@@ -1,0 +1,98 @@
+@layer ui.components {
+  .ui-alert {
+    --ui-alert-bg: var(--ui-bg-surface);
+    --ui-alert-border: var(--ui-line);
+    --ui-alert-fg: var(--ui-fg);
+    --ui-alert-icon-fg: var(--ui-fg-muted);
+    --ui-alert-padding: var(--ui-space-5);
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ui-space-3);
+    align-items: start;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    border: 1px solid var(--ui-alert-border);
+    border-radius: var(--ui-radius-lg);
+    padding: var(--ui-alert-padding);
+    background: var(--ui-alert-bg);
+    color: var(--ui-alert-fg);
+  }
+
+  .ui-alert:has([data-ui-part~='icon']) {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .ui-alert:where([data-ui-density='compact']) {
+    --ui-alert-padding: var(--ui-space-4);
+    gap: var(--ui-space-2) var(--ui-space-3);
+  }
+
+  .ui-alert:where([data-ui-variant='accent']) {
+    --ui-alert-bg: var(--ui-accent-soft);
+    --ui-alert-border: color-mix(in oklab, var(--ui-accent), transparent 62%);
+    --ui-alert-icon-fg: var(--ui-accent);
+  }
+
+  .ui-alert:where([data-ui-variant='success']) {
+    --ui-alert-bg: var(--ui-success-soft);
+    --ui-alert-border: color-mix(in oklab, var(--ui-success), transparent 62%);
+    --ui-alert-icon-fg: var(--ui-success);
+  }
+
+  .ui-alert:where([data-ui-variant='warning']) {
+    --ui-alert-bg: var(--ui-warning-soft);
+    --ui-alert-border: color-mix(in oklab, var(--ui-warning), transparent 58%);
+    --ui-alert-icon-fg: var(--ui-warning);
+  }
+
+  .ui-alert:where([data-ui-variant='danger']) {
+    --ui-alert-bg: var(--ui-danger-soft);
+    --ui-alert-border: color-mix(in oklab, var(--ui-danger), transparent 60%);
+    --ui-alert-icon-fg: var(--ui-danger);
+  }
+
+  .ui-alert :where([data-ui-part~='icon']) {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    color: var(--ui-alert-icon-fg);
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .ui-alert :where([data-ui-part~='content']) {
+    display: grid;
+    gap: var(--ui-space-1);
+    min-inline-size: 0;
+  }
+
+  .ui-alert :where([data-ui-part~='title']) {
+    margin: 0;
+    color: var(--ui-fg);
+    font-size: 0.9375rem;
+    font-weight: 750;
+    line-height: 1.35;
+  }
+
+  .ui-alert :where([data-ui-part~='description']) {
+    margin: 0;
+    color: var(--ui-fg-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .ui-alert :where([data-ui-part~='actions']) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ui-space-3);
+    margin-block-start: var(--ui-space-2);
+  }
+
+  .ui-alert :where(a, button):focus-visible {
+    outline: 2px solid var(--ui-focus);
+    outline-offset: 3px;
+  }
+}

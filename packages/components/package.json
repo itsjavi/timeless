@@ -1,0 +1,148 @@
+{
+  "name": "@timelessui/components",
+  "version": "0.0.1",
+  "description": "CSS-first Timeless UI components.",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "custom-elements.json",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "./dist/css/*.css"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./define": {
+      "types": "./dist/define.d.ts",
+      "import": "./dist/define.js"
+    },
+    "./color": {
+      "types": "./dist/color-api.d.ts",
+      "import": "./dist/color-api.js"
+    },
+    "./collection": {
+      "types": "./dist/collection.d.ts",
+      "import": "./dist/collection.js"
+    },
+    "./events": {
+      "types": "./dist/events.d.ts",
+      "import": "./dist/events.js"
+    },
+    "./value-state": {
+      "types": "./dist/value-state.d.ts",
+      "import": "./dist/value-state.js"
+    },
+    "./tabs": {
+      "types": "./dist/tabs.d.ts",
+      "import": "./dist/tabs.js"
+    },
+    "./dialog": {
+      "types": "./dist/dialog.d.ts",
+      "import": "./dist/dialog.js"
+    },
+    "./sheet": {
+      "types": "./dist/sheet.d.ts",
+      "import": "./dist/sheet.js"
+    },
+    "./popover": {
+      "types": "./dist/popover.d.ts",
+      "import": "./dist/popover.js"
+    },
+    "./hover-card": {
+      "types": "./dist/hover-card.d.ts",
+      "import": "./dist/hover-card.js"
+    },
+    "./menu": {
+      "types": "./dist/menu.d.ts",
+      "import": "./dist/menu.js"
+    },
+    "./menu-button": {
+      "types": "./dist/menu-button.d.ts",
+      "import": "./dist/menu-button.js"
+    },
+    "./toolbar": {
+      "types": "./dist/toolbar.d.ts",
+      "import": "./dist/toolbar.js"
+    },
+    "./radio-group": {
+      "types": "./dist/choice-group.d.ts",
+      "import": "./dist/choice-group.js"
+    },
+    "./checkbox-group": {
+      "types": "./dist/choice-group.d.ts",
+      "import": "./dist/choice-group.js"
+    },
+    "./listbox": {
+      "types": "./dist/listbox.d.ts",
+      "import": "./dist/listbox.js"
+    },
+    "./select": {
+      "types": "./dist/select.d.ts",
+      "import": "./dist/select.js"
+    },
+    "./combobox": {
+      "types": "./dist/combobox.d.ts",
+      "import": "./dist/combobox.js"
+    },
+    "./toaster": {
+      "types": "./dist/toast.d.ts",
+      "import": "./dist/toast.js"
+    },
+    "./toast": {
+      "types": "./dist/toast.d.ts",
+      "import": "./dist/toast.js"
+    },
+    "./toggle-group": {
+      "types": "./dist/toggle-group.d.ts",
+      "import": "./dist/toggle-group.js"
+    },
+    "./number-stepper": {
+      "types": "./dist/number-stepper.d.ts",
+      "import": "./dist/number-stepper.js"
+    },
+    "./color-picker": {
+      "types": "./dist/color-picker.d.ts",
+      "import": "./dist/color-picker.js"
+    },
+    "./define/*": {
+      "types": "./dist/define/*.d.ts",
+      "import": "./dist/define/*.js"
+    },
+    "./jsx/react": {
+      "types": "./dist/jsx/react.d.ts",
+      "import": "./dist/jsx/react.js"
+    },
+    "./css/*.css": "./dist/css/*.css"
+  },
+  "scripts": {
+    "build": "pnpm generate:check && pnpm contracts:validate && pnpm manifest:validate && tsdown --copy src/css",
+    "contracts:validate": "node scripts/validate-contracts.mjs",
+    "exports:validate": "node scripts/check-exports.mjs",
+    "generated-dom:check": "node scripts/check-generated-dom.mjs",
+    "generate": "node scripts/generate-elements.mjs",
+    "generate:check": "node scripts/generate-elements.mjs --check",
+    "manifest:validate": "node scripts/validate-manifest.mjs",
+    "performance:check": "node scripts/check-performance.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "publint": "publint --strict --pack=false"
+  },
+  "dependencies": {
+    "@timelessui/core": "workspace:*"
+  },
+  "devDependencies": {
+    "publint": "^0.3.23",
+    "tsdown": "^0.22.14",
+    "typescript": "catalog:",
+    "vitest": "^4.1.10"
+  },
+  "customElements": "./custom-elements.json"
+}

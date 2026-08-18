@@ -1,0 +1,75 @@
+@layer ui.components {
+  .ui-range {
+    --ui-range-track: 0.375rem;
+    --ui-range-thumb: 1rem;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--ui-space-2);
+    align-items: center;
+    color: var(--ui-fg);
+    font-size: 0.8125rem;
+    font-weight: 650;
+  }
+
+  .ui-range:where([data-ui-size='sm']) {
+    --ui-range-track: 0.25rem;
+    --ui-range-thumb: 0.875rem;
+
+    font-size: 0.75rem;
+  }
+
+  .ui-range:where([data-ui-size='lg']) {
+    --ui-range-track: 0.5rem;
+    --ui-range-thumb: 1.25rem;
+
+    font-size: 0.875rem;
+  }
+
+  .ui-range > input[type='range'] {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+
+  .ui-range > output {
+    color: var(--ui-fg-muted);
+    font-family: var(--ui-font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .ui-range > :where(.ui-description, [data-ui-part~='hint']) {
+    grid-column: 1 / -1;
+    font-weight: 400;
+  }
+
+  .ui-range > input[style*='--ui-range-gradient'] {
+    appearance: none;
+    block-size: var(--ui-range-track);
+    border-radius: var(--ui-radius-pill);
+    background: var(--ui-range-gradient);
+  }
+
+  .ui-range > input[style*='--ui-range-gradient']::-webkit-slider-thumb {
+    appearance: none;
+    inline-size: var(--ui-range-thumb);
+    block-size: var(--ui-range-thumb);
+    border: 2px solid var(--ui-bg-surface);
+    border-radius: 50%;
+    background: var(--ui-fg);
+    box-shadow:
+      0 0 0 1px var(--ui-line-strong),
+      var(--ui-shadow-control);
+  }
+
+  .ui-range > input[style*='--ui-range-gradient']::-moz-range-thumb {
+    inline-size: calc(var(--ui-range-thumb) - 0.25rem);
+    block-size: calc(var(--ui-range-thumb) - 0.25rem);
+    border: 2px solid var(--ui-bg-surface);
+    border-radius: 50%;
+    background: var(--ui-fg);
+    box-shadow:
+      0 0 0 1px var(--ui-line-strong),
+      var(--ui-shadow-control);
+  }
+}

@@ -1,0 +1,38 @@
+---
+import { storiesUrl } from '../../lib/stories'
+
+type Props = { home?: boolean }
+const { home = false } = Astro.props
+const sectionPrefix = home ? '' : '/'
+---
+
+<header class="site-nav" aria-label="Primary">
+  <div class="site-nav__menu">
+    <a class="brand" href={home ? '#top' : '/'} aria-label="Timeless home">
+      <span>Timeless</span>
+    </a>
+
+    <nav class="nav-links" aria-label="Page sections">
+      <a href={`${sectionPrefix}#ingredients`}>Ingredients</a>
+      <a href={`${sectionPrefix}#principles`}>Principles</a>
+      <a href={`${sectionPrefix}#enhancement`}>Before JS</a>
+      <a href="/docs/">Docs</a>
+      <a href={storiesUrl()}>Stories</a>
+    </nav>
+  </div>
+
+  <a
+    class="github-link"
+    href="https://github.com/itsjavi/timeless"
+    rel="noopener noreferrer"
+    target="_blank"
+    aria-label="Timeless GitHub repository"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path
+        d="M12 .5C5.65.5.5 5.66.5 12.02c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-.99-.02-1.94-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.71 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.89-.39.98 0 1.97.13 2.89.39 2.21-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.77.11 3.06.74.81 1.19 1.84 1.19 3.1 0 4.44-2.69 5.42-5.25 5.7.41.36.78 1.07.78 2.15 0 1.55-.02 2.8-.02 3.18 0 .3.21.66.79.55 4.56-1.52 7.85-5.83 7.85-10.91C23.5 5.66 18.35.5 12 .5Z"
+      ></path>
+    </svg>
+    <span>GitHub</span>
+  </a>
+</header>

@@ -1,0 +1,64 @@
+---
+import SiteFooter from '../components/site/SiteFooter.astro'
+import SiteHeader from '../components/site/SiteHeader.astro'
+import SiteLayout from '../layouts/SiteLayout.astro'
+import '../styles/not-found.css'
+---
+
+<SiteLayout
+  title="Cupcake Not Found - Timeless"
+  description="The Timeless page you wanted took a pie break."
+  ogDescription="A 1950s-style Timeless 404 page with a fresh excuse from the recipe box."
+>
+  <div class="site-shell not-found-shell">
+    <SiteHeader />
+
+      <main id="main" class="not-found-main">
+        <section class="not-found-hero" aria-labelledby="not-found-title">
+          <figure
+            class="not-found-hero__art"
+            data-not-found-art
+            role="img"
+            aria-label="1950s-style robot baker looking for a missing recipe card in a retro kitchen."
+          >
+            <img
+              data-not-found-art-image
+              src="/assets/avif/hero-art-07.avif"
+              alt=""
+              aria-hidden="true"
+            />
+          </figure>
+
+          <div class="not-found-hero__copy">
+            <p class="not-found-hero__eyebrow">404 recipe misfire</p>
+            <h1 id="not-found-title" data-not-found-title>Cupcake not found</h1>
+            <p class="not-found-hero__sentence" data-not-found-sentence aria-live="polite">
+              The frosting filed a redirect and left no forwarding address.
+            </p>
+
+            <div class="hero__actions" aria-label="404 actions">
+              <a class="button button--primary" href="/">Back to the counter</a>
+              <button class="button button--secondary" type="button" data-not-found-reroll>
+                Another excuse
+              </button>
+            </div>
+          </div>
+
+          <aside class="not-found-recipe" aria-label="Emergency 404 recipe">
+            <span class="not-found-recipe__tape" aria-hidden="true"></span>
+            <p class="not-found-recipe__code">404</p>
+            <h2>Emergency recipe</h2>
+            <ol>
+              <li>Find one working URL.</li>
+              <li>Dust with semantic HTML.</li>
+              <li>Bake until the server says OK.</li>
+            </ol>
+          </aside>
+        </section>
+      </main>
+
+    <SiteFooter />
+  </div>
+</SiteLayout>
+
+<script src="../scripts/not-found.ts"></script>

@@ -1,0 +1,16 @@
+:root {
+  --sl-primary: #2b90ed;
+  --sl-secondary: #e67e22;
+}
+
+.brand__mark {
+  color: white;
+  background: light-dark(#999, #444);
+  padding: 0.1rem;
+  border-radius: 15px;
+  border: none;
+  span {
+    font-variant-numeric: tabular-nums;
+    font-size: 14px;
+  }
+}

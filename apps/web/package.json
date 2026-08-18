@@ -1,0 +1,27 @@
+{
+  "name": "@apps/web",
+  "version": "0.0.1",
+  "private": true,
+  "description": "The main timeless.build website.",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host 0.0.0.0 --port ${PORT:-6339}",
+    "build": "astro build",
+    "preview": "vite preview --host 0.0.0.0 --port ${PORT:-6339} --outDir dist",
+    "typecheck": "astro check",
+    "test": "node scripts/validate-claims.mjs && node scripts/validate-docs.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.0",
+    "@astrojs/starlight": "^0.41.7",
+    "@lucide/astro": "^1.31.0",
+    "@timelessui/components": "workspace:*",
+    "@timelessui/examples": "workspace:*",
+    "astro": "^7.2.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "catalog:",
+    "vite": "^8.2.1"
+  }
+}

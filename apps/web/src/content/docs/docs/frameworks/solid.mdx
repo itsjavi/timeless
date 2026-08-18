@@ -1,0 +1,44 @@
+---
+title: Solid
+description: Render Timeless custom elements directly from Solid.
+sidebar:
+  order: 6
+---
+
+## Install
+
+```sh
+pnpm add @timelessui/components
+```
+
+## CSS and registration
+
+Import CSS and the required definitions once:
+
+```ts
+import '@timelessui/components/css/tokens.css'
+import '@timelessui/components/css/choice-group.css'
+import '@timelessui/components/define/ui-radio-group'
+```
+
+## Markup
+
+Solid forwards custom-element attributes and properties without a Timeless adapter:
+
+```tsx
+<ui-radio-group value="system" aria-label="Theme">
+  <label>
+    <input type="radio" name="theme" value="system" /> System
+  </label>
+  <label>
+    <input type="radio" name="theme" value="dark" /> Dark
+  </label>
+</ui-radio-group>
+```
+
+## SSR, hydration, events, and TypeScript
+
+SSR emits the authored attributes and Light DOM. Keep registration in client code so custom-element
+upgrade happens after hydration. Use a typed ref for live property assignment and namespaced event
+listeners. Public classes and transition detail types are available from granular TypeScript
+entrypoints.

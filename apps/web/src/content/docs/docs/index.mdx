@@ -1,0 +1,59 @@
+---
+title: Timeless documentation
+description: Framework-agnostic UI built on modern web standards.
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components'
+import StoriesLink from '../../../components/docs/StoriesLink.astro'
+
+Timeless is a UI library of plain CSS and custom elements. You author the markup, your CSS can
+override anything, and JavaScript only runs where the platform cannot do the job alone. There is no
+framework runtime and no third-party dependency, so the same components work in plain HTML, React,
+Vue, Svelte, Solid, and Astro.
+
+<CardGrid>
+  <LinkCard
+    title="Install and build something"
+    description="Add the package, load the CSS, register an element."
+    href="/docs/getting-started/installation/"
+  />
+  <LinkCard
+    title="Browse all components"
+    description="43 components, grouped by what they are for."
+    href="/docs/components/"
+  />
+  <LinkCard
+    title="Theme it"
+    description="Cascade layers, design tokens, and component variables."
+    href="/docs/styling/theming/"
+  />
+  <LinkCard
+    title="Use it with your framework"
+    description="Vanilla, React, Astro, Svelte, Vue, and Solid."
+    href="/docs/frameworks/vanilla/"
+  />
+</CardGrid>
+
+## How to read a component page
+
+Every component page follows the same shape, so you can skip to what you need:
+
+- **Anatomy** names each part you author, whether it is required, and the selector your CSS can
+  target.
+- **Attributes** lists every permitted value and the default. The build proves these against the
+  stylesheets, so a documented value is a value that works.
+- **Element API** appears for custom elements only, and covers the DOM properties and events added
+  once the element upgrades.
+- **Styling** separates the custom properties you may set from the global tokens the component
+  reads.
+- **Before JavaScript runs** says what the markup does on its own.
+
+## What the contracts guarantee
+
+Every published import except the stylesheets and the `define/*` entrypoints is side-effect free, so
+class imports are safe during server rendering. Enhanced elements coordinate the markup you wrote
+rather than replacing it, and they preserve native controls wherever those controls already provide
+submission, labelling, reset, and validation.
+
+<StoriesLink>Every component also has a StoryLite page</StoriesLink> with variants, live controls,
+and manual testing.

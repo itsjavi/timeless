@@ -1,0 +1,21 @@
+{
+  "name": "@apps/e2e",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "e2e": "playwright test",
+    "e2e:site": "playwright test -c playwright.site.config.ts",
+    "e2e:install": "playwright install chromium firefox webkit",
+    "e2e:show": "E2E_SLOW_MO=500 playwright test --headed",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.62.1",
+    "@timelessui/examples": "workspace:*",
+    "@types/node": "^26.2.0",
+    "@vitest/browser-playwright": "^4.1.10",
+    "typescript": "catalog:"
+  }
+}

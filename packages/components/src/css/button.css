@@ -1,0 +1,182 @@
+@layer ui.components {
+  .ui-button {
+    --ui-button-bg: var(--ui-bg-accent);
+    --ui-button-bg-hover: var(--ui-bg-accent-hover);
+    --ui-button-bg-active: var(--ui-bg-accent-active);
+    --ui-button-fg: #ffffff;
+    --ui-button-fg-hover: var(--ui-button-fg);
+    --ui-button-border: color-mix(in oklab, var(--ui-button-bg), #000000 12%);
+    --ui-button-shadow: var(--ui-shadow-control-accent);
+    --ui-button-shadow-hover:
+      0 1px 1px rgb(0 0 0 / 10%), 0 2px 6px rgb(0 122 255 / 14%),
+      inset 0 1px 0 rgb(255 255 255 / 20%), inset 0 -1px 0 rgb(0 0 0 / 13%);
+    --ui-button-shadow-active: var(--ui-shadow-control-active);
+    --ui-button-height: 2.625rem;
+    --ui-button-padding-x: 1.125rem;
+    --ui-button-gap: 0.5rem;
+    --ui-button-radius: var(--ui-radius-control);
+
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ui-button-gap);
+    min-block-size: var(--ui-button-height);
+    border: 1px solid var(--ui-button-border);
+    border-radius: var(--ui-button-radius);
+    padding-inline: var(--ui-button-padding-x);
+    background: var(--ui-button-bg);
+    box-shadow: var(--ui-button-shadow);
+    color: var(--ui-button-fg);
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 650;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: default;
+    user-select: none;
+    transition:
+      background var(--ui-duration-fast) var(--ui-ease-standard),
+      border-color var(--ui-duration-fast) var(--ui-ease-standard),
+      box-shadow var(--ui-duration-fast) var(--ui-ease-standard),
+      color var(--ui-duration-fast) var(--ui-ease-standard),
+      transform var(--ui-duration-fast) var(--ui-ease-standard);
+  }
+
+  .ui-button:where([data-ui-size='sm']) {
+    --ui-button-height: 2.125rem;
+    --ui-button-padding-x: 0.875rem;
+    --ui-button-gap: 0.375rem;
+    --ui-button-radius: 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .ui-button:where([data-ui-size='lg']) {
+    --ui-button-height: 3.25rem;
+    --ui-button-padding-x: 1.5rem;
+    --ui-button-gap: 0.625rem;
+    --ui-button-radius: 1rem;
+    font-size: 1.125rem;
+  }
+
+  .ui-button:where([data-ui-variant='secondary']) {
+    --ui-button-bg: var(--ui-bg-control);
+    --ui-button-bg-hover: var(--ui-bg-control-hover);
+    --ui-button-bg-active: var(--ui-bg-control-active);
+    --ui-button-fg: var(--ui-fg);
+    --ui-button-border: transparent;
+    --ui-button-shadow: none;
+    --ui-button-shadow-hover: none;
+    --ui-button-shadow-active: none;
+  }
+
+  .ui-button:where([data-ui-variant='outline']) {
+    --ui-button-bg: light-dark(#ffffff, #151518);
+    --ui-button-bg-hover: var(--ui-bg-control-muted);
+    --ui-button-bg-active: var(--ui-bg-control);
+    --ui-button-fg: var(--ui-fg);
+    --ui-button-border: light-dark(#dddddf, #35363b);
+    --ui-button-shadow: var(--ui-shadow-outline-control);
+    --ui-button-shadow-hover:
+      0 1px 1px light-dark(rgb(0 0 0 / 8%), rgb(0 0 0 / 30%)),
+      0 2px 6px light-dark(rgb(0 0 0 / 5%), rgb(0 0 0 / 18%)),
+      inset 0 1px 0 light-dark(rgb(255 255 255 / 90%), rgb(255 255 255 / 7%)),
+      inset 0 -1px 0 light-dark(rgb(0 0 0 / 6%), rgb(0 0 0 / 26%));
+    --ui-button-shadow-active: inset 0 1px 2px light-dark(rgb(0 0 0 / 10%), rgb(0 0 0 / 34%));
+  }
+
+  .ui-button:where([data-ui-variant='ghost']) {
+    --ui-button-bg: transparent;
+    --ui-button-bg-hover: var(--ui-bg-control);
+    --ui-button-bg-active: var(--ui-bg-control-hover);
+    --ui-button-fg: var(--ui-fg);
+    --ui-button-border: transparent;
+    --ui-button-shadow: none;
+    --ui-button-shadow-hover: none;
+    --ui-button-shadow-active: none;
+  }
+
+  .ui-button:where([data-ui-variant='danger']) {
+    --ui-button-bg: var(--ui-bg-danger);
+    --ui-button-bg-hover: var(--ui-bg-danger-hover);
+    --ui-button-bg-active: var(--ui-bg-danger-active);
+    --ui-button-fg: #ffffff;
+    --ui-button-border: color-mix(in oklab, var(--ui-button-bg), #000000 10%);
+    --ui-button-shadow: var(--ui-shadow-control-danger);
+    --ui-button-shadow-hover:
+      0 1px 1px rgb(0 0 0 / 10%), 0 2px 6px rgb(255 51 71 / 15%),
+      inset 0 1px 0 rgb(255 255 255 / 20%), inset 0 -1px 0 rgb(0 0 0 / 13%);
+    --ui-button-shadow-active:
+      inset 0 1px 2px rgb(0 0 0 / 18%), inset 0 1px 0 rgb(255 255 255 / 12%);
+  }
+
+  .ui-button:where([data-ui-variant='danger-outline']) {
+    --ui-button-bg: light-dark(#ffffff, #151518);
+    --ui-button-bg-hover: light-dark(#ffeded, #2b1b20);
+    --ui-button-bg-active: light-dark(#ffe1e4, #382129);
+    --ui-button-fg: light-dark(#c40012, #ff5a67);
+    --ui-button-border: light-dark(#dddddf, #3a3033);
+    --ui-button-shadow:
+      0 1px 1px light-dark(rgb(0 0 0 / 8%), rgb(0 0 0 / 28%)),
+      0 2px 5px light-dark(rgb(0 0 0 / 5%), rgb(0 0 0 / 16%)),
+      inset 0 1px 0 light-dark(rgb(255 255 255 / 90%), rgb(255 255 255 / 6%)),
+      inset 0 -1px 0 light-dark(rgb(0 0 0 / 5%), rgb(0 0 0 / 24%));
+    --ui-button-shadow-hover:
+      0 1px 1px light-dark(rgb(0 0 0 / 8%), rgb(0 0 0 / 30%)),
+      0 2px 6px light-dark(rgb(196 0 18 / 5%), rgb(255 90 103 / 7%)),
+      inset 0 1px 0 light-dark(rgb(255 255 255 / 90%), rgb(255 255 255 / 7%)),
+      inset 0 -1px 0 light-dark(rgb(196 0 18 / 6%), rgb(0 0 0 / 26%));
+    --ui-button-shadow-active: inset 0 1px 2px light-dark(rgb(196 0 18 / 10%), rgb(0 0 0 / 34%));
+  }
+
+  .ui-button:where([data-ui-variant='link']) {
+    --ui-button-bg: transparent;
+    --ui-button-bg-hover: transparent;
+    --ui-button-bg-active: transparent;
+    --ui-button-fg: var(--ui-fg);
+    --ui-button-fg-hover: var(--ui-accent);
+    --ui-button-border: transparent;
+    --ui-button-shadow: none;
+    --ui-button-shadow-hover: none;
+    --ui-button-shadow-active: none;
+    min-block-size: auto;
+    border-radius: var(--ui-button-radius);
+    padding-block: 0.125rem;
+    padding-inline: 0;
+    text-decoration-line: underline;
+    text-decoration-thickness: 0.065em;
+    text-underline-offset: 0.18em;
+  }
+
+  .ui-button:where(:hover):where(:not(:disabled, [aria-disabled='true'])) {
+    background: var(--ui-button-bg-hover);
+    box-shadow: var(--ui-button-shadow-hover);
+    color: var(--ui-button-fg-hover);
+  }
+
+  .ui-button:where(:active):where(:not(:disabled, [aria-disabled='true'])) {
+    background: var(--ui-button-bg-active);
+    box-shadow: var(--ui-button-shadow-active);
+    color: var(--ui-button-fg-hover);
+    transform: translateY(1px);
+  }
+
+  .ui-button:where(:focus-visible) {
+    outline: 2px solid var(--ui-focus);
+    outline-offset: 3px;
+  }
+
+  .ui-button:where(:disabled, [aria-disabled='true']) {
+    cursor: default;
+    opacity: 0.56;
+  }
+
+  .ui-button:where([aria-busy='true']) {
+    --ui-button-bg-hover: var(--ui-button-bg);
+    --ui-button-bg-active: var(--ui-button-bg);
+    --ui-button-shadow-hover: var(--ui-button-shadow);
+    --ui-button-shadow-active: var(--ui-button-shadow);
+  }
+}

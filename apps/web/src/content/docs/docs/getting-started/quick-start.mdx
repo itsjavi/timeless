@@ -1,0 +1,55 @@
+---
+title: Quick start
+description: Build a Timeless interface from native HTML and explicit enhancement.
+sidebar:
+  order: 2
+---
+
+Import CSS and the definition entrypoint:
+
+```js
+import '@timelessui/components/css/tokens.css'
+import '@timelessui/components/css/button.css'
+import '@timelessui/components/css/popover.css'
+import '@timelessui/components/define/ui-popover'
+```
+
+Author the anatomy in HTML. This is the minimum a Popover needs:
+
+```html
+<ui-popover>
+  <button class="ui-button" data-ui-part="trigger" type="button" popovertarget="release">
+    Release status
+  </button>
+  <div id="release" popover="auto">
+    <h2>Ready to publish</h2>
+    <p>All required checks passed.</p>
+  </div>
+</ui-popover>
+```
+
+`popovertarget` is what makes this work before JavaScript: the button opens the surface natively,
+and the browser handles light dismiss and Escape. Registration then adds `aria-controls`,
+`aria-expanded`, `aria-haspopup`, the surface `role`, and anchored positioning.
+
+## Author the parts you own
+
+Timeless never writes your content or your accessible names. When the surface is a dialog, name and
+describe it yourself:
+
+```html
+<div
+  id="release"
+  popover="auto"
+  role="dialog"
+  aria-labelledby="release-title"
+  aria-describedby="release-summary"
+>
+  <h2 id="release-title">Ready to publish</h2>
+  <p id="release-summary">All required checks passed.</p>
+</div>
+```
+
+The component pages show this fuller form, because an example should be correct on its own. The
+**Attributes** and **Anatomy** tables on each page mark what you must author and what the element
+adds for you.

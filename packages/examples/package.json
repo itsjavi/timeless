@@ -1,0 +1,30 @@
+{
+  "name": "@timelessui/examples",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Canonical Timeless UI consumer examples shared by documentation apps.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./primitives": "./src/primitives.html.ts",
+    "./forms": "./src/forms.html.ts",
+    "./collections": "./src/collections.html.ts",
+    "./overlays": "./src/overlays.html.ts",
+    "./color-picker": "./src/color-picker.html.ts",
+    "./color-swatch": "./src/color-swatch.html.ts",
+    "./empty": "./src/empty.html.ts",
+    "./meter": "./src/meter.html.ts",
+    "./number-stepper": "./src/number-stepper.html.ts",
+    "./toggle": "./src/toggle.html.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node scripts/validate.mjs"
+  },
+  "dependencies": {
+    "@timelessui/components": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

@@ -1,0 +1,62 @@
+---
+title: React
+description: Use custom elements directly with opt-in JSX types and no runtime wrapper.
+sidebar:
+  order: 2
+---
+
+## Install and TypeScript
+
+```sh
+pnpm add @timelessui/components
+```
+
+React 19 supports custom-element properties on the client and primitive attributes during server
+rendering. Import Timeless JSX declarations once in your application types:
+
+```ts
+import '@timelessui/components/jsx/react'
+```
+
+The declaration is types-only. Timeless does not add a runtime wrapper or React dependency.
+
+## CSS and registration
+
+Import CSS and registration from a client entrypoint:
+
+```ts
+import '@timelessui/components/css/tokens.css'
+import '@timelessui/components/css/listbox.css'
+import '@timelessui/components/define/ui-listbox'
+```
+
+Load definition imports from a client entrypoint. CSS and class-only imports are safe during server
+rendering.
+
+## Markup and hydration
+
+Use the element directly:
+
+```tsx
+export function StatusPicker() {
+  return (
+    <ui-listbox value="draft" role="listbox" aria-label="Status">
+      <div role="option" data-ui-value="draft">
+        Draft
+      </div>
+      <div role="option" data-ui-value="ready">
+        Ready
+      </div>
+    </ui-listbox>
+  )
+}
+```
+
+Primitive values render as attributes on the server. Assign object or array properties after the
+element upgrades when a component exposes them. React hydrates the authored Light DOM, then the
+browser upgrades the custom element without replacing that anatomy.
+
+## Events
+
+Attach namespaced custom events with a ref and `addEventListener` when an application needs typed,
+cancelable transition handling. Import event detail types from `@timelessui/components/events`.

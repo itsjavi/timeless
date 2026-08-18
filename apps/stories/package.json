@@ -1,0 +1,26 @@
+{
+  "name": "@apps/stories",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Timeless UI StoryLite workbench.",
+  "type": "module",
+  "scripts": {
+    "dev": "PORT=1992 storylite dev",
+    "build": "storylite build && node scripts/write-route-catalog.mjs",
+    "preview": "PORT=1993 storylite preview",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@storylite/storylite": "^1.5.4",
+    "@timelessui/components": "workspace:*",
+    "@timelessui/core": "workspace:*",
+    "@timelessui/examples": "workspace:*"
+  },
+  "devDependencies": {
+    "satteri": "^0.9.5",
+    "typescript": "catalog:",
+    "vite-plugin-satteri": "^0.2.15",
+    "vitest": "^4.1.10"
+  }
+}

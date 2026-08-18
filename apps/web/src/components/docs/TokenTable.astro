@@ -1,0 +1,43 @@
+---
+import { readFile } from 'node:fs/promises'
+import { resolve } from 'node:path'
+import { atmosphereTokenGroups } from '@timelessui/components'
+
+type Props = { group: keyof typeof atmosphereTokenGroups }
+const { group } = Astro.props
+
+const stylesheet = await readFile(
+  resolve(process.cwd(), '../../packages/components/src/css/tokens.css'),
+  'utf8',
+)
+
+/**
+ * Declared values come straight from `tokens.css`, so the table cannot drift from the stylesheet.
+ * `validate-contracts.mjs` already proves the two lists name the same tokens.
+ */
+const declarations = new Map(
+  [...stylesheet.matchAll(/^\s*(--ui-[a-z0-9-]+)\s*:\s*([^;]+);/gm)].map((match) => [
+    match[1],
+    match[2].replace(/\s+/g, ' ').trim(),
+  ]),
+)
+
+const tokens: readonly string[] = atmosphereTokenGroups[group]
+const truncate = (value: string) => (value.length > 72 ? `${value.slice(0, 69)}…` : value)
+---
+
+<table>
+  <thead>
+    <tr><th>Token</th><th>Value</th></tr>
+  </thead>
+  <tbody>
+    {
+      tokens.map((token) => (
+        <tr>
+          <td><code>{token}</code></td>
+          <td><code>{truncate(declarations.get(token) ?? '')}</code></td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>

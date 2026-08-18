@@ -1,0 +1,29 @@
+{
+  "justification": "Milestone 015 initial per-entry closure and CSS baselines.",
+  "entries": {
+    "popover": {
+      "cssGzipBytes": 1132,
+      "cssRawBytes": 6293,
+      "gzipBytes": 4155,
+      "rawBytes": 16097
+    },
+    "listbox": {
+      "cssGzipBytes": 449,
+      "cssRawBytes": 1391,
+      "gzipBytes": 6254,
+      "rawBytes": 25117
+    },
+    "select": {
+      "cssGzipBytes": 758,
+      "cssRawBytes": 2425,
+      "gzipBytes": 15018,
+      "rawBytes": 62169
+    },
+    "combobox": {
+      "cssGzipBytes": 777,
+      "cssRawBytes": 2602,
+      "gzipBytes": 14564,
+      "rawBytes": 59469
+    }
+  }
+}

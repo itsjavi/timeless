@@ -1,0 +1,49 @@
+---
+title: Astro
+description: Render Timeless anatomy on the server and register behavior in the browser.
+sidebar:
+  order: 3
+---
+
+## Install
+
+```sh
+pnpm add @timelessui/components
+```
+
+## CSS and registration
+
+Import component CSS in an Astro layout or page frontmatter:
+
+```astro
+---
+import '@timelessui/components/css/tokens.css'
+import '@timelessui/components/css/popover.css'
+---
+```
+
+Render the public anatomy as ordinary Astro markup, then load the definition as a processed client
+script:
+
+```astro
+<ui-popover>
+  <button data-ui-part="trigger" type="button" popovertarget="details">Open</button>
+  <div id="details" popover="auto">Popover content</div>
+</ui-popover>
+
+<script>
+  import '@timelessui/components/define/ui-popover'
+</script>
+```
+
+## SSR and hydration
+
+Astro renders the complete Light DOM on the server. A custom element does not need an Astro client
+directive. The processed script registers it in the browser, then native custom-element upgrade
+enhances the existing DOM. Class-only imports are SSR safe.
+
+## Attributes, properties, events, and TypeScript
+
+Use plain attributes for authored state. Assign live properties from a client script after selecting
+the element. Listen for namespaced events with `addEventListener`, and import element or event
+detail types from the matching package entrypoint when the script uses TypeScript.

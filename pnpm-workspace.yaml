@@ -1,0 +1,30 @@
+# only direct deps may use exotic sources like git repositories or direct tarball URLs
+blockExoticSubdeps: true
+
+# only packages released at least 1.5 days ago can be installed:
+minimumReleaseAge: 2160
+minimumReleaseAgeExclude:
+  - "@storylite/*"
+
+# when set to no-downgrade, pnpm will fail if a package's trust level has decreased compared to previous releases
+trustPolicy: no-downgrade
+
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+allowBuilds:
+  esbuild: true
+  msw: true
+
+catalog:
+  typescript: "^6.0.3"
+
+overrides:
+  'chokidar': '^5.0.0'
+  "typescript": "^6.0.3"
+
+update:
+  ignoreDeps:
+    - typescript
+    - chokidar

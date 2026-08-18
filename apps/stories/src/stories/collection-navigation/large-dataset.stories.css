@@ -1,0 +1,44 @@
+@layer ui.showcase {
+  .ui-large-dataset {
+    display: grid;
+    gap: var(--ui-space-4);
+    inline-size: min(100%, 44rem);
+  }
+
+  .ui-large-dataset [role='listbox'] {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+    max-block-size: 22rem;
+  }
+
+  .ui-large-dataset [role='option'] {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr) auto;
+    gap: var(--ui-space-3);
+    align-items: center;
+  }
+
+  .ui-large-dataset [role='option'] img {
+    display: block;
+    inline-size: 2rem;
+    block-size: 2rem;
+    border-radius: var(--ui-radius-sm);
+    background: var(--ui-bg-surface-raised);
+  }
+
+  .ui-large-dataset [role='option'] small {
+    color: var(--ui-fg-muted);
+    font-family: var(--ui-font-mono);
+  }
+
+  .ui-large-dataset [data-dataset-controls] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ui-space-3);
+    align-items: center;
+  }
+
+  .ui-large-dataset [data-dataset-status] {
+    margin: 0;
+    color: var(--ui-fg-muted);
+  }
+}

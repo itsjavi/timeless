@@ -1,0 +1,1324 @@
+{
+  "schemaVersion": "2.1.0",
+  "readme": "README.md",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "dist/tabs.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UITabsElement",
+          "customElement": true,
+          "tagName": "ui-tabs",
+          "attributes": [
+            {
+              "name": "activation",
+              "description": "Whether moving focus with the arrow keys selects the tab immediately (`automatic`) or waits for Enter or Space (`manual`). Use `manual` when selecting a tab is expensive.",
+              "type": {
+                "text": "'automatic' | 'manual'"
+              },
+              "default": "automatic"
+            },
+            {
+              "name": "orientation",
+              "description": "Arrow-key axis. Mirrored onto `aria-orientation` on the tablist during enhancement.",
+              "type": {
+                "text": "'horizontal' | 'vertical'"
+              },
+              "default": "horizontal"
+            },
+            {
+              "name": "value",
+              "description": "The tab selected on load and after a form reset. Match a tab’s `value` attribute. Assign the `value` property for live changes.",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "activation",
+              "attribute": "activation",
+              "type": {
+                "text": "'automatic' | 'manual'"
+              },
+              "description": "Whether moving focus with the arrow keys selects the tab immediately (`automatic`) or waits for Enter or Space (`manual`). Use `manual` when selecting a tab is expensive."
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "attribute": "orientation",
+              "type": {
+                "text": "'horizontal' | 'vertical'"
+              },
+              "description": "Arrow-key axis. Mirrored onto `aria-orientation` on the tablist during enhancement."
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "attribute": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Authored default and form-reset value. Reflects the `value` attribute."
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Live value. Assigning it does not rewrite the authored default and does not dispatch transition events."
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the selected tab changes. Call `preventDefault()` to reject the transition and keep the current value.",
+              "type": {
+                "text": "CustomEvent<UITransitionDetail>"
+              }
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the selected tab has changed. Bubbles and is composed.",
+              "type": {
+                "text": "CustomEvent<UITransitionDetail>"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UITabsElement",
+          "declaration": {
+            "name": "UITabsElement",
+            "module": "dist/tabs.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/dialog.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIDialogElement",
+          "customElement": true,
+          "tagName": "ui-dialog",
+          "attributes": [
+            {
+              "name": "kind",
+              "description": "Whether the panel is a regular dialog or an alert dialog. `alert` resolves to `role=\"alertdialog\"`, for a destructive confirmation the user must answer.",
+              "type": {
+                "text": "'dialog' | 'alert'"
+              },
+              "default": "dialog"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "kind",
+              "attribute": "kind",
+              "type": {
+                "text": "'dialog' | 'alert'"
+              },
+              "description": "Whether the panel is a regular dialog or an alert dialog. `alert` resolves to `role=\"alertdialog\"`, for a destructive confirmation the user must answer."
+            }
+          ],
+          "events": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIDialogElement",
+          "declaration": {
+            "name": "UIDialogElement",
+            "module": "dist/dialog.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/sheet.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UISheetElement",
+          "customElement": true,
+          "tagName": "ui-sheet",
+          "attributes": [
+            {
+              "name": "modal",
+              "description": "Present to open the sheet as a modal, trapping focus and blocking the page behind it. Omit for a non-modal sheet the user can interact around.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "open",
+              "description": "Present to render the sheet open on load.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "position",
+              "description": "Which viewport edge the sheet slides in from.",
+              "type": {
+                "text": "'top' | 'right' | 'bottom' | 'left'"
+              },
+              "default": "right"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "modal",
+              "attribute": "modal",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to open the sheet as a modal, trapping focus and blocking the page behind it. Omit for a non-modal sheet the user can interact around."
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "attribute": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to render the sheet open on load."
+            },
+            {
+              "kind": "field",
+              "name": "position",
+              "attribute": "position",
+              "type": {
+                "text": "'top' | 'right' | 'bottom' | 'left'"
+              },
+              "description": "Which viewport edge the sheet slides in from."
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-open",
+              "description": "Dispatched after the sheet opens.",
+              "type": {
+                "text": "CustomEvent<{ source: string }>"
+              }
+            },
+            {
+              "name": "ui-close",
+              "description": "Dispatched after the sheet closes.",
+              "type": {
+                "text": "CustomEvent<{ source: string }>"
+              }
+            },
+            {
+              "name": "ui-dismiss",
+              "description": "Dispatched when the sheet closes through Escape or a backdrop click rather than an explicit control.",
+              "type": {
+                "text": "CustomEvent<SheetEventDetail>"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UISheetElement",
+          "declaration": {
+            "name": "UISheetElement",
+            "module": "dist/sheet.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/popover.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIPopoverElement",
+          "customElement": true,
+          "tagName": "ui-popover",
+          "attributes": [
+            {
+              "name": "placement",
+              "description": "Preferred side of the trigger. Positioning uses CSS anchor positioning, so the browser may flip the surface to keep it on screen.",
+              "type": {
+                "text": "'bottom' | 'top' | 'right' | 'left'"
+              },
+              "default": "bottom"
+            },
+            {
+              "name": "role",
+              "description": "Semantics applied to the surface, and the `aria-haspopup` value set on the trigger. Choose it from the interaction, not the appearance.",
+              "type": {
+                "text": "'dialog' | 'menu' | 'listbox' | 'tooltip'"
+              },
+              "default": "dialog"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "placement",
+              "attribute": "placement",
+              "type": {
+                "text": "'bottom' | 'top' | 'right' | 'left'"
+              },
+              "description": "Preferred side of the trigger. Positioning uses CSS anchor positioning, so the browser may flip the surface to keep it on screen."
+            },
+            {
+              "kind": "field",
+              "name": "roleValue",
+              "attribute": "role",
+              "type": {
+                "text": "'dialog' | 'menu' | 'listbox' | 'tooltip'"
+              },
+              "description": "Semantics applied to the surface, and the `aria-haspopup` value set on the trigger. Choose it from the interaction, not the appearance."
+            }
+          ],
+          "events": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIPopoverElement",
+          "declaration": {
+            "name": "UIPopoverElement",
+            "module": "dist/popover.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/hover-card.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIHoverCardElement",
+          "customElement": true,
+          "tagName": "ui-hover-card",
+          "attributes": [
+            {
+              "name": "anchor",
+              "description": "Id of an element to anchor against instead of the trigger. Use it when the visual anchor differs from the control that opens the card.",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "variant",
+              "description": "Set `tooltip` for the compact tooltip treatment. Omit for the roomier hover-card surface.",
+              "type": {
+                "text": "'tooltip'"
+              }
+            },
+            {
+              "name": "placement",
+              "description": "Preferred side of the anchor.",
+              "type": {
+                "text": "'bottom' | 'top' | 'right' | 'left'"
+              },
+              "default": "bottom"
+            },
+            {
+              "name": "open-delay",
+              "description": "Milliseconds of hover or focus intent before opening. The resolved number is available on the read-only `openDelay` property.",
+              "type": {
+                "text": "number"
+              },
+              "default": "180"
+            },
+            {
+              "name": "close-delay",
+              "description": "Milliseconds after the pointer leaves before closing, so the user can cross the gap into the surface. The resolved number is available on the read-only `closeDelay` property.",
+              "type": {
+                "text": "number"
+              },
+              "default": "100"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "anchor",
+              "attribute": "anchor",
+              "type": {
+                "text": "string"
+              },
+              "description": "Id of an element to anchor against instead of the trigger. Use it when the visual anchor differs from the control that opens the card."
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "attribute": "variant",
+              "type": {
+                "text": "'tooltip'"
+              },
+              "description": "Set `tooltip` for the compact tooltip treatment. Omit for the roomier hover-card surface."
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "attribute": "placement",
+              "type": {
+                "text": "'bottom' | 'top' | 'right' | 'left'"
+              },
+              "description": "Preferred side of the anchor."
+            },
+            {
+              "kind": "field",
+              "name": "openDelayValue",
+              "attribute": "open-delay",
+              "type": {
+                "text": "string"
+              },
+              "description": "Milliseconds of hover or focus intent before opening. The resolved number is available on the read-only `openDelay` property."
+            },
+            {
+              "kind": "field",
+              "name": "closeDelayValue",
+              "attribute": "close-delay",
+              "type": {
+                "text": "string"
+              },
+              "description": "Milliseconds after the pointer leaves before closing, so the user can cross the gap into the surface. The resolved number is available on the read-only `closeDelay` property."
+            }
+          ],
+          "events": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIHoverCardElement",
+          "declaration": {
+            "name": "UIHoverCardElement",
+            "module": "dist/hover-card.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/menu.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIMenuElement",
+          "customElement": true,
+          "tagName": "ui-menu",
+          "attributes": [
+            {
+              "name": "orientation",
+              "description": "Arrow-key axis. Defaults to `horizontal` when the menu part is `role=\"menubar\"`.",
+              "type": {
+                "text": "'horizontal' | 'vertical'"
+              },
+              "default": "vertical"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "orientation",
+              "attribute": "orientation",
+              "type": {
+                "text": "'horizontal' | 'vertical'"
+              },
+              "description": "Arrow-key axis. Defaults to `horizontal` when the menu part is `role=\"menubar\"`."
+            }
+          ],
+          "events": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIMenuElement",
+          "declaration": {
+            "name": "UIMenuElement",
+            "module": "dist/menu.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/menu-button.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIMenuButtonElement",
+          "customElement": true,
+          "tagName": "ui-menu-button",
+          "attributes": [
+            {
+              "name": "open",
+              "description": "Present to render the menu open on load.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "placement",
+              "description": "Preferred side of the trigger.",
+              "type": {
+                "text": "'bottom' | 'top' | 'right' | 'left'"
+              },
+              "default": "bottom"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "attribute": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to render the menu open on load."
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "attribute": "placement",
+              "type": {
+                "text": "'bottom' | 'top' | 'right' | 'left'"
+              },
+              "description": "Preferred side of the trigger."
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-open",
+              "description": "Dispatched after the menu opens.",
+              "type": {
+                "text": "CustomEvent<{ source: string }>"
+              }
+            },
+            {
+              "name": "ui-close",
+              "description": "Dispatched after the menu closes.",
+              "type": {
+                "text": "CustomEvent<{ source: string }>"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIMenuButtonElement",
+          "declaration": {
+            "name": "UIMenuButtonElement",
+            "module": "dist/menu-button.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/toolbar.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIToolbarElement",
+          "customElement": true,
+          "tagName": "ui-toolbar",
+          "attributes": [
+            {
+              "name": "orientation",
+              "description": "Arrow-key axis across the toolbar controls.",
+              "type": {
+                "text": "'horizontal' | 'vertical'"
+              },
+              "default": "horizontal"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "orientation",
+              "attribute": "orientation",
+              "type": {
+                "text": "'horizontal' | 'vertical'"
+              },
+              "description": "Arrow-key axis across the toolbar controls."
+            }
+          ],
+          "events": []
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIToolbarElement",
+          "declaration": {
+            "name": "UIToolbarElement",
+            "module": "dist/toolbar.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/choice-group.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIRadioGroupElement",
+          "customElement": true,
+          "tagName": "ui-radio-group",
+          "attributes": [
+            {
+              "name": "orientation",
+              "description": "Layout and arrow-key axis.",
+              "type": {
+                "text": "'horizontal' | 'vertical'"
+              },
+              "default": "vertical"
+            },
+            {
+              "name": "value",
+              "description": "The radio checked on load and after a form reset. Match one input’s `value`. Assign the `value` property for live changes.",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "orientation",
+              "attribute": "orientation",
+              "type": {
+                "text": "'horizontal' | 'vertical'"
+              },
+              "description": "Layout and arrow-key axis."
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "attribute": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Authored default and form-reset value. Reflects the `value` attribute."
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Live value. Assigning it does not rewrite the authored default and does not dispatch transition events."
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the checked radio changes. Call `preventDefault()` to reject the transition and keep the current value.",
+              "type": {
+                "text": "CustomEvent<UITransitionDetail>"
+              }
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the checked radio has changed. Bubbles and is composed.",
+              "type": {
+                "text": "CustomEvent<UITransitionDetail>"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIRadioGroupElement",
+          "declaration": {
+            "name": "UIRadioGroupElement",
+            "module": "dist/choice-group.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/choice-group.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UICheckboxGroupElement",
+          "customElement": true,
+          "tagName": "ui-checkbox-group",
+          "attributes": [
+            {
+              "name": "orientation",
+              "description": "Layout and arrow-key axis.",
+              "type": {
+                "text": "'horizontal' | 'vertical'"
+              },
+              "default": "vertical"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "orientation",
+              "attribute": "orientation",
+              "type": {
+                "text": "'horizontal' | 'vertical'"
+              },
+              "description": "Layout and arrow-key axis."
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the set of checked boxes changes. Call `preventDefault()` to reject the transition and keep the current value.",
+              "type": {
+                "text": "CustomEvent<UITransitionDetail>"
+              }
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the set of checked boxes has changed. Bubbles and is composed.",
+              "type": {
+                "text": "CustomEvent<UITransitionDetail>"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UICheckboxGroupElement",
+          "declaration": {
+            "name": "UICheckboxGroupElement",
+            "module": "dist/choice-group.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/listbox.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIListboxElement",
+          "customElement": true,
+          "tagName": "ui-listbox",
+          "attributes": [
+            {
+              "name": "multiple",
+              "description": "Present to allow more than one selected option. The `value` property then reads and writes an array.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "value",
+              "description": "The option selected on load and after a form reset. Assign the `value` property for live changes.",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "multiple",
+              "attribute": "multiple",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to allow more than one selected option. The `value` property then reads and writes an array."
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "attribute": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Authored default and form-reset value. Reflects the `value` attribute."
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Live value. Assigning it does not rewrite the authored default and does not dispatch transition events."
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the selection changes. Call `preventDefault()` to reject the transition and keep the current value.",
+              "type": {
+                "text": "CustomEvent<UITransitionDetail>"
+              }
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the selection has changed. Bubbles and is composed.",
+              "type": {
+                "text": "CustomEvent<UITransitionDetail>"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIListboxElement",
+          "declaration": {
+            "name": "UIListboxElement",
+            "module": "dist/listbox.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/select.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UISelectElement",
+          "customElement": true,
+          "tagName": "ui-select",
+          "attributes": [
+            {
+              "name": "open",
+              "description": "Present to render the listbox open on load.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "placement",
+              "description": "Preferred side of the trigger for the listbox surface.",
+              "type": {
+                "text": "'bottom' | 'top' | 'right' | 'left'"
+              },
+              "default": "bottom"
+            },
+            {
+              "name": "value",
+              "description": "The option selected on load and after a form reset. Mirror it onto a hidden input to submit with a form.",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "attribute": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to render the listbox open on load."
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "attribute": "placement",
+              "type": {
+                "text": "'bottom' | 'top' | 'right' | 'left'"
+              },
+              "description": "Preferred side of the trigger for the listbox surface."
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "attribute": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Authored default and form-reset value. Reflects the `value` attribute."
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Live value. Assigning it does not rewrite the authored default and does not dispatch transition events."
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the selected option changes. Call `preventDefault()` to reject the transition and keep the current value.",
+              "type": {
+                "text": "CustomEvent<UITransitionDetail>"
+              }
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the selected option has changed. Bubbles and is composed.",
+              "type": {
+                "text": "CustomEvent<UITransitionDetail>"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UISelectElement",
+          "declaration": {
+            "name": "UISelectElement",
+            "module": "dist/select.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/combobox.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIComboboxElement",
+          "customElement": true,
+          "tagName": "ui-combobox",
+          "attributes": [
+            {
+              "name": "value",
+              "description": "The option selected on load and after a form reset. Assign the `value` property for live changes.",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "attribute": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Authored default and form-reset value. Reflects the `value` attribute."
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Live value. Assigning it does not rewrite the authored default and does not dispatch transition events."
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the selected option changes. Call `preventDefault()` to reject the transition and keep the current value.",
+              "type": {
+                "text": "CustomEvent<UITransitionDetail>"
+              }
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the selected option has changed. Bubbles and is composed.",
+              "type": {
+                "text": "CustomEvent<UITransitionDetail>"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIComboboxElement",
+          "declaration": {
+            "name": "UIComboboxElement",
+            "module": "dist/combobox.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/toast.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIToasterElement",
+          "customElement": true,
+          "tagName": "ui-toaster",
+          "attributes": [
+            {
+              "name": "placement",
+              "description": "Corner or edge of the viewport the toasts stack against.",
+              "type": {
+                "text": "'top-start' | 'top-center' | 'top-end' | 'bottom-start' | 'bottom-center' | 'bottom-end'"
+              },
+              "default": "bottom-end"
+            },
+            {
+              "name": "stack",
+              "description": "Whether queued toasts overlap into a deck (`overlap`) or lay out as a full list (`list`).",
+              "type": {
+                "text": "'overlap' | 'list'"
+              },
+              "default": "overlap"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "placement",
+              "attribute": "placement",
+              "type": {
+                "text": "'top-start' | 'top-center' | 'top-end' | 'bottom-start' | 'bottom-center' | 'bottom-end'"
+              },
+              "description": "Corner or edge of the viewport the toasts stack against."
+            },
+            {
+              "kind": "field",
+              "name": "stack",
+              "attribute": "stack",
+              "type": {
+                "text": "'overlap' | 'list'"
+              },
+              "description": "Whether queued toasts overlap into a deck (`overlap`) or lay out as a full list (`list`)."
+            }
+          ],
+          "events": [],
+          "cssProperties": [
+            {
+              "name": "--ui-toaster-gap",
+              "description": "Gap between toasts in `list` mode."
+            },
+            {
+              "name": "--ui-toaster-overlap",
+              "description": "Offset between stacked toasts in `overlap` mode."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIToasterElement",
+          "declaration": {
+            "name": "UIToasterElement",
+            "module": "dist/toast.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/toast.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIToastElement",
+          "customElement": true,
+          "tagName": "ui-toast",
+          "attributes": [
+            {
+              "name": "duration",
+              "description": "Milliseconds before the toast dismisses itself. `0` keeps it open until dismissed.",
+              "type": {
+                "text": "number"
+              },
+              "default": "5000"
+            },
+            {
+              "name": "persistent",
+              "description": "Present to disable auto-dismiss regardless of `duration`.",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "duration",
+              "attribute": "duration",
+              "type": {
+                "text": "string"
+              },
+              "description": "Milliseconds before the toast dismisses itself. `0` keeps it open until dismissed."
+            },
+            {
+              "kind": "field",
+              "name": "persistent",
+              "attribute": "persistent",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to disable auto-dismiss regardless of `duration`."
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-dismiss",
+              "description": "Dispatched when the toast is dismissed. The detail names the reason: a timeout, the close control, or the imperative API.",
+              "type": {
+                "text": "CustomEvent<ToastDismissDetail>"
+              }
+            }
+          ],
+          "cssStates": [
+            {
+              "name": "--closed",
+              "description": "Set while the toast plays its exit transition. Internal; do not author it."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIToastElement",
+          "declaration": {
+            "name": "UIToastElement",
+            "module": "dist/toast.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/toggle-group.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIToggleGroupElement",
+          "customElement": true,
+          "tagName": "ui-toggle-group",
+          "attributes": [
+            {
+              "name": "attached",
+              "description": "Present to join the buttons into one segmented control. Styling only, resolved by `toggle.css`.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "orientation",
+              "description": "Layout and arrow-key axis.",
+              "type": {
+                "text": "'horizontal' | 'vertical'"
+              },
+              "default": "horizontal"
+            },
+            {
+              "name": "selection",
+              "description": "Whether pressing one button releases the others (`single`) or toggles independently (`multiple`).",
+              "type": {
+                "text": "'single' | 'multiple'"
+              },
+              "default": "single"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "orientation",
+              "attribute": "orientation",
+              "type": {
+                "text": "'horizontal' | 'vertical'"
+              },
+              "description": "Layout and arrow-key axis."
+            },
+            {
+              "kind": "field",
+              "name": "selection",
+              "attribute": "selection",
+              "type": {
+                "text": "'single' | 'multiple'"
+              },
+              "description": "Whether pressing one button releases the others (`single`) or toggles independently (`multiple`)."
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the pressed set changes. Call `preventDefault()` to reject the transition and keep the current value.",
+              "type": {
+                "text": "CustomEvent<UITransitionDetail>"
+              }
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the pressed set has changed. Bubbles and is composed.",
+              "type": {
+                "text": "CustomEvent<UITransitionDetail>"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIToggleGroupElement",
+          "declaration": {
+            "name": "UIToggleGroupElement",
+            "module": "dist/toggle-group.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/number-stepper.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UINumberStepperElement",
+          "customElement": true,
+          "tagName": "ui-number-stepper",
+          "attributes": [],
+          "members": [],
+          "events": [
+            {
+              "name": "input",
+              "description": "Native `input` event dispatched on the inner number input after each step.",
+              "type": {
+                "text": "Event"
+              }
+            },
+            {
+              "name": "change",
+              "description": "Native `change` event dispatched on the inner number input.",
+              "type": {
+                "text": "Event"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UINumberStepperElement",
+          "declaration": {
+            "name": "UINumberStepperElement",
+            "module": "dist/number-stepper.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/color-picker.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIColorPickerElement",
+          "customElement": true,
+          "tagName": "ui-color-picker",
+          "attributes": [
+            {
+              "name": "format",
+              "description": "Color space the channel controls edit and the raw input round-trips through. The picker converts the current value when this changes.",
+              "type": {
+                "text": "'oklch' | 'oklab' | 'lch' | 'lab' | 'hex' | 'rgb' | 'hsl' | 'hwb' | 'p3' | 'rec2020'"
+              },
+              "default": "oklch"
+            },
+            {
+              "name": "value",
+              "description": "Initial and form-reset color, in any CSS color syntax. Unlike the collection elements, the picker reflects one `value` property rather than a separate authored default.",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "format",
+              "attribute": "format",
+              "type": {
+                "text": "'oklch' | 'oklab' | 'lch' | 'lab' | 'hex' | 'rgb' | 'hsl' | 'hwb' | 'p3' | 'rec2020'"
+              },
+              "description": "Color space the channel controls edit and the raw input round-trips through. The picker converts the current value when this changes."
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "attribute": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Initial and form-reset color, in any CSS color syntax. Unlike the collection elements, the picker reflects one `value` property rather than a separate authored default."
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "description": "Native `input` event dispatched while the color is being edited.",
+              "type": {
+                "text": "Event"
+              }
+            },
+            {
+              "name": "change",
+              "description": "Native `change` event dispatched when the edit is committed.",
+              "type": {
+                "text": "Event"
+              }
+            }
+          ],
+          "cssStates": [
+            {
+              "name": "--contextual",
+              "description": "Set while the picker renders inside a popover surface. Internal; do not author it."
+            },
+            {
+              "name": "--copied",
+              "description": "Set briefly after the value is copied. Internal; do not author it."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIColorPickerElement",
+          "declaration": {
+            "name": "UIColorPickerElement",
+            "module": "dist/color-picker.js"
+          }
+        }
+      ]
+    }
+  ]
+}

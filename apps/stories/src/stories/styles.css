@@ -1,0 +1,213 @@
+@layer ui.showcase {
+  .ui-demo-page {
+    box-sizing: border-box;
+    display: grid;
+    gap: var(--ui-space-5);
+    max-inline-size: 64rem;
+    inline-size: 100%;
+    min-inline-size: 0;
+    margin: 0 auto;
+    padding: var(--ui-space-5);
+    color: var(--ui-fg);
+    font-family:
+      Inter,
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      sans-serif;
+  }
+
+  .ui-demo-page > * {
+    min-inline-size: 0;
+  }
+
+  .ui-demo-page > header {
+    display: grid;
+    gap: var(--ui-space-2);
+  }
+
+  .ui-demo-page h1,
+  .ui-demo-page h2,
+  .ui-demo-page p {
+    margin: 0;
+  }
+
+  /* Demo prose only. Component anatomy keeps the colors its own stylesheet defines. */
+  .ui-demo-page p:not([data-ui-part]) {
+    color: var(--ui-fg-muted);
+    line-height: 1.6;
+  }
+
+  .ui-demo-stack,
+  .ui-demo-row {
+    display: flex;
+    gap: var(--ui-space-3);
+  }
+
+  .ui-demo-stack {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .ui-demo-stack > * {
+    box-sizing: border-box;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+  }
+
+  .ui-demo-row {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .ui-demo-code {
+    box-sizing: border-box;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius-lg);
+    padding: var(--ui-space-4);
+    overflow: auto;
+    background: var(--ui-bg-surface);
+    color: var(--ui-fg);
+  }
+
+  .story-md {
+    container-type: inline-size;
+    box-sizing: border-box;
+    inline-size: min(760px, 100%);
+    margin-inline: auto;
+    padding: clamp(28px, 8vw, 80px) 20px;
+    color: var(--ui-fg);
+    font-family: var(--ui-font-sans);
+  }
+
+  .story-md h1 {
+    margin: 0 0 16px;
+    font-size: clamp(1.6rem, 4cqi, 2.4rem);
+    line-height: 1.05;
+  }
+
+  .story-md h2 {
+    margin: 28px 0 10px;
+    font-size: 1rem;
+  }
+
+  .story-md p,
+  .story-md li {
+    color: var(--ui-fg-muted);
+    line-height: 1.6;
+  }
+
+  .story-md a {
+    color: var(--ui-accent);
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.18em;
+  }
+
+  .story-md a:hover,
+  .story-md a:focus-visible {
+    text-decoration-style: solid;
+  }
+
+  .story-md code {
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius-sm);
+    padding: 0.1em 0.35em;
+    background: var(--ui-bg-surface-subtle);
+    color: var(--ui-fg);
+    font-family: var(--ui-font-mono);
+    font-size: 0.9em;
+  }
+
+  .story-md img {
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+
+  .story-md pre,
+  .story-md table {
+    display: block;
+    max-inline-size: 100%;
+    overflow: auto;
+  }
+
+  .story-md table {
+    display: table;
+    inline-size: 100%;
+    margin: 18px 0;
+    overflow: hidden;
+    border: 1px solid color-mix(in oklab, var(--ui-line), var(--ui-fg) 8%);
+    border-radius: var(--ui-radius-md);
+    border-spacing: 0;
+    background: var(--ui-bg-surface);
+    font-size: 0.92rem;
+  }
+
+  .story-md :is(th, td) {
+    padding: 10px 12px;
+    border-block-end: 1px solid var(--ui-line);
+    border-inline-end: 1px solid var(--ui-line);
+    text-align: start;
+    vertical-align: top;
+  }
+
+  .story-md :is(th, td):last-child {
+    border-inline-end: 0;
+  }
+
+  .story-md :is(th, td):first-child {
+    inline-size: 32%;
+  }
+
+  .story-md tbody tr:last-child > :is(th, td),
+  .story-md table > tr:last-child > :is(th, td) {
+    border-block-end: 0;
+  }
+
+  .story-md thead th {
+    background: var(--ui-bg-surface-subtle);
+    color: var(--ui-fg);
+    font-weight: 750;
+  }
+
+  .story-md tbody th {
+    color: var(--ui-fg);
+    font-weight: 650;
+  }
+
+  .story-md td {
+    color: var(--ui-fg-muted);
+    line-height: 1.5;
+  }
+
+  .story-md table code {
+    overflow-wrap: anywhere;
+  }
+
+  .story-md pre {
+    box-sizing: border-box;
+    margin: 18px 0;
+    padding: 14px 16px;
+    border: 1px solid color-mix(in oklab, var(--ui-line), var(--ui-fg) 8%);
+    border-radius: var(--ui-radius-md);
+    background: var(--ui-bg-surface);
+    box-shadow: inset 0 1px 0 light-dark(rgb(255 255 255 / 70%), rgb(255 255 255 / 4%));
+  }
+
+  .story-md pre code {
+    display: block;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--ui-fg);
+    font-size: 0.82rem;
+    line-height: 1.55;
+    white-space: pre;
+  }
+}

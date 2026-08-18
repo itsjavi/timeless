@@ -1,0 +1,47 @@
+---
+title: Installation
+description: Install Timeless, load its CSS, and register the elements a route uses.
+sidebar:
+  order: 1
+---
+
+```bash
+pnpm add @timelessui/components
+```
+
+That is the only package you install. There are no peer dependencies, no framework runtime, and no
+configuration file.
+
+## Load the CSS
+
+Import the tokens plus the components a route renders:
+
+```js
+import '@timelessui/components/css/tokens.css'
+import '@timelessui/components/css/button.css'
+import '@timelessui/components/css/popover.css'
+```
+
+Import `tokens.css` first — it declares the cascade-layer order that lets your own CSS override
+component styles. For prototypes, `@timelessui/components/css/components.css` loads everything in
+one request. See [Loading CSS](/docs/styling/css/) for the trade-off and
+[Theming](/docs/styling/theming/) for what you can override.
+
+## Register the elements you use
+
+CSS-only primitives such as Button, Alert, and Card need no JavaScript at all. Enhanced components
+are custom elements, and registration is explicit:
+
+```js
+import '@timelessui/components/define/ui-popover'
+```
+
+Importing `@timelessui/components/popover` gives you the class and helpers **without** registering
+anything, which keeps the import safe during server rendering. See
+[Custom-element registration](/docs/getting-started/registration/) for the SSR and hydration
+details, and [Packages and entrypoints](/docs/reference/packages/) for the full list of imports.
+
+## Next
+
+Build something with it in [Quick start](/docs/getting-started/quick-start/), or jump straight to a
+component such as [Button](/docs/components/button/) or [Dialog](/docs/components/dialog/).

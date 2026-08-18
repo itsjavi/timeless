@@ -1,0 +1,140 @@
+---
+import { Code } from '@astrojs/starlight/components'
+import { getExample, renderExample } from '@timelessui/examples'
+import { RotateCw, SunMoon } from '@lucide/astro'
+
+type Props = { id: string }
+const { id } = Astro.props
+const example = getExample(id)
+if (!example) throw new Error(`Unknown example: ${id}`)
+const source = renderExample(example)
+---
+
+<section class="component-preview" data-component-preview data-example-id={id}>
+  <div class="component-preview__toolbar" aria-label={`${example.title} preview controls`}>
+    <strong>{example.title}</strong>
+    <span class="component-preview__actions">
+      <button
+        class="component-preview__icon-button"
+        type="button"
+        data-preview-theme
+        aria-label="Dark canvas"
+        aria-pressed="false"
+        title="Dark canvas"
+      >
+        <SunMoon size={18} aria-hidden="true" />
+      </button>
+      <button
+        class="component-preview__icon-button"
+        type="button"
+        data-preview-reload
+        aria-label="Reload preview"
+        title="Reload preview"
+      >
+        <RotateCw size={18} aria-hidden="true" />
+      </button>
+    </span>
+  </div>
+  <iframe
+    title={`${example.title} live preview`}
+    src={`/docs/_preview/${id}/`}
+    loading="eager"
+    data-preview-frame
+  ></iframe>
+  <div class="component-preview__source">
+    <Code code={source} lang="html" title="Copy this markup" />
+  </div>
+</section>
+
+<script>
+  for (const preview of document.querySelectorAll<HTMLElement>('[data-component-preview]')) {
+    if (preview.dataset.ready) continue
+    preview.dataset.ready = 'true'
+    const frame = preview.querySelector<HTMLIFrameElement>('[data-preview-frame]')
+    const theme = preview.querySelector<HTMLButtonElement>('[data-preview-theme]')
+    const reload = preview.querySelector<HTMLButtonElement>('[data-preview-reload]')
+    let dark = false
+
+    theme?.addEventListener('click', () => {
+      dark = !dark
+      theme.setAttribute('aria-pressed', String(dark))
+      if (frame) frame.src = `${frame.src.split('?')[0]}?theme=${dark ? 'dark' : 'light'}`
+    })
+    reload?.addEventListener('click', () => {
+      if (frame) frame.src = frame.src
+    })
+  }
+</script>
+
+<style>
+  .component-preview {
+    margin-block: 1.5rem;
+    overflow: hidden;
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: 0.75rem;
+    background: var(--sl-color-bg);
+  }
+
+  .component-preview__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.65rem 0.8rem;
+    background: var(--sl-color-bg-nav);
+    color: var(--sl-color-white);
+  }
+
+  .component-preview__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .component-preview__icon-button {
+    display: inline-grid;
+    inline-size: 2rem;
+    block-size: 2rem;
+    flex: none;
+    margin: 0;
+    place-items: center;
+    padding: 0;
+  }
+
+  button {
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: 0.4rem;
+    background: var(--sl-color-bg);
+    padding: 0.35rem 0.55rem;
+    color: var(--sl-color-white);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  iframe {
+    width: 100%;
+    min-height: 20rem;
+    display: block;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--sl-color-hairline);
+    background: #fff;
+  }
+
+  .component-preview__source {
+    border-top: 1px solid var(--sl-color-hairline);
+  }
+
+  .component-preview__source :global(.expressive-code) {
+    margin: 0;
+  }
+
+  .component-preview__source :global(.expressive-code pre) {
+    /*
+     * No height clamp: a clamped block scrolls vertically, and a scrollable region needs its own
+     * keyboard access. The markup is the point of this block, so show all of it.
+     */
+    border-radius: 0;
+  }
+</style>

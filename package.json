@@ -1,0 +1,52 @@
+{
+  "name": "timelessui-monorepo",
+  "version": "0.0.1",
+  "private": true,
+  "homepage": "https://timeless.build",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/itsjavi/timeless.git"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r --if-present run build",
+    "build:apps": "pnpm --filter \"./apps/*\" run build",
+    "build:docker": "docker build --target app_serve -t ${DOCKER_IMAGE:-timeless-ui:local} .",
+    "build:packages": "pnpm --filter \"./packages/*\" run build",
+    "build:site": "pnpm build:packages && pnpm build:web && pnpm build:stories && node scripts/compose-static-site.mjs",
+    "build:stories": "STORYLITE_BASE=/stories/ pnpm -F @apps/stories run build",
+    "build:web": "pnpm -F @apps/web run build",
+    "build:avif": "magick mogrify -format avif -quality 80% -path ./apps/web/public/assets/avif ./apps/web/public/assets/*.{png}",
+    "dev": "pnpm dev:apps",
+    "dev:all": "pnpm -r --if-present --parallel --stream run dev",
+    "dev:apps": "pnpm -F @apps/stories -F @apps/web run dev",
+    "dev:ui": "pnpm -F @apps/stories run dev",
+    "dev:web": "pnpm -F @apps/web run dev",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
+    "preview": "pnpm preview:ui",
+    "preview:all": "pnpm -r --if-present --parallel --stream run preview",
+    "preview:docker": "pnpm run build:docker && docker run --rm -d --name ${DOCKER_CONTAINER:-timeless-ui-preview} -p ${PORT:-8080}:80 ${DOCKER_IMAGE:-timeless-ui:local} && open http://localhost:${PORT:-8080}",
+    "preview:site": "pnpm -F @apps/web exec vite preview --host 0.0.0.0 --port ${PORT:-6339} --outDir ../../dist-site",
+    "preview:ui": "pnpm build && pnpm -F @apps/stories run preview",
+    "preview:web": "pnpm -F @apps/web run build && pnpm -F @apps/web run preview",
+    "publint": "pnpm -r --if-present --stream run publint",
+    "boundaries:check": "node scripts/check-boundaries.mjs",
+    "qa": "pnpm test:full-qa",
+    "test": "pnpm -r --if-present --parallel --stream run test",
+    "test:e2e": "pnpm -F @apps/e2e run e2e",
+    "test:full-qa": "pnpm typecheck && pnpm format:check && pnpm build && pnpm test && pnpm test:e2e",
+    "typecheck": "pnpm -r --if-present --parallel --stream run typecheck",
+    "update-deps": "pnpm -r update --latest && sleep 1 && pnpm install"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.63.0",
+    "typescript": "catalog:",
+    "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@11.22.0"
+}

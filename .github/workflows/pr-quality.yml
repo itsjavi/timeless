@@ -1,0 +1,99 @@
+name: PR Quality Checks
+
+on:
+  push:
+    branches: [develop, 'release/**']
+  pull_request:
+    branches: ['**']
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  package-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          show-progress: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Format
+        run: pnpm format:check
+      - name: Build packages
+        run: pnpm build:packages
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Unit and contract tests
+        run: pnpm test
+      - name: Validate published package contracts
+        run: |
+          pnpm boundaries:check
+          pnpm -F @timelessui/components manifest:validate
+          pnpm -F @timelessui/components exports:validate
+          pnpm -F @timelessui/components generated-dom:check
+          pnpm -F @timelessui/components performance:check
+          pnpm publint
+
+  static-site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          show-progress: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build composed site
+        run: pnpm build:site
+      - name: Validate examples and documentation
+        run: |
+          pnpm -F @timelessui/examples test
+          pnpm -F @apps/web test
+      - uses: actions/upload-artifact@v6
+        with:
+          name: static-site
+          path: dist-site
+
+  browser-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          show-progress: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:packages
+      - run: pnpm build:site
+      - name: Install browser engines
+        run: pnpm -F @apps/e2e exec playwright install --with-deps chromium firefox webkit
+      - name: Website, documentation, and StoryLite browser gates
+        run: pnpm -F @apps/e2e exec playwright test
+      - name: Composite deployment browser gates
+        run: pnpm -F @apps/e2e run e2e:site

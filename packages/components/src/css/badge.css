@@ -1,0 +1,74 @@
+@layer ui.components {
+  .ui-badge {
+    --ui-badge-bg: var(--ui-bg-control-muted);
+    --ui-badge-border: transparent;
+    --ui-badge-fg: var(--ui-fg);
+    --ui-badge-gap: var(--ui-space-1);
+    --ui-badge-height: 1.5rem;
+    --ui-badge-padding-x: var(--ui-space-2);
+
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-badge-gap);
+    min-block-size: var(--ui-badge-height);
+    max-inline-size: 100%;
+    border: 1px solid var(--ui-badge-border);
+    border-radius: var(--ui-radius-pill);
+    padding-block: 0.125rem;
+    padding-inline: var(--ui-badge-padding-x);
+    background: var(--ui-badge-bg);
+    color: var(--ui-badge-fg);
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .ui-badge:where([data-ui-size='sm']) {
+    --ui-badge-height: 1.25rem;
+    --ui-badge-padding-x: 0.3125rem;
+    font-size: 0.6875rem;
+  }
+
+  .ui-badge:where([data-ui-size='lg']) {
+    --ui-badge-height: 1.75rem;
+    --ui-badge-padding-x: var(--ui-space-3);
+    font-size: 0.8125rem;
+  }
+
+  .ui-badge:where([data-ui-variant='accent']) {
+    --ui-badge-bg: var(--ui-accent-soft);
+    --ui-badge-fg: light-dark(#0057c2, #8cc2ff);
+  }
+
+  .ui-badge:where([data-ui-variant='success']) {
+    --ui-badge-bg: var(--ui-success-soft);
+    --ui-badge-fg: var(--ui-success);
+  }
+
+  .ui-badge:where([data-ui-variant='warning']) {
+    --ui-badge-bg: var(--ui-warning-soft);
+    --ui-badge-fg: var(--ui-warning);
+  }
+
+  .ui-badge:where([data-ui-variant='danger']) {
+    --ui-badge-bg: var(--ui-danger-soft);
+    --ui-badge-fg: var(--ui-danger);
+  }
+
+  .ui-badge:where([data-ui-variant='outline']) {
+    --ui-badge-bg: transparent;
+    --ui-badge-border: var(--ui-line);
+  }
+
+  .ui-badge :where([data-ui-part~='dot']) {
+    flex: 0 0 auto;
+    inline-size: 0.45rem;
+    block-size: 0.45rem;
+    border-radius: var(--ui-radius-pill);
+    background: currentColor;
+  }
+}

@@ -1,0 +1,66 @@
+@layer ui.showcase {
+  .ui-primitive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: var(--ui-space-5);
+  }
+
+  .ui-primitive-panel {
+    display: grid;
+    gap: var(--ui-space-4);
+    align-content: start;
+    min-inline-size: 0;
+  }
+
+  .ui-primitive-panel > h2 {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 750;
+    color: var(--ui-fg-muted);
+    text-transform: uppercase;
+  }
+
+  .ui-primitive-flow {
+    display: grid;
+    gap: var(--ui-space-4);
+  }
+
+  .ui-primitive-copy {
+    display: grid;
+    gap: var(--ui-space-4);
+    max-inline-size: 44rem;
+  }
+
+  .ui-primitive-copy p {
+    margin: 0;
+  }
+
+  .ui-primitive-separator-demo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ui-space-3);
+    min-block-size: 3rem;
+    min-inline-size: 0;
+  }
+
+  .ui-primitive-muted {
+    color: var(--ui-fg-muted);
+  }
+
+  .ui-primitive-roster-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--ui-space-3);
+  }
+
+  .ui-primitive-roster-item p {
+    margin: 0;
+  }
+
+  .ui-primitive-loading-list {
+    display: grid;
+    gap: var(--ui-space-3);
+  }
+}

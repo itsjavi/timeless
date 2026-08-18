@@ -1,0 +1,44 @@
+---
+title: Svelte
+description: Use Timeless elements as native custom elements in Svelte.
+sidebar:
+  order: 4
+---
+
+## Install
+
+```sh
+pnpm add @timelessui/components
+```
+
+## CSS and registration
+
+Import CSS and definitions from a client module or layout:
+
+```ts
+import '@timelessui/components/css/tokens.css'
+import '@timelessui/components/css/tabs.css'
+import '@timelessui/components/define/ui-tabs'
+```
+
+## Markup
+
+Author the element normally:
+
+```svelte
+<ui-tabs value="details">
+  <div role="tablist" aria-label="Project">
+    <button role="tab" value="details">Details</button>
+    <button role="tab" value="activity">Activity</button>
+  </div>
+  <section role="tabpanel">Project details</section>
+  <section role="tabpanel">Recent activity</section>
+</ui-tabs>
+```
+
+## SSR, hydration, properties, and events
+
+SSR emits the complete Light DOM anatomy before the definition loads. Plain attributes express
+authored defaults. Use `bind:this` to assign live properties or attach a typed `ui-change` listener
+in `onMount`, then remove the listener during cleanup. Timeless element classes and event detail
+types can be imported into TypeScript without registering elements on the server.

@@ -1,0 +1,37 @@
+@layer ui.components {
+  .ui-link {
+    border-radius: var(--ui-radius-xs);
+    color: var(--ui-link-fg, var(--ui-accent));
+    font: inherit;
+    font-weight: 650;
+    line-height: inherit;
+    letter-spacing: 0;
+    text-decoration-line: underline;
+    text-decoration-thickness: 0.065em;
+    text-decoration-color: color-mix(in oklab, currentColor, transparent 35%);
+    text-underline-offset: 0.18em;
+    transition:
+      color var(--ui-duration-fast) var(--ui-ease-standard),
+      text-decoration-color var(--ui-duration-fast) var(--ui-ease-standard);
+  }
+
+  .ui-link:hover {
+    color: var(--ui-link-fg-hover, var(--ui-accent-hover));
+    text-decoration-color: currentColor;
+  }
+
+  .ui-link:where([data-ui-variant='muted']) {
+    --ui-link-fg: var(--ui-fg-muted);
+    --ui-link-fg-hover: var(--ui-fg);
+  }
+
+  .ui-link:where([data-ui-variant='danger']) {
+    --ui-link-fg: var(--ui-danger);
+    --ui-link-fg-hover: light-dark(#8f1111, #fca5a5);
+  }
+
+  .ui-link:focus-visible {
+    outline: 2px solid var(--ui-focus);
+    outline-offset: 3px;
+  }
+}

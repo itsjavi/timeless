@@ -1,0 +1,9 @@
+---
+/**
+ * MDX cannot read the dev/production StoryLite base itself, so content links route through here.
+ * See `src/lib/stories.ts` for why the base differs between `astro dev` and the composed site.
+ */
+import { storiesUrl } from '../../lib/stories'
+---
+
+<a href={storiesUrl()}><slot /></a>

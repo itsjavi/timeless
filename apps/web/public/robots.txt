@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /docs/_preview/
+
+Sitemap: https://timeless.build/sitemap-index.xml

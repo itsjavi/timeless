@@ -1,0 +1,127 @@
+@layer ui.components {
+  ui-menu-button {
+    display: contents;
+  }
+
+  ui-menu {
+    box-sizing: border-box;
+  }
+
+  ui-menu {
+    display: grid;
+    gap: var(--ui-space-1);
+    min-inline-size: var(--ui-menu-min-inline-size, 12rem);
+    margin: 0;
+    padding: var(--ui-space-1);
+  }
+
+  ui-menu[orientation='horizontal'] {
+    display: flex;
+    align-items: center;
+  }
+
+  ui-menu:where([popover]) {
+    inline-size: max-content;
+    max-inline-size: min(22rem, calc(100vw - 2rem));
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius-lg);
+    background: var(--ui-bg-surface);
+    box-shadow: var(--ui-shadow-floating);
+    color: var(--ui-fg);
+  }
+
+  ui-menu:where([popover]):not(:popover-open) {
+    display: none;
+  }
+
+  ui-menu:where([popover][data-ui-internal-floating='fallback']) {
+    position: fixed;
+    inset: auto;
+    left: var(--ui-floating-left);
+    top: var(--ui-floating-top);
+    right: auto;
+    bottom: auto;
+    translate: 0 0;
+    position-area: none;
+    position-try-fallbacks: none;
+  }
+
+  ui-menu :where([role='menuitem'], [role='menuitemcheckbox'], [role='menuitemradio']) {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-2);
+    min-block-size: 2rem;
+    border: 0;
+    border-radius: var(--ui-radius-sm);
+    padding: var(--ui-space-2) var(--ui-space-3);
+    background: transparent;
+    color: var(--ui-fg);
+    font: inherit;
+    line-height: 1.25;
+    text-align: start;
+    text-decoration: none;
+  }
+
+  ui-menu
+    :where([role='menuitem'], [role='menuitemcheckbox'], [role='menuitemradio']):where(
+      :hover,
+      :focus-visible
+    ) {
+    outline: 0;
+    background: var(--ui-bg-surface-raised);
+  }
+
+  ui-menu :where([role='menuitemcheckbox'], [role='menuitemradio'])[aria-checked='true'],
+  ui-menu :where([role='menuitem'])[aria-current='true'] {
+    background: var(--ui-accent-soft);
+    color: var(--ui-accent);
+  }
+
+  ui-menu [aria-disabled='true'] {
+    opacity: var(--ui-disabled-opacity);
+  }
+
+  ui-menu :where([role='separator'], hr) {
+    block-size: 1px;
+    border: 0;
+    margin: var(--ui-space-1) 0;
+    background: var(--ui-line);
+  }
+
+  @supports (anchor-name: --ui-anchor) {
+    ui-menu[role='menubar'] > ui-menu:where([popover]):popover-open {
+      inset: auto;
+      position-area: bottom span-right;
+      translate: 0 var(--ui-floating-offset, 0.375rem);
+      position-try-fallbacks:
+        flip-block,
+        flip-inline,
+        flip-block flip-inline;
+    }
+
+    ui-menu-button > ui-menu[popover]:popover-open {
+      inset: auto;
+      position-area: bottom center;
+      translate: 0 var(--ui-floating-offset, 0.375rem);
+      position-try-fallbacks:
+        flip-block,
+        flip-inline,
+        flip-block flip-inline;
+    }
+
+    ui-menu-button[placement='top'] > ui-menu[popover]:popover-open {
+      position-area: top center;
+      translate: 0 calc(var(--ui-floating-offset, 0.375rem) * -1);
+    }
+
+    ui-menu-button[placement='right'] > ui-menu[popover]:popover-open {
+      position-area: right center;
+      translate: var(--ui-floating-offset, 0.375rem) 0;
+    }
+
+    ui-menu-button[placement='left'] > ui-menu[popover]:popover-open {
+      position-area: left center;
+      translate: calc(var(--ui-floating-offset, 0.375rem) * -1) 0;
+    }
+  }
+}

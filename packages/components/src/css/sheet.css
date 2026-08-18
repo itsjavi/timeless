@@ -1,0 +1,147 @@
+@layer ui.components {
+  ui-sheet {
+    display: contents;
+  }
+
+  ui-sheet > dialog {
+    position: fixed;
+    inset-block: 0;
+    inset-inline: auto 0;
+    inline-size: min(88vw, 28rem);
+    block-size: 100dvh;
+    max-inline-size: none;
+    max-block-size: none;
+    margin: 0;
+    border: 0;
+    border-inline-start: 1px solid var(--ui-line);
+    padding: 0;
+    overflow: hidden;
+    background: var(--ui-bg-surface);
+    box-shadow: var(--ui-shadow-floating);
+    color: var(--ui-fg);
+  }
+
+  ui-sheet > dialog:not([open]) {
+    display: none;
+  }
+
+  ui-sheet[position='left'] > dialog {
+    inset-inline: 0 auto;
+    border-inline: 0 1px solid var(--ui-line);
+  }
+
+  ui-sheet[position='top'] > dialog,
+  ui-sheet[position='bottom'] > dialog {
+    inline-size: 100dvw;
+    block-size: min(80dvh, 24rem);
+    border-inline: 0;
+  }
+
+  ui-sheet[position='top'] > dialog {
+    inset-block: 0 auto;
+    border-block-end: 1px solid var(--ui-line);
+  }
+
+  ui-sheet[position='bottom'] > dialog {
+    inset-block: auto 0;
+    border-block-start: 1px solid var(--ui-line);
+  }
+
+  ui-sheet:not([modal]) > dialog {
+    inline-size: min(88vw, 24rem);
+  }
+
+  ui-sheet > dialog::backdrop {
+    background: light-dark(rgb(0 0 0 / 32%), rgb(0 0 0 / 60%));
+  }
+
+  ui-sheet > dialog:focus-visible,
+  ui-sheet > dialog :focus-visible {
+    outline: 2px solid var(--ui-focus);
+    outline-offset: 3px;
+  }
+
+  ui-sheet > dialog > header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--ui-space-2) var(--ui-space-4);
+    align-items: start;
+    border-block-end: 1px solid var(--ui-line);
+    padding: var(--ui-space-5);
+  }
+
+  ui-sheet > dialog > header > :where(h1, h2, h3) {
+    margin: 0;
+    color: var(--ui-fg);
+    font-size: 1rem;
+    font-weight: 750;
+    line-height: 1.25;
+  }
+
+  ui-sheet > dialog > header > p {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--ui-fg-muted);
+    line-height: 1.5;
+  }
+
+  ui-sheet > dialog > section {
+    block-size: 100%;
+    overflow: auto;
+    padding: var(--ui-space-5);
+    color: var(--ui-fg-muted);
+    line-height: 1.55;
+  }
+
+  ui-sheet > dialog > footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ui-space-3);
+    justify-content: end;
+    border-block-start: 1px solid var(--ui-line);
+    padding: var(--ui-space-4) var(--ui-space-5);
+    background: var(--ui-bg-surface-subtle);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    ui-sheet > dialog[open] {
+      animation: ui-sheet-slide-inline-end 180ms var(--ui-ease-standard);
+    }
+
+    ui-sheet[position='left'] > dialog[open] {
+      animation-name: ui-sheet-slide-inline-start;
+    }
+
+    ui-sheet[position='top'] > dialog[open] {
+      animation-name: ui-sheet-slide-block-start;
+    }
+
+    ui-sheet[position='bottom'] > dialog[open] {
+      animation-name: ui-sheet-slide-block-end;
+    }
+  }
+
+  @keyframes ui-sheet-slide-inline-end {
+    from {
+      translate: 100% 0;
+    }
+  }
+
+  @keyframes ui-sheet-slide-inline-start {
+    from {
+      translate: -100% 0;
+    }
+  }
+
+  @keyframes ui-sheet-slide-block-start {
+    from {
+      translate: 0 -100%;
+    }
+  }
+
+  @keyframes ui-sheet-slide-block-end {
+    from {
+      translate: 0 100%;
+    }
+  }
+}

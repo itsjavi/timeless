@@ -1,0 +1,50 @@
+---
+title: Vanilla
+description: Use Timeless directly from HTML and JavaScript.
+sidebar:
+  order: 1
+---
+
+## Install
+
+```sh
+pnpm add @timelessui/components
+```
+
+## CSS and registration
+
+Import styles and definitions from an application module:
+
+```js
+import '@timelessui/components/css/tokens.css'
+import '@timelessui/components/css/button.css'
+import '@timelessui/components/css/toggle.css'
+import '@timelessui/components/define/ui-toggle-group'
+```
+
+Then author normal HTML:
+
+```html
+<ui-toggle-group selection="single" aria-label="Alignment">
+  <button class="ui-button ui-toggle" value="left" aria-pressed="true">Left</button>
+  <button class="ui-button ui-toggle" value="center" aria-pressed="false">Center</button>
+</ui-toggle-group>
+```
+
+The same markup is emitted by a server or copied into a static HTML document. The complete Light DOM
+is readable before registration, then the explicit definition upgrades it in the browser.
+
+## Attributes, properties, and events
+
+Properties are useful for live state. Attributes provide authored defaults and reset state:
+
+```js
+const group = document.querySelector('ui-toggle-group')
+group.addEventListener('ui-before-change', (event) => {
+  if (!canChange(event.detail.value)) event.preventDefault()
+})
+group.addEventListener('ui-change', (event) => save(event.detail.value))
+```
+
+Use TypeScript with the exported element classes and event detail types when querying or creating
+elements. No hydration runtime is required.

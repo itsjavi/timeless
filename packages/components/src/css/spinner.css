@@ -1,0 +1,72 @@
+@layer ui.components {
+  .ui-spinner {
+    --ui-spinner-size: 1rem;
+    --ui-spinner-color: var(--ui-fg-muted);
+
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-2);
+    color: var(--ui-fg);
+  }
+
+  .ui-spinner::before {
+    box-sizing: border-box;
+    display: inline-block;
+    flex: 0 0 auto;
+    content: '';
+    inline-size: var(--ui-spinner-size);
+    block-size: var(--ui-spinner-size);
+    border: 0.125rem solid color-mix(in oklab, var(--ui-spinner-color), transparent 72%);
+    border-block-start-color: var(--ui-spinner-color);
+    border-radius: var(--ui-radius-pill);
+    vertical-align: -0.125em;
+    animation: ui-spinner-rotate 0.8s linear infinite;
+  }
+
+  .ui-spinner:where([data-ui-size='sm']) {
+    --ui-spinner-size: 0.875rem;
+  }
+
+  .ui-spinner:where([data-ui-size='sm'])::before {
+    border-width: 0.1125rem;
+  }
+
+  .ui-spinner:where([data-ui-size='lg']) {
+    --ui-spinner-size: 1.25rem;
+  }
+
+  .ui-spinner:where([data-ui-variant='accent']) {
+    --ui-spinner-color: var(--ui-accent);
+  }
+
+  .ui-spinner:where([data-ui-variant='success']) {
+    --ui-spinner-color: var(--ui-success);
+  }
+
+  .ui-spinner:where([data-ui-variant='warning']) {
+    --ui-spinner-color: var(--ui-warning);
+  }
+
+  .ui-spinner:where([data-ui-variant='danger']) {
+    --ui-spinner-color: var(--ui-danger);
+  }
+
+  .ui-spinner :where([data-ui-part~='label']) {
+    color: var(--ui-fg-muted);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  @keyframes ui-spinner-rotate {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-spinner::before {
+      animation: none;
+      border-style: dotted;
+    }
+  }
+}

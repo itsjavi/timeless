@@ -1,0 +1,177 @@
+---
+title: Theming
+description: Override Timeless styles with cascade layers, design tokens, and component variables.
+sidebar:
+  order: 2
+---
+
+import { Aside } from '@astrojs/starlight/components'
+import TokenTable from '../../../../components/docs/TokenTable.astro'
+
+Timeless has three styling surfaces, in order of how often you should reach for them:
+
+1. **Design tokens** — global values every component reads. Change these to rebrand everything.
+2. **Component variables** — per-component custom properties. Change these to restyle one component.
+3. **Your own CSS** — public classes, plain attributes, and `data-ui-part` selectors. Change these
+   when you want something the first two cannot express.
+
+There is no configuration file and no build step. All three are plain CSS.
+
+## Cascade layers come first
+
+`tokens.css` opens with the layer order, so every Timeless rule lands in a named layer:
+
+```css
+@layer ui.tokens, ui.components, ui.utilities;
+```
+
+Unlayered CSS beats layered CSS, whatever the specificity. So your own stylesheet wins over
+component styles by default — a single class overrides a Timeless rule with three selectors, and you
+never need `!important`:
+
+```css
+/* Wins over .ui-button, no matter how specific the component rule is. */
+.checkout-button {
+  border-radius: 0;
+}
+```
+
+Put your CSS in `ui.utilities` when you want it layered but still above the components, and import
+Timeless styles before your own so the layer order is established first.
+
+<Aside type="caution" title="Import order matters">
+  `tokens.css` declares the layer order. If a component stylesheet loads first, its `@layer
+  ui.components` block establishes the order instead and `ui.tokens` ends up last. Always import
+  `tokens.css` before any component CSS.
+</Aside>
+
+## Design tokens
+
+Tokens are CSS custom properties on `:root`, all prefixed `--ui-`. Redefine any of them in your own
+`:root` block, or scope them to a subtree to theme part of a page:
+
+```css
+:root {
+  --ui-accent: oklch(58% 0.19 265);
+  --ui-radius-control: 0.25rem;
+  --ui-font-sans: 'Inter Variable', system-ui, sans-serif;
+}
+
+.marketing-section {
+  --ui-bg-surface: #fffaf0;
+}
+```
+
+The names and groups are exported as `atmosphereTokenGroups` from `@timelessui/components`, so you
+can drive a theme editor or a token audit from the same list this page is generated from.
+
+### Color
+
+<TokenTable group="color" />
+
+### Control fills
+
+<TokenTable group="controlFill" />
+
+### Radius
+
+<TokenTable group="radius" />
+
+### Shadow
+
+<TokenTable group="shadow" />
+
+### Space
+
+<TokenTable group="space" />
+
+### Typography
+
+<TokenTable group="typography" />
+
+### Motion
+
+<TokenTable group="motion" />
+
+### Effects
+
+<TokenTable group="effect" />
+
+## Light and dark
+
+`tokens.css` sets `color-scheme: light dark` and expresses every scheme-dependent token with
+`light-dark()`:
+
+```css
+--ui-bg-surface: light-dark(#ffffff, #19191d);
+```
+
+That means the platform picks the scheme and no JavaScript is involved. To force one scheme, set
+`color-scheme` on the root or on any subtree:
+
+```css
+/* Always light, even when the OS asks for dark. */
+.invoice-preview {
+  color-scheme: light;
+}
+```
+
+When you override a scheme-dependent token, keep using `light-dark()` so both schemes stay correct:
+
+```css
+:root {
+  --ui-bg-page: light-dark(#fdfdfd, #0d0d10);
+}
+```
+
+Some tokens are deliberately scheme-independent — brand fills such as `--ui-bg-accent` are the same
+in both schemes, and their hover and active steps are derived with `color-mix()` in OKLab:
+
+```css
+--ui-bg-accent-hover: color-mix(in oklab, #0064d8 78%, #0045b7);
+```
+
+## Component variables
+
+Each component documents the custom properties it reads from its own root. They are listed in the
+**Styling** section of every component page. Set them wherever you want the change to apply:
+
+```css
+/* Every button in the app. */
+.ui-button {
+  --ui-button-radius: 0.375rem;
+}
+
+/* One button. */
+.checkout-button {
+  --ui-button-bg: var(--ui-success);
+  --ui-button-height: 3rem;
+}
+```
+
+Component variables are the right tool when a token would be too broad: `--ui-radius-control` rounds
+every control, while `--ui-button-radius` rounds only buttons.
+
+## Styling without Timeless CSS
+
+Components stay usable with no Timeless stylesheet at all. The public anatomy is the contract:
+
+- `.ui-*` classes identify CSS component roots.
+- `data-ui-*` attributes carry contract-declared configuration on those roots.
+- Plain attributes configure `ui-*` custom-element hosts.
+- `data-ui-part` identifies authored anatomy.
+- Native attributes, ARIA, and platform pseudo-classes carry state.
+
+So a utility-class or CSS-in-JS project can skip the stylesheets and target the same anatomy:
+
+```css
+[data-ui-part~='trigger'] {
+  /* your own trigger styling */
+}
+
+ui-tabs [role='tab'][aria-selected='true'] {
+  /* your own selected-tab styling */
+}
+```
+
+Never target `data-ui-internal-*`. Those are private runtime hooks and change without notice.

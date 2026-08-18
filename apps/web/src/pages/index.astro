@@ -1,0 +1,233 @@
+---
+import { storiesUrl } from '../lib/stories'
+import SiteFooter from '../components/site/SiteFooter.astro'
+import SiteHeader from '../components/site/SiteHeader.astro'
+import SiteLayout from '../layouts/SiteLayout.astro'
+---
+
+<SiteLayout
+  title="Timeless"
+  description="Timeless is a framework-agnostic UI library built on modern web standards."
+  ogDescription="Framework-agnostic UI, baked on the modern web platform."
+>
+  <div class="site-shell">
+    <SiteHeader home />
+
+      <main id="main">
+        <section class="hero" id="top" aria-labelledby="hero-title">
+          <figure
+            class="hero__art"
+            id="hero-artwork"
+            role="img"
+            inert
+            aria-label="1950s-style illustration of a maker in a retro kitchen holding reusable UI component recipe cards."
+          ></figure>
+
+          <div class="hero__copy">
+            <h1 id="hero-title">Timeless</h1>
+            <p>Components baked on the modern web platform, for a post-framework era.</p>
+            <div class="hero__actions" aria-label="Primary actions">
+              <a class="button button--primary" href="/docs/">
+                <span>Get started</span>
+                <svg style="display: none" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path
+                    d="M13.9 5.1 20.8 12l-6.9 6.9-1.4-1.4 4.5-4.5H3.3v-2h13.7l-4.5-4.5 1.4-1.4Z"
+                  />
+                </svg>
+              </a>
+              <a
+                class="button button--secondary"
+                href="https://github.com/itsjavi/timeless"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span>GitHub</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section class="ingredient-band" id="ingredients" aria-labelledby="ingredients-title">
+          <div class="section-heading">
+            <h2 id="ingredients-title">Modern ingredients</h2>
+            <p>Built with the browser features Timeless is meant to preserve, not replace.</p>
+          </div>
+
+          <div class="tin-shelf" aria-label="Modern web platform features">
+            <article class="tin tin--teal">
+              <span class="tin__handle" aria-hidden="true"></span>
+              <span class="tin__lid" aria-hidden="true"></span>
+              <div class="tin__label">
+                <h3>CSS anchor positioning</h3>
+                <span class="tin__icon" aria-hidden="true">AP</span>
+                <p>Popover surfaces can stay attached without framework layout code.</p>
+              </div>
+            </article>
+            <article class="tin tin--red">
+              <span class="tin__handle" aria-hidden="true"></span>
+              <span class="tin__lid" aria-hidden="true"></span>
+              <div class="tin__label">
+                <h3>Native Overlays</h3>
+                <span class="tin__icon" aria-hidden="true">POP</span>
+                <p>Native dialogs and popovers handle light dismiss and escape flows.</p>
+              </div>
+            </article>
+            <article class="tin tin--yellow">
+              <span class="tin__handle" aria-hidden="true"></span>
+              <span class="tin__lid" aria-hidden="true"></span>
+              <div class="tin__label">
+                <h3>Cascade layers</h3>
+                <span class="tin__icon" aria-hidden="true">@L</span>
+                <p>Your CSS wins over component styles without a specificity fight.</p>
+              </div>
+            </article>
+            <article class="tin tin--blue">
+              <span class="tin__handle" aria-hidden="true"></span>
+              <span class="tin__lid" aria-hidden="true"></span>
+              <div class="tin__label">
+                <h3>Invoker Commands</h3>
+                <span class="tin__icon" aria-hidden="true">CM</span>
+                <p>A new way to define declarative behavior for UI components.</p>
+              </div>
+            </article>
+            <article class="tin tin--cream">
+              <span class="tin__handle" aria-hidden="true"></span>
+              <span class="tin__lid" aria-hidden="true"></span>
+              <div class="tin__label">
+                <h3>light-dark()</h3>
+                <span class="tin__icon" aria-hidden="true">LD</span>
+                <p>Color tokens can honor color-scheme without extra runtime.</p>
+              </div>
+            </article>
+            <article class="tin tin--ink">
+              <span class="tin__handle" aria-hidden="true"></span>
+              <span class="tin__lid" aria-hidden="true"></span>
+              <div class="tin__label">
+                <h3>Light DOM</h3>
+                <span class="tin__icon" aria-hidden="true">&lt;/&gt;</span>
+                <p>
+                  Consumers keep readable markup and style-relevant anatomy, intended for zero
+                  layout shifts.
+                </p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="principles-section" id="principles" aria-labelledby="principles-title">
+          <div class="principles-layout">
+            <div class="principles-copy">
+              <h2 id="principles-title">House rules</h2>
+              <p>
+                Timeless treats the platform as the recipe: HTML renders, CSS carries the look,
+                native browser features do the heavy lifting, and custom elements step in only to
+                improve behavior, accessibility, and authoring across stacks.
+              </p>
+            </div>
+
+            <ul class="principles-list" aria-label="Timeless principles">
+              <li>HTML-first, CSS-first, Accessibility-first.</li>
+              <li>Renderable before JavaScript runs.</li>
+              <li>Native controls before custom replacements.</li>
+              <li>Custom elements enhance behavior and accessibility.</li>
+              <li>Plain attributes for public component APIs.</li>
+              <li>Optional CSS, layered and override-friendly.</li>
+              <li>Side-effect-free imports; explicit define entrypoints.</li>
+              <li>No third-party dependencies or rendering runtimes.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="recipe-section" id="enhancement" aria-labelledby="enhancement-title">
+          <div class="section-heading">
+            <h2 id="enhancement-title">Bakes before JavaScript</h2>
+            <p>
+              The initial shell works with HTML and CSS. JavaScript enhances only when available.
+            </p>
+          </div>
+
+          <div class="recipe-layout">
+            <article class="recipe-card" aria-label="Popover component recipe">
+              <h3>Recipe: Popover</h3>
+              <dl>
+                <div>
+                  <dt>Starts with</dt>
+                  <dd>A native button and hidden content.</dd>
+                </div>
+                <div>
+                  <dt>Adds</dt>
+                  <dd>Popover wiring, ARIA state, focus behavior, and anchored positioning.</dd>
+                </div>
+                <div>
+                  <dt>Without JavaScript</dt>
+                  <dd>The button still opens the popover, natively.</dd>
+                </div>
+              </dl>
+            </article>
+
+            <figure class="code-board" aria-label="Popover markup example">
+              <figcaption hidden>Copyable markup</figcaption>
+              <pre tabindex="0"><code>&lt;ui-popover&gt;
+  &lt;button data-ui-part="trigger"
+    popovertarget="menu"&gt;Menu&lt;/button&gt;
+  &lt;div id="menu" popover="auto"&gt;
+    The content
+  &lt;/div&gt;
+&lt;/ui-popover&gt;</code></pre>
+            </figure>
+          </div>
+        </section>
+
+        <section class="storylite-section" id="cookbook" aria-labelledby="storylite-title">
+          <div class="storylite-copy">
+            <h2 id="storylite-title">
+              Served with
+              <a href={storiesUrl()}>StoryLite</a>
+            </h2>
+            <p>
+              Preview components, explore variants, and read documentation in the same plain-web
+              spirit.
+            </p>
+          </div>
+
+          <div class="preview-counter" aria-label="StoryLite preview illustration">
+            <div class="monitor">
+              <div class="monitor__bar">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <div class="monitor__body">
+                <div class="control-row">
+                  <button type="button">Default</button>
+                  <button type="button" class="is-selected">Primary</button>
+                  <button type="button">Secondary</button>
+                </div>
+                <div class="field-preview">
+                  <label for="demo-email">Email address</label>
+                  <input id="demo-email" type="email" value="hello@timeless.build" readonly />
+                </div>
+                <div class="popover-preview">
+                  <button type="button">Open menu</button>
+                  <ul aria-label="Preview menu">
+                    <li>Profile</li>
+                    <li>Settings</li>
+                    <li>Sign out</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <aside class="tips-jar" aria-label="Documentation note">
+              <strong>Good docs</strong>
+              <span>make great components</span>
+            </aside>
+          </div>
+        </section>
+      </main>
+
+    <SiteFooter />
+  </div>
+</SiteLayout>
+
+<script src="../scripts/hero-art.ts"></script>

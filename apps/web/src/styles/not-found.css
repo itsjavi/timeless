@@ -1,0 +1,279 @@
+.not-found-shell {
+  min-height: 100svh;
+}
+
+.not-found-main {
+  min-height: 100svh;
+}
+
+.not-found-hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+  align-items: center;
+  gap: clamp(28px, 5vw, 58px);
+  overflow: hidden;
+  isolation: isolate;
+  padding: 126px var(--site-gutter) 82px;
+}
+
+.not-found-hero::before {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  height: 74px;
+  content: '';
+  background:
+    linear-gradient(45deg, var(--chrome-accent-2) 25%, transparent 25%) 0 0 / 36px 36px,
+    linear-gradient(-45deg, var(--chrome-accent-2) 25%, transparent 25%) 0 18px / 36px 36px,
+    linear-gradient(45deg, transparent 75%, var(--chrome-accent-2) 75%) 18px -18px / 36px 36px,
+    linear-gradient(-45deg, transparent 75%, var(--chrome-accent-2) 75%) 18px 0 / 36px 36px,
+    var(--chrome-surface);
+  opacity: 0.92;
+}
+
+.not-found-hero__art {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  margin: 0;
+  overflow: hidden;
+  background: var(--chrome-bg);
+  pointer-events: none;
+  user-select: none;
+}
+
+.not-found-hero__art::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background:
+    linear-gradient(90deg, rgba(248, 232, 189, 0.96) 0 42%, rgba(248, 232, 189, 0.34) 72%),
+    radial-gradient(circle at 10% 18%, rgba(255, 255, 255, 0.34), transparent 32%);
+  pointer-events: none;
+}
+
+.not-found-hero__art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 66% center;
+  filter: saturate(1.04) contrast(1.02);
+}
+
+.not-found-hero__copy {
+  width: min(720px, 100%);
+  margin-inline: max(0px, calc((100vw - var(--site-width)) / 2));
+}
+
+.not-found-hero__eyebrow {
+  width: fit-content;
+  margin: 0 0 18px;
+  border: 2px solid var(--chrome-border);
+  border-radius: var(--chrome-radius);
+  background: var(--chrome-accent-3);
+  box-shadow: 4px 4px 0 rgba(51, 37, 29, 0.14);
+  padding: 7px 11px;
+  color: var(--chrome-ink);
+  font-size: 13px;
+  font-weight: 950;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.not-found-hero h1 {
+  max-width: 10ch;
+  margin: 0;
+  color: var(--chrome-accent);
+  font-family: var(--chrome-font-display);
+  font-size: clamp(52px, 8vw, 118px);
+  font-weight: 900;
+  line-height: 0.88;
+  text-shadow:
+    5px 0 0 var(--chrome-bg),
+    -5px 0 0 var(--chrome-bg),
+    0 5px 0 var(--chrome-bg),
+    0 -5px 0 var(--chrome-bg),
+    5px 5px 0 var(--chrome-bg),
+    -5px 5px 0 var(--chrome-bg),
+    8px 8px 0 rgba(51, 37, 29, 0.14);
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.not-found-hero__sentence {
+  max-width: 42rem;
+  margin: 22px 0 0;
+  border: 2px solid var(--chrome-border);
+  border-radius: var(--chrome-radius-lg);
+  background:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(51, 37, 29, 0.09) 28px 30px),
+    var(--chrome-surface);
+  box-shadow: 8px 8px 0 rgba(51, 37, 29, 0.16);
+  padding: clamp(18px, 3vw, 25px);
+  color: var(--chrome-ink);
+  font-size: clamp(22px, 3vw, 34px);
+  font-weight: 900;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.not-found-hero button.button {
+  cursor: pointer;
+}
+
+.not-found-recipe {
+  position: relative;
+  align-self: center;
+  width: min(100%, 420px);
+  justify-self: end;
+  border: 2px solid var(--chrome-border);
+  border-radius: var(--chrome-radius-lg);
+  background:
+    repeating-linear-gradient(0deg, transparent 0 32px, rgba(51, 37, 29, 0.13) 32px 34px),
+    var(--chrome-surface);
+  box-shadow: 8px 8px 0 rgba(51, 37, 29, 0.16);
+  padding: clamp(24px, 4vw, 34px);
+  transform: rotate(2deg);
+}
+
+.not-found-recipe::before {
+  position: absolute;
+  right: 28px;
+  bottom: -24px;
+  left: 28px;
+  height: 24px;
+  content: '';
+  border: 2px solid var(--chrome-border);
+  border-radius: 50%;
+  background: #f7e6ba;
+  box-shadow: 0 10px 0 rgba(51, 37, 29, 0.12);
+}
+
+.not-found-recipe__tape {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  width: 96px;
+  height: 26px;
+  transform: translateX(-50%) rotate(-3deg);
+  border: 2px solid var(--chrome-border);
+  background: rgba(239, 182, 73, 0.88);
+}
+
+.not-found-recipe__code {
+  width: fit-content;
+  margin: 0 0 14px;
+  border: 2px solid var(--chrome-border);
+  border-radius: 999px;
+  background: var(--chrome-accent);
+  padding: 6px 12px;
+  color: #fff7df;
+  font-family: var(--chrome-font-display);
+  font-size: 21px;
+  line-height: 1;
+}
+
+.not-found-recipe h2 {
+  margin: 0;
+  color: var(--chrome-accent-2);
+  font-family: var(--chrome-font-script);
+  font-size: clamp(38px, 5vw, 56px);
+  font-weight: 700;
+  line-height: 0.9;
+}
+
+.not-found-recipe ol {
+  display: grid;
+  gap: 14px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: recipe-step;
+}
+
+.not-found-recipe li {
+  position: relative;
+  min-height: 42px;
+  padding-left: 48px;
+  color: var(--chrome-fg-muted);
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.18;
+  counter-increment: recipe-step;
+}
+
+.not-found-recipe li::before {
+  position: absolute;
+  top: -4px;
+  left: 0;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  content: counter(recipe-step);
+  border: 2px solid var(--chrome-border);
+  border-radius: 50%;
+  background: var(--chrome-accent-3);
+  color: var(--chrome-ink);
+  font-family: var(--chrome-font-display);
+  font-size: 19px;
+  line-height: 1;
+}
+
+@media (max-width: 980px) {
+  .not-found-hero {
+    grid-template-columns: 1fr;
+    align-items: start;
+    padding-top: 116px;
+  }
+
+  .not-found-hero__art::after {
+    background:
+      linear-gradient(180deg, rgba(248, 232, 189, 0.94) 0 44%, rgba(248, 232, 189, 0.4) 76%),
+      radial-gradient(circle at 10% 18%, rgba(255, 255, 255, 0.34), transparent 32%);
+  }
+
+  .not-found-hero__copy {
+    margin: 0;
+  }
+
+  .not-found-recipe {
+    justify-self: start;
+    transform: rotate(1deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .not-found-hero {
+    min-height: 760px;
+    padding-top: 90px;
+    padding-bottom: 62px;
+  }
+
+  .not-found-hero h1 {
+    max-width: 100%;
+    font-size: clamp(46px, 14vw, 74px);
+    text-shadow:
+      4px 0 0 var(--chrome-bg),
+      -4px 0 0 var(--chrome-bg),
+      0 4px 0 var(--chrome-bg),
+      0 -4px 0 var(--chrome-bg),
+      4px 4px 0 var(--chrome-bg),
+      -4px 4px 0 var(--chrome-bg),
+      6px 6px 0 rgba(51, 37, 29, 0.14);
+  }
+
+  .not-found-hero__sentence {
+    font-size: clamp(20px, 7vw, 28px);
+  }
+
+  .not-found-recipe {
+    width: 100%;
+    padding: 22px 18px;
+    transform: none;
+  }
+}

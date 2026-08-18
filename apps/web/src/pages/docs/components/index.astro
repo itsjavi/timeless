@@ -1,0 +1,106 @@
+---
+import { Badge } from '@astrojs/starlight/components'
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro'
+import { examples } from '@timelessui/examples'
+
+const GROUP_ORDER = [
+  'Foundations',
+  'Actions',
+  'Forms',
+  'Navigation',
+  'Content',
+  'Feedback',
+  'Overlays',
+  'Color',
+] as const
+
+const documented = examples
+  .filter((example) => example.domain !== 'recipes')
+  .sort((left, right) => left.title.localeCompare(right.title))
+
+const groups = GROUP_ORDER.map((group) => ({
+  group,
+  items: documented.filter((example) => example.group === group),
+})).filter(({ items }) => items.length > 0)
+
+const enhancedCount = documented.filter((example) => example.definitions.length > 0).length
+
+const headings = groups.map(({ group }) => ({
+  depth: 2,
+  slug: group.toLowerCase(),
+  text: group,
+}))
+---
+
+<StarlightPage
+  frontmatter={{
+    title: 'Components',
+    description: `All ${documented.length} Timeless components, grouped by what they are for.`,
+    tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 2 },
+  }}
+  headings={headings}
+>
+  <p>
+    {documented.length} components. {documented.length - enhancedCount} are CSS only and need no
+    JavaScript; {enhancedCount} are custom elements that enhance markup you author.
+  </p>
+
+  {
+    groups.map(({ group, items }) => (
+      <>
+        <h2 id={group.toLowerCase()}>{group}</h2>
+        <ul class="component-index">
+          {items.map((example) => (
+            <li>
+              <span class="component-index__head">
+                <a href={`/docs/components/${example.id}/`}>{example.title}</a>
+                {example.definitions.length > 0 ? (
+                  <Badge text="Custom element" variant="note" />
+                ) : (
+                  <Badge text="CSS only" variant="success" />
+                )}
+              </span>
+              <span class="component-index__description">{example.description}</span>
+            </li>
+          ))}
+        </ul>
+      </>
+    ))
+  }
+</StarlightPage>
+
+<style>
+  .component-index {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0;
+    list-style: none;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  }
+
+  .component-index > li {
+    display: grid;
+    gap: 0.2rem;
+    align-content: start;
+    margin: 0;
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: 0.5rem;
+    padding: 0.75rem 0.85rem;
+  }
+
+  .component-index__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .component-index a {
+    font-weight: 600;
+  }
+
+  .component-index__description {
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+  }
+</style>

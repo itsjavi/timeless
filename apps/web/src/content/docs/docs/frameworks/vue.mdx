@@ -1,0 +1,46 @@
+---
+title: Vue
+description: Configure Vue to treat ui elements as native custom elements.
+sidebar:
+  order: 5
+---
+
+## Install and compiler configuration
+
+```sh
+pnpm add @timelessui/components
+```
+
+Tell the Vue compiler that `ui-` tags are custom elements:
+
+```ts
+// vite.config.ts
+vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith('ui-') } } })
+```
+
+## CSS and registration
+
+Import granular CSS and registration from a client entrypoint:
+
+```ts
+import '@timelessui/components/css/tokens.css'
+import '@timelessui/components/css/listbox.css'
+import '@timelessui/components/define/ui-listbox'
+```
+
+## Markup and state
+
+Use attributes for authored defaults and DOM properties for live state:
+
+```vue
+<ui-listbox ref="listbox" value="draft" role="listbox" aria-label="Status">
+  <div role="option" data-ui-value="draft">Draft</div>
+  <div role="option" data-ui-value="ready">Ready</div>
+</ui-listbox>
+```
+
+## SSR, hydration, events, and TypeScript
+
+Vue can hydrate the server-rendered Light DOM before the element definition upgrades it. Keep
+registration in browser code. Use a typed template ref to assign properties and `addEventListener`
+for namespaced custom events. Import public element classes and event detail types for TypeScript.

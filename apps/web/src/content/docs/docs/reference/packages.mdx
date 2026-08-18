@@ -1,0 +1,92 @@
+---
+title: Packages and entrypoints
+description: Every published import, what it contains, and whether it is safe on the server.
+sidebar:
+  order: 1
+---
+
+## Packages
+
+| Package                  | Role                                                                                                                                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@timelessui/components` | Everything a consumer needs: CSS, custom elements, contracts, and utilities. This is the only package you install.                                                        |
+| `@timelessui/core`       | The internal custom-element authoring layer the components are built on. It arrives as a dependency; you do not import it directly, and it is not part of the public API. |
+
+```bash
+pnpm add @timelessui/components
+```
+
+## Entrypoints
+
+| Import                                       | Contains                                                                                         | Side effects                  |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------- |
+| `@timelessui/components`                     | Contracts, design-token names, permitted attribute values, event types, and every element class. | None                          |
+| `@timelessui/components/{element}`           | One enhanced element's class and helpers, for example `@timelessui/components/dialog`.           | None                          |
+| `@timelessui/components/define/ui-{element}` | Registers one custom element.                                                                    | Calls `customElements.define` |
+| `@timelessui/components/define`              | Registers every public custom element.                                                           | Calls `customElements.define` |
+| `@timelessui/components/css/{component}.css` | One component's styles.                                                                          | Stylesheet                    |
+| `@timelessui/components/css/components.css`  | Every component's styles, tokens included.                                                       | Stylesheet                    |
+| `@timelessui/components/css/tokens.css`      | Design tokens and the cascade-layer order.                                                       | Stylesheet                    |
+| `@timelessui/components/color`               | Color parsing, conversion, and gamut utilities.                                                  | None                          |
+| `@timelessui/components/collection`          | Locale-aware matching and disabled-aware keyboard navigation.                                    | None                          |
+| `@timelessui/components/events`              | Transition event and detail types.                                                               | None                          |
+| `@timelessui/components/value-state`         | Authored-default and live-value helpers.                                                         | None                          |
+| `@timelessui/components/jsx/react`           | React 19 intrinsic-element declarations. Types only.                                             | None                          |
+
+Only enhanced elements have a class entrypoint. CSS-only primitives such as Button, Alert, and Card
+are classes and attributes rather than JavaScript, so they have no per-component module at all —
+their permitted values live on the root import instead.
+
+## Contracts and permitted values
+
+The root import is the machine-readable version of every component reference page:
+
+```ts
+import { buttonVariants, componentContracts } from '@timelessui/components'
+
+buttonVariants
+// ['primary', 'secondary', 'outline', 'ghost', 'danger', 'danger-outline', 'link']
+
+componentContracts.tabs.parts.filter((part) => part.required).map((part) => part.selector)
+// ["[role='tablist']", "[role='tab']", "[role='tabpanel']"]
+```
+
+`componentContracts` records each component's root, stylesheets, attributes with their permitted
+values and defaults, authored parts, public state, and events. The build proves every documented
+value against the stylesheets in both directions, so this is the same data the reference tables
+render.
+
+Permitted values are also exported individually as `as const` arrays with matching union types:
+`buttonVariants`, `buttonSizes`, `alertVariants`, `badgeVariants`, `cardVariants`, `linkVariants`,
+`listVariants`, `separatorVariants`, `spinnerVariants`, `avatarShapes`, `avatarStatuses`,
+`skeletonShapes`, `skeletonWidths`, `primitiveSizes`, `primitiveDensities`, `groupOrientations`,
+`separatorOrientations`, `formControlSizes`, `fieldLayouts`, `formDensities`,
+`choiceGroupOrientations`, `floatingPlacements`, `sheetPositions`, `tabsOrientations`,
+`tabsActivations`, `toasterPlacements`, `toasterStacks`, `toggleGroupSelections`, and
+`colorPickerFormats`.
+
+## Design tokens
+
+`atmosphereTokenGroups` names every public custom property, grouped by purpose, and
+`isAtmosphereToken` narrows a string against the set. See [Theming](/docs/styling/theming/) for the
+values and how to override them.
+
+## Custom Elements Manifest
+
+`@timelessui/components/custom-elements.json` is exposed through the package's `customElements`
+field. It declares attributes with union types and defaults, reflecting properties under their real
+names, events with their detail types, CSS custom properties, and custom states — for editors,
+generators, and downstream tooling.
+
+## React JSX declarations
+
+Import `@timelessui/components/jsx/react` once in your application types to augment React 19
+intrinsic elements. The declaration is types-only and adds no runtime wrapper and no React
+dependency.
+
+## Server rendering
+
+Every import above is side-effect free except the stylesheets and the `define/*` entrypoints. Class
+imports never call `customElements.define`, so they are safe in server code and test utilities. Keep
+`define/*` imports in browser-only modules. See
+[Custom-element registration](/docs/getting-started/registration/).

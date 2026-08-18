@@ -1,0 +1,66 @@
+@layer ui.components {
+  .ui-meter-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--ui-space-2);
+    align-items: center;
+    color: var(--ui-fg);
+    font-size: 0.875rem;
+    font-weight: 650;
+  }
+
+  .ui-meter-field > output {
+    color: var(--ui-fg-muted);
+    font-family: var(--ui-font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .ui-meter-field > meter {
+    appearance: none;
+    grid-column: 1 / -1;
+    inline-size: 100%;
+    block-size: 0.625rem;
+    border: 0;
+    border-radius: var(--ui-radius-pill);
+    background: var(--ui-bg-control);
+    color: var(--ui-success);
+  }
+
+  .ui-meter-field > meter::-webkit-meter-bar {
+    border: 0;
+    border-radius: var(--ui-radius-pill);
+    background: var(--ui-bg-control);
+    box-shadow: var(--ui-shadow-inset);
+  }
+
+  .ui-meter-field > meter::-webkit-meter-optimum-value,
+  .ui-meter-field > meter::-moz-meter-bar {
+    border-radius: var(--ui-radius-pill);
+    background: var(--ui-success);
+  }
+
+  .ui-meter-field > meter::-webkit-meter-suboptimum-value {
+    border-radius: var(--ui-radius-pill);
+    background: var(--ui-warning);
+  }
+
+  .ui-meter-field > meter::-webkit-meter-even-less-good-value {
+    border-radius: var(--ui-radius-pill);
+    background: var(--ui-danger);
+  }
+
+  .ui-meter-field > :where(.ui-description, [data-ui-part~='hint']) {
+    grid-column: 1 / -1;
+    color: var(--ui-fg-muted);
+    font-size: 0.8125rem;
+    font-weight: 400;
+  }
+}
+
+@media (forced-colors: active) {
+  .ui-meter-field > meter {
+    forced-color-adjust: none;
+    color: Highlight;
+  }
+}

@@ -1,0 +1,336 @@
+@layer ui.components {
+  .ui-field {
+    --ui-field-gap: var(--ui-space-2);
+
+    display: grid;
+    gap: var(--ui-field-gap);
+    min-inline-size: 0;
+    color: var(--ui-fg);
+  }
+
+  .ui-field:where([data-ui-density='compact']) {
+    --ui-field-gap: var(--ui-space-1);
+  }
+
+  .ui-field:where([data-ui-density='spacious']) {
+    --ui-field-gap: var(--ui-space-3);
+  }
+
+  .ui-field:where([data-ui-layout='inline']) {
+    grid-template-columns: minmax(8rem, 0.34fr) minmax(0, 1fr);
+    column-gap: var(--ui-space-4);
+    align-items: start;
+  }
+
+  .ui-field:where([data-ui-layout='inline']) > .ui-label {
+    padding-block-start: 0.625rem;
+  }
+
+  .ui-field :where([data-ui-part~='control']) {
+    display: grid;
+    gap: var(--ui-field-gap);
+    min-inline-size: 0;
+  }
+
+  .ui-label {
+    color: var(--ui-fg);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .ui-field:has(:required) > .ui-label::after {
+    content: ' *';
+    color: var(--ui-danger);
+  }
+
+  .ui-description,
+  .ui-error {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+
+  .ui-description {
+    color: var(--ui-fg-muted);
+  }
+
+  .ui-error {
+    color: var(--ui-danger);
+  }
+
+  .ui-input,
+  .ui-textarea,
+  .ui-select,
+  .ui-file {
+    box-sizing: border-box;
+    inline-size: 100%;
+    min-inline-size: 0;
+    border: 1px solid var(--ui-form-border, var(--ui-line));
+    border-radius: var(--ui-radius-md);
+    background: var(--ui-form-bg, var(--ui-bg-control-muted));
+    box-shadow: var(--ui-shadow-inset);
+    color: var(--ui-fg);
+    font: inherit;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    transition:
+      border-color var(--ui-duration-fast) var(--ui-ease-standard),
+      background-color var(--ui-duration-fast) var(--ui-ease-standard),
+      box-shadow var(--ui-duration-fast) var(--ui-ease-standard);
+  }
+
+  .ui-input,
+  .ui-select,
+  .ui-file {
+    min-block-size: var(--ui-form-control-height, 2.5rem);
+    padding-block: 0.5rem;
+    padding-inline: 0.75rem;
+  }
+
+  .ui-textarea {
+    min-block-size: 6rem;
+    padding: 0.625rem 0.75rem;
+    resize: vertical;
+  }
+
+  .ui-input:where([data-ui-size='sm']),
+  .ui-select:where([data-ui-size='sm']),
+  .ui-file:where([data-ui-size='sm']) {
+    --ui-form-control-height: 2rem;
+    font-size: 0.875rem;
+    padding-block: 0.375rem;
+    padding-inline: 0.625rem;
+  }
+
+  .ui-input:where([data-ui-size='lg']),
+  .ui-select:where([data-ui-size='lg']),
+  .ui-file:where([data-ui-size='lg']) {
+    --ui-form-control-height: 3rem;
+    font-size: 1rem;
+    padding-block: 0.625rem;
+    padding-inline: 0.875rem;
+  }
+
+  .ui-textarea:where([data-ui-size='sm']) {
+    min-block-size: 4.5rem;
+    font-size: 0.875rem;
+    padding: 0.5rem 0.625rem;
+  }
+
+  .ui-textarea:where([data-ui-size='lg']) {
+    min-block-size: 8rem;
+    font-size: 1rem;
+    padding: 0.75rem 0.875rem;
+  }
+
+  .ui-input::placeholder,
+  .ui-textarea::placeholder {
+    color: var(--ui-fg-subtle);
+    opacity: 1;
+  }
+
+  .ui-input:hover,
+  .ui-textarea:hover,
+  .ui-select:hover,
+  .ui-file:hover {
+    --ui-form-border: var(--ui-line-strong);
+    --ui-form-bg: var(--ui-bg-control);
+  }
+
+  .ui-input:focus-visible,
+  .ui-textarea:focus-visible,
+  .ui-select:focus-visible,
+  .ui-checkbox:focus-visible,
+  .ui-radio:focus-visible,
+  .ui-switch:focus-visible,
+  .ui-range > input[type='range']:focus-visible,
+  .ui-file:focus-visible {
+    outline: 2px solid var(--ui-focus);
+    outline-offset: 2px;
+  }
+
+  .ui-input:where(:invalid, [aria-invalid='true']),
+  .ui-textarea:where(:invalid, [aria-invalid='true']),
+  .ui-select:where(:invalid, [aria-invalid='true']),
+  .ui-file:where(:invalid, [aria-invalid='true']),
+  .ui-field:where([aria-invalid='true']) :where(.ui-input, .ui-textarea, .ui-select, .ui-file) {
+    --ui-form-border: var(--ui-danger);
+    --ui-form-bg: var(--ui-danger-soft);
+  }
+
+  .ui-input:disabled,
+  .ui-textarea:disabled,
+  .ui-select:disabled,
+  .ui-file:disabled,
+  .ui-checkbox:disabled,
+  .ui-radio:disabled,
+  .ui-switch:disabled,
+  .ui-range > input[type='range']:disabled {
+    opacity: 0.55;
+  }
+
+  .ui-input:read-only,
+  .ui-textarea:read-only {
+    --ui-form-bg: var(--ui-bg-surface-subtle);
+  }
+
+  .ui-select {
+    color-scheme: light dark;
+  }
+
+  .ui-checkbox,
+  .ui-radio {
+    box-sizing: border-box;
+    inline-size: 1rem;
+    block-size: 1rem;
+    margin: 0;
+    accent-color: var(--ui-accent);
+    color: var(--ui-accent);
+  }
+
+  .ui-checkbox:where(:invalid, [aria-invalid='true']),
+  .ui-radio:where(:invalid, [aria-invalid='true']) {
+    accent-color: var(--ui-danger);
+  }
+
+  .ui-choice {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--ui-space-3);
+    align-items: start;
+    color: var(--ui-fg);
+  }
+
+  .ui-choice:where([data-ui-density='compact']) {
+    gap: var(--ui-space-2);
+  }
+
+  .ui-choice:has(:disabled) {
+    opacity: 0.6;
+  }
+
+  .ui-choice :where(.ui-checkbox, .ui-radio, .ui-switch) {
+    margin-block-start: 0.125rem;
+  }
+
+  .ui-choice :where([data-ui-part~='body']) {
+    display: grid;
+    gap: var(--ui-space-1);
+    min-inline-size: 0;
+  }
+
+  .ui-choice :where([data-ui-part~='title']) {
+    color: var(--ui-fg);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .ui-choice :where([data-ui-part~='description']) {
+    color: var(--ui-fg-muted);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+
+  .ui-choice-group {
+    display: grid;
+    gap: var(--ui-space-3);
+    min-inline-size: 0;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    color: var(--ui-fg);
+  }
+
+  .ui-choice-group:where([data-ui-density='compact']) {
+    gap: var(--ui-space-2);
+  }
+
+  .ui-choice-group:where([data-ui-orientation='horizontal']) {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), max-content));
+    align-items: start;
+    column-gap: var(--ui-space-5);
+  }
+
+  .ui-choice-group > legend {
+    padding: 0;
+  }
+
+  .ui-choice-group :where([data-ui-part~='description']) {
+    color: var(--ui-fg-muted);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+
+  .ui-choice-group :where([data-ui-part~='error']) {
+    color: var(--ui-danger);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+
+  .ui-switch {
+    appearance: none;
+    box-sizing: border-box;
+    position: relative;
+    inline-size: 2.25rem;
+    block-size: 1.25rem;
+    margin: 0;
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius-pill);
+    background: var(--ui-bg-control);
+    vertical-align: middle;
+    transition:
+      border-color var(--ui-duration-fast) var(--ui-ease-standard),
+      background-color var(--ui-duration-fast) var(--ui-ease-standard);
+  }
+
+  .ui-switch::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0.125rem;
+    inset-inline-start: 0.125rem;
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    border-radius: var(--ui-radius-pill);
+    background: var(--ui-bg-surface);
+    box-shadow: var(--ui-shadow-control);
+    transition: translate var(--ui-duration-fast) var(--ui-ease-standard);
+  }
+
+  .ui-switch:checked {
+    border-color: color-mix(in oklab, var(--ui-accent), #000000 12%);
+    background: var(--ui-accent);
+  }
+
+  .ui-switch:checked::before {
+    translate: 1rem 0;
+  }
+
+  .ui-range > input[type='range'] {
+    inline-size: 100%;
+    accent-color: var(--ui-accent);
+  }
+
+  .ui-file::file-selector-button {
+    min-block-size: 1.75rem;
+    margin-inline-end: var(--ui-space-3);
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius-sm);
+    padding: 0.25rem 0.625rem;
+    background: var(--ui-bg-surface);
+    color: var(--ui-fg);
+    font: inherit;
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: 640px) {
+    .ui-field:where([data-ui-layout='inline']) {
+      grid-template-columns: 1fr;
+    }
+
+    .ui-field:where([data-ui-layout='inline']) > .ui-label {
+      padding-block-start: 0;
+    }
+  }
+}

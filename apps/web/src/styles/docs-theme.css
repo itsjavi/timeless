@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Yellowtail&display=swap');
+
+:root {
+  --sl-color-accent-low: hsl(8deg 54% 20%);
+  --sl-color-accent: hsl(8deg 70% 46%);
+  --sl-color-accent-high: hsl(43deg 82% 86%);
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: hsl(43deg 82% 86%);
+  --sl-color-accent: hsl(8deg 70% 46%);
+  --sl-color-accent-high: hsl(8deg 70% 30%);
+}
+
+.site-title {
+  font-family: Yellowtail, cursive;
+  font-size: 2rem;
+}
+
+/*
+ * Reference tables are dense with identifiers. Let long values wrap rather than making the table a
+ * scroll container: a scrollable region needs its own keyboard access, and wrapped cells read fine.
+ */
+.sl-markdown-content :where(table) :where(td) {
+  overflow-wrap: anywhere;
+}
+
+/* Column headings are short labels; breaking them mid-word ("Re/qui/red") is never an improvement. */
+.sl-markdown-content :where(table) :where(th) {
+  text-wrap: nowrap;
+}
+
+.sl-markdown-content :where(table) :where(td:first-child) {
+  /* Identifiers stay on one line where they fit; only very long ones break. */
+  text-wrap: balance;
+}
+
+/*
+ * Some canonical markup embeds long unbreakable tokens, such as inline SVG path data. Wrapping alone
+ * still leaves those lines overflowing, which turns the block into a scrollable region that needs its
+ * own keyboard access. Breaking anywhere is safe here: the copy button copies the real source.
+ */
+.expressive-code pre.wrap :where(code) {
+  overflow-wrap: anywhere;
+}

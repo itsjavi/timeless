@@ -1,0 +1,38 @@
+---
+import { examples, renderExample } from '@timelessui/examples'
+import { resolvePreviewStyles } from '../../../lib/preview-styles'
+import '../../../styles/preview.css'
+
+export function getStaticPaths() {
+  return examples.map((example) => ({
+    params: { section: '_preview', id: example.id },
+    props: { example },
+  }))
+}
+
+const { example } = Astro.props
+const componentStyles = resolvePreviewStyles(example.styles)
+const html = renderExample(example)
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Framed by the component pages; it has no navigation and should never be a search result. -->
+    <meta name="robots" content="noindex" />
+    <title>{example.title} preview</title>
+    <style is:inline set:html={componentStyles}></style>
+    <style is:global>
+      astro-dev-toolbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body data-definitions={JSON.stringify(example.definitions)}>
+    <main class="preview-stage" set:html={html}></main>
+    <script src="../../../scripts/preview-runtime.ts"></script>
+    {example.script ? <script is:inline type="module" set:html={example.script} /> : null}
+  </body>
+</html>

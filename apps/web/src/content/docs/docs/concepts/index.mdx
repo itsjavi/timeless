@@ -1,0 +1,66 @@
+---
+title: Core concepts
+description: The contracts behind Timeless components.
+---
+
+## Progressive enhancement
+
+Timeless begins with native HTML. CSS-only primitives add no behavior. Enhanced elements coordinate
+authored Light DOM and preserve native controls where those controls already provide submission,
+labels, reset, disabled state, and restoration.
+
+## Public Light DOM anatomy
+
+Consumers author style-relevant anatomy. Components observe replacement and insertion of supported
+parts, then reconnect listeners without generating visual wrappers. Native CSS roots use `.ui-*`,
+contract-declared `data-ui-*` attributes configure their visuals, and `data-ui-part` identifies
+authored anatomy when semantics are insufficient. Plain attributes configure registered `ui-*`
+hosts. Native and ARIA state remain authoritative.
+
+## Default and live state
+
+The authored `value` attribute supplies initial and form-reset state. The `value` property
+represents live state. Direct property assignment is silent and does not rewrite the authored
+default.
+
+## Dynamic authored anatomy
+
+Enhanced collections observe supported authored children. Applications can replace or append
+options, tabs, menu items, and other public parts without asking Timeless to generate visual
+wrappers.
+
+## Transitions
+
+User transitions dispatch cancelable `ui-before-change`, then non-cancelable `ui-change` after
+commit. Details include `value`, `previousValue`, `source`, `reason`, and `originalEvent`. Events
+bubble and are composed.
+
+## SSR and registration
+
+Class-only imports are side-effect free. Explicit definition entrypoints register elements in a
+browser realm and report conflicting constructors. Properties assigned before upgrade are replayed
+when the element connects.
+
+## Accessibility
+
+Native semantics come first. Enhanced components follow the relevant ARIA Authoring Practices
+keyboard model where native behavior is not sufficient. Automated route checks cover axe WCAG 2.2 A
+and AA rules, reflow, and text spacing, but manual assistive-technology review remains required.
+
+## Granular performance
+
+Import the CSS and definition entrypoints an interface uses. Normal enhancement retains authored
+visual DOM. Checked package baselines guard representative entry closures, mutations, layout reads,
+and layout shifts.
+
+## CSS-only and enhanced components
+
+CSS-only primitives style native semantics and need no registration. Enhanced elements are reserved
+for keyboard coordination, focus, state synchronization, or authoring behavior that CSS cannot
+provide accessibly.
+
+## Styling and themes
+
+Consumer-facing visual decisions remain in CSS. Tokens, component variables, public classes, plain
+host attributes, and documented Light DOM hooks provide the styling contract. JavaScript exposes
+behavior state without writing visual declarations.

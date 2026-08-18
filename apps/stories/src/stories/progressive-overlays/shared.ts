@@ -1,0 +1,38 @@
+import type { StoryLiteMeta } from '@storylite/storylite'
+import buttonCss from '@timelessui/components/css/button.css?raw'
+import collapsibleCss from '@timelessui/components/css/collapsible.css?raw'
+import codeCss from '@timelessui/components/css/code.css?raw'
+import dialogCss from '@timelessui/components/css/dialog.css?raw'
+import popoverCss from '@timelessui/components/css/popover.css?raw'
+import sheetCss from '@timelessui/components/css/sheet.css?raw'
+import tabsCss from '@timelessui/components/css/tabs.css?raw'
+import tokensCss from '@timelessui/components/css/tokens.css?raw'
+import toastCss from '@timelessui/components/css/toast.css?raw'
+import { defineTimelessElements } from '@timelessui/components/define'
+import demoCss from '../styles.css?raw'
+import overlayDemoCss from './shared.css?raw'
+
+const progressiveOverlayParameters = {
+  renderer: 'html',
+  css: [
+    tokensCss,
+    buttonCss,
+    codeCss,
+    tabsCss,
+    collapsibleCss,
+    dialogCss,
+    sheetCss,
+    popoverCss,
+    toastCss,
+    demoCss,
+    overlayDemoCss,
+  ],
+  defineCustomElements: defineTimelessElements,
+} satisfies StoryLiteMeta['parameters']
+
+export function createProgressiveOverlayMeta(component: string): StoryLiteMeta {
+  return {
+    title: `Library/${component === 'Toast' ? 'Feedback' : 'Overlays'}/${component}`,
+    parameters: progressiveOverlayParameters,
+  }
+}

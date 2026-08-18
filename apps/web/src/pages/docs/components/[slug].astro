@@ -1,0 +1,413 @@
+---
+import { Aside, Badge, Code } from '@astrojs/starlight/components'
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro'
+import { examples, getExample } from '@timelessui/examples'
+import ComponentPreview from '../../../components/docs/ComponentPreview.astro'
+import {
+  declarationsFor,
+  documentedContracts,
+  inlineCode,
+  inlineMarkdown,
+  stylingFor,
+} from '../../../lib/component-docs'
+import { storyUrl } from '../../../lib/stories'
+
+export function getStaticPaths() {
+  return examples
+    .filter((example) => example.domain !== 'recipes')
+    .map((example) => ({ params: { slug: example.id }, props: { example } }))
+}
+
+const { example } = Astro.props
+const contracts = documentedContracts(example.contracts)
+const declarations = declarationsFor(example.definitions)
+const styling = await stylingFor(example.styles, contracts)
+const enhanced = example.definitions.length > 0
+
+const imports = [
+  ...example.styles.map((style) => `import '@timelessui/components/css/${style}'`),
+  ...example.definitions.map((tag) => `import '@timelessui/components/define/${tag}'`),
+].join('\n')
+
+const attributeContracts = contracts.filter(({ contract }) => contract.attributes.length > 0)
+const partContracts = contracts.filter(({ contract }) => contract.parts.length > 0)
+/** Several contracts can share a state, so present each distinct one once. */
+const publicStates = [
+  ...new Map(
+    contracts.flatMap(({ contract }) =>
+      contract.states
+        .filter((state) => state.public)
+        .map((state) => [`${state.name}:${state.description}`, state] as const),
+    ),
+  ).values(),
+]
+const accessibility = contracts.filter(({ contract }) => contract.accessibility)
+const related = (example.related ?? []).flatMap((id) => getExample(id) ?? [])
+
+/** StarlightPage cannot infer headings from slot content, so the page declares its own outline. */
+const headings = [
+  { depth: 2, slug: 'install', text: 'Install' },
+  ...(example.script ? [{ depth: 2, slug: 'wiring', text: 'Consumer wiring' }] : []),
+  ...(partContracts.length > 0 ? [{ depth: 2, slug: 'anatomy', text: 'Anatomy' }] : []),
+  ...(attributeContracts.length > 0 ? [{ depth: 2, slug: 'attributes', text: 'Attributes' }] : []),
+  ...(declarations.length > 0
+    ? [
+        { depth: 2, slug: 'element-api', text: 'Element API' },
+        ...declarations.map((declaration) => ({
+          depth: 3,
+          slug: `${declaration.tagName}-api`,
+          text: `<${declaration.tagName}>`,
+        })),
+      ]
+    : []),
+  ...(publicStates.length > 0 ? [{ depth: 2, slug: 'state', text: 'State' }] : []),
+  { depth: 2, slug: 'styling', text: 'Styling' },
+  { depth: 2, slug: 'accessibility', text: 'Accessibility' },
+  { depth: 2, slug: 'progressive-enhancement', text: 'Before JavaScript runs' },
+  ...related.map((composition) => ({
+    depth: 2,
+    slug: `composition-${composition.id}`,
+    text: composition.title,
+  })),
+  { depth: 2, slug: 'more-examples', text: 'More examples' },
+]
+
+const valueList = (values: readonly string[] | undefined, fallbackType: string) =>
+  values ? values : fallbackType === 'boolean' ? [] : undefined
+---
+
+<StarlightPage
+  frontmatter={{
+    title: example.title,
+    description: example.description,
+    tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 3 },
+  }}
+  headings={headings}
+>
+  <p>
+    {example.description}{' '}
+    {
+      enhanced ? (
+        <Badge text="Custom element" variant="note" />
+      ) : (
+        <Badge text="CSS only" variant="success" />
+      )
+    }
+  </p>
+
+  {
+    example.guidance ? (
+      <Aside type="tip" title="Choosing between components">
+        <p set:html={inlineMarkdown(example.guidance)} />
+      </Aside>
+    ) : null
+  }
+
+  <ComponentPreview id={example.id} />
+
+  <h2 id="install">Install</h2>
+  <Code code={imports} lang="js" title="Styles and registration" />
+
+  {
+    example.script ? (
+      <>
+        <h2 id="wiring">Consumer wiring</h2>
+        <p>This example needs the following plain JavaScript beyond custom-element registration.</p>
+        <Code code={example.script} lang="js" />
+      </>
+    ) : null
+  }
+
+  {
+    partContracts.length > 0 ? (
+      <>
+        <h2 id="anatomy">Anatomy</h2>
+        <p>
+          Parts are authored in your own markup and identified by the selector below, so your CSS can
+          target the same anatomy without loading Timeless styles. Required parts must be present for
+          the component to work. Private <code>data-ui-internal-*</code> hooks are written by the
+          runtime and must never be authored.
+        </p>
+        {partContracts.map(({ label, contract }) => (
+          <>
+            {contracts.length > 1 ? <p><strong>{label}</strong></p> : null}
+            <table>
+              <thead>
+                <tr><th>Part</th><th>Required</th><th>Selector</th><th>Purpose</th></tr>
+              </thead>
+              <tbody>
+                {contract.parts.map((part) => (
+                  <tr>
+                    <td><code>{part.name}</code></td>
+                    <td>{part.required ? 'Yes' : 'No'}</td>
+                    <td><code>{part.selector}</code></td>
+                    <td set:html={inlineCode(part.description)} />
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        ))}
+      </>
+    ) : null
+  }
+
+  {
+    attributeContracts.length > 0 ? (
+      <>
+        <h2 id="attributes">Attributes</h2>
+        <p>
+          Every value below is implemented by the stylesheets this component ships. Boolean
+          attributes are presence-based: author the attribute with no value, or omit it.
+        </p>
+        {attributeContracts.map(({ label, contract }) => (
+          <>
+            {contracts.length > 1 ? <p><strong>{label}</strong></p> : null}
+            <table>
+              <thead>
+                <tr><th>Attribute</th><th>Values</th><th>Default</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                {contract.attributes.map((attribute) => (
+                  <tr>
+                    <td><code>{attribute.name}</code></td>
+                    <td>
+                      {
+                        valueList(attribute.values, attribute.type)?.length
+                          ? valueList(attribute.values, attribute.type)!.map((value, index) => (
+                              <>
+                                {index > 0 ? ' · ' : ''}
+                                <code>{value}</code>
+                              </>
+                            ))
+                          : attribute.type === 'boolean'
+                            ? 'presence'
+                            : <>any <code>{attribute.type}</code></>
+                      }
+                    </td>
+                    <td>
+                      {attribute.default === undefined ? (
+                        attribute.type === 'boolean' ? 'absent' : '—'
+                      ) : (
+                        <code>{attribute.default}</code>
+                      )}
+                    </td>
+                    <td set:html={inlineCode(attribute.description)} />
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        ))}
+      </>
+    ) : null
+  }
+
+  {
+    declarations.length > 0 ? (
+      <>
+        <h2 id="element-api">Element API</h2>
+        <p>
+          Attributes above are the authoring surface. These are the DOM properties and events the
+          registered element adds once it upgrades.
+        </p>
+        {declarations.map((declaration) => (
+          <section>
+            <h3 id={`${declaration.tagName}-api`}><code>{`<${declaration.tagName}>`}</code></h3>
+            {(declaration.members?.length ?? 0) > 0 ? (
+              <table>
+                <thead>
+                  <tr><th>Property</th><th>Type</th><th>Notes</th></tr>
+                </thead>
+                <tbody>
+                  {declaration.members?.map((member) => (
+                    <tr>
+                      <td><code>{member.name}</code></td>
+                      <td><code>{member.type?.text ?? 'unknown'}</code></td>
+                      <td>
+                        {member.attribute ? (
+                          <>
+                            Reflects the <code>{member.attribute}</code> attribute, documented above.
+                          </>
+                        ) : (
+                          <span set:html={inlineCode(member.description ?? '')} />
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>This element adds no public properties. Configure it with the attributes above.</p>
+            )}
+            {(declaration.events?.length ?? 0) > 0 ? (
+              <table>
+                <thead><tr><th>Event</th><th>Detail</th><th>Description</th></tr></thead>
+                <tbody>
+                  {declaration.events?.map((event) => (
+                    <tr>
+                      <td><code>{event.name}</code></td>
+                      <td><code>{event.type?.text ?? 'CustomEvent'}</code></td>
+                      <td set:html={inlineCode(event.description ?? '')} />
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>This element dispatches no component events.</p>
+            )}
+          </section>
+        ))}
+      </>
+    ) : null
+  }
+
+  {
+    publicStates.length > 0 ? (
+      <>
+        <h2 id="state">State</h2>
+        <p>
+          Native attributes, ARIA, and platform pseudo-classes are authoritative. Style state through
+          the selectors below rather than adding your own state classes.
+        </p>
+        <table>
+          <thead><tr><th>State</th><th>Source</th><th>How to express it</th></tr></thead>
+          <tbody>
+            {publicStates.map((state) => (
+              <tr>
+                <td><code>{state.name}</code></td>
+                <td>{state.source}</td>
+                <td set:html={inlineCode(state.description)} />
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </>
+    ) : null
+  }
+
+  <h2 id="styling">Styling</h2>
+  <p>
+    Root identity: {contracts.map(({ contract }, index) => (
+      <>{index > 0 ? ', ' : ''}<code>{contract.root.name}</code></>
+    ))}. Required stylesheets: {example.styles.map((style, index) => (
+      <>{index > 0 ? ', ' : ''}<code>{style}</code></>
+    ))}.
+  </p>
+  {
+    styling.variables.length > 0 ? (
+      <>
+        <p>Set these custom properties to restyle the component:</p>
+        <table>
+          <thead><tr><th>Custom property</th><th>Controls</th></tr></thead>
+          <tbody>
+            {styling.variables.map((variable) => (
+              <tr>
+                <td><code>{variable.name}</code></td>
+                <td set:html={inlineCode(variable.description)} />
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </>
+    ) : (
+      <p>
+        This component adds no custom properties of its own. Restyle it through the{' '}
+        <a href="/docs/styling/theming/">design tokens</a> or your own CSS.
+      </p>
+    )
+  }
+  {
+    styling.tokens.length > 0 ? (
+      <details>
+        <summary>Design tokens this component reads ({styling.tokens.length})</summary>
+        <p>
+          These are global <a href="/docs/styling/theming/">Atmosphere tokens</a>. Change them once at
+          the theme level rather than per component.
+        </p>
+        <p>
+          {styling.tokens.map((token, index) => (
+            <>{index > 0 ? ' · ' : ''}<code>{token}</code></>
+          ))}
+        </p>
+      </details>
+    ) : null
+  }
+
+  <h2 id="accessibility">Accessibility</h2>
+  <p>
+    Keep the native elements, roles, and relationships shown in the example. Timeless adds only the
+    state and keyboard coordination the platform does not already provide, and it never supplies your
+    accessible names — those depend on your content.
+  </p>
+  {
+    accessibility.map(({ label, contract }) => (
+      <>
+        {accessibility.length > 1 ? <p><strong>{label}</strong></p> : null}
+        <p>
+          Follows the{' '}
+          <a
+            href={`https://www.w3.org/WAI/ARIA/apg/patterns/${contract.accessibility!.pattern}/`}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {contract.accessibility!.patternLabel} pattern
+          </a>{' '}
+          from the ARIA Authoring Practices Guide.
+        </p>
+        {contract.accessibility!.keys.length > 0 ? (
+          <table>
+            <thead><tr><th>Key</th><th>Action</th></tr></thead>
+            <tbody>
+              {contract.accessibility!.keys.map((entry) => (
+                <tr>
+                  <td><kbd>{entry.key}</kbd></td>
+                  <td set:html={inlineCode(entry.action)} />
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : null}
+        {contract.accessibility!.notes ? (
+          <p set:html={inlineCode(contract.accessibility!.notes)} />
+        ) : null}
+      </>
+    ))
+  }
+  {
+    enhanced ? (
+      <Aside type="note" title="Verify in context">
+        Automated checks cover axe WCAG 2.2 A and AA rules on every documented route. Keyboard, zoom,
+        forced-colors, and screen-reader review still belong to your application.
+      </Aside>
+    ) : null
+  }
+
+  <h2 id="progressive-enhancement">Before JavaScript runs</h2>
+  <p>
+    {
+      enhanced
+        ? 'The markup above is complete and usable on its own: native controls submit, labels associate, and authored ARIA is already correct. Registration adds state synchronisation, focus management, and keyboard coordination on top of it.'
+        : 'This primitive is CSS only. There is nothing to register and nothing to wait for.'
+    }
+  </p>
+
+  {
+    related.map((composition) => (
+      <>
+        <h2 id={`composition-${composition.id}`}>{composition.title}</h2>
+        <p>{composition.description}</p>
+        <ComponentPreview id={composition.id} />
+        {composition.script ? <Code code={composition.script} lang="js" /> : null}
+      </>
+    ))
+  }
+
+  <h2 id="more-examples">More examples</h2>
+  <p>
+    <a href={storyUrl(example.domain, example.id)}>
+      Open {example.title} in StoryLite
+    </a>{' '}
+    for variants, controls, and manual testing.
+  </p>
+</StarlightPage>

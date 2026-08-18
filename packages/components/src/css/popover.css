@@ -1,0 +1,131 @@
+@layer ui.components {
+  ui-popover,
+  ui-hover-card:not([anchor]) {
+    display: contents;
+  }
+
+  :where(ui-popover, ui-hover-card) > [popover],
+  ui-hover-card[anchor] {
+    box-sizing: border-box;
+    inline-size: max-content;
+    max-inline-size: min(22rem, calc(100vw - 2rem));
+    max-block-size: calc(100dvh - 6rem);
+    overflow: auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius-lg);
+    margin: 0;
+    padding: var(--ui-space-4);
+    background: var(--ui-bg-surface);
+    box-shadow: var(--ui-shadow-floating);
+    color: var(--ui-fg);
+    font: inherit;
+    line-height: 1.5;
+  }
+
+  ui-popover > [popover] {
+    min-inline-size: 16rem;
+  }
+
+  :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]) :where(h2, h3, p) {
+    margin: 0;
+  }
+
+  :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]) :where(h2, h3) {
+    color: var(--ui-fg);
+    font-size: 0.95rem;
+    font-weight: 750;
+  }
+
+  :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]) p {
+    color: var(--ui-fg-muted);
+  }
+
+  ui-hover-card:where([variant='tooltip']) > [popover],
+  ui-hover-card:where([variant='tooltip'][anchor]) {
+    --ui-tooltip-bg: light-dark(#17171a, #f4f4f5);
+    --ui-tooltip-fg: light-dark(#ffffff, #17171a);
+
+    max-inline-size: 18rem;
+    border-radius: var(--ui-radius-md);
+    padding: var(--ui-space-2) var(--ui-space-3);
+    border-color: color-mix(in oklab, var(--ui-tooltip-bg), var(--ui-tooltip-fg) 24%);
+    background: var(--ui-tooltip-bg);
+    color: var(--ui-tooltip-fg);
+    box-shadow: var(--ui-shadow-floating);
+    font-size: 0.8125rem;
+  }
+
+  :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]):not(:popover-open) {
+    display: none;
+  }
+
+  :where([data-ui-internal-floating-anchor]) {
+    anchor-name: var(--ui-floating-anchor);
+  }
+
+  :where([data-ui-internal-floating-content]) {
+    position-anchor: var(--ui-floating-anchor);
+  }
+
+  :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]):where(
+    [data-ui-internal-floating='fallback']
+  ) {
+    position: fixed;
+    inset: auto;
+    left: var(--ui-floating-left);
+    top: var(--ui-floating-top);
+    right: auto;
+    bottom: auto;
+    translate: 0 0;
+    position-area: none;
+    position-try-fallbacks: none;
+  }
+
+  :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]):popover-open {
+    position: fixed;
+    inset: auto;
+    inset-block-start: 5rem;
+    inset-inline-start: 50%;
+    translate: -50% 0;
+  }
+
+  :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor])::backdrop {
+    background: transparent;
+  }
+
+  @supports (anchor-name: --ui-anchor) {
+    ui-hover-card[anchor]:popover-open,
+    :where(ui-popover, ui-hover-card) > [popover]:popover-open {
+      inset: auto;
+      position-area: bottom center;
+      translate: 0 var(--ui-floating-offset, 0.375rem);
+      position-try-fallbacks:
+        flip-block,
+        flip-inline,
+        flip-block flip-inline;
+    }
+
+    ui-hover-card[anchor]:where([placement='top']):popover-open,
+    :where(ui-popover, ui-hover-card):where([placement='top']) > [popover]:popover-open {
+      position-area: top center;
+      translate: 0 calc(var(--ui-floating-offset, 0.375rem) * -1);
+    }
+
+    ui-hover-card[anchor]:where([placement='right']):popover-open,
+    :where(ui-popover, ui-hover-card):where([placement='right']) > [popover]:popover-open {
+      position-area: right center;
+      translate: var(--ui-floating-offset, 0.375rem) 0;
+    }
+
+    ui-hover-card[anchor]:where([placement='left']):popover-open,
+    :where(ui-popover, ui-hover-card):where([placement='left']) > [popover]:popover-open {
+      position-area: left center;
+      translate: calc(var(--ui-floating-offset, 0.375rem) * -1) 0;
+    }
+  }
+
+  ui-hover-card:where([variant='tooltip']) :where(p) {
+    color: inherit !important;
+  }
+}

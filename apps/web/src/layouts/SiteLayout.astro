@@ -1,0 +1,80 @@
+---
+import '../styles/site.css'
+
+type Props = {
+  title: string
+  description: string
+  ogDescription?: string
+  /** Share image, relative to the site root. */
+  image?: string
+}
+
+const { title, description, ogDescription = description, image = '/assets/hero-art-01.png' } =
+  Astro.props
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href
+const shareImage = new URL(image, Astro.site ?? Astro.url).href
+
+/**
+ * Analytics is for the deployed site only. A local `astro build` looks identical to a deploy, so this
+ * is an explicit opt-in set by the deploy workflow — otherwise the script warns into the console on
+ * every local preview and Docker smoke test.
+ */
+const analytics = import.meta.env.PUBLIC_ENABLE_ANALYTICS === 'true'
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Timeless" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={shareImage} />
+    <meta property="og:image:width" content="1672" />
+    <meta property="og:image:height" content="941" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={shareImage} />
+
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Yellowtail&display=swap"
+    />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    {
+      analytics ? (
+        <>
+          <script is:inline async src="https://ua.werkowl.com/js/pa-UHLZD0JoQz6OkZ_c2uEOD.js" />
+          <script is:inline>
+            ;((window.plausible =
+              window.plausible ||
+              function () {
+                ;(window.plausible.q = window.plausible.q || []).push(arguments)
+              }),
+              (window.plausible.init =
+                window.plausible.init ||
+                function (options) {
+                  window.plausible.o = options || {}
+                }))
+            window.plausible.init()
+          </script>
+        </>
+      ) : null
+    }
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+  </body>
+</html>

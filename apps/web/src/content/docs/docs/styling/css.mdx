@@ -1,0 +1,51 @@
+---
+title: Loading CSS
+description: Choose one aggregate stylesheet or only the component contracts a route uses.
+sidebar:
+  order: 1
+---
+
+Timeless CSS ships as plain stylesheets. There is no build step, no preprocessor, and no
+configuration — you choose how much of it enters your bundle.
+
+## One stylesheet, or only what you use
+
+For prototypes, documents, and anything where request granularity does not matter, import
+everything:
+
+```js
+import '@timelessui/components/css/components.css'
+```
+
+For applications, import the shared tokens plus the exact component styles a route renders:
+
+```js
+import '@timelessui/components/css/tokens.css'
+import '@timelessui/components/css/button.css'
+import '@timelessui/components/css/dialog.css'
+```
+
+Both paths produce the same public classes, custom properties, layers, and state selectors. The only
+difference is how much CSS reaches the browser. Each component page lists the stylesheets that
+component needs under **Styling**.
+
+## Always import tokens first
+
+`tokens.css` declares the layer order that makes consumer overrides win:
+
+```css
+@layer ui.tokens, ui.components, ui.utilities;
+```
+
+If a component stylesheet loads first, it establishes the order instead and `ui.tokens` ends up with
+the highest precedence — which is the opposite of what you want. `components.css` already imports
+tokens in the right order; when importing granularly, put `tokens.css` first.
+
+See [Theming](/docs/styling/theming/) for what those layers mean in practice and which tokens and
+component variables you can override.
+
+## Using components without Timeless CSS
+
+CSS is optional. Every component keeps its public anatomy in your markup, so you can skip the
+stylesheets entirely and style the same classes, attributes, and parts with your own CSS or utility
+classes. [Theming](/docs/styling/theming/#styling-without-timeless-css) covers that path.

@@ -1,0 +1,39 @@
+@layer ui.components {
+  .ui-code {
+    border: 1px solid transparent;
+    border-radius: var(--ui-radius-sm);
+    padding-block: 0.125rem;
+    padding-inline: 0.3125rem;
+    background: var(--ui-bg-control-muted);
+    color: var(--ui-fg);
+    font-family: var(--ui-font-mono);
+    font-size: 0.875em;
+    line-height: 1.45;
+    letter-spacing: 0;
+  }
+
+  pre.ui-code {
+    display: block;
+    max-inline-size: 100%;
+    border-color: var(--ui-line);
+    padding: var(--ui-space-4);
+    overflow: auto;
+    background: var(--ui-bg-surface);
+    font-size: 0.875rem;
+    white-space: pre;
+  }
+
+  pre.ui-code code {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+  }
+
+  .ui-code:focus-visible {
+    outline: 2px solid var(--ui-focus);
+    outline-offset: 3px;
+  }
+}
