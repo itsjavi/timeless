@@ -49,14 +49,14 @@ jobs:
       - name: Format
         run: pnpm format:check
 
-      - name: Typecheck
-        run: pnpm typecheck
-
       - name: Build Pages artifact
         run: pnpm build:site
         env:
           # Only the deployed site loads analytics; see apps/web/src/layouts/SiteLayout.astro.
           PUBLIC_ENABLE_ANALYTICS: 'true'
+
+      - name: Typecheck
+        run: pnpm typecheck
 
       - name: Test
         run: pnpm test
