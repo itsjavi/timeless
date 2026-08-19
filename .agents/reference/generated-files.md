@@ -12,22 +12,23 @@ pnpm -F @timelessui/components run generate
 
 ## Inside `packages/components`
 
-| Path                           | Holds                                                                                                    |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| `src/values/<module>.ts`       | One `as const` value array plus its union type per `valueSets` entry, grouped by the set's `module`      |
-| `src/contracts.ts`             | The full `componentContracts` record: roots, attributes, parts, states, variables, events, accessibility |
-| `src/attributes.ts`            | `uiAttributes()` and `uiAttributeString()`, the typed root-attribute builders                            |
-| `src/define.ts`                | The aggregate `defineTimelessElements()` plus every per-element re-export                                |
-| `src/define/<tag>.ts`          | One `define<Name>Element()` entrypoint per custom element                                                |
-| `src/react.ts`                 | React JSX intrinsic element typings                                                                      |
-| `src/preact.ts`                | Preact JSX intrinsic element typings                                                                     |
-| `src/solid.ts`                 | Solid JSX intrinsic element typings                                                                      |
-| `src/vue.ts`                   | Vue `GlobalComponents` typings                                                                           |
-| `src/svelte.ts`                | Svelte element typings                                                                                   |
-| `custom-elements.json`         | Custom Elements Manifest                                                                                 |
-| `vscode.html-custom-data.json` | Editor completion for tags and attributes                                                                |
-| `vscode.css-custom-data.json`  | Editor completion for CSS custom properties, built from `src/tokens.ts`                                  |
-| `web-types.json`               | JetBrains web-types                                                                                      |
+| Path                                              | Holds                                                                                                                                                           |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/values/<module>.ts`                          | One `as const` value array plus its union type per `valueSets` entry, grouped by the set's `module`                                                             |
+| `src/contracts.ts`                                | The full `componentContracts` record: roots, attributes, parts, states, variables, events, accessibility                                                        |
+| `src/attributes.ts`                               | `uiAttributes()` and `uiAttributeString()`, the typed root-attribute builders                                                                                   |
+| `src/define.ts`                                   | The aggregate `defineTimelessElements()` plus every per-element re-export                                                                                       |
+| `src/define/<tag>.ts`                             | One `define<Name>Element()` entrypoint per custom element                                                                                                       |
+| `src/react.ts`                                    | React JSX intrinsic element typings                                                                                                                             |
+| `src/preact.ts`                                   | Preact JSX intrinsic element typings                                                                                                                            |
+| `src/solid.ts`                                    | Solid JSX intrinsic element typings                                                                                                                             |
+| `src/vue.ts`                                      | Vue `GlobalComponents` typings                                                                                                                                  |
+| `src/svelte.ts`                                   | Svelte element typings                                                                                                                                          |
+| `custom-elements.json`                            | Custom Elements Manifest                                                                                                                                        |
+| `vscode.html-custom-data.json`                    | Editor completion for tags and attributes                                                                                                                       |
+| `vscode.css-custom-data.json`                     | Editor completion for CSS custom properties, built from `src/tokens.ts`                                                                                         |
+| `web-types.json`                                  | JetBrains web-types                                                                                                                                             |
+| `skills/using-timeless-ui/reference/contracts.md` | The generated half of the consumer agent skill: every root, its kind, its configuration attributes and the value set each names, its parts, and its stylesheets |
 
 ## Not generated — edit these directly
 
@@ -38,6 +39,9 @@ pnpm -F @timelessui/components run generate
   shape parseable.
 - `src/<module>.ts` — the component behavior modules, and their colocated `*.test.ts`.
 - `src/index.ts` — the public barrel.
+- `skills/using-timeless-ui/SKILL.md` — the authored half of the consumer agent skill. It states the
+  authoring grammar and deliberately names no attribute, value, or root; every such fact lives in
+  the generated `reference/contracts.md` beside it, so the prose cannot contradict the stylesheets.
 
 ## Gotcha
 

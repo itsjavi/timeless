@@ -1,0 +1,26 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "Timeless UI",
+  "description": "Framework-agnostic UI components built on modern web standards. Most components are plain CSS over native HTML; the rest are Light-DOM custom elements, used only where keyboard coordination, focus management, or state synchronisation cannot be expressed accessibly in CSS.",
+  "folders": ["apps/web/src/content/docs", "packages/components/skills"],
+  "excludeFolders": [
+    "apps/e2e",
+    "apps/stories",
+    "packages/core/src",
+    "packages/components/src",
+    "packages/components/dist",
+    "packages/examples/src",
+    ".agents"
+  ],
+  "rules": [
+    "Timeless has two kinds of component, configured differently. CSS components are a native element with a `ui-*` class, configured with `data-ui-*` attributes: `<button class=\"ui-button\" data-ui-variant=\"primary\">`. Custom elements are a registered `ui-*` tag, configured with plain attributes and never `data-ui-*`: `<ui-tabs orientation=\"vertical\">`.",
+    "Never write a CSS component as a custom element. `<ui-button>` does not exist; it is `<button class=\"ui-button\">`.",
+    "Boolean attributes are presence-based. Author `invalid`, never `invalid=\"true\"` or `data-ui-invalid=\"true\"`.",
+    "Component anatomy is authored by the consumer and marked with a whitespace-separated `data-ui-part` token list, selected with `[data-ui-part~='name']`.",
+    "Never author `data-ui-internal-*` attributes. They are private runtime hooks.",
+    "Native HTML semantics, ARIA, and platform pseudo-classes are authoritative for state. Do not add state classes, and do not use ARIA to replace behavior a real element provides.",
+    "Timeless wires relationships, never content. Accessible names are always the consumer's to supply.",
+    "Import stylesheets from `@timelessui/components/css/<file>` and register custom elements from `@timelessui/components/define/<tag>`. `tokens.css` is required once by every component. Registration is per-element and explicit.",
+    "The full contract for any component — permitted attributes and values, parts, state, custom properties, element API, and canonical markup — is at `https://timeless.build/docs/components/<component>.md`. The index is at `https://timeless.build/llms.txt`."
+  ]
+}

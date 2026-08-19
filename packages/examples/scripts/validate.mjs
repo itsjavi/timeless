@@ -2,6 +2,7 @@ import { readFile, readdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { examples, renderExample } from '../src/catalog.ts'
 import { components } from '../../components/scripts/component-registry.mjs'
+import { checkMarkup } from '../../components/scripts/check-markup.mjs'
 
 const root = resolve(import.meta.dirname, '../../..')
 const manifest = JSON.parse(
@@ -102,6 +103,26 @@ for (const example of examples) {
         throw new Error(`${example.id} uses uncatalogued public class ${name}`)
       }
     }
+  }
+}
+
+/**
+ * Every canonical example is markup the library publishes as correct, so `checkMarkup` must report
+ * nothing on any of them. This is the strongest assertion available for the checker that backs the
+ * agent skill and the advisory eval: a finding here is a bug in the checker or a bug in the example,
+ * and either way the build should stop.
+ *
+ * It lives here rather than beside the checker's unit tests because `check-boundaries.mjs` forbids a
+ * published package from importing `@timelessui/examples`, and this direction is the legal one.
+ */
+for (const example of examples) {
+  const findings = checkMarkup(renderExample(example))
+  if (findings.length > 0) {
+    throw new Error(
+      `${example.id} fails the markup contract check:\n${findings
+        .map((finding) => `  ${finding.kind}: ${finding.message}`)
+        .join('\n')}`,
+    )
   }
 }
 

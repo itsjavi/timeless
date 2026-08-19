@@ -3,6 +3,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { format } from 'oxfmt'
 import { components, elements, valueSets } from './component-registry.mjs'
+import { createSkillContracts } from './emit-agent-skill.mjs'
 import { createCssCustomData, createHtmlCustomData, createWebTypes } from './emit-editor-data.mjs'
 import {
   createPreactTypes,
@@ -79,6 +80,11 @@ for (const [path, source] of [
 ]) {
   outputs.set(resolve(packageRoot, path), await formatted(path.split('/').at(-1), source))
 }
+
+outputs.set(
+  resolve(packageRoot, 'skills/using-timeless-ui/reference/contracts.md'),
+  await formatted('contracts.md', createSkillContracts(components)),
+)
 
 for (const [path, data] of [
   ['vscode.html-custom-data.json', createHtmlCustomData(elements)],

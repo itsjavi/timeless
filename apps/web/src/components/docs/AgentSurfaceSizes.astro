@@ -1,0 +1,51 @@
+---
+/**
+ * Measured sizes of the agent-facing files, so the agents reference page can tell a reader which one
+ * fits their context window without anyone hand-maintaining a number.
+ *
+ * The counts come from the same strings the endpoints return. Following `TokenTable.astro`, which
+ * does the same for design tokens rather than restating them in prose.
+ */
+import { estimateTokens } from '../../lib/agent-surfaces.ts'
+import { buildLlmsFullTxt, buildLlmsTxt } from '../../lib/llms.ts'
+
+const rows = [
+  {
+    path: '/llms.txt',
+    body: await buildLlmsTxt(),
+    use: 'Start here. The authoring grammar plus an index of every page.',
+  },
+  {
+    path: '/llms-full.txt',
+    body: await buildLlmsFullTxt(),
+    use: 'Every guide and every contract, for models with the context to hold it.',
+  },
+]
+
+const format = new Intl.NumberFormat('en-US')
+---
+
+<table>
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>Approximate tokens</th>
+      <th>When to use it</th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      rows.map((row) => (
+        <tr>
+          <td>
+            <a href={row.path}>
+              <code>{row.path}</code>
+            </a>
+          </td>
+          <td>{format.format(estimateTokens(row.body))}</td>
+          <td>{row.use}</td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>

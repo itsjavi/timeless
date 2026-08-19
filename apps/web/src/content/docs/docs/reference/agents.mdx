@@ -1,0 +1,114 @@
+---
+title: AI agents
+description:
+  Markdown routes, llms.txt, and a packaged skill, so a coding agent authors Timeless markup
+  correctly instead of guessing from React conventions.
+sidebar:
+  order: 5
+---
+
+import { Aside } from '@astrojs/starlight/components'
+import AgentSurfaceSizes from '../../../../components/docs/AgentSurfaceSizes.astro'
+
+Timeless is not prop-based. A model that has read a lot of React will reach for
+`<ui-button variant="primary">`, and that is not a component — it is
+`<button class="ui-button" data-ui-variant="primary">`. The files on this page exist to correct that
+before an agent writes markup, rather than after.
+
+Everything here is generated from the same declaration the stylesheets are validated against, so a
+value an agent reads is a value the CSS implements.
+
+## Any page as Markdown
+
+Append `.md` to any documentation URL to get its Markdown source:
+
+```
+https://timeless.build/docs/components/tabs.md
+https://timeless.build/docs/styling/theming.md
+```
+
+Every page also carries a **View as Markdown** link next to its title.
+
+Component pages are the ones worth fetching. Each one is the component's full contract — permitted
+attributes and their values, authored parts and their selectors, public state, custom properties,
+the element API, keyboard behavior, and copyable canonical markup — at roughly a tenth the tokens of
+the rendered page.
+
+## llms.txt
+
+<AgentSurfaceSizes />
+
+Start with [`/llms.txt`](/llms.txt). It opens with the authoring grammar — the two kinds of
+component and how each is configured — then indexes every guide and component with a link to its
+`.md` file. It is written to be read in full alongside real work, and the build fails if it grows
+past its token budget.
+
+[`/llms-full.txt`](/llms-full.txt) is every guide and every contract concatenated. Reach for it only
+when the model has the context to hold it.
+
+## A packaged skill
+
+`@timelessui/components` ships an [agent skill](https://code.claude.com/docs/en/skills) at
+`skills/using-timeless-ui/`. It states the authoring grammar and carries a generated reference table
+of every root in the library, so an agent working in your project has the contract without fetching
+anything.
+
+Because it ships inside the package, it is always the version you installed. Link it into your agent
+with one of the community tools that read the convention:
+
+```bash
+npx skills-npm
+```
+
+That scans `node_modules/**/skills/*/SKILL.md` and symlinks what it finds into the skill directories
+your agents read. You can also point your agent at the file directly, or copy it — it is plain
+Markdown.
+
+<Aside type="tip" title="No skill runner?">
+  If you would rather not install anything, paste the block below into your project's `AGENTS.md`.
+  Claude Code, Codex, Cursor, Copilot, and most other agents read that file automatically.
+</Aside>
+
+```markdown
+## Timeless UI
+
+Two kinds of component, configured differently:
+
+- **CSS components** — a native element with a `ui-*` class, configured with `data-ui-*`:
+  `<button class="ui-button" data-ui-variant="primary">`. Nothing to register.
+- **Custom elements** — a registered `ui-*` tag, configured with plain attributes, never
+  `data-ui-*`: `<ui-tabs orientation="vertical">`. Register each one you use.
+
+Rules for both:
+
+- Boolean attributes are presence-based. Author `invalid`, never `invalid="true"`.
+- Anatomy is authored and marked with a `data-ui-part` token list, selected with
+  `[data-ui-part~='name']`. Required parts must be present.
+- Never author `data-ui-internal-*`. It belongs to the runtime.
+- Native semantics, ARIA, and platform pseudo-classes are authoritative for state. Do not add state
+  classes, and do not use ARIA to replace real elements.
+- Accessible names are always yours to supply.
+- Import styles from `@timelessui/components/css/<file>` and register elements from
+  `@timelessui/components/define/<tag>`. `tokens.css` is required once.
+
+Before guessing an attribute or a value, fetch the component's contract:
+`https://timeless.build/docs/components/<component>.md`. The index is at
+`https://timeless.build/llms.txt`.
+```
+
+## Editor tooling
+
+Agents that read your editor's language services benefit from the same data your editor does — tag,
+attribute, and value completion in plain HTML and CSS, from shipped custom-data files and a Custom
+Elements Manifest. See [Editor setup](/docs/reference/editor-setup/).
+
+## MCP
+
+There is no first-party MCP server yet.
+
+The shipped `custom-elements.json` is a standard Custom Elements Manifest and is declared through
+the `customElements` field in `package.json`, so community MCP and language servers built on that
+format discover it without configuration. Be aware of the coverage boundary: a manifest describes
+custom elements, so those tools see the registered `ui-*` elements and not the CSS-only components,
+which are the majority of the library. For full coverage use the Markdown routes or the skill, both
+of which are generated from the contracts rather than the manifest.
