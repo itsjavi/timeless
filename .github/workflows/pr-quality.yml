@@ -14,6 +14,7 @@ concurrency:
 
 jobs:
   package-contracts:
+    name: package-contracts
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -47,6 +48,7 @@ jobs:
           pnpm -F @timelessui/components attw
 
   static-site:
+    name: static-site
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -77,6 +79,7 @@ jobs:
           path: dist-site
 
   browser-contracts:
+    name: browser-contracts
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
