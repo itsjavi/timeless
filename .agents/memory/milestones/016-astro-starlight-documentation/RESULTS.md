@@ -93,9 +93,18 @@ source used by both Starlight previews and StoryLite.
 
 ## Remaining manual review
 
-- Decide whether byte-identical CSS, matching geometry, and sub-1-percent antialiasing differences
-  satisfy the parity gate, or recapture a new approved visual baseline in the deployment browser.
-- Start the production Docker image, run `nginx -t`, and verify `/`, `/docs/`, `/stories/`, `/ui/`,
-  `/404.html`, and an unknown route over HTTP when a Docker daemon is available.
 - Complete release keyboard, forced-colors, 200-percent zoom, and assistive-technology review. These
   checks remain necessary before making a complete WCAG conformance claim.
+
+## Resolved after the milestone
+
+- The visual parity gate is accepted on byte-identical CSS and matching geometry. The literal
+  zero-pixel check never passed, and it can no longer be recaptured: the baseline was never
+  committed, and both the approved navigation change and milestone 017 landed on top of it.
+- Docker and nginx were removed in `053a6fb`, so the production image smoke test is dropped and
+  GitHub Pages is the only deploy target. This diverges from two acceptance criteria in `PLAN.md`,
+  which still describe the `/ui/` redirect in nginx and Docker consuming the same artifact as GitHub
+  Pages.
+- The `/ui` and `/ui/` permanent redirects to `/stories/` lived only in `server/nginx.conf` and are
+  gone with no replacement, because GitHub Pages has no server-side redirects. Nothing in the
+  repository links to `/ui/`.

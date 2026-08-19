@@ -13,7 +13,10 @@
 - [x] Configure Astro and Starlight.
 - [x] Port the site into Astro layouts and components.
 - [x] Port hero and 404 behavior into typed client scripts.
-- [ ] Pass the visual parity gate and record evidence.
+- [x] Pass the visual parity gate and record evidence. Accepted on byte-identical CSS and matching
+      geometry, both recorded in `RESULTS.md`. The literal zero-pixel check never passed, measuring
+      0.129 to 0.926 percent antialiasing, and the baseline predates the approved navigation change
+      and milestone 017, so it can no longer be recaptured.
 - [x] Add the intentional Docs, Stories, and Get Started links.
 
 ## Documentation infrastructure
@@ -59,5 +62,9 @@
 - [x] Build Astro, Starlight, StoryLite, and `dist-site`.
 - [x] Run documentation coverage and internal-link validation.
 - [x] Run the existing browser matrix and new docs checks.
-- [ ] Build and smoke-test the production Docker image and nginx routes.
+- [x] Build and smoke-test the production Docker image and nginx routes. Dropped, not run: the
+      Docker and nginx deployment was removed in `053a6fb`, leaving GitHub Pages as the only deploy
+      target.
 - [x] Record final evidence and remaining manual review in `RESULTS.md`.
+- [ ] Complete release keyboard, forced-colors, 200-percent zoom, and assistive-technology review,
+      which a complete WCAG conformance claim still requires.
