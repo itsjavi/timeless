@@ -47,9 +47,10 @@ for facts a skill should rely on; `memory/milestones/` is the place for what is 
 Read a research document when you want to know **why** a decision was made, or to avoid redoing an
 investigation someone already finished. Verify anything you intend to act on against the source.
 
-| Document                                                           | Question it answered                                                                                                                 |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| [`research/library-comparison.md`](research/library-comparison.md) | Does Timeless ship too much, too little, or the wrong things, measured against Base UI and shadcn/ui? Produced milestones 021 to 025 |
+| Document                                                           | Question it answered                                                                                                                      |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| [`research/library-comparison.md`](research/library-comparison.md) | Does Timeless ship too much, too little, or the wrong things, measured against Base UI and shadcn/ui? Produced milestones 021 to 025      |
+| [`research/llm-support.md`](research/llm-support.md)               | How should a component library make itself usable by coding agents, and which mechanisms suit Astro and Starlight? Produced milestone 027 |
 
 Every document carries `model` and `date` frontmatter naming what produced it and when, and ends
 with a section recording what it led to. Add new ones with the same shape and a row in the table
