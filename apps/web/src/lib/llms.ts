@@ -10,55 +10,10 @@ import { getCollection } from 'astro:content'
 import { examples } from '@timelessui/examples'
 import { GROUP_ORDER, SITE } from './agent-surfaces.ts'
 import { componentMarkdown } from './component-markdown.ts'
+import { grammarBody } from './grammar.ts'
 
-/**
- * The authoring grammar, stated once. Every line is about shape, never about a value — the values
- * live in the per-component `.md` files, which are generated from the contracts and proven against
- * the stylesheets. So nothing here can contradict the CSS, because nothing here names a value.
- *
- * This preamble is the highest-leverage text in the milestone. An agent arrives with a React and
- * Tailwind prior and no prior for this API; without these lines it writes
- * `<ui-button variant="primary">` and every fact downstream of that is wrong.
- */
-const PREAMBLE = `# Timeless UI
-
-> Framework-agnostic UI components built on modern web standards. Most components are plain CSS over
-> native HTML and need no JavaScript; the rest are Light-DOM custom elements, used only where keyboard
-> coordination, focus management, or state synchronisation cannot be expressed accessibly in CSS.
-> Targets Baseline 2025 browsers. Usable from plain HTML, React, Preact, Vue, Svelte, Solid, or Astro.
-
-## How to author Timeless markup
-
-Read this before writing any Timeless markup. The API is not prop-based, and guessing from React or
-Tailwind conventions produces markup that does not work.
-
-There are two kinds of component, and they are configured differently:
-
-- **CSS components** are a native element with a \`ui-*\` class. Configure them with \`data-ui-*\`
-  attributes: \`<button class="ui-button" data-ui-variant="primary">\`. There is nothing to register
-  and nothing to import beyond the stylesheet.
-- **Custom elements** are a registered \`ui-*\` tag wrapping your own markup. Configure them with
-  plain attributes, never \`data-ui-*\`: \`<ui-tabs orientation="vertical">\`. Register each one you
-  use.
-
-Mixing the two is the most common mistake. \`<ui-button variant="primary">\` is not a component;
-\`data-ui-variant\` on a custom-element host is not configuration.
-
-Further rules that apply to both kinds:
-
-- Boolean attributes are presence-based. Author \`invalid\`, never \`invalid="true"\` or
-  \`data-ui-invalid="true"\`.
-- Anatomy inside a component is marked with a whitespace-separated \`data-ui-part\` token list, and
-  selected with \`[data-ui-part~='name']\`. Required parts must be present for the component to work.
-- \`data-ui-internal-*\` attributes are written by the runtime. Never author them, never style them.
-- Native HTML semantics, ARIA, and platform pseudo-classes are authoritative for state. Do not add
-  your own state classes.
-- Timeless wires relationships, never content. Accessible names are always yours to supply.
-- Import stylesheets from \`@timelessui/components/css/<file>\` and register elements from
-  \`@timelessui/components/define/<tag>\`. Registration is per-element and explicit.
-- Every component page below has a \`.md\` twin carrying its full contract — permitted attributes and
-  values, authored parts, public state, custom properties, the element API, and canonical markup.
-  Fetch that file rather than guessing.`
+/** The document title. Everything below it — the summary blockquote included — is the grammar. */
+const TITLE = '# Timeless UI'
 
 /** Sidebar sections, in the order the site presents them. */
 const SECTION_ORDER = [
@@ -84,7 +39,7 @@ export async function buildLlmsTxt(): Promise<string> {
   const entry = (id: string, title: string, description?: string) =>
     `- [${title}](${SITE}/${id}.md)${description ? `: ${description}` : ''}`
 
-  const lines: string[] = [PREAMBLE, '']
+  const lines: string[] = [TITLE, '', await grammarBody(), '']
 
   const overview = docs.find((doc) => doc.id === 'docs')
   if (overview) {
@@ -166,6 +121,15 @@ export async function buildLlmsFullTxt(): Promise<string> {
     '',
     `Every guide and every component contract. See ${SITE}/llms.txt for the curated index, and`,
     `${SITE}/docs/reference/agents/ for how these files are meant to be used.`,
+    '',
+    '---',
+    '',
+    /*
+     * The grammar leads, exactly as it does in `/llms.txt`. An agent handed only this file would
+     * otherwise reach the first component contract without knowing how either kind is configured,
+     * which is the one thing it is most likely to get wrong.
+     */
+    await grammarBody(),
     '',
     '---',
     '',

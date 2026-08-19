@@ -9,6 +9,7 @@ sidebar:
 
 import { Aside } from '@astrojs/starlight/components'
 import AgentSurfaceSizes from '../../../../components/docs/AgentSurfaceSizes.astro'
+import AgentsBlock from '../../../../components/docs/AgentsBlock.astro'
 
 Timeless is not prop-based. A model that has read a lot of React will reach for
 `<ui-button variant="primary">`, and that is not a component — it is
@@ -69,32 +70,7 @@ Markdown.
   Claude Code, Codex, Cursor, Copilot, and most other agents read that file automatically.
 </Aside>
 
-```markdown
-## Timeless UI
-
-Two kinds of component, configured differently:
-
-- **CSS components** — a native element with a `ui-*` class, configured with `data-ui-*`:
-  `<button class="ui-button" data-ui-variant="primary">`. Nothing to register.
-- **Custom elements** — a registered `ui-*` tag, configured with plain attributes, never
-  `data-ui-*`: `<ui-tabs orientation="vertical">`. Register each one you use.
-
-Rules for both:
-
-- Boolean attributes are presence-based. Author `invalid`, never `invalid="true"`.
-- Anatomy is authored and marked with a `data-ui-part` token list, selected with
-  `[data-ui-part~='name']`. Required parts must be present.
-- Never author `data-ui-internal-*`. It belongs to the runtime.
-- Native semantics, ARIA, and platform pseudo-classes are authoritative for state. Do not add state
-  classes, and do not use ARIA to replace real elements.
-- Accessible names are always yours to supply.
-- Import styles from `@timelessui/components/css/<file>` and register elements from
-  `@timelessui/components/define/<tag>`. `tokens.css` is required once.
-
-Before guessing an attribute or a value, fetch the component's contract:
-`https://timeless.build/docs/components/<component>.md`. The index is at
-`https://timeless.build/llms.txt`.
-```
+<AgentsBlock />
 
 ## Editor tooling
 

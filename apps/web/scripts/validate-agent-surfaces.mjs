@@ -96,6 +96,37 @@ for (const link of links) {
 
 if (!(await exists(resolve(dist, 'llms-full.txt')))) throw new Error('No dist/llms-full.txt.')
 
+/*
+ * The authoring grammar is declared once in `packages/components/scripts/authoring-grammar.mjs` and
+ * projected into the skill, `context7.json`, the agents page, and this file. `generate:check` proves
+ * the projections are current; this proves the website actually serves one rather than a stale copy of
+ * its own, which is the failure the single-sourcing exists to prevent.
+ */
+const grammarSource = await readFile(
+  resolve(root, 'packages/components/skills/using-timeless-ui/reference/grammar.md'),
+  'utf8',
+)
+const grammar = grammarSource
+  .replace(/^<!--[\s\S]*?-->$/m, '')
+  .replace(/^#\s.*$/m, '')
+  .trim()
+
+if (!llms.includes(grammar)) {
+  throw new Error(
+    'llms.txt does not carry the generated authoring grammar verbatim. It must serve reference/grammar.md, not its own copy.',
+  )
+}
+
+const agentsPage = await readFile(resolve(dist, 'docs/reference/agents/index.html'), 'utf8').catch(
+  () => {
+    throw new Error('No dist/docs/reference/agents/index.html.')
+  },
+)
+/* One rule, spot-checked in rendered form, proves the page renders the generated block. */
+if (!agentsPage.includes('Never author')) {
+  throw new Error('The agents page does not render the generated AGENTS.md block.')
+}
+
 /* The skill is a published artifact, so the manifest has to carry it or consumers never see it. */
 const components = resolve(root, 'packages/components')
 const manifest = JSON.parse(await readFile(resolve(components, 'package.json'), 'utf8'))

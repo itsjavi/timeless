@@ -3,7 +3,13 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { format } from 'oxfmt'
 import { components, elements, valueSets } from './component-registry.mjs'
-import { createSkillContracts } from './emit-agent-skill.mjs'
+import {
+  createAgentsBlockMarkdown,
+  createContext7Config,
+  createGrammarMarkdown,
+  createSkillContracts,
+  createSkillMarkdown,
+} from './emit-agent-skill.mjs'
 import { createCssCustomData, createHtmlCustomData, createWebTypes } from './emit-editor-data.mjs'
 import {
   createPreactTypes,
@@ -84,6 +90,28 @@ for (const [path, source] of [
 outputs.set(
   resolve(packageRoot, 'skills/using-timeless-ui/reference/contracts.md'),
   await formatted('contracts.md', createSkillContracts(components)),
+)
+outputs.set(
+  resolve(packageRoot, 'skills/using-timeless-ui/reference/grammar.md'),
+  await formatted('grammar.md', createGrammarMarkdown()),
+)
+outputs.set(
+  resolve(packageRoot, 'skills/using-timeless-ui/reference/agents-block.md'),
+  await formatted('agents-block.md', createAgentsBlockMarkdown()),
+)
+outputs.set(
+  resolve(packageRoot, 'skills/using-timeless-ui/SKILL.md'),
+  await formatted('SKILL.md', createSkillMarkdown()),
+)
+
+/*
+ * The only generated file outside this package. `context7.json` must sit at the repository root for
+ * Context7 to find it, and its `rules` array is the authoring grammar in imperative form — the fourth
+ * place that grammar used to be hand-written.
+ */
+outputs.set(
+  resolve(packageRoot, '../../context7.json'),
+  await formattedJson('context7.json', createContext7Config()),
 )
 
 for (const [path, data] of [

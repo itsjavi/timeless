@@ -102,6 +102,26 @@
 - [ ] Record the first eval score in RESULTS.md as a starting point, not a gate — needs an API key,
       which this environment has none of. The harness is ready and skips cleanly
 
+## 5b. Single-sourcing the grammar
+
+- [x] Declare the grammar once in `packages/components/scripts/authoring-grammar.mjs` as structured
+      data, with `renderGrammar()` and `grammarRules()` over it
+- [x] Confirm the declaration states no component, attribute, or permitted value
+- [x] Generate `SKILL.md`, `reference/grammar.md`, and `reference/agents-block.md` from it
+- [x] Generate `context7.json` from it, and record it as the only generated file outside
+      `packages/components`
+- [x] Read `grammar.md` and `agents-block.md` from `apps/web` through `lib/grammar.ts` instead of
+      keeping a copy
+- [x] Replace the hand-written `AGENTS.md` block on the agents page with `AgentsBlock.astro`
+- [x] Assert in `validate-agent-surfaces.mjs` that `/llms.txt` carries the grammar verbatim and the
+      built agents page renders the block
+- [x] Prove propagation by probe: one edit to a `rule` string reaches all four consumers, and
+      `generate:check` fails until `pnpm generate` runs
+- [x] Prepend the grammar to `/llms-full.txt`, which the probe showed was missing it
+- [x] Update `.agents/reference/generated-files.md`, moving `SKILL.md` out of the do-not-generate
+      list and adding the new outputs
+- [x] Confirm zero hand-written copies of the grammar remain
+
 ## 6. Closing
 
 - [x] Run `pnpm -F @timelessui/components run generate:check`

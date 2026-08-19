@@ -86,16 +86,69 @@ to convert Markdown into HTML and the Markdown renderer simply does not call the
 
 Measured: 45 files, 216KB, averaging 4.8KB per component against a rendered page many times that.
 
-### The grammar preamble names no values
+### The grammar is declared once and projected
 
-Everything authored by hand in this milestone — the `/llms.txt` preamble, `SKILL.md`, the
-`context7.json` rules, the `AGENTS.md` block on the docs page — states the _shape_ of the API and
-never a component, an attribute, or a permitted value. Every fact of that kind lives in a generated
-file: the per-component `.md` routes, or `skills/using-timeless-ui/reference/contracts.md`.
+Everything authored by hand here states the _shape_ of the API and never a component, an attribute,
+or a permitted value. Every fact of that kind lives in a generated file: the per-component `.md`
+routes, or `skills/using-timeless-ui/reference/contracts.md`. That was the only way to add
+agent-facing prose without adding the repository's first unvalidated public claim, and it is also
+the right split for the reader — the grammar is what a model gets wrong, and it is small enough to
+always carry.
 
-This was the only way to add agent-facing prose without adding the repository's first unvalidated
-public claim. It also happens to be the right split for the reader: the grammar is what a model gets
-wrong, and it is small enough to always carry.
+**The first implementation got the split right and the storage wrong.** The grammar prose was
+written out four times — the `/llms.txt` preamble, `SKILL.md`, `context7.json`'s `rules`, and the
+paste-able block on the agents page. Because none of the four named a value, ordinary component work
+could not invalidate them, and every gate passed. But a change to the grammar _itself_ — dropping
+`data-ui-*` for CSS configuration, renaming `data-ui-part`, changing the boolean-presence convention
+— would have left four copies disagreeing with nothing able to catch it. That was the one place in
+the milestone where a fact was stored more than once.
+
+It is now declared once in `packages/components/scripts/authoring-grammar.mjs` as structured data —
+`summary`, `kinds`, `corrections`, `rules` (each an imperative one-liner plus its detail), and
+`lookup` — with two renderers over it: `renderGrammar()` for prose and `grammarRules()` for the
+imperative list. `generate-elements.mjs` projects it into four generated files, so `generate:check`
+owns every copy:
+
+| Output                               | Shape                                     | Read by                      |
+| ------------------------------------ | ----------------------------------------- | ---------------------------- |
+| `skills/…/SKILL.md`                  | frontmatter, prose grammar, checklist     | agents, from the npm package |
+| `skills/…/reference/grammar.md`      | prose grammar plus the summary blockquote | `apps/web` → both llms files |
+| `skills/…/reference/agents-block.md` | imperative one-liners                     | `apps/web` → `AgentsBlock`   |
+| `context7.json`                      | the same one-liners as its `rules` array  | Context7                     |
+
+Two consequences worth recording.
+
+**`context7.json` is the only generated file outside `packages/components`.** Context7 requires it
+at the repository root, and its `rules` array _is_ the grammar. Generating it there is a small
+boundary compromise taken deliberately: the alternative was a hand-written fourth copy, which is the
+thing being removed.
+
+**`apps/web` reads the generated files rather than importing the declaration.** `lib/grammar.ts`
+reads `grammar.md` and `agents-block.md` from disk, the same way `component-docs.ts` reads the
+manifest. Importing the `.mjs` directly would mean telling Vite to serve outside the app root, and
+reading a generated artifact is the pattern the app already uses.
+
+**`validate-agent-surfaces.mjs` now proves the wiring, not just the files.** `generate:check` proves
+the projections are current, but nothing proved the _website_ served one rather than a stale copy of
+its own — the exact failure the single-sourcing exists to prevent. So the validator asserts
+`/llms.txt` contains `grammar.md`'s body verbatim, and that the built agents page renders the block.
+
+Verified by probe: appending a marker to one `rule` string in `authoring-grammar.mjs` made
+`generate:check` fail, and after `pnpm generate` the marker appeared in `SKILL.md`, `grammar.md`,
+`agents-block.md`, and `context7.json`, then in `/llms.txt` and the built agents page after a web
+build — with no edit anywhere in `apps/web`.
+
+**`llms-full.txt` now leads with the grammar too.** The probe exposed that it did not: it
+concatenated guides and component contracts without a preamble, so an agent handed only that file
+would reach the first contract without knowing how either kind of component is configured. It now
+opens with the same grammar `/llms.txt` does, which cost ~700 tokens on a ~71,000-token file.
+
+**One regression, accepted.** `/docs/reference/agents.md` previously carried the paste-able block as
+literal Markdown, because the block was literal Markdown in the MDX. It is now `<AgentsBlock />`,
+which `starlight-dot-md` serves unexpanded — the same MDX limitation already recorded for
+`<TokenTable />` on the theming page. The trade is one unexpanded tag on a page _about_ the tooling
+against removing a copy of the grammar that nothing could gate. `/llms.txt` and `/llms-full.txt`,
+which are the routes agents are pointed at, both carry the grammar in full.
 
 ### Generating into the skill buys the gate for free
 
@@ -184,10 +237,13 @@ Markdown" link to every page that has a twin, and omits it on the component inde
 grammar and indexes every guide and component by `.md` link; `/llms-full.txt` (~71,000 tokens)
 concatenates everything.
 
-**The consumer skill.** `packages/components/skills/using-timeless-ui/SKILL.md` states the grammar;
-`reference/contracts.md` beside it is generated from the registry by the new `emit-agent-skill.mjs`.
-The package declares both through `files`, `aiAgentSkill`, and the `ai-agent-skill` keyword, and
-both appear in `npm pack`.
+**The consumer skill.** `packages/components/skills/using-timeless-ui/SKILL.md` and its two
+`reference/` companions are all generated — `contracts.md` from the registry, `grammar.md` and
+`agents-block.md` from `authoring-grammar.mjs`. The package declares the directory through `files`,
+`aiAgentSkill`, and the `ai-agent-skill` keyword, and it appears in `npm pack`.
+
+**One grammar, four consumers.** `authoring-grammar.mjs` is the single declaration; the skill,
+`context7.json`, `/llms.txt` and `/llms-full.txt`, and the agents page all read a projection of it.
 
 **Documentation.** `docs/reference/agents.mdx` covers the `.md` convention, both llms files with
 measured counts, the skill, editor tooling, and MCP status, plus a paste-able `AGENTS.md` block.
