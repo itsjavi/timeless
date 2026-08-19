@@ -5,10 +5,15 @@ import {
   syncRovingTabIndex,
 } from './collection'
 import { transitionSourceFromEvent, type UITransitionDetail } from './events'
+import { toggleGroupOrientations, toggleGroupSelections } from './values/toggle-group'
+import type { ToggleGroupOrientation, ToggleGroupSelection } from './values/toggle-group'
 
-export const toggleGroupSelections = ['single', 'multiple'] as const
-export type ToggleGroupSelection = (typeof toggleGroupSelections)[number]
-export type ToggleGroupOrientation = 'horizontal' | 'vertical'
+export {
+  toggleGroupOrientations,
+  toggleGroupSelections,
+  type ToggleGroupOrientation,
+  type ToggleGroupSelection,
+}
 export type ToggleGroupChangeDetail = UITransitionDetail<readonly string[], 'toggle'> & {
   readonly values: readonly string[]
 }

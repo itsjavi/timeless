@@ -1,9 +1,11 @@
 import { attr, createUIElementClass, element, listen, watch } from '@timelessui/core'
 import { collectionItemText } from './collection'
 import { syncFloatingAnchor } from './floating'
+import { menuOrientations } from './values/menu'
+import type { MenuOrientation } from './values/menu'
 
 export type MenuRole = 'menu' | 'menubar'
-export type MenuOrientation = 'horizontal' | 'vertical'
+export { menuOrientations, type MenuOrientation }
 
 export type MenuItemLike = {
   readonly textContent?: string | null

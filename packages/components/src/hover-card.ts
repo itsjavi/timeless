@@ -16,6 +16,10 @@ import {
 } from './floating'
 import { isPopoverOpen } from './popover'
 import { queryOwnedPart } from './parts'
+import { hoverCardVariants } from './values/hover-card'
+import type { HoverCardVariant } from './values/hover-card'
+
+export { hoverCardVariants, type HoverCardVariant }
 
 export type HoverCardElementLike = {
   id: string

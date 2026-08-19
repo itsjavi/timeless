@@ -11,8 +11,10 @@ import {
   type FocusTarget,
 } from '@timelessui/core'
 import { queryOwnedPart } from './parts'
+import { dialogKinds } from './values/dialog'
+import type { DialogKind } from './values/dialog'
 
-export type DialogKind = 'dialog' | 'alert'
+export { dialogKinds, type DialogKind }
 
 export type DialogElementLike = {
   id: string

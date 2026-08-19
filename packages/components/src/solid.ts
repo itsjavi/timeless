@@ -1,0 +1,326 @@
+/**
+ * Solid declarations for every Timeless custom element, generated from the component
+ * registry. Types only: importing this module adds no runtime code and no Solid dependency.
+ *
+ * Both spellings are emitted: `on:ui-change` is the namespaced form Solid recommends for custom events, and `onui-change` is the delegated form.
+ */
+
+import type { TabsActivation, TabsOrientation } from './values/tabs'
+import type { DialogKind } from './values/dialog'
+import type { SheetPosition } from './values/sheet'
+import type { FloatingPlacement } from './values/floating'
+import type { PopoverRole } from './values/popover'
+import type { HoverCardVariant } from './values/hover-card'
+import type { MenuOrientation } from './values/menu'
+import type { ToolbarOrientation } from './values/toolbar'
+import type { ChoiceGroupOrientation } from './values/forms'
+import type { ToasterPlacement, ToasterStack } from './values/toast'
+import type { ToggleGroupOrientation, ToggleGroupSelection } from './values/toggle-group'
+import type { ColorPickerFormat } from './values/color-picker'
+import type { TabsChangeDetail } from './tabs'
+import type { SheetEventDetail } from './sheet'
+import type { MenuButtonToggleDetail } from './menu-button'
+import type { CheckboxGroupChangeDetail, RadioGroupChangeDetail } from './choice-group'
+import type { ListboxChangeDetail } from './listbox'
+import type { SelectChangeDetail } from './select'
+import type { ComboboxChangeDetail } from './combobox'
+import type { ToastDismissDetail } from './toast'
+import type { ToggleGroupChangeDetail } from './toggle-group'
+
+/**
+ * Consumer-authored `data-*` and `aria-*` attributes stay open. The generated members above are
+ * the escape hatch's opposite number: they are what completes and what type-checks.
+ */
+type OpenAttributes = {
+  [name: `data-${string}`]: unknown
+  [name: `aria-${string}`]: string | number | boolean | undefined
+}
+
+export type TimelessGlobalProps = OpenAttributes & {
+  children?: unknown
+  class?: string
+  dir?: 'ltr' | 'rtl' | 'auto'
+  hidden?: boolean | 'until-found'
+  id?: string
+  inert?: boolean
+  lang?: string
+  part?: string
+  exportparts?: string
+  popover?: 'auto' | 'manual' | 'hint'
+  role?: string
+  slot?: string
+  title?: string
+  classList?: Record<string, boolean | undefined>
+  ref?: unknown
+  style?: string | Record<string, string | number>
+  tabindex?: number
+  innerHTML?: string
+}
+
+export interface UITabsElementProps extends TimelessGlobalProps {
+  /** Whether moving focus with the arrow keys selects the tab immediately (`automatic`) or waits for Enter or Space (`manual`). Use `manual` when selecting a tab is expensive. */
+  activation?: TabsActivation
+  /** Arrow-key axis. Mirrored onto `aria-orientation` on the tablist during enhancement. */
+  orientation?: TabsOrientation
+  /** The tab selected on load and after a form reset. Match a tab’s `value` attribute. Assign the `value` property for live changes. */
+  value?: string
+  /** Authored default and form-reset value, reflecting the `value` attribute. */
+  defaultValue?: string
+  /** Cancelable proposal dispatched before the selected tab changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'on:ui-before-change'?: (event: CustomEvent<TabsChangeDetail>) => void
+  /** Cancelable proposal dispatched before the selected tab changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'onui-before-change'?: (event: CustomEvent<TabsChangeDetail>) => void
+  /** Dispatched after the selected tab has changed. Bubbles and is composed. */
+  'on:ui-change'?: (event: CustomEvent<TabsChangeDetail>) => void
+  /** Dispatched after the selected tab has changed. Bubbles and is composed. */
+  'onui-change'?: (event: CustomEvent<TabsChangeDetail>) => void
+}
+
+export interface UIDialogElementProps extends TimelessGlobalProps {
+  /** Whether the panel is a regular dialog or an alert dialog. `alert` resolves to `role="alertdialog"`, for a destructive confirmation the user must answer. */
+  kind?: DialogKind
+}
+
+export interface UISheetElementProps extends TimelessGlobalProps {
+  /** Present to open the sheet as a modal, trapping focus and blocking the page behind it. Omit for a non-modal sheet the user can interact around. */
+  modal?: boolean
+  /** Present to render the sheet open on load. */
+  open?: boolean
+  /** Which viewport edge the sheet slides in from. */
+  position?: SheetPosition
+  /** Dispatched after the sheet opens. */
+  'on:ui-open'?: (event: CustomEvent<SheetEventDetail>) => void
+  /** Dispatched after the sheet opens. */
+  'onui-open'?: (event: CustomEvent<SheetEventDetail>) => void
+  /** Dispatched after the sheet closes. */
+  'on:ui-close'?: (event: CustomEvent<SheetEventDetail>) => void
+  /** Dispatched after the sheet closes. */
+  'onui-close'?: (event: CustomEvent<SheetEventDetail>) => void
+  /** Dispatched when the sheet closes through Escape or a backdrop click rather than an explicit control. */
+  'on:ui-dismiss'?: (event: CustomEvent<SheetEventDetail>) => void
+  /** Dispatched when the sheet closes through Escape or a backdrop click rather than an explicit control. */
+  'onui-dismiss'?: (event: CustomEvent<SheetEventDetail>) => void
+}
+
+export interface UIPopoverElementProps extends TimelessGlobalProps {
+  /** Preferred side of the trigger. Positioning uses CSS anchor positioning, so the browser may flip the surface to keep it on screen. */
+  placement?: FloatingPlacement
+  /** Semantics applied to the surface, and the `aria-haspopup` value set on the trigger. Choose it from the interaction, not the appearance. */
+  role?: PopoverRole
+  /** DOM property reflecting the `role` attribute. */
+  roleValue?: PopoverRole
+}
+
+export interface UIHoverCardElementProps extends TimelessGlobalProps {
+  /** Id of an element to anchor against instead of the trigger. Use it when the visual anchor differs from the control that opens the card. */
+  anchor?: string
+  /** Set `tooltip` for the compact tooltip treatment. Omit for the roomier hover-card surface. */
+  variant?: HoverCardVariant
+  /** Preferred side of the anchor. */
+  placement?: FloatingPlacement
+  /** Milliseconds of hover or focus intent before opening. The resolved number is available on the read-only `openDelay` property. */
+  'open-delay'?: number
+  /** Milliseconds after the pointer leaves before closing, so the user can cross the gap into the surface. The resolved number is available on the read-only `closeDelay` property. */
+  'close-delay'?: number
+  /** DOM property reflecting the `open-delay` attribute. */
+  openDelayValue?: string
+  /** DOM property reflecting the `close-delay` attribute. */
+  closeDelayValue?: string
+}
+
+export interface UIMenuElementProps extends TimelessGlobalProps {
+  /** Arrow-key axis. Defaults to `horizontal` when the menu part is `role="menubar"`. */
+  orientation?: MenuOrientation
+}
+
+export interface UIMenuButtonElementProps extends TimelessGlobalProps {
+  /** Present to render the menu open on load. */
+  open?: boolean
+  /** Preferred side of the trigger. */
+  placement?: FloatingPlacement
+  /** Dispatched after the menu opens. */
+  'on:ui-open'?: (event: CustomEvent<MenuButtonToggleDetail>) => void
+  /** Dispatched after the menu opens. */
+  'onui-open'?: (event: CustomEvent<MenuButtonToggleDetail>) => void
+  /** Dispatched after the menu closes. */
+  'on:ui-close'?: (event: CustomEvent<MenuButtonToggleDetail>) => void
+  /** Dispatched after the menu closes. */
+  'onui-close'?: (event: CustomEvent<MenuButtonToggleDetail>) => void
+}
+
+export interface UIToolbarElementProps extends TimelessGlobalProps {
+  /** Arrow-key axis across the toolbar controls. */
+  orientation?: ToolbarOrientation
+}
+
+export interface UIRadioGroupElementProps extends TimelessGlobalProps {
+  /** Layout and arrow-key axis. */
+  orientation?: ChoiceGroupOrientation
+  /** The radio checked on load and after a form reset. Match one input’s `value`. Assign the `value` property for live changes. */
+  value?: string
+  /** Authored default and form-reset value, reflecting the `value` attribute. */
+  defaultValue?: string
+  /** Cancelable proposal dispatched before the checked radio changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'on:ui-before-change'?: (event: CustomEvent<RadioGroupChangeDetail>) => void
+  /** Cancelable proposal dispatched before the checked radio changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'onui-before-change'?: (event: CustomEvent<RadioGroupChangeDetail>) => void
+  /** Dispatched after the checked radio has changed. Bubbles and is composed. */
+  'on:ui-change'?: (event: CustomEvent<RadioGroupChangeDetail>) => void
+  /** Dispatched after the checked radio has changed. Bubbles and is composed. */
+  'onui-change'?: (event: CustomEvent<RadioGroupChangeDetail>) => void
+}
+
+export interface UICheckboxGroupElementProps extends TimelessGlobalProps {
+  /** Layout and arrow-key axis. */
+  orientation?: ChoiceGroupOrientation
+  /** Cancelable proposal dispatched before the set of checked boxes changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'on:ui-before-change'?: (event: CustomEvent<CheckboxGroupChangeDetail>) => void
+  /** Cancelable proposal dispatched before the set of checked boxes changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'onui-before-change'?: (event: CustomEvent<CheckboxGroupChangeDetail>) => void
+  /** Dispatched after the set of checked boxes has changed. Bubbles and is composed. */
+  'on:ui-change'?: (event: CustomEvent<CheckboxGroupChangeDetail>) => void
+  /** Dispatched after the set of checked boxes has changed. Bubbles and is composed. */
+  'onui-change'?: (event: CustomEvent<CheckboxGroupChangeDetail>) => void
+}
+
+export interface UIListboxElementProps extends TimelessGlobalProps {
+  /** Present to allow more than one selected option. The `value` property then reads and writes an array. */
+  multiple?: boolean
+  /** The option selected on load and after a form reset. Assign the `value` property for live changes. */
+  value?: string
+  /** Authored default and form-reset value, reflecting the `value` attribute. */
+  defaultValue?: string
+  /** Cancelable proposal dispatched before the selection changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'on:ui-before-change'?: (event: CustomEvent<ListboxChangeDetail>) => void
+  /** Cancelable proposal dispatched before the selection changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'onui-before-change'?: (event: CustomEvent<ListboxChangeDetail>) => void
+  /** Dispatched after the selection has changed. Bubbles and is composed. */
+  'on:ui-change'?: (event: CustomEvent<ListboxChangeDetail>) => void
+  /** Dispatched after the selection has changed. Bubbles and is composed. */
+  'onui-change'?: (event: CustomEvent<ListboxChangeDetail>) => void
+}
+
+export interface UISelectElementProps extends TimelessGlobalProps {
+  /** Present to render the listbox open on load. */
+  open?: boolean
+  /** Preferred side of the trigger for the listbox surface. */
+  placement?: FloatingPlacement
+  /** The option selected on load and after a form reset. Mirror it onto a hidden input to submit with a form. */
+  value?: string
+  /** Authored default and form-reset value, reflecting the `value` attribute. */
+  defaultValue?: string
+  /** Cancelable proposal dispatched before the selected option changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'on:ui-before-change'?: (event: CustomEvent<SelectChangeDetail>) => void
+  /** Cancelable proposal dispatched before the selected option changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'onui-before-change'?: (event: CustomEvent<SelectChangeDetail>) => void
+  /** Dispatched after the selected option has changed. Bubbles and is composed. */
+  'on:ui-change'?: (event: CustomEvent<SelectChangeDetail>) => void
+  /** Dispatched after the selected option has changed. Bubbles and is composed. */
+  'onui-change'?: (event: CustomEvent<SelectChangeDetail>) => void
+}
+
+export interface UIComboboxElementProps extends TimelessGlobalProps {
+  /** The option selected on load and after a form reset. Assign the `value` property for live changes. */
+  value?: string
+  /** Authored default and form-reset value, reflecting the `value` attribute. */
+  defaultValue?: string
+  /** Cancelable proposal dispatched before the selected option changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'on:ui-before-change'?: (event: CustomEvent<ComboboxChangeDetail>) => void
+  /** Cancelable proposal dispatched before the selected option changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'onui-before-change'?: (event: CustomEvent<ComboboxChangeDetail>) => void
+  /** Dispatched after the selected option has changed. Bubbles and is composed. */
+  'on:ui-change'?: (event: CustomEvent<ComboboxChangeDetail>) => void
+  /** Dispatched after the selected option has changed. Bubbles and is composed. */
+  'onui-change'?: (event: CustomEvent<ComboboxChangeDetail>) => void
+}
+
+export interface UIToasterElementProps extends TimelessGlobalProps {
+  /** Corner or edge of the viewport the toasts stack against. */
+  placement?: ToasterPlacement
+  /** Whether queued toasts overlap into a deck (`overlap`) or lay out as a full list (`list`). */
+  stack?: ToasterStack
+}
+
+export interface UIToastElementProps extends TimelessGlobalProps {
+  /** Milliseconds before the toast dismisses itself. `0` keeps it open until dismissed. */
+  duration?: number
+  /** Present to disable auto-dismiss regardless of `duration`. */
+  persistent?: boolean
+  /** Dispatched when the toast is dismissed. The detail names the reason: a timeout, the close control, or the imperative API. */
+  'on:ui-dismiss'?: (event: CustomEvent<ToastDismissDetail>) => void
+  /** Dispatched when the toast is dismissed. The detail names the reason: a timeout, the close control, or the imperative API. */
+  'onui-dismiss'?: (event: CustomEvent<ToastDismissDetail>) => void
+}
+
+export interface UIToggleGroupElementProps extends TimelessGlobalProps {
+  /** Present to join the buttons into one segmented control. Styling only, resolved by `toggle.css`. */
+  attached?: boolean
+  /** Layout and arrow-key axis. */
+  orientation?: ToggleGroupOrientation
+  /** Whether pressing one button releases the others (`single`) or toggles independently (`multiple`). */
+  selection?: ToggleGroupSelection
+  /** Cancelable proposal dispatched before the pressed set changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'on:ui-before-change'?: (event: CustomEvent<ToggleGroupChangeDetail>) => void
+  /** Cancelable proposal dispatched before the pressed set changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'onui-before-change'?: (event: CustomEvent<ToggleGroupChangeDetail>) => void
+  /** Dispatched after the pressed set has changed. Bubbles and is composed. */
+  'on:ui-change'?: (event: CustomEvent<ToggleGroupChangeDetail>) => void
+  /** Dispatched after the pressed set has changed. Bubbles and is composed. */
+  'onui-change'?: (event: CustomEvent<ToggleGroupChangeDetail>) => void
+}
+
+export interface UINumberStepperElementProps extends TimelessGlobalProps {
+  /** Native `input` event dispatched on the inner number input after each step. */
+  'on:input'?: (event: Event) => void
+  /** Native `input` event dispatched on the inner number input after each step. */
+  oninput?: (event: Event) => void
+  /** Native `change` event dispatched on the inner number input. */
+  'on:change'?: (event: Event) => void
+  /** Native `change` event dispatched on the inner number input. */
+  onchange?: (event: Event) => void
+}
+
+export interface UIColorPickerElementProps extends TimelessGlobalProps {
+  /** Color space the channel controls edit and the raw input round-trips through. The picker converts the current value when this changes. */
+  format?: ColorPickerFormat
+  /** Initial and form-reset color, in any CSS color syntax. Unlike the collection elements, the picker reflects one `value` property rather than a separate authored default. */
+  value?: string
+  /** Native `input` event dispatched while the color is being edited. */
+  'on:input'?: (event: Event) => void
+  /** Native `input` event dispatched while the color is being edited. */
+  oninput?: (event: Event) => void
+  /** Native `change` event dispatched when the edit is committed. */
+  'on:change'?: (event: Event) => void
+  /** Native `change` event dispatched when the edit is committed. */
+  onchange?: (event: Event) => void
+}
+
+export interface TimelessIntrinsicElements {
+  'ui-tabs': UITabsElementProps
+  'ui-dialog': UIDialogElementProps
+  'ui-sheet': UISheetElementProps
+  'ui-popover': UIPopoverElementProps
+  'ui-hover-card': UIHoverCardElementProps
+  'ui-menu': UIMenuElementProps
+  'ui-menu-button': UIMenuButtonElementProps
+  'ui-toolbar': UIToolbarElementProps
+  'ui-radio-group': UIRadioGroupElementProps
+  'ui-checkbox-group': UICheckboxGroupElementProps
+  'ui-listbox': UIListboxElementProps
+  'ui-select': UISelectElementProps
+  'ui-combobox': UIComboboxElementProps
+  'ui-toaster': UIToasterElementProps
+  'ui-toast': UIToastElementProps
+  'ui-toggle-group': UIToggleGroupElementProps
+  'ui-number-stepper': UINumberStepperElementProps
+  'ui-color-picker': UIColorPickerElementProps
+}
+
+// @ts-ignore Solid is an optional consumer dependency.
+declare module 'solid-js' {
+  namespace JSX {
+    interface IntrinsicElements extends TimelessIntrinsicElements {}
+  }
+}
+
+export {}

@@ -1,0 +1,945 @@
+{
+  "version": 1.1,
+  "tags": [
+    {
+      "name": "ui-tabs",
+      "description": "Timeless `ui-tabs`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Tabs pattern. Dispatches `ui-before-change`, `ui-change`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "activation",
+          "description": "Whether moving focus with the arrow keys selects the tab immediately (`automatic`) or waits for Enter or Space (`manual`). Use `manual` when selecting a tab is expensive. Defaults to `automatic`. Exported as `tabsActivations`.",
+          "valueSet": "tabsActivations"
+        },
+        {
+          "name": "orientation",
+          "description": "Arrow-key axis. Mirrored onto `aria-orientation` on the tablist during enhancement. Defaults to `horizontal`. Exported as `tabsOrientations`.",
+          "valueSet": "tabsOrientations"
+        },
+        {
+          "name": "value",
+          "description": "The tab selected on load and after a form reset. Match a tab’s `value` attribute. Assign the `value` property for live changes."
+        }
+      ]
+    },
+    {
+      "name": "ui-dialog",
+      "description": "Timeless `ui-dialog`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Modal Dialog pattern.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "kind",
+          "description": "Whether the panel is a regular dialog or an alert dialog. `alert` resolves to `role=\"alertdialog\"`, for a destructive confirmation the user must answer. Defaults to `dialog`. Exported as `dialogKinds`.",
+          "valueSet": "dialogKinds"
+        }
+      ]
+    },
+    {
+      "name": "ui-sheet",
+      "description": "Timeless `ui-sheet`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Modal Dialog pattern. Dispatches `ui-open`, `ui-close`, `ui-dismiss`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "modal",
+          "description": "Present to open the sheet as a modal, trapping focus and blocking the page behind it. Omit for a non-modal sheet the user can interact around. Presence-based: author the attribute with no value."
+        },
+        {
+          "name": "open",
+          "description": "Present to render the sheet open on load. Presence-based: author the attribute with no value."
+        },
+        {
+          "name": "position",
+          "description": "Which viewport edge the sheet slides in from. Defaults to `right`. Exported as `sheetPositions`.",
+          "valueSet": "sheetPositions"
+        }
+      ]
+    },
+    {
+      "name": "ui-popover",
+      "description": "Timeless `ui-popover`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Disclosure pattern.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "placement",
+          "description": "Preferred side of the trigger. Positioning uses CSS anchor positioning, so the browser may flip the surface to keep it on screen. Defaults to `bottom`. Exported as `floatingPlacements`.",
+          "valueSet": "floatingPlacements"
+        },
+        {
+          "name": "role",
+          "description": "Semantics applied to the surface, and the `aria-haspopup` value set on the trigger. Choose it from the interaction, not the appearance. Defaults to `dialog`. Exported as `popoverRoles`.",
+          "valueSet": "popoverRoles"
+        }
+      ]
+    },
+    {
+      "name": "ui-hover-card",
+      "description": "Timeless `ui-hover-card`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Tooltip pattern.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "anchor",
+          "description": "Id of an element to anchor against instead of the trigger. Use it when the visual anchor differs from the control that opens the card."
+        },
+        {
+          "name": "variant",
+          "description": "Set `tooltip` for the compact tooltip treatment. Omit for the roomier hover-card surface. Exported as `hoverCardVariants`.",
+          "valueSet": "hoverCardVariants"
+        },
+        {
+          "name": "placement",
+          "description": "Preferred side of the anchor. Defaults to `bottom`. Exported as `floatingPlacements`.",
+          "valueSet": "floatingPlacements"
+        },
+        {
+          "name": "open-delay",
+          "description": "Milliseconds of hover or focus intent before opening. The resolved number is available on the read-only `openDelay` property. Defaults to `180`."
+        },
+        {
+          "name": "close-delay",
+          "description": "Milliseconds after the pointer leaves before closing, so the user can cross the gap into the surface. The resolved number is available on the read-only `closeDelay` property. Defaults to `100`."
+        }
+      ]
+    },
+    {
+      "name": "ui-menu",
+      "description": "Timeless `ui-menu`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Menu and Menubar pattern.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "orientation",
+          "description": "Arrow-key axis. Defaults to `horizontal` when the menu part is `role=\"menubar\"`. Defaults to `vertical`. Exported as `menuOrientations`.",
+          "valueSet": "menuOrientations"
+        }
+      ]
+    },
+    {
+      "name": "ui-menu-button",
+      "description": "Timeless `ui-menu-button`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Menu Button pattern. Dispatches `ui-open`, `ui-close`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Present to render the menu open on load. Presence-based: author the attribute with no value."
+        },
+        {
+          "name": "placement",
+          "description": "Preferred side of the trigger. Defaults to `bottom`. Exported as `floatingPlacements`.",
+          "valueSet": "floatingPlacements"
+        }
+      ]
+    },
+    {
+      "name": "ui-toolbar",
+      "description": "Timeless `ui-toolbar`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Toolbar pattern.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "orientation",
+          "description": "Arrow-key axis across the toolbar controls. Defaults to `horizontal`. Exported as `toolbarOrientations`.",
+          "valueSet": "toolbarOrientations"
+        }
+      ]
+    },
+    {
+      "name": "ui-radio-group",
+      "description": "Timeless `ui-radio-group`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Radio Group pattern. Dispatches `ui-before-change`, `ui-change`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "orientation",
+          "description": "Layout and arrow-key axis. Defaults to `vertical`. Exported as `choiceGroupOrientations`.",
+          "valueSet": "choiceGroupOrientations"
+        },
+        {
+          "name": "value",
+          "description": "The radio checked on load and after a form reset. Match one input’s `value`. Assign the `value` property for live changes."
+        }
+      ]
+    },
+    {
+      "name": "ui-checkbox-group",
+      "description": "Timeless `ui-checkbox-group`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Checkbox pattern. Dispatches `ui-before-change`, `ui-change`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "orientation",
+          "description": "Layout and arrow-key axis. Defaults to `vertical`. Exported as `choiceGroupOrientations`.",
+          "valueSet": "choiceGroupOrientations"
+        }
+      ]
+    },
+    {
+      "name": "ui-listbox",
+      "description": "Timeless `ui-listbox`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Listbox pattern. Dispatches `ui-before-change`, `ui-change`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "multiple",
+          "description": "Present to allow more than one selected option. The `value` property then reads and writes an array. Presence-based: author the attribute with no value."
+        },
+        {
+          "name": "value",
+          "description": "The option selected on load and after a form reset. Assign the `value` property for live changes."
+        }
+      ]
+    },
+    {
+      "name": "ui-select",
+      "description": "Timeless `ui-select`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Select-Only Combobox pattern. Dispatches `ui-before-change`, `ui-change`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Present to render the listbox open on load. Presence-based: author the attribute with no value."
+        },
+        {
+          "name": "placement",
+          "description": "Preferred side of the trigger for the listbox surface. Defaults to `bottom`. Exported as `floatingPlacements`.",
+          "valueSet": "floatingPlacements"
+        },
+        {
+          "name": "value",
+          "description": "The option selected on load and after a form reset. Mirror it onto a hidden input to submit with a form."
+        }
+      ]
+    },
+    {
+      "name": "ui-combobox",
+      "description": "Timeless `ui-combobox`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Combobox pattern. Dispatches `ui-before-change`, `ui-change`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "description": "The option selected on load and after a form reset. Assign the `value` property for live changes."
+        }
+      ]
+    },
+    {
+      "name": "ui-toaster",
+      "description": "Timeless `ui-toaster`. Enhances the Light DOM you author; the markup stays yours.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "placement",
+          "description": "Corner or edge of the viewport the toasts stack against. Defaults to `bottom-end`. Exported as `toasterPlacements`.",
+          "valueSet": "toasterPlacements"
+        },
+        {
+          "name": "stack",
+          "description": "Whether queued toasts overlap into a deck (`overlap`) or lay out as a full list (`list`). Defaults to `overlap`. Exported as `toasterStacks`.",
+          "valueSet": "toasterStacks"
+        }
+      ]
+    },
+    {
+      "name": "ui-toast",
+      "description": "Timeless `ui-toast`. Enhances the Light DOM you author; the markup stays yours. Dispatches `ui-dismiss`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "duration",
+          "description": "Milliseconds before the toast dismisses itself. `0` keeps it open until dismissed. Defaults to `5000`."
+        },
+        {
+          "name": "persistent",
+          "description": "Present to disable auto-dismiss regardless of `duration`. Presence-based: author the attribute with no value."
+        }
+      ]
+    },
+    {
+      "name": "ui-toggle-group",
+      "description": "Timeless `ui-toggle-group`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Button pattern. Dispatches `ui-before-change`, `ui-change`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "attached",
+          "description": "Present to join the buttons into one segmented control. Styling only, resolved by `toggle.css`. Presence-based: author the attribute with no value."
+        },
+        {
+          "name": "orientation",
+          "description": "Layout and arrow-key axis. Defaults to `horizontal`. Exported as `toggleGroupOrientations`.",
+          "valueSet": "toggleGroupOrientations"
+        },
+        {
+          "name": "selection",
+          "description": "Whether pressing one button releases the others (`single`) or toggles independently (`multiple`). Defaults to `single`. Exported as `toggleGroupSelections`.",
+          "valueSet": "toggleGroupSelections"
+        }
+      ]
+    },
+    {
+      "name": "ui-number-stepper",
+      "description": "Timeless `ui-number-stepper`. Enhances the Light DOM you author; the markup stays yours. Dispatches `input`, `change`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": []
+    },
+    {
+      "name": "ui-color-picker",
+      "description": "Timeless `ui-color-picker`. Enhances the Light DOM you author; the markup stays yours. Dispatches `input`, `change`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "format",
+          "description": "Color space the channel controls edit and the raw input round-trips through. The picker converts the current value when this changes. Defaults to `oklch`. Exported as `colorPickerFormats`.",
+          "valueSet": "colorPickerFormats"
+        },
+        {
+          "name": "value",
+          "description": "Initial and form-reset color, in any CSS color syntax. Unlike the collection elements, the picker reflects one `value` property rather than a separate authored default."
+        }
+      ]
+    }
+  ],
+  "globalAttributes": [
+    {
+      "name": "data-ui-part",
+      "description": "Whitespace-separated list of anatomy part names, selected with `[data-ui-part~='name']`. Each part belongs to its nearest component root.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    }
+  ],
+  "valueSets": [
+    {
+      "name": "buttonVariants",
+      "values": [
+        {
+          "name": "primary"
+        },
+        {
+          "name": "secondary"
+        },
+        {
+          "name": "outline"
+        },
+        {
+          "name": "ghost"
+        },
+        {
+          "name": "danger"
+        },
+        {
+          "name": "danger-outline"
+        },
+        {
+          "name": "link"
+        }
+      ]
+    },
+    {
+      "name": "buttonSizes",
+      "values": [
+        {
+          "name": "sm"
+        },
+        {
+          "name": "md"
+        },
+        {
+          "name": "lg"
+        }
+      ]
+    },
+    {
+      "name": "alertVariants",
+      "values": [
+        {
+          "name": "neutral"
+        },
+        {
+          "name": "accent"
+        },
+        {
+          "name": "success"
+        },
+        {
+          "name": "warning"
+        },
+        {
+          "name": "danger"
+        }
+      ]
+    },
+    {
+      "name": "spinnerVariants",
+      "values": [
+        {
+          "name": "neutral"
+        },
+        {
+          "name": "accent"
+        },
+        {
+          "name": "success"
+        },
+        {
+          "name": "warning"
+        },
+        {
+          "name": "danger"
+        }
+      ]
+    },
+    {
+      "name": "badgeVariants",
+      "values": [
+        {
+          "name": "neutral"
+        },
+        {
+          "name": "accent"
+        },
+        {
+          "name": "success"
+        },
+        {
+          "name": "warning"
+        },
+        {
+          "name": "danger"
+        },
+        {
+          "name": "outline"
+        }
+      ]
+    },
+    {
+      "name": "avatarShapes",
+      "values": [
+        {
+          "name": "circle"
+        },
+        {
+          "name": "rounded"
+        },
+        {
+          "name": "square"
+        }
+      ]
+    },
+    {
+      "name": "avatarStatuses",
+      "values": [
+        {
+          "name": "online"
+        },
+        {
+          "name": "away"
+        },
+        {
+          "name": "busy"
+        },
+        {
+          "name": "offline"
+        }
+      ]
+    },
+    {
+      "name": "cardVariants",
+      "values": [
+        {
+          "name": "surface"
+        },
+        {
+          "name": "filled"
+        },
+        {
+          "name": "ghost"
+        }
+      ]
+    },
+    {
+      "name": "linkVariants",
+      "values": [
+        {
+          "name": "default"
+        },
+        {
+          "name": "muted"
+        },
+        {
+          "name": "danger"
+        }
+      ]
+    },
+    {
+      "name": "listVariants",
+      "values": [
+        {
+          "name": "plain"
+        },
+        {
+          "name": "divided"
+        },
+        {
+          "name": "inset"
+        },
+        {
+          "name": "ordered"
+        }
+      ]
+    },
+    {
+      "name": "separatorVariants",
+      "values": [
+        {
+          "name": "default"
+        },
+        {
+          "name": "strong"
+        },
+        {
+          "name": "centered"
+        }
+      ]
+    },
+    {
+      "name": "separatorOrientations",
+      "values": [
+        {
+          "name": "horizontal"
+        },
+        {
+          "name": "vertical"
+        }
+      ]
+    },
+    {
+      "name": "skeletonShapes",
+      "values": [
+        {
+          "name": "text"
+        },
+        {
+          "name": "circle"
+        },
+        {
+          "name": "media"
+        }
+      ]
+    },
+    {
+      "name": "skeletonWidths",
+      "values": [
+        {
+          "name": "full"
+        },
+        {
+          "name": "medium"
+        },
+        {
+          "name": "short"
+        }
+      ]
+    },
+    {
+      "name": "groupOrientations",
+      "values": [
+        {
+          "name": "horizontal"
+        },
+        {
+          "name": "vertical"
+        }
+      ]
+    },
+    {
+      "name": "primitiveSizes",
+      "values": [
+        {
+          "name": "sm"
+        },
+        {
+          "name": "md"
+        },
+        {
+          "name": "lg"
+        }
+      ]
+    },
+    {
+      "name": "primitiveDensities",
+      "values": [
+        {
+          "name": "compact"
+        },
+        {
+          "name": "normal"
+        },
+        {
+          "name": "spacious"
+        }
+      ]
+    },
+    {
+      "name": "compactDensities",
+      "values": [
+        {
+          "name": "compact"
+        },
+        {
+          "name": "normal"
+        }
+      ]
+    },
+    {
+      "name": "tableAlignments",
+      "values": [
+        {
+          "name": "start"
+        },
+        {
+          "name": "end"
+        }
+      ]
+    },
+    {
+      "name": "formControlSizes",
+      "values": [
+        {
+          "name": "sm"
+        },
+        {
+          "name": "md"
+        },
+        {
+          "name": "lg"
+        }
+      ]
+    },
+    {
+      "name": "fieldLayouts",
+      "values": [
+        {
+          "name": "stacked"
+        },
+        {
+          "name": "inline"
+        }
+      ]
+    },
+    {
+      "name": "formDensities",
+      "values": [
+        {
+          "name": "compact"
+        },
+        {
+          "name": "normal"
+        },
+        {
+          "name": "spacious"
+        }
+      ]
+    },
+    {
+      "name": "choiceGroupOrientations",
+      "values": [
+        {
+          "name": "vertical"
+        },
+        {
+          "name": "horizontal"
+        }
+      ]
+    },
+    {
+      "name": "floatingPlacements",
+      "values": [
+        {
+          "name": "bottom"
+        },
+        {
+          "name": "top"
+        },
+        {
+          "name": "right"
+        },
+        {
+          "name": "left"
+        }
+      ]
+    },
+    {
+      "name": "tabsOrientations",
+      "values": [
+        {
+          "name": "horizontal"
+        },
+        {
+          "name": "vertical"
+        }
+      ]
+    },
+    {
+      "name": "tabsActivations",
+      "values": [
+        {
+          "name": "automatic"
+        },
+        {
+          "name": "manual"
+        }
+      ]
+    },
+    {
+      "name": "dialogKinds",
+      "values": [
+        {
+          "name": "dialog"
+        },
+        {
+          "name": "alert"
+        }
+      ]
+    },
+    {
+      "name": "sheetPositions",
+      "values": [
+        {
+          "name": "top"
+        },
+        {
+          "name": "right"
+        },
+        {
+          "name": "bottom"
+        },
+        {
+          "name": "left"
+        }
+      ]
+    },
+    {
+      "name": "popoverRoles",
+      "values": [
+        {
+          "name": "dialog"
+        },
+        {
+          "name": "menu"
+        },
+        {
+          "name": "listbox"
+        },
+        {
+          "name": "tooltip"
+        }
+      ]
+    },
+    {
+      "name": "hoverCardVariants",
+      "values": [
+        {
+          "name": "tooltip"
+        }
+      ]
+    },
+    {
+      "name": "menuOrientations",
+      "values": [
+        {
+          "name": "horizontal"
+        },
+        {
+          "name": "vertical"
+        }
+      ]
+    },
+    {
+      "name": "toolbarOrientations",
+      "values": [
+        {
+          "name": "horizontal"
+        },
+        {
+          "name": "vertical"
+        }
+      ]
+    },
+    {
+      "name": "toasterPlacements",
+      "values": [
+        {
+          "name": "top-start"
+        },
+        {
+          "name": "top-center"
+        },
+        {
+          "name": "top-end"
+        },
+        {
+          "name": "bottom-start"
+        },
+        {
+          "name": "bottom-center"
+        },
+        {
+          "name": "bottom-end"
+        }
+      ]
+    },
+    {
+      "name": "toasterStacks",
+      "values": [
+        {
+          "name": "overlap"
+        },
+        {
+          "name": "list"
+        }
+      ]
+    },
+    {
+      "name": "toggleGroupOrientations",
+      "values": [
+        {
+          "name": "horizontal"
+        },
+        {
+          "name": "vertical"
+        }
+      ]
+    },
+    {
+      "name": "toggleGroupSelections",
+      "values": [
+        {
+          "name": "single"
+        },
+        {
+          "name": "multiple"
+        }
+      ]
+    },
+    {
+      "name": "colorPickerFormats",
+      "values": [
+        {
+          "name": "oklch"
+        },
+        {
+          "name": "oklab"
+        },
+        {
+          "name": "lch"
+        },
+        {
+          "name": "lab"
+        },
+        {
+          "name": "hex"
+        },
+        {
+          "name": "rgb"
+        },
+        {
+          "name": "hsl"
+        },
+        {
+          "name": "hwb"
+        },
+        {
+          "name": "p3"
+        },
+        {
+          "name": "rec2020"
+        }
+      ]
+    }
+  ]
+}

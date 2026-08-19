@@ -8,8 +8,13 @@ import {
   type CollectionOrientation,
 } from './collection'
 import { transitionSourceFromEvent, type UITransitionDetail } from './events'
+import { choiceGroupOrientations } from './values/forms'
+import type { ChoiceGroupOrientation } from './values/forms'
 
-export type SelectionGroupOrientation = 'horizontal' | 'vertical'
+export { choiceGroupOrientations, type ChoiceGroupOrientation }
+
+/** Historical alias for {@link ChoiceGroupOrientation}. */
+export type SelectionGroupOrientation = ChoiceGroupOrientation
 
 export type ChoiceInputLike = {
   checked: boolean

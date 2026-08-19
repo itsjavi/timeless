@@ -17,10 +17,36 @@ for (const item of elements) {
 
 await import(resolve(packageRoot, 'dist/index.js'))
 await import(resolve(packageRoot, 'dist/define.js'))
-await import(resolve(packageRoot, 'dist/jsx/react.js'))
 await import(resolve(packageRoot, 'dist/collection.js'))
 await import(resolve(packageRoot, 'dist/events.js'))
 await import(resolve(packageRoot, 'dist/value-state.js'))
+await import(resolve(packageRoot, 'dist/attributes.js'))
+await import(resolve(packageRoot, 'dist/validate.js'))
+
+// Every framework typing must resolve and must stay types-only. A declaration file that augments a
+// framework module still compiles to an empty JavaScript module.
+for (const framework of ['react', 'preact', 'solid', 'vue', 'svelte']) {
+  const module = await import(resolve(packageRoot, `dist/${framework}.js`))
+  assert(
+    Object.keys(module).length === 0,
+    `${framework} typings emitted runtime exports; they must be types only`,
+  )
+}
+
+// The editor data files ship in the package, so a consumer can register them by path.
+for (const file of [
+  'custom-elements.json',
+  'vscode.html-custom-data.json',
+  'vscode.css-custom-data.json',
+  'web-types.json',
+]) {
+  assert(packageJson.files.includes(file), `${file} is missing from the package files array`)
+  await readFile(resolve(packageRoot, file), 'utf8')
+}
+assert(
+  packageJson['web-types'] === './web-types.json',
+  'the web-types field must point at the file',
+)
 
 for (const item of elements) {
   const cssExport = `./css/${item.css}`

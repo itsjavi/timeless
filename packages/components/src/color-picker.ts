@@ -27,20 +27,10 @@ import {
   type ParsedColor,
   type RgbColor,
 } from './color'
+import { colorPickerFormats } from './values/color-picker'
+import type { ColorPickerFormat } from './values/color-picker'
 
-export const colorPickerFormats = [
-  'oklch',
-  'oklab',
-  'lch',
-  'lab',
-  'hex',
-  'rgb',
-  'hsl',
-  'hwb',
-  'p3',
-  'rec2020',
-] as const
-export type ColorPickerFormat = (typeof colorPickerFormats)[number]
+export { colorPickerFormats, type ColorPickerFormat }
 
 export type ColorChannelDefinition = {
   readonly key: string

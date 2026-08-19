@@ -9,6 +9,11 @@ export type ComponentAttributeContract = {
   readonly name: string
   /** `boolean` attributes are presence-based: author the attribute, never a value. */
   readonly type: string
+  /**
+   * Name of the exported `as const` array holding these values, for example `buttonVariants`.
+   * Import it from the package root to drive a control, a validator, or a test.
+   */
+  readonly set?: string
   /** Absent when the attribute takes free-form input such as an element id or a CSS color. */
   readonly values?: readonly string[]
   /** The value that applies when the attribute is absent. Absent when omitting it means "off". */
@@ -136,6 +141,7 @@ export const componentContracts = {
       {
         name: 'data-ui-variant',
         type: 'string',
+        set: 'buttonVariants',
         values: ['primary', 'secondary', 'outline', 'ghost', 'danger', 'danger-outline', 'link'],
         default: 'primary',
         description:
@@ -144,6 +150,7 @@ export const componentContracts = {
       {
         name: 'data-ui-size',
         type: 'string',
+        set: 'buttonSizes',
         values: ['sm', 'md', 'lg'],
         default: 'md',
         description: 'Control height, padding, and font size.',
@@ -225,6 +232,7 @@ export const componentContracts = {
       {
         name: 'data-ui-variant',
         type: 'string',
+        set: 'buttonVariants',
         values: ['primary', 'secondary', 'outline', 'ghost', 'danger', 'danger-outline', 'link'],
         default: 'primary',
         description:
@@ -233,6 +241,7 @@ export const componentContracts = {
       {
         name: 'data-ui-size',
         type: 'string',
+        set: 'buttonSizes',
         values: ['sm', 'md', 'lg'],
         default: 'md',
         description: 'Control height, padding, and font size. Resolved by `button.css`.',
@@ -267,6 +276,7 @@ export const componentContracts = {
       {
         name: 'data-ui-variant',
         type: 'string',
+        set: 'alertVariants',
         values: ['neutral', 'accent', 'success', 'warning', 'danger'],
         default: 'neutral',
         description:
@@ -275,6 +285,7 @@ export const componentContracts = {
       {
         name: 'data-ui-density',
         type: 'string',
+        set: 'compactDensities',
         values: ['compact', 'normal'],
         default: 'normal',
         description: 'Internal spacing.',
@@ -327,6 +338,7 @@ export const componentContracts = {
       {
         name: 'data-ui-size',
         type: 'string',
+        set: 'primitiveSizes',
         values: ['sm', 'md', 'lg'],
         default: 'md',
         description: 'Avatar diameter.',
@@ -334,6 +346,7 @@ export const componentContracts = {
       {
         name: 'data-ui-shape',
         type: 'string',
+        set: 'avatarShapes',
         values: ['circle', 'rounded', 'square'],
         default: 'circle',
         description: 'Corner treatment.',
@@ -341,6 +354,7 @@ export const componentContracts = {
       {
         name: 'data-ui-status',
         type: 'string',
+        set: 'avatarStatuses',
         values: ['online', 'away', 'busy', 'offline'],
         description:
           'Presence indicator color. Omit the attribute to hide the indicator. The dot is decorative, so also expose the status in text.',
@@ -381,6 +395,7 @@ export const componentContracts = {
       {
         name: 'data-ui-variant',
         type: 'string',
+        set: 'badgeVariants',
         values: ['neutral', 'accent', 'success', 'warning', 'danger', 'outline'],
         default: 'neutral',
         description: 'Status intent.',
@@ -388,6 +403,7 @@ export const componentContracts = {
       {
         name: 'data-ui-size',
         type: 'string',
+        set: 'primitiveSizes',
         values: ['sm', 'md', 'lg'],
         default: 'md',
         description: 'Badge height and font size.',
@@ -416,6 +432,7 @@ export const componentContracts = {
       {
         name: 'data-ui-orientation',
         type: 'string',
+        set: 'separatorOrientations',
         values: ['horizontal', 'vertical'],
         default: 'horizontal',
         description:
@@ -424,6 +441,7 @@ export const componentContracts = {
       {
         name: 'data-ui-variant',
         type: 'string',
+        set: 'separatorVariants',
         values: ['default', 'strong', 'centered'],
         default: 'default',
         description:
@@ -453,6 +471,7 @@ export const componentContracts = {
       {
         name: 'data-ui-variant',
         type: 'string',
+        set: 'cardVariants',
         values: ['surface', 'filled', 'ghost'],
         default: 'surface',
         description: 'Background and border treatment.',
@@ -460,6 +479,7 @@ export const componentContracts = {
       {
         name: 'data-ui-density',
         type: 'string',
+        set: 'compactDensities',
         values: ['compact', 'normal'],
         default: 'normal',
         description: 'Internal spacing.',
@@ -524,6 +544,7 @@ export const componentContracts = {
       {
         name: 'data-ui-size',
         type: 'string',
+        set: 'primitiveSizes',
         values: ['sm', 'md', 'lg'],
         default: 'md',
         description: 'Line height for the `text` shape, diameter for `circle`.',
@@ -531,6 +552,7 @@ export const componentContracts = {
       {
         name: 'data-ui-shape',
         type: 'string',
+        set: 'skeletonShapes',
         values: ['text', 'circle', 'media'],
         default: 'text',
         description: 'Placeholder geometry.',
@@ -538,6 +560,7 @@ export const componentContracts = {
       {
         name: 'data-ui-width',
         type: 'string',
+        set: 'skeletonWidths',
         values: ['full', 'medium', 'short'],
         default: 'full',
         description: 'Inline size, so a group of lines can look like real text.',
@@ -559,6 +582,7 @@ export const componentContracts = {
       {
         name: 'data-ui-size',
         type: 'string',
+        set: 'primitiveSizes',
         values: ['sm', 'md', 'lg'],
         default: 'md',
         description: 'Track thickness and label size.',
@@ -566,6 +590,7 @@ export const componentContracts = {
       {
         name: 'data-ui-density',
         type: 'string',
+        set: 'compactDensities',
         values: ['compact', 'normal'],
         default: 'normal',
         description: 'Internal spacing.',
@@ -606,6 +631,7 @@ export const componentContracts = {
       {
         name: 'data-ui-variant',
         type: 'string',
+        set: 'linkVariants',
         values: ['default', 'muted', 'danger'],
         default: 'default',
         description: 'Link color intent.',
@@ -653,6 +679,7 @@ export const componentContracts = {
       {
         name: 'data-ui-orientation',
         type: 'string',
+        set: 'groupOrientations',
         values: ['horizontal', 'vertical'],
         default: 'horizontal',
         description: 'Layout direction of the grouped controls.',
@@ -660,6 +687,7 @@ export const componentContracts = {
       {
         name: 'data-ui-density',
         type: 'string',
+        set: 'primitiveDensities',
         values: ['compact', 'normal', 'spacious'],
         default: 'normal',
         description: 'Gap between grouped controls.',
@@ -692,6 +720,7 @@ export const componentContracts = {
       {
         name: 'data-ui-variant',
         type: 'string',
+        set: 'listVariants',
         values: ['plain', 'divided', 'inset', 'ordered'],
         default: 'plain',
         description:
@@ -700,6 +729,7 @@ export const componentContracts = {
       {
         name: 'data-ui-density',
         type: 'string',
+        set: 'compactDensities',
         values: ['compact', 'normal'],
         default: 'normal',
         description: 'Row padding.',
@@ -740,6 +770,7 @@ export const componentContracts = {
       {
         name: 'data-ui-density',
         type: 'string',
+        set: 'compactDensities',
         values: ['compact', 'normal'],
         default: 'normal',
         description: 'Cell padding.',
@@ -747,6 +778,7 @@ export const componentContracts = {
       {
         name: 'data-ui-align',
         type: 'string',
+        set: 'tableAlignments',
         values: ['start', 'end'],
         default: 'start',
         description:
@@ -788,6 +820,7 @@ export const componentContracts = {
       {
         name: 'data-ui-density',
         type: 'string',
+        set: 'compactDensities',
         values: ['compact', 'normal'],
         default: 'normal',
         description: 'Summary and content padding.',
@@ -809,6 +842,7 @@ export const componentContracts = {
       {
         name: 'data-ui-density',
         type: 'string',
+        set: 'compactDensities',
         values: ['compact', 'normal'],
         default: 'normal',
         description: 'Summary and content padding.',
@@ -830,6 +864,7 @@ export const componentContracts = {
       {
         name: 'data-ui-size',
         type: 'string',
+        set: 'primitiveSizes',
         values: ['sm', 'md', 'lg'],
         default: 'md',
         description: 'Spinner diameter.',
@@ -837,6 +872,7 @@ export const componentContracts = {
       {
         name: 'data-ui-variant',
         type: 'string',
+        set: 'spinnerVariants',
         values: ['neutral', 'accent', 'success', 'warning', 'danger'],
         default: 'neutral',
         description: 'Indicator color.',
@@ -865,6 +901,7 @@ export const componentContracts = {
       {
         name: 'data-ui-density',
         type: 'string',
+        set: 'primitiveDensities',
         values: ['compact', 'normal', 'spacious'],
         default: 'normal',
         description: 'Vertical rhythm of the empty state.',
@@ -957,6 +994,7 @@ export const componentContracts = {
       {
         name: 'data-ui-layout',
         type: 'string',
+        set: 'fieldLayouts',
         values: ['stacked', 'inline'],
         default: 'stacked',
         description: 'Whether the label sits above the control or beside it.',
@@ -964,6 +1002,7 @@ export const componentContracts = {
       {
         name: 'data-ui-density',
         type: 'string',
+        set: 'formDensities',
         values: ['compact', 'normal', 'spacious'],
         default: 'normal',
         description: 'Gap between label, control, description, and error.',
@@ -1039,6 +1078,7 @@ export const componentContracts = {
       {
         name: 'data-ui-size',
         type: 'string',
+        set: 'formControlSizes',
         values: ['sm', 'md', 'lg'],
         default: 'md',
         description: 'Control height, padding, and font size.',
@@ -1073,6 +1113,7 @@ export const componentContracts = {
       {
         name: 'data-ui-size',
         type: 'string',
+        set: 'formControlSizes',
         values: ['sm', 'md', 'lg'],
         default: 'md',
         description: 'Control height, padding, and font size.',
@@ -1107,6 +1148,7 @@ export const componentContracts = {
       {
         name: 'data-ui-size',
         type: 'string',
+        set: 'formControlSizes',
         values: ['sm', 'md', 'lg'],
         default: 'md',
         description: 'Control height, padding, and font size.',
@@ -1193,6 +1235,7 @@ export const componentContracts = {
       {
         name: 'data-ui-density',
         type: 'string',
+        set: 'formDensities',
         values: ['compact', 'normal', 'spacious'],
         default: 'normal',
         description: 'Gap between the control and its label.',
@@ -1233,13 +1276,15 @@ export const componentContracts = {
       {
         name: 'data-ui-orientation',
         type: 'string',
-        values: ['horizontal', 'vertical'],
+        set: 'choiceGroupOrientations',
+        values: ['vertical', 'horizontal'],
         default: 'vertical',
         description: 'Layout direction of the choices.',
       },
       {
         name: 'data-ui-density',
         type: 'string',
+        set: 'formDensities',
         values: ['compact', 'normal', 'spacious'],
         default: 'normal',
         description: 'Gap between choices.',
@@ -1307,6 +1352,7 @@ export const componentContracts = {
       {
         name: 'data-ui-size',
         type: 'string',
+        set: 'formControlSizes',
         values: ['sm', 'md', 'lg'],
         default: 'md',
         description: 'Track thickness, thumb diameter, and label size.',
@@ -1383,6 +1429,7 @@ export const componentContracts = {
       {
         name: 'activation',
         type: 'string',
+        set: 'tabsActivations',
         values: ['automatic', 'manual'],
         default: 'automatic',
         description:
@@ -1391,6 +1438,7 @@ export const componentContracts = {
       {
         name: 'orientation',
         type: 'string',
+        set: 'tabsOrientations',
         values: ['horizontal', 'vertical'],
         default: 'horizontal',
         description:
@@ -1437,14 +1485,14 @@ export const componentContracts = {
     events: [
       {
         name: 'ui-before-change',
-        type: 'CustomEvent<UITransitionDetail>',
+        type: 'CustomEvent<TabsChangeDetail>',
         description:
           'Cancelable proposal dispatched before the selected tab changes. Call `preventDefault()` to reject the transition and keep the current value.',
         cancelable: true,
       },
       {
         name: 'ui-change',
-        type: 'CustomEvent<UITransitionDetail>',
+        type: 'CustomEvent<TabsChangeDetail>',
         description: 'Dispatched after the selected tab has changed. Bubbles and is composed.',
         cancelable: false,
       },
@@ -1482,6 +1530,7 @@ export const componentContracts = {
       {
         name: 'kind',
         type: 'string',
+        set: 'dialogKinds',
         values: ['dialog', 'alert'],
         default: 'dialog',
         description:
@@ -1546,6 +1595,7 @@ export const componentContracts = {
       {
         name: 'position',
         type: 'string',
+        set: 'sheetPositions',
         values: ['top', 'right', 'bottom', 'left'],
         default: 'right',
         description: 'Which viewport edge the sheet slides in from.',
@@ -1576,13 +1626,13 @@ export const componentContracts = {
     events: [
       {
         name: 'ui-open',
-        type: 'CustomEvent<{ source: string }>',
+        type: 'CustomEvent<SheetEventDetail>',
         description: 'Dispatched after the sheet opens.',
         cancelable: false,
       },
       {
         name: 'ui-close',
-        type: 'CustomEvent<{ source: string }>',
+        type: 'CustomEvent<SheetEventDetail>',
         description: 'Dispatched after the sheet closes.',
         cancelable: false,
       },
@@ -1618,6 +1668,7 @@ export const componentContracts = {
       {
         name: 'placement',
         type: 'string',
+        set: 'floatingPlacements',
         values: ['bottom', 'top', 'right', 'left'],
         default: 'bottom',
         description:
@@ -1626,6 +1677,7 @@ export const componentContracts = {
       {
         name: 'role',
         type: 'string',
+        set: 'popoverRoles',
         values: ['dialog', 'menu', 'listbox', 'tooltip'],
         default: 'dialog',
         description:
@@ -1680,6 +1732,7 @@ export const componentContracts = {
       {
         name: 'variant',
         type: 'string',
+        set: 'hoverCardVariants',
         values: ['tooltip'],
         description:
           'Set `tooltip` for the compact tooltip treatment. Omit for the roomier hover-card surface.',
@@ -1687,6 +1740,7 @@ export const componentContracts = {
       {
         name: 'placement',
         type: 'string',
+        set: 'floatingPlacements',
         values: ['bottom', 'top', 'right', 'left'],
         default: 'bottom',
         description: 'Preferred side of the anchor.',
@@ -1747,6 +1801,7 @@ export const componentContracts = {
       {
         name: 'orientation',
         type: 'string',
+        set: 'menuOrientations',
         values: ['horizontal', 'vertical'],
         default: 'vertical',
         description:
@@ -1817,6 +1872,7 @@ export const componentContracts = {
       {
         name: 'placement',
         type: 'string',
+        set: 'floatingPlacements',
         values: ['bottom', 'top', 'right', 'left'],
         default: 'bottom',
         description: 'Preferred side of the trigger.',
@@ -1841,13 +1897,13 @@ export const componentContracts = {
     events: [
       {
         name: 'ui-open',
-        type: 'CustomEvent<{ source: string }>',
+        type: 'CustomEvent<MenuButtonToggleDetail>',
         description: 'Dispatched after the menu opens.',
         cancelable: false,
       },
       {
         name: 'ui-close',
-        type: 'CustomEvent<{ source: string }>',
+        type: 'CustomEvent<MenuButtonToggleDetail>',
         description: 'Dispatched after the menu closes.',
         cancelable: false,
       },
@@ -1880,6 +1936,7 @@ export const componentContracts = {
       {
         name: 'orientation',
         type: 'string',
+        set: 'toolbarOrientations',
         values: ['horizontal', 'vertical'],
         default: 'horizontal',
         description: 'Arrow-key axis across the toolbar controls.',
@@ -1930,7 +1987,8 @@ export const componentContracts = {
       {
         name: 'orientation',
         type: 'string',
-        values: ['horizontal', 'vertical'],
+        set: 'choiceGroupOrientations',
+        values: ['vertical', 'horizontal'],
         default: 'vertical',
         description: 'Layout and arrow-key axis.',
       },
@@ -1955,14 +2013,14 @@ export const componentContracts = {
     events: [
       {
         name: 'ui-before-change',
-        type: 'CustomEvent<UITransitionDetail>',
+        type: 'CustomEvent<RadioGroupChangeDetail>',
         description:
           'Cancelable proposal dispatched before the checked radio changes. Call `preventDefault()` to reject the transition and keep the current value.',
         cancelable: true,
       },
       {
         name: 'ui-change',
-        type: 'CustomEvent<UITransitionDetail>',
+        type: 'CustomEvent<RadioGroupChangeDetail>',
         description: 'Dispatched after the checked radio has changed. Bubbles and is composed.',
         cancelable: false,
       },
@@ -2000,7 +2058,8 @@ export const componentContracts = {
       {
         name: 'orientation',
         type: 'string',
-        values: ['horizontal', 'vertical'],
+        set: 'choiceGroupOrientations',
+        values: ['vertical', 'horizontal'],
         default: 'vertical',
         description: 'Layout and arrow-key axis.',
       },
@@ -2019,14 +2078,14 @@ export const componentContracts = {
     events: [
       {
         name: 'ui-before-change',
-        type: 'CustomEvent<UITransitionDetail>',
+        type: 'CustomEvent<CheckboxGroupChangeDetail>',
         description:
           'Cancelable proposal dispatched before the set of checked boxes changes. Call `preventDefault()` to reject the transition and keep the current value.',
         cancelable: true,
       },
       {
         name: 'ui-change',
-        type: 'CustomEvent<UITransitionDetail>',
+        type: 'CustomEvent<CheckboxGroupChangeDetail>',
         description:
           'Dispatched after the set of checked boxes has changed. Bubbles and is composed.',
         cancelable: false,
@@ -2102,14 +2161,14 @@ export const componentContracts = {
     events: [
       {
         name: 'ui-before-change',
-        type: 'CustomEvent<UITransitionDetail>',
+        type: 'CustomEvent<ListboxChangeDetail>',
         description:
           'Cancelable proposal dispatched before the selection changes. Call `preventDefault()` to reject the transition and keep the current value.',
         cancelable: true,
       },
       {
         name: 'ui-change',
-        type: 'CustomEvent<UITransitionDetail>',
+        type: 'CustomEvent<ListboxChangeDetail>',
         description: 'Dispatched after the selection has changed. Bubbles and is composed.',
         cancelable: false,
       },
@@ -2160,6 +2219,7 @@ export const componentContracts = {
       {
         name: 'placement',
         type: 'string',
+        set: 'floatingPlacements',
         values: ['bottom', 'top', 'right', 'left'],
         default: 'bottom',
         description: 'Preferred side of the trigger for the listbox surface.',
@@ -2203,14 +2263,14 @@ export const componentContracts = {
     events: [
       {
         name: 'ui-before-change',
-        type: 'CustomEvent<UITransitionDetail>',
+        type: 'CustomEvent<SelectChangeDetail>',
         description:
           'Cancelable proposal dispatched before the selected option changes. Call `preventDefault()` to reject the transition and keep the current value.',
         cancelable: true,
       },
       {
         name: 'ui-change',
-        type: 'CustomEvent<UITransitionDetail>',
+        type: 'CustomEvent<SelectChangeDetail>',
         description: 'Dispatched after the selected option has changed. Bubbles and is composed.',
         cancelable: false,
       },
@@ -2282,14 +2342,14 @@ export const componentContracts = {
     events: [
       {
         name: 'ui-before-change',
-        type: 'CustomEvent<UITransitionDetail>',
+        type: 'CustomEvent<ComboboxChangeDetail>',
         description:
           'Cancelable proposal dispatched before the selected option changes. Call `preventDefault()` to reject the transition and keep the current value.',
         cancelable: true,
       },
       {
         name: 'ui-change',
-        type: 'CustomEvent<UITransitionDetail>',
+        type: 'CustomEvent<ComboboxChangeDetail>',
         description: 'Dispatched after the selected option has changed. Bubbles and is composed.',
         cancelable: false,
       },
@@ -2330,6 +2390,7 @@ export const componentContracts = {
       {
         name: 'placement',
         type: 'string',
+        set: 'toasterPlacements',
         values: [
           'top-start',
           'top-center',
@@ -2344,6 +2405,7 @@ export const componentContracts = {
       {
         name: 'stack',
         type: 'string',
+        set: 'toasterStacks',
         values: ['overlap', 'list'],
         default: 'overlap',
         description:
@@ -2447,6 +2509,7 @@ export const componentContracts = {
       {
         name: 'orientation',
         type: 'string',
+        set: 'toggleGroupOrientations',
         values: ['horizontal', 'vertical'],
         default: 'horizontal',
         description: 'Layout and arrow-key axis.',
@@ -2454,6 +2517,7 @@ export const componentContracts = {
       {
         name: 'selection',
         type: 'string',
+        set: 'toggleGroupSelections',
         values: ['single', 'multiple'],
         default: 'single',
         description:
@@ -2474,14 +2538,14 @@ export const componentContracts = {
     events: [
       {
         name: 'ui-before-change',
-        type: 'CustomEvent<UITransitionDetail>',
+        type: 'CustomEvent<ToggleGroupChangeDetail>',
         description:
           'Cancelable proposal dispatched before the pressed set changes. Call `preventDefault()` to reject the transition and keep the current value.',
         cancelable: true,
       },
       {
         name: 'ui-change',
-        type: 'CustomEvent<UITransitionDetail>',
+        type: 'CustomEvent<ToggleGroupChangeDetail>',
         description: 'Dispatched after the pressed set has changed. Bubbles and is composed.',
         cancelable: false,
       },
@@ -2565,6 +2629,7 @@ export const componentContracts = {
       {
         name: 'format',
         type: 'string',
+        set: 'colorPickerFormats',
         values: ['oklch', 'oklab', 'lch', 'lab', 'hex', 'rgb', 'hsl', 'hwb', 'p3', 'rec2020'],
         default: 'oklch',
         description:

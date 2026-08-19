@@ -7,6 +7,10 @@ import {
   type FloatingElementLike,
 } from './floating'
 import { queryOwnedPart } from './parts'
+import { popoverRoles } from './values/popover'
+import type { PopoverRole } from './values/popover'
+
+export { popoverRoles, type PopoverRole }
 
 export type PopoverElementLike = {
   id: string
@@ -29,7 +33,7 @@ export type PopoverEnhancementOptions = {
   readonly generatedId: string
   readonly anchorName: string
   readonly supportsPopover: boolean
-  readonly role?: 'dialog' | 'menu' | 'listbox' | 'tooltip'
+  readonly role?: PopoverRole
 }
 
 export type PopoverEnhancementResult =

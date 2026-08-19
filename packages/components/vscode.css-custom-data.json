@@ -1,0 +1,745 @@
+{
+  "version": 1.1,
+  "properties": [
+    {
+      "name": "--ui-bg-page",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-bg-surface",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-bg-surface-raised",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-bg-surface-subtle",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-fg",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-fg-muted",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-fg-subtle",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-line",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-line-strong",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-accent",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-accent-hover",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-accent-active",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-accent-soft",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-success",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-success-soft",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-warning",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-warning-soft",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-danger",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-danger-soft",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-focus",
+      "description": "Timeless Atmosphere token (color). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-bg-control",
+      "description": "Timeless Atmosphere token (controlFill). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-bg-control-hover",
+      "description": "Timeless Atmosphere token (controlFill). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-bg-control-active",
+      "description": "Timeless Atmosphere token (controlFill). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-bg-control-muted",
+      "description": "Timeless Atmosphere token (controlFill). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-bg-accent",
+      "description": "Timeless Atmosphere token (controlFill). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-bg-accent-hover",
+      "description": "Timeless Atmosphere token (controlFill). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-bg-accent-active",
+      "description": "Timeless Atmosphere token (controlFill). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-bg-danger",
+      "description": "Timeless Atmosphere token (controlFill). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-bg-danger-hover",
+      "description": "Timeless Atmosphere token (controlFill). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-bg-danger-active",
+      "description": "Timeless Atmosphere token (controlFill). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-radius-xs",
+      "description": "Timeless Atmosphere token (radius). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-radius-sm",
+      "description": "Timeless Atmosphere token (radius). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-radius-md",
+      "description": "Timeless Atmosphere token (radius). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-radius-lg",
+      "description": "Timeless Atmosphere token (radius). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-radius-xl",
+      "description": "Timeless Atmosphere token (radius). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-radius-control",
+      "description": "Timeless Atmosphere token (radius). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-radius-pill",
+      "description": "Timeless Atmosphere token (radius). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-shadow-control",
+      "description": "Timeless Atmosphere token (shadow). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-shadow-control-hover",
+      "description": "Timeless Atmosphere token (shadow). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-shadow-control-active",
+      "description": "Timeless Atmosphere token (shadow). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-shadow-control-accent",
+      "description": "Timeless Atmosphere token (shadow). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-shadow-control-danger",
+      "description": "Timeless Atmosphere token (shadow). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-shadow-outline-control",
+      "description": "Timeless Atmosphere token (shadow). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-shadow-floating",
+      "description": "Timeless Atmosphere token (shadow). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-shadow-inset",
+      "description": "Timeless Atmosphere token (shadow). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-space-1",
+      "description": "Timeless Atmosphere token (space). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-space-2",
+      "description": "Timeless Atmosphere token (space). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-space-3",
+      "description": "Timeless Atmosphere token (space). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-space-4",
+      "description": "Timeless Atmosphere token (space). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-space-5",
+      "description": "Timeless Atmosphere token (space). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-font-sans",
+      "description": "Timeless Atmosphere token (typography). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-font-mono",
+      "description": "Timeless Atmosphere token (typography). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-duration-fast",
+      "description": "Timeless Atmosphere token (motion). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-ease-standard",
+      "description": "Timeless Atmosphere token (motion). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-disabled-opacity",
+      "description": "Timeless Atmosphere token (effect). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-checkerboard",
+      "description": "Timeless Atmosphere token (effect). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-checkerboard-ink",
+      "description": "Timeless Atmosphere token (effect). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-button-bg",
+      "description": "Resting background. Set on `ui-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-button-bg-hover",
+      "description": "Hover background. Set on `ui-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-button-bg-active",
+      "description": "Active background. Set on `ui-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-button-fg",
+      "description": "Label color. Set on `ui-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-button-fg-hover",
+      "description": "Hover label color. Set on `ui-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-button-border",
+      "description": "Border color. Set on `ui-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-button-shadow",
+      "description": "Resting shadow. Set on `ui-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-button-shadow-hover",
+      "description": "Hover shadow. Set on `ui-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-button-shadow-active",
+      "description": "Active shadow. Set on `ui-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-button-height",
+      "description": "Minimum block size. Set on `ui-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-button-padding-x",
+      "description": "Inline padding. Set on `ui-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-button-gap",
+      "description": "Gap between icon and label. Set on `ui-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-button-radius",
+      "description": "Corner radius. Set on `ui-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-range-track",
+      "description": "Track thickness. Set on `ui-range`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-range-thumb",
+      "description": "Thumb diameter. Set on `ui-range`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-toaster-gap",
+      "description": "Gap between toasts in `list` mode. Set on `ui-toaster`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-toaster-overlap",
+      "description": "Offset between stacked toasts in `overlap` mode. Set on `ui-toaster`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    }
+  ]
+}

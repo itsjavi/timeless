@@ -31,6 +31,8 @@ for (const module of manifest.modules) {
 for (const item of elements) assert(tags.has(item.tag), `manifest is missing ${item.tag}`)
 
 await validateDeclaredEvents()
+await validateEventDetailTypes()
+validateAuthoredParts()
 
 console.log(`Validated the Custom Elements Manifest for ${elements.length} elements.`)
 
@@ -64,6 +66,56 @@ async function validateDeclaredEvents() {
       )
     }
   }
+}
+
+/**
+ * A `CustomEvent<TabsChangeDetail>` declaration is only useful if a consumer can import
+ * `TabsChangeDetail`. Prove every named detail type is exported by the module that dispatches it,
+ * so the manifest and the generated framework typings can never name a type that does not exist.
+ */
+async function validateEventDetailTypes() {
+  for (const item of elements) {
+    if (item.events.length === 0) continue
+    const source = await readFile(resolve(packageRoot, `src/${item.module}.ts`), 'utf8')
+    for (const event of item.events) {
+      const detail = /^CustomEvent<(\w+)>$/.exec(event.type)?.[1]
+      if (!detail) continue
+      assert(
+        new RegExp(`export type ${detail}\\b|\\b${detail},`).test(source),
+        `${item.tag} declares ${event.name} as ${event.type}, but src/${item.module}.ts does not export ${detail}`,
+      )
+    }
+  }
+}
+
+/**
+ * Timeless anatomy is authored Light DOM, so parts are reported under `timeless:parts` with the
+ * selector an author actually writes. `cssParts` would claim a `::part()` contract this library does
+ * not have, and a private runtime hook must never reach the published manifest.
+ */
+function validateAuthoredParts() {
+  for (const module of manifest.modules) {
+    for (const declaration of module.declarations) {
+      assert(
+        declaration.cssParts === undefined,
+        `${declaration.tagName} declares cssParts, but Timeless parts are Light DOM`,
+      )
+      for (const part of declaration['timeless:parts'] ?? []) {
+        assert(
+          typeof part.selector === 'string' && part.selector.length > 0,
+          `${declaration.tagName} part ${part.name} has no selector`,
+        )
+        assert(
+          !part.selector.includes('data-ui-internal-'),
+          `${declaration.tagName} part ${part.name} exposes a private runtime hook`,
+        )
+      }
+    }
+  }
+  assert(
+    !JSON.stringify(manifest).includes('data-ui-internal-'),
+    'private runtime hooks must not appear anywhere in the manifest',
+  )
 }
 
 function assert(condition, message) {

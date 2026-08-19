@@ -6,6 +6,9 @@
   "files": [
     "dist",
     "custom-elements.json",
+    "vscode.html-custom-data.json",
+    "vscode.css-custom-data.json",
+    "web-types.json",
     "README.md"
   ],
   "type": "module",
@@ -35,6 +38,14 @@
     "./events": {
       "types": "./dist/events.d.ts",
       "import": "./dist/events.js"
+    },
+    "./attributes": {
+      "types": "./dist/attributes.d.ts",
+      "import": "./dist/attributes.js"
+    },
+    "./validate": {
+      "types": "./dist/validate.d.ts",
+      "import": "./dist/validate.js"
     },
     "./value-state": {
       "types": "./dist/value-state.d.ts",
@@ -116,9 +127,25 @@
       "types": "./dist/define/*.d.ts",
       "import": "./dist/define/*.js"
     },
-    "./jsx/react": {
-      "types": "./dist/jsx/react.d.ts",
-      "import": "./dist/jsx/react.js"
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js"
+    },
+    "./preact": {
+      "types": "./dist/preact.d.ts",
+      "import": "./dist/preact.js"
+    },
+    "./solid": {
+      "types": "./dist/solid.d.ts",
+      "import": "./dist/solid.js"
+    },
+    "./vue": {
+      "types": "./dist/vue.d.ts",
+      "import": "./dist/vue.js"
+    },
+    "./svelte": {
+      "types": "./dist/svelte.d.ts",
+      "import": "./dist/svelte.js"
     },
     "./css/*.css": "./dist/css/*.css"
   },
@@ -133,16 +160,19 @@
     "performance:check": "node scripts/check-performance.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "publint": "publint --strict --pack=false"
+    "publint": "publint --strict --pack=false",
+    "attw": "attw --pack --profile esm-only"
   },
   "dependencies": {
     "@timelessui/core": "workspace:*"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "publint": "^0.3.23",
     "tsdown": "^0.22.14",
     "typescript": "catalog:",
     "vitest": "^4.1.10"
   },
-  "customElements": "./custom-elements.json"
+  "customElements": "./custom-elements.json",
+  "web-types": "./web-types.json"
 }

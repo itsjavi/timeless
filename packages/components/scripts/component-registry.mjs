@@ -3,12 +3,15 @@
  *
  * This file is the single declaration of public roots, configuration attributes and their permitted
  * values, authored parts, public state, component CSS variables, and events. `generate-elements.mjs`
- * projects it into `src/contracts.ts`, `custom-elements.json`, the define entrypoints, and the JSX
- * types. `validate-contracts.mjs` proves the declared values against the stylesheets in both
- * directions, so a value documented here is a value the CSS actually implements.
+ * projects it into `src/values.ts`, `src/contracts.ts`, `custom-elements.json`, the define
+ * entrypoints, the framework typings, and the editor data files. `validate-contracts.mjs` proves the
+ * declared values against the stylesheets in both directions, so a value documented here is a value
+ * the CSS actually implements.
  *
- * Attribute values are declared per component, not per value set: `data-ui-density` accepts three
- * values on Field and two on Alert because that is what the stylesheets implement.
+ * Permitted values live in `valueSets` below and are referenced by name, so each set is written once
+ * and every consumer of it — contracts, manifest, typings, editor data, stories — reads the same
+ * list. A component still chooses which set it implements: `data-ui-density` resolves to three
+ * values on Field and two on Alert because that is what those stylesheets implement.
  */
 
 /**
@@ -16,23 +19,31 @@
  * reflects the attribute, which is not always the attribute name: `ui-popover` reflects `role`
  * through `roleValue`, and `ui-toggle-group`'s CSS-only `attached` reflects nothing at all.
  *
+ * `set` names an entry in `valueSets`, which is where the permitted values themselves are written.
+ * An attribute with no `set` takes free-form input such as an element id or a CSS color.
+ *
  * @param {string} name
  * @param {string} type
  * @param {{
- *   values?: readonly string[],
+ *   set?: string,
  *   default?: string,
  *   description?: string,
  *   property?: false | { name: string, type?: string, live?: string },
  * }} [options]
  */
-const attribute = (name, type, options = {}) => ({
-  name,
-  type,
-  ...(options.values ? { values: options.values } : {}),
-  ...(options.default === undefined ? {} : { default: options.default }),
-  description: options.description ?? '',
-  property: options.property === undefined ? { name } : options.property,
-})
+const attribute = (name, type, options = {}) => {
+  if (options.set !== undefined && !Object.hasOwn(valueSets, options.set)) {
+    throw new Error(`Attribute ${name} references the undeclared value set ${options.set}`)
+  }
+  return {
+    name,
+    type,
+    ...(options.set ? { set: options.set, values: valueSets[options.set].values } : {}),
+    ...(options.default === undefined ? {} : { default: options.default }),
+    description: options.description ?? '',
+    property: options.property === undefined ? { name } : options.property,
+  }
+}
 
 /** The authored-default plus live-value property pair used by every value-bearing collection. */
 const valueProperty = { name: 'defaultValue', type: 'string', live: 'value' }
@@ -149,37 +160,191 @@ const customElement = (
   accessibility: a11y,
 })
 
-// Repeated value sets. Each component still declares which of these its stylesheet implements.
-const SIZES = ['sm', 'md', 'lg']
-const DENSITIES = ['compact', 'normal', 'spacious']
-const COMPACT_DENSITIES = ['compact', 'normal']
-const ORIENTATIONS = ['horizontal', 'vertical']
-const PLACEMENTS = ['bottom', 'top', 'right', 'left']
-const STATUS_VARIANTS = ['neutral', 'accent', 'success', 'warning', 'danger']
+/**
+ * Every public attribute value set, declared exactly once.
+ *
+ * `generate-elements.mjs` emits each entry into `src/values.ts` as an `as const` array under the key
+ * used here plus a union type under `type`, and the module named by `module` re-exports both. That
+ * makes this table the only place a permitted value is written: the stylesheets prove it, the
+ * contracts render it, the manifest types it, the framework typings complete it, and
+ * `validate-contracts.mjs` fails when the two disagree.
+ *
+ * Sets with identical values still get separate names when they are separate public exports.
+ * `buttonSizes`, `primitiveSizes`, and `formControlSizes` are all `sm | md | lg`, and a consumer
+ * importing one of them must keep getting that name back.
+ */
+export const valueSets = {
+  buttonVariants: {
+    type: 'ButtonVariant',
+    module: 'button',
+    values: ['primary', 'secondary', 'outline', 'ghost', 'danger', 'danger-outline', 'link'],
+  },
+  buttonSizes: { type: 'ButtonSize', module: 'button', values: ['sm', 'md', 'lg'] },
+  alertVariants: {
+    type: 'AlertVariant',
+    module: 'primitives',
+    values: ['neutral', 'accent', 'success', 'warning', 'danger'],
+  },
+  spinnerVariants: {
+    type: 'SpinnerVariant',
+    module: 'primitives',
+    values: ['neutral', 'accent', 'success', 'warning', 'danger'],
+  },
+  badgeVariants: {
+    type: 'BadgeVariant',
+    module: 'primitives',
+    values: ['neutral', 'accent', 'success', 'warning', 'danger', 'outline'],
+  },
+  avatarShapes: {
+    type: 'AvatarShape',
+    module: 'primitives',
+    values: ['circle', 'rounded', 'square'],
+  },
+  avatarStatuses: {
+    type: 'AvatarStatus',
+    module: 'primitives',
+    values: ['online', 'away', 'busy', 'offline'],
+  },
+  cardVariants: {
+    type: 'CardVariant',
+    module: 'primitives',
+    values: ['surface', 'filled', 'ghost'],
+  },
+  linkVariants: {
+    type: 'LinkVariant',
+    module: 'primitives',
+    values: ['default', 'muted', 'danger'],
+  },
+  listVariants: {
+    type: 'ListVariant',
+    module: 'primitives',
+    values: ['plain', 'divided', 'inset', 'ordered'],
+  },
+  separatorVariants: {
+    type: 'SeparatorVariant',
+    module: 'primitives',
+    values: ['default', 'strong', 'centered'],
+  },
+  separatorOrientations: {
+    type: 'SeparatorOrientation',
+    module: 'primitives',
+    values: ['horizontal', 'vertical'],
+  },
+  skeletonShapes: {
+    type: 'SkeletonShape',
+    module: 'primitives',
+    values: ['text', 'circle', 'media'],
+  },
+  skeletonWidths: {
+    type: 'SkeletonWidth',
+    module: 'primitives',
+    values: ['full', 'medium', 'short'],
+  },
+  groupOrientations: {
+    type: 'GroupOrientation',
+    module: 'primitives',
+    values: ['horizontal', 'vertical'],
+  },
+  primitiveSizes: { type: 'PrimitiveSize', module: 'primitives', values: ['sm', 'md', 'lg'] },
+  primitiveDensities: {
+    type: 'PrimitiveDensity',
+    module: 'primitives',
+    values: ['compact', 'normal', 'spacious'],
+  },
+  compactDensities: {
+    type: 'CompactDensity',
+    module: 'primitives',
+    values: ['compact', 'normal'],
+  },
+  tableAlignments: { type: 'TableAlignment', module: 'primitives', values: ['start', 'end'] },
+  formControlSizes: { type: 'FormControlSize', module: 'forms', values: ['sm', 'md', 'lg'] },
+  fieldLayouts: { type: 'FieldLayout', module: 'forms', values: ['stacked', 'inline'] },
+  formDensities: {
+    type: 'FormDensity',
+    module: 'forms',
+    values: ['compact', 'normal', 'spacious'],
+  },
+  choiceGroupOrientations: {
+    type: 'ChoiceGroupOrientation',
+    module: 'forms',
+    values: ['vertical', 'horizontal'],
+  },
+  floatingPlacements: {
+    type: 'FloatingPlacement',
+    module: 'floating',
+    values: ['bottom', 'top', 'right', 'left'],
+  },
+  tabsOrientations: { type: 'TabsOrientation', module: 'tabs', values: ['horizontal', 'vertical'] },
+  tabsActivations: { type: 'TabsActivation', module: 'tabs', values: ['automatic', 'manual'] },
+  dialogKinds: { type: 'DialogKind', module: 'dialog', values: ['dialog', 'alert'] },
+  sheetPositions: {
+    type: 'SheetPosition',
+    module: 'sheet',
+    values: ['top', 'right', 'bottom', 'left'],
+  },
+  popoverRoles: {
+    type: 'PopoverRole',
+    module: 'popover',
+    values: ['dialog', 'menu', 'listbox', 'tooltip'],
+  },
+  hoverCardVariants: { type: 'HoverCardVariant', module: 'hover-card', values: ['tooltip'] },
+  menuOrientations: { type: 'MenuOrientation', module: 'menu', values: ['horizontal', 'vertical'] },
+  toolbarOrientations: {
+    type: 'ToolbarOrientation',
+    module: 'toolbar',
+    values: ['horizontal', 'vertical'],
+  },
+  toasterPlacements: {
+    type: 'ToasterPlacement',
+    module: 'toast',
+    values: ['top-start', 'top-center', 'top-end', 'bottom-start', 'bottom-center', 'bottom-end'],
+  },
+  toasterStacks: { type: 'ToasterStack', module: 'toast', values: ['overlap', 'list'] },
+  toggleGroupOrientations: {
+    type: 'ToggleGroupOrientation',
+    module: 'toggle-group',
+    values: ['horizontal', 'vertical'],
+  },
+  toggleGroupSelections: {
+    type: 'ToggleGroupSelection',
+    module: 'toggle-group',
+    values: ['single', 'multiple'],
+  },
+  colorPickerFormats: {
+    type: 'ColorPickerFormat',
+    module: 'color-picker',
+    values: ['oklch', 'oklab', 'lch', 'lab', 'hex', 'rgb', 'hsl', 'hwb', 'p3', 'rec2020'],
+  },
+}
 
-const size = (description = 'Control height, padding, and font size.') =>
-  attribute('data-ui-size', 'string', { values: SIZES, default: 'md', description })
+const size = (set, description = 'Control height, padding, and font size.') =>
+  attribute('data-ui-size', 'string', { set, default: 'md', description })
 
-const density = (values, description = 'Internal spacing.') =>
-  attribute('data-ui-density', 'string', { values, default: 'normal', description })
+const density = (set, description = 'Internal spacing.') =>
+  attribute('data-ui-density', 'string', { set, default: 'normal', description })
 
-const transitionEvents = (subject) => [
+/**
+ * `detail` names the element's own exported detail type rather than the shared
+ * `UITransitionDetail`, so the manifest and every generated framework typing hand a consumer the
+ * value type the element actually dispatches.
+ */
+const transitionEvents = (subject, detail) => [
   event(
     'ui-before-change',
-    'CustomEvent<UITransitionDetail>',
+    `CustomEvent<${detail}>`,
     `Cancelable proposal dispatched before ${subject} changes. Call \`preventDefault()\` to reject the transition and keep the current value.`,
     true,
   ),
   event(
     'ui-change',
-    'CustomEvent<UITransitionDetail>',
+    `CustomEvent<${detail}>`,
     `Dispatched after ${subject} has changed. Bubbles and is composed.`,
   ),
 ]
 
-const overlayEvents = (subject) => [
-  event('ui-open', 'CustomEvent<{ source: string }>', `Dispatched after the ${subject} opens.`),
-  event('ui-close', 'CustomEvent<{ source: string }>', `Dispatched after the ${subject} closes.`),
+const overlayEvents = (subject, detail) => [
+  event('ui-open', `CustomEvent<${detail}>`, `Dispatched after the ${subject} opens.`),
+  event('ui-close', `CustomEvent<${detail}>`, `Dispatched after the ${subject} closes.`),
 ]
 
 export const components = [
@@ -189,12 +354,12 @@ export const components = [
     'button.css',
     [
       attribute('data-ui-variant', 'string', {
-        values: ['primary', 'secondary', 'outline', 'ghost', 'danger', 'danger-outline', 'link'],
+        set: 'buttonVariants',
         default: 'primary',
         description:
           'Visual intent. Use `primary` for the main action in a view, `secondary` for neutral actions, `outline` when the action needs a stronger edge, `ghost` for low-emphasis toolbar actions, `danger` and `danger-outline` for destructive actions, and `link` for an action that should read as inline text.',
       }),
-      size(),
+      size('buttonSizes'),
     ],
     [],
     [state('disabled', 'native', true, 'Native `disabled`, or `aria-disabled` on an anchor.')],
@@ -220,12 +385,12 @@ export const components = [
     'toggle.css',
     [
       attribute('data-ui-variant', 'string', {
-        values: ['primary', 'secondary', 'outline', 'ghost', 'danger', 'danger-outline', 'link'],
+        set: 'buttonVariants',
         default: 'primary',
         description:
           'Visual intent, resolved by `button.css`. Author `class="ui-button ui-toggle"` so the shared button styling applies.',
       }),
-      size('Control height, padding, and font size. Resolved by `button.css`.'),
+      size('buttonSizes', 'Control height, padding, and font size. Resolved by `button.css`.'),
     ],
     [],
     [
@@ -239,12 +404,12 @@ export const components = [
     'alert.css',
     [
       attribute('data-ui-variant', 'string', {
-        values: STATUS_VARIANTS,
+        set: 'alertVariants',
         default: 'neutral',
         description:
           'Status intent. This is styling only — set `role="status"` or `role="alert"` yourself to control how assistive technology announces the message.',
       }),
-      density(COMPACT_DENSITIES),
+      density('compactDensities'),
     ],
     [
       part('icon', false, undefined, 'Decorative status icon. Mark it `aria-hidden="true"`.'),
@@ -259,14 +424,14 @@ export const components = [
     'ui-avatar',
     'avatar.css',
     [
-      size('Avatar diameter.'),
+      size('primitiveSizes', 'Avatar diameter.'),
       attribute('data-ui-shape', 'string', {
-        values: ['circle', 'rounded', 'square'],
+        set: 'avatarShapes',
         default: 'circle',
         description: 'Corner treatment.',
       }),
       attribute('data-ui-status', 'string', {
-        values: ['online', 'away', 'busy', 'offline'],
+        set: 'avatarStatuses',
         description:
           'Presence indicator color. Omit the attribute to hide the indicator. The dot is decorative, so also expose the status in text.',
       }),
@@ -283,11 +448,11 @@ export const components = [
     'badge.css',
     [
       attribute('data-ui-variant', 'string', {
-        values: [...STATUS_VARIANTS, 'outline'],
+        set: 'badgeVariants',
         default: 'neutral',
         description: 'Status intent.',
       }),
-      size('Badge height and font size.'),
+      size('primitiveSizes', 'Badge height and font size.'),
     ],
     [part('dot', false, undefined, 'Leading status dot. Decorative.')],
   ),
@@ -297,13 +462,13 @@ export const components = [
     'separator.css',
     [
       attribute('data-ui-orientation', 'string', {
-        values: ORIENTATIONS,
+        set: 'separatorOrientations',
         default: 'horizontal',
         description:
           'Rule direction. Also set `aria-orientation="vertical"` on an `<hr>` when you change this.',
       }),
       attribute('data-ui-variant', 'string', {
-        values: ['default', 'strong', 'centered'],
+        set: 'separatorVariants',
         default: 'default',
         description:
           'Line weight and label placement. `centered` positions the label part in the middle of the rule.',
@@ -317,11 +482,11 @@ export const components = [
     'card.css',
     [
       attribute('data-ui-variant', 'string', {
-        values: ['surface', 'filled', 'ghost'],
+        set: 'cardVariants',
         default: 'surface',
         description: 'Background and border treatment.',
       }),
-      density(COMPACT_DENSITIES),
+      density('compactDensities'),
     ],
     [
       part('header', false, undefined, 'Top region, usually the title and meta.'),
@@ -334,14 +499,14 @@ export const components = [
     ],
   ),
   css('skeleton', 'ui-skeleton', 'skeleton.css', [
-    size('Line height for the `text` shape, diameter for `circle`.'),
+    size('primitiveSizes', 'Line height for the `text` shape, diameter for `circle`.'),
     attribute('data-ui-shape', 'string', {
-      values: ['text', 'circle', 'media'],
+      set: 'skeletonShapes',
       default: 'text',
       description: 'Placeholder geometry.',
     }),
     attribute('data-ui-width', 'string', {
-      values: ['full', 'medium', 'short'],
+      set: 'skeletonWidths',
       default: 'full',
       description: 'Inline size, so a group of lines can look like real text.',
     }),
@@ -350,7 +515,7 @@ export const components = [
     'progress',
     'ui-progress',
     'progress.css',
-    [size('Track thickness and label size.'), density(COMPACT_DENSITIES)],
+    [size('primitiveSizes', 'Track thickness and label size.'), density('compactDensities')],
     [
       part('header', false, undefined, 'Row holding the label and output.'),
       part('output', false, undefined, 'Live percentage or count. Use `<output>`.'),
@@ -359,7 +524,7 @@ export const components = [
   ),
   css('link', 'ui-link', 'link.css', [
     attribute('data-ui-variant', 'string', {
-      values: ['default', 'muted', 'danger'],
+      set: 'linkVariants',
       default: 'default',
       description: 'Link color intent.',
     }),
@@ -368,11 +533,11 @@ export const components = [
   css('code', 'ui-code', 'code.css'),
   css('group', 'ui-group', 'group.css', [
     attribute('data-ui-orientation', 'string', {
-      values: ORIENTATIONS,
+      set: 'groupOrientations',
       default: 'horizontal',
       description: 'Layout direction of the grouped controls.',
     }),
-    density(DENSITIES, 'Gap between grouped controls.'),
+    density('primitiveDensities', 'Gap between grouped controls.'),
     attribute('data-ui-wrap', 'boolean', {
       description: 'Present to let the group wrap onto multiple lines.',
     }),
@@ -387,12 +552,12 @@ export const components = [
     'list.css',
     [
       attribute('data-ui-variant', 'string', {
-        values: ['plain', 'divided', 'inset', 'ordered'],
+        set: 'listVariants',
         default: 'plain',
         description:
           'Row treatment. Use `ordered` together with an `<ol>` element, not instead of one.',
       }),
-      density(COMPACT_DENSITIES, 'Row padding.'),
+      density('compactDensities', 'Row padding.'),
     ],
     [
       part('item', false, undefined, 'One row. Use `<li>`.'),
@@ -405,9 +570,9 @@ export const components = [
     'ui-table',
     'table.css',
     [
-      density(COMPACT_DENSITIES, 'Cell padding.'),
+      density('compactDensities', 'Cell padding.'),
       attribute('data-ui-align', 'string', {
-        values: ['start', 'end'],
+        set: 'tableAlignments',
         default: 'start',
         description:
           'Cell text alignment. Set it on a `<th>` or `<td>`, not on the table. `end` also enables tabular numerals.',
@@ -420,19 +585,19 @@ export const components = [
     ],
   ),
   css('disclosure', 'ui-disclosure', 'disclosure.css', [
-    density(COMPACT_DENSITIES, 'Summary and content padding.'),
+    density('compactDensities', 'Summary and content padding.'),
   ]),
   css('collapsible', 'ui-collapsible', 'collapsible.css', [
-    density(COMPACT_DENSITIES, 'Summary and content padding.'),
+    density('compactDensities', 'Summary and content padding.'),
   ]),
   css(
     'spinner',
     'ui-spinner',
     'spinner.css',
     [
-      size('Spinner diameter.'),
+      size('primitiveSizes', 'Spinner diameter.'),
       attribute('data-ui-variant', 'string', {
-        values: STATUS_VARIANTS,
+        set: 'spinnerVariants',
         default: 'neutral',
         description: 'Indicator color.',
       }),
@@ -443,7 +608,7 @@ export const components = [
     'empty',
     'ui-empty',
     'empty.css',
-    [density(DENSITIES, 'Vertical rhythm of the empty state.')],
+    [density('primitiveDensities', 'Vertical rhythm of the empty state.')],
     [
       part('art', false, undefined, 'Decorative illustration or icon.'),
       part('actions', false, undefined, 'Container for the one clear next action.'),
@@ -474,11 +639,11 @@ export const components = [
     'forms.css',
     [
       attribute('data-ui-layout', 'string', {
-        values: ['stacked', 'inline'],
+        set: 'fieldLayouts',
         default: 'stacked',
         description: 'Whether the label sits above the control or beside it.',
       }),
-      density(DENSITIES, 'Gap between label, control, description, and error.'),
+      density('formDensities', 'Gap between label, control, description, and error.'),
     ],
     [part('control', false, undefined, 'Wrapper around the native control when one is needed.')],
     [
@@ -497,7 +662,7 @@ export const components = [
     'input',
     'ui-input',
     'forms.css',
-    [size()],
+    [size('formControlSizes')],
     [],
     [
       state('invalid', 'native', true, 'Native `:invalid`, or `aria-invalid="true"`.'),
@@ -508,7 +673,7 @@ export const components = [
     'textarea',
     'ui-textarea',
     'forms.css',
-    [size()],
+    [size('formControlSizes')],
     [],
     [
       state('invalid', 'native', true, 'Native `:invalid`, or `aria-invalid="true"`.'),
@@ -519,7 +684,7 @@ export const components = [
     'nativeSelect',
     'ui-select',
     'forms.css',
-    [size()],
+    [size('formControlSizes')],
     [],
     [
       state('invalid', 'native', true, 'Native `:invalid`, or `aria-invalid="true"`.'),
@@ -552,7 +717,7 @@ export const components = [
     'choice',
     'ui-choice',
     'forms.css',
-    [density(DENSITIES, 'Gap between the control and its label.')],
+    [density('formDensities', 'Gap between the control and its label.')],
     [
       part('body', false, undefined, 'Wrapper for the title and description beside the control.'),
       part('title', false, undefined, 'The choice label text.'),
@@ -565,11 +730,11 @@ export const components = [
     'forms.css',
     [
       attribute('data-ui-orientation', 'string', {
-        values: ORIENTATIONS,
+        set: 'choiceGroupOrientations',
         default: 'vertical',
         description: 'Layout direction of the choices.',
       }),
-      density(DENSITIES, 'Gap between choices.'),
+      density('formDensities', 'Gap between choices.'),
     ],
     [
       part('description', false, undefined, 'Group-level help text under the legend.'),
@@ -599,7 +764,7 @@ export const components = [
     'range',
     'ui-range',
     'range.css',
-    [size('Track thickness, thumb diameter, and label size.')],
+    [size('formControlSizes', 'Track thickness, thumb diameter, and label size.')],
     [part('hint', false, undefined, 'Supporting text or the live `<output>` value.')],
     [
       state('invalid', 'native', true, 'Native `:invalid`, or `aria-invalid="true"`.'),
@@ -631,13 +796,13 @@ export const components = [
     'tabs.css',
     [
       attribute('activation', 'string', {
-        values: ['automatic', 'manual'],
+        set: 'tabsActivations',
         default: 'automatic',
         description:
           'Whether moving focus with the arrow keys selects the tab immediately (`automatic`) or waits for Enter or Space (`manual`). Use `manual` when selecting a tab is expensive.',
       }),
       attribute('orientation', 'string', {
-        values: ORIENTATIONS,
+        set: 'tabsOrientations',
         default: 'horizontal',
         description:
           'Arrow-key axis. Mirrored onto `aria-orientation` on the tablist during enhancement.',
@@ -665,7 +830,7 @@ export const components = [
     ],
     [state('selected', 'aria', true, '`aria-selected="true"` on the active tab.')],
     [],
-    transitionEvents('the selected tab'),
+    transitionEvents('the selected tab', 'TabsChangeDetail'),
     accessibility(
       'tabs',
       'Tabs',
@@ -690,7 +855,7 @@ export const components = [
     'dialog.css',
     [
       attribute('kind', 'string', {
-        values: ['dialog', 'alert'],
+        set: 'dialogKinds',
         default: 'dialog',
         description:
           'Whether the panel is a regular dialog or an alert dialog. `alert` resolves to `role="alertdialog"`, for a destructive confirmation the user must answer.',
@@ -738,7 +903,7 @@ export const components = [
         description: 'Present to render the sheet open on load.',
       }),
       attribute('position', 'string', {
-        values: ['top', 'right', 'bottom', 'left'],
+        set: 'sheetPositions',
         default: 'right',
         description: 'Which viewport edge the sheet slides in from.',
       }),
@@ -751,7 +916,7 @@ export const components = [
     [],
     [],
     [
-      ...overlayEvents('sheet'),
+      ...overlayEvents('sheet', 'SheetEventDetail'),
       event(
         'ui-dismiss',
         'CustomEvent<SheetEventDetail>',
@@ -775,14 +940,14 @@ export const components = [
     'popover.css',
     [
       attribute('placement', 'string', {
-        values: PLACEMENTS,
+        set: 'floatingPlacements',
         default: 'bottom',
         description:
           'Preferred side of the trigger. Positioning uses CSS anchor positioning, so the browser may flip the surface to keep it on screen.',
       }),
       attribute('role', 'string', {
         property: { name: 'roleValue' },
-        values: ['dialog', 'menu', 'listbox', 'tooltip'],
+        set: 'popoverRoles',
         default: 'dialog',
         description:
           'Semantics applied to the surface, and the `aria-haspopup` value set on the trigger. Choose it from the interaction, not the appearance.',
@@ -821,12 +986,12 @@ export const components = [
           'Id of an element to anchor against instead of the trigger. Use it when the visual anchor differs from the control that opens the card.',
       }),
       attribute('variant', 'string', {
-        values: ['tooltip'],
+        set: 'hoverCardVariants',
         description:
           'Set `tooltip` for the compact tooltip treatment. Omit for the roomier hover-card surface.',
       }),
       attribute('placement', 'string', {
-        values: PLACEMENTS,
+        set: 'floatingPlacements',
         default: 'bottom',
         description: 'Preferred side of the anchor.',
       }),
@@ -867,7 +1032,7 @@ export const components = [
     'menu.css',
     [
       attribute('orientation', 'string', {
-        values: ORIENTATIONS,
+        set: 'menuOrientations',
         default: 'vertical',
         description:
           'Arrow-key axis. Defaults to `horizontal` when the menu part is `role="menubar"`.',
@@ -919,7 +1084,7 @@ export const components = [
         description: 'Present to render the menu open on load.',
       }),
       attribute('placement', 'string', {
-        values: PLACEMENTS,
+        set: 'floatingPlacements',
         default: 'bottom',
         description: 'Preferred side of the trigger.',
       }),
@@ -930,7 +1095,7 @@ export const components = [
     ],
     [],
     [],
-    overlayEvents('menu'),
+    overlayEvents('menu', 'MenuButtonToggleDetail'),
     accessibility(
       'menu-button',
       'Menu Button',
@@ -951,7 +1116,7 @@ export const components = [
     'toolbar.css',
     [
       attribute('orientation', 'string', {
-        values: ORIENTATIONS,
+        set: 'toolbarOrientations',
         default: 'horizontal',
         description: 'Arrow-key axis across the toolbar controls.',
       }),
@@ -984,7 +1149,7 @@ export const components = [
     'choice-group.css',
     [
       attribute('orientation', 'string', {
-        values: ORIENTATIONS,
+        set: 'choiceGroupOrientations',
         default: 'vertical',
         description: 'Layout and arrow-key axis.',
       }),
@@ -1004,7 +1169,7 @@ export const components = [
     ],
     [],
     [],
-    transitionEvents('the checked radio'),
+    transitionEvents('the checked radio', 'RadioGroupChangeDetail'),
     accessibility(
       'radio',
       'Radio Group',
@@ -1022,7 +1187,7 @@ export const components = [
     'choice-group.css',
     [
       attribute('orientation', 'string', {
-        values: ORIENTATIONS,
+        set: 'choiceGroupOrientations',
         default: 'vertical',
         description: 'Layout and arrow-key axis.',
       }),
@@ -1037,7 +1202,7 @@ export const components = [
     ],
     [],
     [],
-    transitionEvents('the set of checked boxes'),
+    transitionEvents('the set of checked boxes', 'CheckboxGroupChangeDetail'),
     accessibility(
       'checkbox',
       'Checkbox',
@@ -1075,7 +1240,7 @@ export const components = [
     ],
     [state('selected', 'aria', true, '`aria-selected="true"` on selected options.')],
     [],
-    transitionEvents('the selection'),
+    transitionEvents('the selection', 'ListboxChangeDetail'),
     accessibility(
       'listbox',
       'Listbox',
@@ -1103,7 +1268,7 @@ export const components = [
         description: 'Present to render the listbox open on load.',
       }),
       attribute('placement', 'string', {
-        values: PLACEMENTS,
+        set: 'floatingPlacements',
         default: 'bottom',
         description: 'Preferred side of the trigger for the listbox surface.',
       }),
@@ -1126,7 +1291,7 @@ export const components = [
     ],
     [],
     [],
-    transitionEvents('the selected option'),
+    transitionEvents('the selected option', 'SelectChangeDetail'),
     accessibility(
       'combobox',
       'Select-Only Combobox',
@@ -1174,7 +1339,7 @@ export const components = [
     ],
     [],
     [],
-    transitionEvents('the selected option'),
+    transitionEvents('the selected option', 'ComboboxChangeDetail'),
     accessibility(
       'combobox',
       'Combobox',
@@ -1197,19 +1362,12 @@ export const components = [
     'toast.css',
     [
       attribute('placement', 'string', {
-        values: [
-          'top-start',
-          'top-center',
-          'top-end',
-          'bottom-start',
-          'bottom-center',
-          'bottom-end',
-        ],
+        set: 'toasterPlacements',
         default: 'bottom-end',
         description: 'Corner or edge of the viewport the toasts stack against.',
       }),
       attribute('stack', 'string', {
-        values: ['overlap', 'list'],
+        set: 'toasterStacks',
         default: 'overlap',
         description:
           'Whether queued toasts overlap into a deck (`overlap`) or lay out as a full list (`list`).',
@@ -1279,12 +1437,12 @@ export const components = [
           'Present to join the buttons into one segmented control. Styling only, resolved by `toggle.css`.',
       }),
       attribute('orientation', 'string', {
-        values: ORIENTATIONS,
+        set: 'toggleGroupOrientations',
         default: 'horizontal',
         description: 'Layout and arrow-key axis.',
       }),
       attribute('selection', 'string', {
-        values: ['single', 'multiple'],
+        set: 'toggleGroupSelections',
         default: 'single',
         description:
           'Whether pressing one button releases the others (`single`) or toggles independently (`multiple`).',
@@ -1300,7 +1458,7 @@ export const components = [
     ],
     [],
     [],
-    transitionEvents('the pressed set'),
+    transitionEvents('the pressed set', 'ToggleGroupChangeDetail'),
     accessibility(
       'button',
       'Button',
@@ -1348,7 +1506,7 @@ export const components = [
     'color-picker.css',
     [
       attribute('format', 'string', {
-        values: ['oklch', 'oklab', 'lch', 'lab', 'hex', 'rgb', 'hsl', 'hwb', 'p3', 'rec2020'],
+        set: 'colorPickerFormats',
         default: 'oklch',
         description:
           'Color space the channel controls edit and the raw input round-trips through. The picker converts the current value when this changes.',

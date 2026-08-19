@@ -12,10 +12,10 @@ import {
   type FocusTarget,
 } from '@timelessui/core'
 import { queryOwnedPart } from './parts'
+import { sheetPositions } from './values/sheet'
+import type { SheetPosition } from './values/sheet'
 
-export const sheetPositions = ['top', 'right', 'bottom', 'left'] as const
-
-export type SheetPosition = (typeof sheetPositions)[number]
+export { sheetPositions, type SheetPosition }
 export type SheetDismissSource = 'close' | 'escape' | 'outside'
 export type SheetEventSource = SheetDismissSource | 'api' | 'trigger'
 

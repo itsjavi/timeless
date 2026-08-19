@@ -1,0 +1,249 @@
+import type {
+  AlertVariant,
+  AvatarShape,
+  AvatarStatus,
+  BadgeVariant,
+  CardVariant,
+  CompactDensity,
+  GroupOrientation,
+  LinkVariant,
+  ListVariant,
+  PrimitiveDensity,
+  PrimitiveSize,
+  SeparatorOrientation,
+  SeparatorVariant,
+  SkeletonShape,
+  SkeletonWidth,
+  SpinnerVariant,
+  TableAlignment,
+} from './values/primitives'
+import type { ButtonSize, ButtonVariant } from './values/button'
+import type {
+  ChoiceGroupOrientation,
+  FieldLayout,
+  FormControlSize,
+  FormDensity,
+} from './values/forms'
+
+import { componentContracts } from './contracts'
+
+/** Configuration accepted by each CSS-only component root, keyed by contract name. */
+export type UIAttributeConfig = {
+  button: {
+    /** Visual intent. Use `primary` for the main action in a view, `secondary` for neutral actions, `outline` when the action needs a stronger edge, `ghost` for low-emphasis toolbar actions, `danger` and `danger-outline` for destructive actions, and `link` for an action that should read as inline text. */
+    variant?: ButtonVariant
+    /** Control height, padding, and font size. */
+    size?: ButtonSize
+  }
+  toggle: {
+    /** Visual intent, resolved by `button.css`. Author `class="ui-button ui-toggle"` so the shared button styling applies. */
+    variant?: ButtonVariant
+    /** Control height, padding, and font size. Resolved by `button.css`. */
+    size?: ButtonSize
+  }
+  alert: {
+    /** Status intent. This is styling only — set `role="status"` or `role="alert"` yourself to control how assistive technology announces the message. */
+    variant?: AlertVariant
+    /** Internal spacing. */
+    density?: CompactDensity
+  }
+  avatar: {
+    /** Avatar diameter. */
+    size?: PrimitiveSize
+    /** Corner treatment. */
+    shape?: AvatarShape
+    /** Presence indicator color. Omit the attribute to hide the indicator. The dot is decorative, so also expose the status in text. */
+    status?: AvatarStatus
+  }
+  badge: {
+    /** Status intent. */
+    variant?: BadgeVariant
+    /** Badge height and font size. */
+    size?: PrimitiveSize
+  }
+  separator: {
+    /** Rule direction. Also set `aria-orientation="vertical"` on an `<hr>` when you change this. */
+    orientation?: SeparatorOrientation
+    /** Line weight and label placement. `centered` positions the label part in the middle of the rule. */
+    variant?: SeparatorVariant
+  }
+  card: {
+    /** Background and border treatment. */
+    variant?: CardVariant
+    /** Internal spacing. */
+    density?: CompactDensity
+  }
+  skeleton: {
+    /** Line height for the `text` shape, diameter for `circle`. */
+    size?: PrimitiveSize
+    /** Placeholder geometry. */
+    shape?: SkeletonShape
+    /** Inline size, so a group of lines can look like real text. */
+    width?: SkeletonWidth
+  }
+  progress: {
+    /** Track thickness and label size. */
+    size?: PrimitiveSize
+    /** Internal spacing. */
+    density?: CompactDensity
+  }
+  link: {
+    /** Link color intent. */
+    variant?: LinkVariant
+  }
+  kbd: {}
+  code: {}
+  group: {
+    /** Layout direction of the grouped controls. */
+    orientation?: GroupOrientation
+    /** Gap between grouped controls. */
+    density?: PrimitiveDensity
+    /** Present to let the group wrap onto multiple lines. */
+    wrap?: boolean
+    /** Present to collapse the gap and join adjacent controls into one segmented control. */
+    attached?: boolean
+  }
+  list: {
+    /** Row treatment. Use `ordered` together with an `<ol>` element, not instead of one. */
+    variant?: ListVariant
+    /** Row padding. */
+    density?: CompactDensity
+  }
+  table: {
+    /** Cell padding. */
+    density?: CompactDensity
+    /** Cell text alignment. Set it on a `<th>` or `<td>`, not on the table. `end` also enables tabular numerals. */
+    align?: TableAlignment
+  }
+  disclosure: {
+    /** Summary and content padding. */
+    density?: CompactDensity
+  }
+  collapsible: {
+    /** Summary and content padding. */
+    density?: CompactDensity
+  }
+  spinner: {
+    /** Spinner diameter. */
+    size?: PrimitiveSize
+    /** Indicator color. */
+    variant?: SpinnerVariant
+  }
+  empty: {
+    /** Vertical rhythm of the empty state. */
+    density?: PrimitiveDensity
+  }
+  meter: {}
+  colorSwatch: {}
+  field: {
+    /** Whether the label sits above the control or beside it. */
+    layout?: FieldLayout
+    /** Gap between label, control, description, and error. */
+    density?: FormDensity
+  }
+  label: {}
+  description: {}
+  error: {}
+  input: {
+    /** Control height, padding, and font size. */
+    size?: FormControlSize
+  }
+  textarea: {
+    /** Control height, padding, and font size. */
+    size?: FormControlSize
+  }
+  nativeSelect: {
+    /** Control height, padding, and font size. */
+    size?: FormControlSize
+  }
+  checkbox: {}
+  radio: {}
+  choice: {
+    /** Gap between the control and its label. */
+    density?: FormDensity
+  }
+  choiceGroup: {
+    /** Layout direction of the choices. */
+    orientation?: ChoiceGroupOrientation
+    /** Gap between choices. */
+    density?: FormDensity
+  }
+  switch: {}
+  range: {
+    /** Track thickness, thumb diameter, and label size. */
+    size?: FormControlSize
+  }
+  file: {}
+}
+
+export type UIAttributeComponent = keyof UIAttributeConfig
+
+/** Attributes ready to spread onto a native element, in any framework or template language. */
+export type UIAttributeResult = { class: string } & Record<`data-ui-${string}`, string>
+
+/**
+ * Builds the root class and `data-ui-*` attributes for a CSS-only component.
+ *
+ * ```ts
+ * uiAttributes('button', { variant: 'primary', size: 'lg' })
+ * // { class: 'ui-button', 'data-ui-variant': 'primary', 'data-ui-size': 'lg' }
+ * ```
+ *
+ * Boolean attributes are presence-based, so `true` emits an empty value and `false` omits the
+ * attribute entirely. Extra classes are appended after the root class, never in place of it.
+ */
+export function uiAttributes<TComponent extends UIAttributeComponent>(
+  component: TComponent,
+  config: UIAttributeConfig[TComponent] & { class?: string } = {} as UIAttributeConfig[TComponent],
+): UIAttributeResult {
+  const { class: extraClass, ...values } = config as Record<string, unknown>
+  const result: UIAttributeResult = {
+    class: [componentContracts[component].root.name, extraClass].filter(Boolean).join(' '),
+  }
+  for (const [key, value] of Object.entries(values)) {
+    if (value === undefined || value === false) continue
+    result[`data-ui-${key}`] = value === true ? '' : String(value)
+  }
+  return result
+}
+
+export type UIAttributeStringOptions = {
+  /**
+   * Omit any value that equals the contract default, because the default is the stylesheet's base
+   * rule and needs no attribute. Keeps generated markup as short as hand-authored markup. Defaults
+   * to `true`.
+   */
+  readonly omitDefaults?: boolean
+}
+
+/**
+ * The same attributes, serialized for a template literal.
+ *
+ * ```ts
+ * `<button ${uiAttributeString('button', { variant: 'danger' })} type="button">Delete</button>`
+ * // <button class="ui-button" data-ui-variant="danger" type="button">Delete</button>
+ * ```
+ *
+ * Defaults are dropped by default, so the contract owns which values are worth writing down and a
+ * template never restates them.
+ */
+export function uiAttributeString<TComponent extends UIAttributeComponent>(
+  component: TComponent,
+  config: UIAttributeConfig[TComponent] & { class?: string } = {} as UIAttributeConfig[TComponent],
+  options: UIAttributeStringOptions = {},
+): string {
+  const defaults = new Map<string, string | undefined>(
+    componentContracts[component].attributes.map((attribute) => [
+      attribute.name,
+      'default' in attribute ? attribute.default : undefined,
+    ]),
+  )
+  const entries = Object.entries(uiAttributes(component, config)).filter(
+    ([name, value]) => options.omitDefaults === false || defaults.get(name) !== value,
+  )
+  return entries.map(([name, value]) => `${name}="${escapeAttribute(value)}"`).join(' ')
+}
+
+function escapeAttribute(value: string): string {
+  return value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;')
+}

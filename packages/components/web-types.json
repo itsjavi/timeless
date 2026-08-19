@@ -1,0 +1,569 @@
+{
+  "$schema": "https://json.schemastore.org/web-types",
+  "name": "@timelessui/components",
+  "version": "0.0.1",
+  "description-markup": "markdown",
+  "contributions": {
+    "html": {
+      "elements": [
+        {
+          "name": "ui-tabs",
+          "description": "Timeless `ui-tabs`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Tabs pattern. Dispatches `ui-before-change`, `ui-change`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "activation",
+              "description": "Whether moving focus with the arrow keys selects the tab immediately (`automatic`) or waits for Enter or Space (`manual`). Use `manual` when selecting a tab is expensive. Defaults to `automatic`. Exported as `tabsActivations`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'automatic'", "'manual'"]
+              }
+            },
+            {
+              "name": "orientation",
+              "description": "Arrow-key axis. Mirrored onto `aria-orientation` on the tablist during enhancement. Defaults to `horizontal`. Exported as `tabsOrientations`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'horizontal'", "'vertical'"]
+              }
+            },
+            {
+              "name": "value",
+              "description": "The tab selected on load and after a form reset. Match a tab’s `value` attribute. Assign the `value` property for live changes.",
+              "value": {
+                "kind": "plain",
+                "type": "string"
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the selected tab changes. Call `preventDefault()` to reject the transition and keep the current value."
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the selected tab has changed. Bubbles and is composed."
+            }
+          ]
+        },
+        {
+          "name": "ui-dialog",
+          "description": "Timeless `ui-dialog`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Modal Dialog pattern.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "kind",
+              "description": "Whether the panel is a regular dialog or an alert dialog. `alert` resolves to `role=\"alertdialog\"`, for a destructive confirmation the user must answer. Defaults to `dialog`. Exported as `dialogKinds`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'dialog'", "'alert'"]
+              }
+            }
+          ],
+          "events": []
+        },
+        {
+          "name": "ui-sheet",
+          "description": "Timeless `ui-sheet`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Modal Dialog pattern. Dispatches `ui-open`, `ui-close`, `ui-dismiss`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "modal",
+              "description": "Present to open the sheet as a modal, trapping focus and blocking the page behind it. Omit for a non-modal sheet the user can interact around. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "open",
+              "description": "Present to render the sheet open on load. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "position",
+              "description": "Which viewport edge the sheet slides in from. Defaults to `right`. Exported as `sheetPositions`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'top'", "'right'", "'bottom'", "'left'"]
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-open",
+              "description": "Dispatched after the sheet opens."
+            },
+            {
+              "name": "ui-close",
+              "description": "Dispatched after the sheet closes."
+            },
+            {
+              "name": "ui-dismiss",
+              "description": "Dispatched when the sheet closes through Escape or a backdrop click rather than an explicit control."
+            }
+          ]
+        },
+        {
+          "name": "ui-popover",
+          "description": "Timeless `ui-popover`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Disclosure pattern.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "placement",
+              "description": "Preferred side of the trigger. Positioning uses CSS anchor positioning, so the browser may flip the surface to keep it on screen. Defaults to `bottom`. Exported as `floatingPlacements`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'bottom'", "'top'", "'right'", "'left'"]
+              }
+            },
+            {
+              "name": "role",
+              "description": "Semantics applied to the surface, and the `aria-haspopup` value set on the trigger. Choose it from the interaction, not the appearance. Defaults to `dialog`. Exported as `popoverRoles`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'dialog'", "'menu'", "'listbox'", "'tooltip'"]
+              }
+            }
+          ],
+          "events": []
+        },
+        {
+          "name": "ui-hover-card",
+          "description": "Timeless `ui-hover-card`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Tooltip pattern.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "anchor",
+              "description": "Id of an element to anchor against instead of the trigger. Use it when the visual anchor differs from the control that opens the card.",
+              "value": {
+                "kind": "plain",
+                "type": "string"
+              }
+            },
+            {
+              "name": "variant",
+              "description": "Set `tooltip` for the compact tooltip treatment. Omit for the roomier hover-card surface. Exported as `hoverCardVariants`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'tooltip'"]
+              }
+            },
+            {
+              "name": "placement",
+              "description": "Preferred side of the anchor. Defaults to `bottom`. Exported as `floatingPlacements`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'bottom'", "'top'", "'right'", "'left'"]
+              }
+            },
+            {
+              "name": "open-delay",
+              "description": "Milliseconds of hover or focus intent before opening. The resolved number is available on the read-only `openDelay` property. Defaults to `180`.",
+              "value": {
+                "kind": "plain",
+                "type": "number"
+              }
+            },
+            {
+              "name": "close-delay",
+              "description": "Milliseconds after the pointer leaves before closing, so the user can cross the gap into the surface. The resolved number is available on the read-only `closeDelay` property. Defaults to `100`.",
+              "value": {
+                "kind": "plain",
+                "type": "number"
+              }
+            }
+          ],
+          "events": []
+        },
+        {
+          "name": "ui-menu",
+          "description": "Timeless `ui-menu`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Menu and Menubar pattern.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "orientation",
+              "description": "Arrow-key axis. Defaults to `horizontal` when the menu part is `role=\"menubar\"`. Defaults to `vertical`. Exported as `menuOrientations`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'horizontal'", "'vertical'"]
+              }
+            }
+          ],
+          "events": []
+        },
+        {
+          "name": "ui-menu-button",
+          "description": "Timeless `ui-menu-button`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Menu Button pattern. Dispatches `ui-open`, `ui-close`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "open",
+              "description": "Present to render the menu open on load. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "placement",
+              "description": "Preferred side of the trigger. Defaults to `bottom`. Exported as `floatingPlacements`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'bottom'", "'top'", "'right'", "'left'"]
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-open",
+              "description": "Dispatched after the menu opens."
+            },
+            {
+              "name": "ui-close",
+              "description": "Dispatched after the menu closes."
+            }
+          ]
+        },
+        {
+          "name": "ui-toolbar",
+          "description": "Timeless `ui-toolbar`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Toolbar pattern.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "orientation",
+              "description": "Arrow-key axis across the toolbar controls. Defaults to `horizontal`. Exported as `toolbarOrientations`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'horizontal'", "'vertical'"]
+              }
+            }
+          ],
+          "events": []
+        },
+        {
+          "name": "ui-radio-group",
+          "description": "Timeless `ui-radio-group`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Radio Group pattern. Dispatches `ui-before-change`, `ui-change`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "orientation",
+              "description": "Layout and arrow-key axis. Defaults to `vertical`. Exported as `choiceGroupOrientations`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'vertical'", "'horizontal'"]
+              }
+            },
+            {
+              "name": "value",
+              "description": "The radio checked on load and after a form reset. Match one input’s `value`. Assign the `value` property for live changes.",
+              "value": {
+                "kind": "plain",
+                "type": "string"
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the checked radio changes. Call `preventDefault()` to reject the transition and keep the current value."
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the checked radio has changed. Bubbles and is composed."
+            }
+          ]
+        },
+        {
+          "name": "ui-checkbox-group",
+          "description": "Timeless `ui-checkbox-group`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Checkbox pattern. Dispatches `ui-before-change`, `ui-change`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "orientation",
+              "description": "Layout and arrow-key axis. Defaults to `vertical`. Exported as `choiceGroupOrientations`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'vertical'", "'horizontal'"]
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the set of checked boxes changes. Call `preventDefault()` to reject the transition and keep the current value."
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the set of checked boxes has changed. Bubbles and is composed."
+            }
+          ]
+        },
+        {
+          "name": "ui-listbox",
+          "description": "Timeless `ui-listbox`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Listbox pattern. Dispatches `ui-before-change`, `ui-change`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "multiple",
+              "description": "Present to allow more than one selected option. The `value` property then reads and writes an array. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "value",
+              "description": "The option selected on load and after a form reset. Assign the `value` property for live changes.",
+              "value": {
+                "kind": "plain",
+                "type": "string"
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the selection changes. Call `preventDefault()` to reject the transition and keep the current value."
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the selection has changed. Bubbles and is composed."
+            }
+          ]
+        },
+        {
+          "name": "ui-select",
+          "description": "Timeless `ui-select`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Select-Only Combobox pattern. Dispatches `ui-before-change`, `ui-change`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "open",
+              "description": "Present to render the listbox open on load. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "placement",
+              "description": "Preferred side of the trigger for the listbox surface. Defaults to `bottom`. Exported as `floatingPlacements`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'bottom'", "'top'", "'right'", "'left'"]
+              }
+            },
+            {
+              "name": "value",
+              "description": "The option selected on load and after a form reset. Mirror it onto a hidden input to submit with a form.",
+              "value": {
+                "kind": "plain",
+                "type": "string"
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the selected option changes. Call `preventDefault()` to reject the transition and keep the current value."
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the selected option has changed. Bubbles and is composed."
+            }
+          ]
+        },
+        {
+          "name": "ui-combobox",
+          "description": "Timeless `ui-combobox`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Combobox pattern. Dispatches `ui-before-change`, `ui-change`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "value",
+              "description": "The option selected on load and after a form reset. Assign the `value` property for live changes.",
+              "value": {
+                "kind": "plain",
+                "type": "string"
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the selected option changes. Call `preventDefault()` to reject the transition and keep the current value."
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the selected option has changed. Bubbles and is composed."
+            }
+          ]
+        },
+        {
+          "name": "ui-toaster",
+          "description": "Timeless `ui-toaster`. Enhances the Light DOM you author; the markup stays yours.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "placement",
+              "description": "Corner or edge of the viewport the toasts stack against. Defaults to `bottom-end`. Exported as `toasterPlacements`.",
+              "value": {
+                "kind": "plain",
+                "type": [
+                  "'top-start'",
+                  "'top-center'",
+                  "'top-end'",
+                  "'bottom-start'",
+                  "'bottom-center'",
+                  "'bottom-end'"
+                ]
+              }
+            },
+            {
+              "name": "stack",
+              "description": "Whether queued toasts overlap into a deck (`overlap`) or lay out as a full list (`list`). Defaults to `overlap`. Exported as `toasterStacks`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'overlap'", "'list'"]
+              }
+            }
+          ],
+          "events": []
+        },
+        {
+          "name": "ui-toast",
+          "description": "Timeless `ui-toast`. Enhances the Light DOM you author; the markup stays yours. Dispatches `ui-dismiss`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "duration",
+              "description": "Milliseconds before the toast dismisses itself. `0` keeps it open until dismissed. Defaults to `5000`.",
+              "value": {
+                "kind": "plain",
+                "type": "number"
+              }
+            },
+            {
+              "name": "persistent",
+              "description": "Present to disable auto-dismiss regardless of `duration`. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-dismiss",
+              "description": "Dispatched when the toast is dismissed. The detail names the reason: a timeout, the close control, or the imperative API."
+            }
+          ]
+        },
+        {
+          "name": "ui-toggle-group",
+          "description": "Timeless `ui-toggle-group`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Button pattern. Dispatches `ui-before-change`, `ui-change`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "attached",
+              "description": "Present to join the buttons into one segmented control. Styling only, resolved by `toggle.css`. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "orientation",
+              "description": "Layout and arrow-key axis. Defaults to `horizontal`. Exported as `toggleGroupOrientations`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'horizontal'", "'vertical'"]
+              }
+            },
+            {
+              "name": "selection",
+              "description": "Whether pressing one button releases the others (`single`) or toggles independently (`multiple`). Defaults to `single`. Exported as `toggleGroupSelections`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'single'", "'multiple'"]
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the pressed set changes. Call `preventDefault()` to reject the transition and keep the current value."
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the pressed set has changed. Bubbles and is composed."
+            }
+          ]
+        },
+        {
+          "name": "ui-number-stepper",
+          "description": "Timeless `ui-number-stepper`. Enhances the Light DOM you author; the markup stays yours. Dispatches `input`, `change`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [],
+          "events": [
+            {
+              "name": "input",
+              "description": "Native `input` event dispatched on the inner number input after each step."
+            },
+            {
+              "name": "change",
+              "description": "Native `change` event dispatched on the inner number input."
+            }
+          ]
+        },
+        {
+          "name": "ui-color-picker",
+          "description": "Timeless `ui-color-picker`. Enhances the Light DOM you author; the markup stays yours. Dispatches `input`, `change`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "format",
+              "description": "Color space the channel controls edit and the raw input round-trips through. The picker converts the current value when this changes. Defaults to `oklch`. Exported as `colorPickerFormats`.",
+              "value": {
+                "kind": "plain",
+                "type": [
+                  "'oklch'",
+                  "'oklab'",
+                  "'lch'",
+                  "'lab'",
+                  "'hex'",
+                  "'rgb'",
+                  "'hsl'",
+                  "'hwb'",
+                  "'p3'",
+                  "'rec2020'"
+                ]
+              }
+            },
+            {
+              "name": "value",
+              "description": "Initial and form-reset color, in any CSS color syntax. Unlike the collection elements, the picker reflects one `value` property rather than a separate authored default.",
+              "value": {
+                "kind": "plain",
+                "type": "string"
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "input",
+              "description": "Native `input` event dispatched while the color is being edited."
+            },
+            {
+              "name": "change",
+              "description": "Native `change` event dispatched when the edit is committed."
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

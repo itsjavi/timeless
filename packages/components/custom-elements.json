@@ -78,15 +78,35 @@
               "name": "ui-before-change",
               "description": "Cancelable proposal dispatched before the selected tab changes. Call `preventDefault()` to reject the transition and keep the current value.",
               "type": {
-                "text": "CustomEvent<UITransitionDetail>"
+                "text": "CustomEvent<TabsChangeDetail>"
               }
             },
             {
               "name": "ui-change",
               "description": "Dispatched after the selected tab has changed. Bubbles and is composed.",
               "type": {
-                "text": "CustomEvent<UITransitionDetail>"
+                "text": "CustomEvent<TabsChangeDetail>"
               }
+            }
+          ],
+          "timeless:parts": [
+            {
+              "name": "tablist",
+              "selector": "[role='tablist']",
+              "required": true,
+              "description": "Container for the tabs."
+            },
+            {
+              "name": "tab",
+              "selector": "[role='tab']",
+              "required": true,
+              "description": "One tab. Use `<button type=\"button\">` and give it a `value`; Timeless wires `id`, `aria-controls`, `aria-selected`, and `tabindex`."
+            },
+            {
+              "name": "tabpanel",
+              "selector": "[role='tabpanel']",
+              "required": true,
+              "description": "One panel per tab, in the same order. Timeless wires `id`, `aria-labelledby`, and `hidden`."
             }
           ]
         }
@@ -132,7 +152,27 @@
               "description": "Whether the panel is a regular dialog or an alert dialog. `alert` resolves to `role=\"alertdialog\"`, for a destructive confirmation the user must answer."
             }
           ],
-          "events": []
+          "events": [],
+          "timeless:parts": [
+            {
+              "name": "trigger",
+              "selector": "[data-ui-part~='trigger']",
+              "required": true,
+              "description": "Native button that opens the dialog."
+            },
+            {
+              "name": "panel",
+              "selector": "dialog",
+              "required": true,
+              "description": "The native `<dialog>` element. Author it, do not generate it."
+            },
+            {
+              "name": "close",
+              "selector": "[data-ui-part~='close']",
+              "required": false,
+              "description": "Optional explicit close button inside the panel."
+            }
+          ]
         }
       ],
       "exports": [
@@ -213,14 +253,14 @@
               "name": "ui-open",
               "description": "Dispatched after the sheet opens.",
               "type": {
-                "text": "CustomEvent<{ source: string }>"
+                "text": "CustomEvent<SheetEventDetail>"
               }
             },
             {
               "name": "ui-close",
               "description": "Dispatched after the sheet closes.",
               "type": {
-                "text": "CustomEvent<{ source: string }>"
+                "text": "CustomEvent<SheetEventDetail>"
               }
             },
             {
@@ -229,6 +269,26 @@
               "type": {
                 "text": "CustomEvent<SheetEventDetail>"
               }
+            }
+          ],
+          "timeless:parts": [
+            {
+              "name": "trigger",
+              "selector": "[data-ui-part~='trigger']",
+              "required": true,
+              "description": "Native button that opens the sheet."
+            },
+            {
+              "name": "panel",
+              "selector": "dialog",
+              "required": true,
+              "description": "The native `<dialog>` element."
+            },
+            {
+              "name": "close",
+              "selector": "[data-ui-part~='close']",
+              "required": false,
+              "description": "Optional explicit close button."
             }
           ]
         }
@@ -291,7 +351,21 @@
               "description": "Semantics applied to the surface, and the `aria-haspopup` value set on the trigger. Choose it from the interaction, not the appearance."
             }
           ],
-          "events": []
+          "events": [],
+          "timeless:parts": [
+            {
+              "name": "trigger",
+              "selector": "[data-ui-part~='trigger']",
+              "required": true,
+              "description": "Native button that opens the surface."
+            },
+            {
+              "name": "content",
+              "selector": "[popover]",
+              "required": true,
+              "description": "The surface. Author the `popover` attribute so it stays hidden before enhancement."
+            }
+          ]
         }
       ],
       "exports": [
@@ -401,7 +475,21 @@
               "description": "Milliseconds after the pointer leaves before closing, so the user can cross the gap into the surface. The resolved number is available on the read-only `closeDelay` property."
             }
           ],
-          "events": []
+          "events": [],
+          "timeless:parts": [
+            {
+              "name": "trigger",
+              "selector": "[data-ui-part~='trigger']",
+              "required": true,
+              "description": "Element that receives hover and focus intent."
+            },
+            {
+              "name": "content",
+              "selector": "[popover]",
+              "required": true,
+              "description": "The surface."
+            }
+          ]
         }
       ],
       "exports": [
@@ -445,7 +533,21 @@
               "description": "Arrow-key axis. Defaults to `horizontal` when the menu part is `role=\"menubar\"`."
             }
           ],
-          "events": []
+          "events": [],
+          "timeless:parts": [
+            {
+              "name": "menu",
+              "selector": "[role='menu']",
+              "required": true,
+              "description": "The menu container. Use `role=\"menubar\"` for a persistent horizontal menu bar."
+            },
+            {
+              "name": "item",
+              "selector": "[role^='menuitem']",
+              "required": true,
+              "description": "One command. Use `role=\"menuitem\"`, or `menuitemcheckbox` / `menuitemradio` with `aria-checked`. Timeless manages roving `tabindex` and typeahead."
+            }
+          ]
         }
       ],
       "exports": [
@@ -510,15 +612,29 @@
               "name": "ui-open",
               "description": "Dispatched after the menu opens.",
               "type": {
-                "text": "CustomEvent<{ source: string }>"
+                "text": "CustomEvent<MenuButtonToggleDetail>"
               }
             },
             {
               "name": "ui-close",
               "description": "Dispatched after the menu closes.",
               "type": {
-                "text": "CustomEvent<{ source: string }>"
+                "text": "CustomEvent<MenuButtonToggleDetail>"
               }
+            }
+          ],
+          "timeless:parts": [
+            {
+              "name": "trigger",
+              "selector": "[data-ui-part~='trigger']",
+              "required": true,
+              "description": "Native button that opens the menu."
+            },
+            {
+              "name": "content",
+              "selector": "[popover]",
+              "required": true,
+              "description": "The popover surface holding a `ui-menu`."
             }
           ]
         }
@@ -564,7 +680,15 @@
               "description": "Arrow-key axis across the toolbar controls."
             }
           ],
-          "events": []
+          "events": [],
+          "timeless:parts": [
+            {
+              "name": "item",
+              "selector": "button, a, input, select, textarea",
+              "required": true,
+              "description": "Any focusable control in the toolbar. Timeless makes the group one tab stop and moves focus with the arrow keys."
+            }
+          ]
         }
       ],
       "exports": [
@@ -592,7 +716,7 @@
               "name": "orientation",
               "description": "Layout and arrow-key axis.",
               "type": {
-                "text": "'horizontal' | 'vertical'"
+                "text": "'vertical' | 'horizontal'"
               },
               "default": "vertical"
             },
@@ -610,7 +734,7 @@
               "name": "orientation",
               "attribute": "orientation",
               "type": {
-                "text": "'horizontal' | 'vertical'"
+                "text": "'vertical' | 'horizontal'"
               },
               "description": "Layout and arrow-key axis."
             },
@@ -637,15 +761,23 @@
               "name": "ui-before-change",
               "description": "Cancelable proposal dispatched before the checked radio changes. Call `preventDefault()` to reject the transition and keep the current value.",
               "type": {
-                "text": "CustomEvent<UITransitionDetail>"
+                "text": "CustomEvent<RadioGroupChangeDetail>"
               }
             },
             {
               "name": "ui-change",
               "description": "Dispatched after the checked radio has changed. Bubbles and is composed.",
               "type": {
-                "text": "CustomEvent<UITransitionDetail>"
+                "text": "CustomEvent<RadioGroupChangeDetail>"
               }
+            }
+          ],
+          "timeless:parts": [
+            {
+              "name": "choice",
+              "selector": "input[type='radio']",
+              "required": true,
+              "description": "One native radio input, sharing a `name` with the rest. Native form submission and reset keep working."
             }
           ]
         }
@@ -675,7 +807,7 @@
               "name": "orientation",
               "description": "Layout and arrow-key axis.",
               "type": {
-                "text": "'horizontal' | 'vertical'"
+                "text": "'vertical' | 'horizontal'"
               },
               "default": "vertical"
             }
@@ -686,7 +818,7 @@
               "name": "orientation",
               "attribute": "orientation",
               "type": {
-                "text": "'horizontal' | 'vertical'"
+                "text": "'vertical' | 'horizontal'"
               },
               "description": "Layout and arrow-key axis."
             }
@@ -696,15 +828,23 @@
               "name": "ui-before-change",
               "description": "Cancelable proposal dispatched before the set of checked boxes changes. Call `preventDefault()` to reject the transition and keep the current value.",
               "type": {
-                "text": "CustomEvent<UITransitionDetail>"
+                "text": "CustomEvent<CheckboxGroupChangeDetail>"
               }
             },
             {
               "name": "ui-change",
               "description": "Dispatched after the set of checked boxes has changed. Bubbles and is composed.",
               "type": {
-                "text": "CustomEvent<UITransitionDetail>"
+                "text": "CustomEvent<CheckboxGroupChangeDetail>"
               }
+            }
+          ],
+          "timeless:parts": [
+            {
+              "name": "choice",
+              "selector": "input[type='checkbox']",
+              "required": true,
+              "description": "One native checkbox input. Author `checked` for the initial state; the group reports every checked value."
             }
           ]
         }
@@ -778,15 +918,29 @@
               "name": "ui-before-change",
               "description": "Cancelable proposal dispatched before the selection changes. Call `preventDefault()` to reject the transition and keep the current value.",
               "type": {
-                "text": "CustomEvent<UITransitionDetail>"
+                "text": "CustomEvent<ListboxChangeDetail>"
               }
             },
             {
               "name": "ui-change",
               "description": "Dispatched after the selection has changed. Bubbles and is composed.",
               "type": {
-                "text": "CustomEvent<UITransitionDetail>"
+                "text": "CustomEvent<ListboxChangeDetail>"
               }
+            }
+          ],
+          "timeless:parts": [
+            {
+              "name": "listbox",
+              "selector": "[role='listbox']",
+              "required": true,
+              "description": "The option container."
+            },
+            {
+              "name": "option",
+              "selector": "[role='option']",
+              "required": true,
+              "description": "One option. Its value comes from `value`, then `data-ui-value`, then the element id. Mark unavailable options `aria-disabled=\"true\"`."
             }
           ]
         }
@@ -877,15 +1031,41 @@
               "name": "ui-before-change",
               "description": "Cancelable proposal dispatched before the selected option changes. Call `preventDefault()` to reject the transition and keep the current value.",
               "type": {
-                "text": "CustomEvent<UITransitionDetail>"
+                "text": "CustomEvent<SelectChangeDetail>"
               }
             },
             {
               "name": "ui-change",
               "description": "Dispatched after the selected option has changed. Bubbles and is composed.",
               "type": {
-                "text": "CustomEvent<UITransitionDetail>"
+                "text": "CustomEvent<SelectChangeDetail>"
               }
+            }
+          ],
+          "timeless:parts": [
+            {
+              "name": "trigger",
+              "selector": "[data-ui-part~='trigger']",
+              "required": true,
+              "description": "Native button that opens the listbox."
+            },
+            {
+              "name": "listbox",
+              "selector": "[role='listbox']",
+              "required": true,
+              "description": "The option container and popover surface."
+            },
+            {
+              "name": "option",
+              "selector": "[role='option']",
+              "required": true,
+              "description": "One option. Its value comes from `value`, then `data-ui-value`, then the element id."
+            },
+            {
+              "name": "label",
+              "selector": "[data-ui-part~='label']",
+              "required": false,
+              "description": "Element inside the trigger that shows the selected label."
             }
           ]
         }
@@ -943,15 +1123,35 @@
               "name": "ui-before-change",
               "description": "Cancelable proposal dispatched before the selected option changes. Call `preventDefault()` to reject the transition and keep the current value.",
               "type": {
-                "text": "CustomEvent<UITransitionDetail>"
+                "text": "CustomEvent<ComboboxChangeDetail>"
               }
             },
             {
               "name": "ui-change",
               "description": "Dispatched after the selected option has changed. Bubbles and is composed.",
               "type": {
-                "text": "CustomEvent<UITransitionDetail>"
+                "text": "CustomEvent<ComboboxChangeDetail>"
               }
+            }
+          ],
+          "timeless:parts": [
+            {
+              "name": "input",
+              "selector": "[role='combobox']",
+              "required": true,
+              "description": "The native text input. Timeless wires `aria-expanded`, `aria-controls`, and `aria-activedescendant`."
+            },
+            {
+              "name": "listbox",
+              "selector": "[role='listbox']",
+              "required": true,
+              "description": "The option container."
+            },
+            {
+              "name": "option",
+              "selector": "[role='option']",
+              "required": true,
+              "description": "One option. Its value comes from `value`, then `data-ui-value`, then the element id. Filtering hides non-matching options."
             }
           ]
         }
@@ -1098,6 +1298,32 @@
               "name": "--closed",
               "description": "Set while the toast plays its exit transition. Internal; do not author it."
             }
+          ],
+          "timeless:parts": [
+            {
+              "name": "content",
+              "selector": "[data-ui-part~='content']",
+              "required": false,
+              "description": "Wrapper for the title and description."
+            },
+            {
+              "name": "title",
+              "selector": "[data-ui-part~='title']",
+              "required": false,
+              "description": "Short summary line."
+            },
+            {
+              "name": "description",
+              "selector": "[data-ui-part~='description']",
+              "required": false,
+              "description": "Supporting detail."
+            },
+            {
+              "name": "close",
+              "selector": "[data-ui-part~='close']",
+              "required": false,
+              "description": "Dismiss button. Give it an accessible name."
+            }
           ]
         }
       ],
@@ -1171,15 +1397,23 @@
               "name": "ui-before-change",
               "description": "Cancelable proposal dispatched before the pressed set changes. Call `preventDefault()` to reject the transition and keep the current value.",
               "type": {
-                "text": "CustomEvent<UITransitionDetail>"
+                "text": "CustomEvent<ToggleGroupChangeDetail>"
               }
             },
             {
               "name": "ui-change",
               "description": "Dispatched after the pressed set has changed. Bubbles and is composed.",
               "type": {
-                "text": "CustomEvent<UITransitionDetail>"
+                "text": "CustomEvent<ToggleGroupChangeDetail>"
               }
+            }
+          ],
+          "timeless:parts": [
+            {
+              "name": "item",
+              "selector": "button[aria-pressed]",
+              "required": true,
+              "description": "One toggle button. Author `value` and `aria-pressed`; Timeless keeps the pressed set in sync."
             }
           ]
         }
@@ -1220,6 +1454,26 @@
               "type": {
                 "text": "Event"
               }
+            }
+          ],
+          "timeless:parts": [
+            {
+              "name": "input",
+              "selector": "input[type='number']",
+              "required": true,
+              "description": "The native number input. `min`, `max`, and `step` come from it, and native validation keeps working."
+            },
+            {
+              "name": "decrement",
+              "selector": "[data-ui-part~='decrement']",
+              "required": true,
+              "description": "Button that steps down. Give it an accessible name."
+            },
+            {
+              "name": "increment",
+              "selector": "[data-ui-part~='increment']",
+              "required": true,
+              "description": "Button that steps up. Give it an accessible name."
             }
           ]
         }
@@ -1305,6 +1559,134 @@
             {
               "name": "--copied",
               "description": "Set briefly after the value is copied. Internal; do not author it."
+            }
+          ],
+          "timeless:parts": [
+            {
+              "name": "preview",
+              "selector": "[data-ui-part~='preview']",
+              "required": false,
+              "description": "Region holding the format select, gamut controls, and readout."
+            },
+            {
+              "name": "preview-bar",
+              "selector": "[data-ui-part~='preview-bar']",
+              "required": false,
+              "description": "Row above the readout."
+            },
+            {
+              "name": "format-field",
+              "selector": "[data-ui-part~='format-field']",
+              "required": false,
+              "description": "Label wrapper around the format select."
+            },
+            {
+              "name": "format",
+              "selector": "select",
+              "required": true,
+              "description": "Native `<select>` listing the supported color formats."
+            },
+            {
+              "name": "gamut-bar",
+              "selector": "[data-ui-part~='gamut-bar']",
+              "required": false,
+              "description": "Row holding the clamp buttons."
+            },
+            {
+              "name": "clamp",
+              "selector": "[data-ui-part~='clamp']",
+              "required": false,
+              "description": "Button that clamps an out-of-gamut color into sRGB or P3. Shown only when needed."
+            },
+            {
+              "name": "readout",
+              "selector": "[data-ui-part~='readout']",
+              "required": false,
+              "description": "Row holding the swatch, raw input, and copy button."
+            },
+            {
+              "name": "gamut",
+              "selector": "[data-ui-part~='gamut']",
+              "required": false,
+              "description": "Current-color swatch. Decorative."
+            },
+            {
+              "name": "input",
+              "selector": "input[type='text']",
+              "required": true,
+              "description": "Raw CSS color value, editable as text."
+            },
+            {
+              "name": "input-label",
+              "selector": "[data-ui-part~='input-label']",
+              "required": false,
+              "description": "Screen-reader label for the raw input or format select."
+            },
+            {
+              "name": "copy",
+              "selector": "[data-ui-part~='copy']",
+              "required": false,
+              "description": "Copies the raw value to the clipboard."
+            },
+            {
+              "name": "copy-icon",
+              "selector": "[data-ui-part~='copy-icon']",
+              "required": false,
+              "description": "Idle state of the copy button. Decorative."
+            },
+            {
+              "name": "copied-icon",
+              "selector": "[data-ui-part~='copied-icon']",
+              "required": false,
+              "description": "Confirmed state of the copy button. Decorative."
+            },
+            {
+              "name": "channels",
+              "selector": "[data-ui-part~='channels']",
+              "required": false,
+              "description": "Container for the per-channel rows."
+            },
+            {
+              "name": "channel",
+              "selector": "[data-ui-part~='channel']",
+              "required": true,
+              "description": "One channel row. The picker rewrites the rows when `format` changes, so author one row per channel of the widest format you support."
+            },
+            {
+              "name": "channel-label",
+              "selector": "[data-ui-part~='channel-label']",
+              "required": false,
+              "description": "Channel name. Written by the picker; decorative."
+            },
+            {
+              "name": "channel-range",
+              "selector": "input[type='range']",
+              "required": true,
+              "description": "Slider for one channel."
+            },
+            {
+              "name": "channel-input",
+              "selector": "input[type='number']",
+              "required": true,
+              "description": "Numeric entry for one channel."
+            },
+            {
+              "name": "warning",
+              "selector": "[data-ui-part~='warning']",
+              "required": false,
+              "description": "Out-of-gamut or unparsable-value message."
+            },
+            {
+              "name": "trigger",
+              "selector": "[data-ui-part~='trigger']",
+              "required": false,
+              "description": "Optional button when the picker lives inside a popover."
+            },
+            {
+              "name": "content",
+              "selector": "[data-ui-part~='content']",
+              "required": false,
+              "description": "Optional popover surface wrapping the picker."
             }
           ]
         }

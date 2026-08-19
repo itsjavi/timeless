@@ -1,6 +1,7 @@
-export const floatingPlacements = ['bottom', 'top', 'right', 'left'] as const
+import { floatingPlacements } from './values/floating'
+import type { FloatingPlacement } from './values/floating'
 
-export type FloatingPlacement = (typeof floatingPlacements)[number]
+export { floatingPlacements, type FloatingPlacement }
 
 export type FloatingElementLike = {
   readonly style: {

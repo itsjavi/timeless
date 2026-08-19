@@ -7,6 +7,12 @@ const distRoot = resolve(packageRoot, 'dist')
 const baselines = JSON.parse(
   await readFile(resolve(import.meta.dirname, 'performance-baselines.json'), 'utf8'),
 )
+/**
+ * `gzipBytes` sums each module gzipped on its own, so it reflects how the bundler splits chunks as
+ * well as how much code an entrypoint pulls in. Splitting the same bytes into one more chunk raises
+ * it. Read `rawBytes` first when a figure moves, and re-baseline rather than shrinking real code to
+ * satisfy an artifact.
+ */
 const entryNames = ['popover', 'listbox', 'select', 'combobox']
 const measurements = {}
 

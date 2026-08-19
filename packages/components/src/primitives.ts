@@ -1,54 +1,78 @@
-export const alertVariants = ['neutral', 'accent', 'success', 'warning', 'danger'] as const
-export type AlertVariant = (typeof alertVariants)[number]
+import {
+  alertVariants,
+  avatarShapes,
+  avatarStatuses,
+  badgeVariants,
+  cardVariants,
+  compactDensities,
+  groupOrientations,
+  linkVariants,
+  listVariants,
+  primitiveDensities,
+  primitiveSizes,
+  separatorOrientations,
+  separatorVariants,
+  skeletonShapes,
+  skeletonWidths,
+  spinnerVariants,
+  tableAlignments,
+} from './values/primitives'
+import type {
+  AlertVariant,
+  AvatarShape,
+  AvatarStatus,
+  BadgeVariant,
+  CardVariant,
+  CompactDensity,
+  GroupOrientation,
+  LinkVariant,
+  ListVariant,
+  PrimitiveDensity,
+  PrimitiveSize,
+  SeparatorOrientation,
+  SeparatorVariant,
+  SkeletonShape,
+  SkeletonWidth,
+  SpinnerVariant,
+  TableAlignment,
+} from './values/primitives'
 
-export const avatarShapes = ['circle', 'rounded', 'square'] as const
-export type AvatarShape = (typeof avatarShapes)[number]
-
-export const avatarStatuses = ['online', 'away', 'busy', 'offline'] as const
-export type AvatarStatus = (typeof avatarStatuses)[number]
-
-export const badgeVariants = [
-  'neutral',
-  'accent',
-  'success',
-  'warning',
-  'danger',
-  'outline',
-] as const
-export type BadgeVariant = (typeof badgeVariants)[number]
-
-export const primitiveSizes = ['sm', 'md', 'lg'] as const
-export type PrimitiveSize = (typeof primitiveSizes)[number]
-
-export const separatorOrientations = ['horizontal', 'vertical'] as const
-export type SeparatorOrientation = (typeof separatorOrientations)[number]
-
-export const separatorVariants = ['default', 'strong', 'centered'] as const
-export type SeparatorVariant = (typeof separatorVariants)[number]
-
-export const cardVariants = ['surface', 'filled', 'ghost'] as const
-export type CardVariant = (typeof cardVariants)[number]
-
-export const skeletonShapes = ['text', 'circle', 'media'] as const
-export type SkeletonShape = (typeof skeletonShapes)[number]
-
-export const skeletonWidths = ['full', 'medium', 'short'] as const
-export type SkeletonWidth = (typeof skeletonWidths)[number]
-
-export const groupOrientations = ['horizontal', 'vertical'] as const
-export type GroupOrientation = (typeof groupOrientations)[number]
-
-export const primitiveDensities = ['compact', 'normal', 'spacious'] as const
-export type PrimitiveDensity = (typeof primitiveDensities)[number]
-
-export const listVariants = ['plain', 'divided', 'inset', 'ordered'] as const
-export type ListVariant = (typeof listVariants)[number]
-
-export const linkVariants = ['default', 'muted', 'danger'] as const
-export type LinkVariant = (typeof linkVariants)[number]
-
-export const spinnerVariants = ['neutral', 'accent', 'success', 'warning', 'danger'] as const
-export type SpinnerVariant = (typeof spinnerVariants)[number]
+export {
+  alertVariants,
+  avatarShapes,
+  avatarStatuses,
+  badgeVariants,
+  cardVariants,
+  compactDensities,
+  groupOrientations,
+  linkVariants,
+  listVariants,
+  primitiveDensities,
+  primitiveSizes,
+  separatorOrientations,
+  separatorVariants,
+  skeletonShapes,
+  skeletonWidths,
+  spinnerVariants,
+  tableAlignments,
+  type AlertVariant,
+  type AvatarShape,
+  type AvatarStatus,
+  type BadgeVariant,
+  type CardVariant,
+  type CompactDensity,
+  type GroupOrientation,
+  type LinkVariant,
+  type ListVariant,
+  type PrimitiveDensity,
+  type PrimitiveSize,
+  type SeparatorOrientation,
+  type SeparatorVariant,
+  type SkeletonShape,
+  type SkeletonWidth,
+  type SpinnerVariant,
+  type TableAlignment,
+}
 
 export function isAlertVariant(value: string): value is AlertVariant {
   return alertVariants.includes(value as AlertVariant)
@@ -96,6 +120,14 @@ export function isGroupOrientation(value: string): value is GroupOrientation {
 
 export function isPrimitiveDensity(value: string): value is PrimitiveDensity {
   return primitiveDensities.includes(value as PrimitiveDensity)
+}
+
+export function isCompactDensity(value: string): value is CompactDensity {
+  return compactDensities.includes(value as CompactDensity)
+}
+
+export function isTableAlignment(value: string): value is TableAlignment {
+  return tableAlignments.includes(value as TableAlignment)
 }
 
 export function isListVariant(value: string): value is ListVariant {

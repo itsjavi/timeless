@@ -10,12 +10,10 @@ import {
   watch,
 } from '@timelessui/core'
 import { transitionSourceFromEvent, type UITransitionDetail } from './events'
+import { tabsActivations, tabsOrientations } from './values/tabs'
+import type { TabsActivation, TabsOrientation } from './values/tabs'
 
-export const tabsOrientations = ['horizontal', 'vertical'] as const
-export type TabsOrientation = (typeof tabsOrientations)[number]
-
-export const tabsActivations = ['automatic', 'manual'] as const
-export type TabsActivation = (typeof tabsActivations)[number]
+export { tabsActivations, tabsOrientations, type TabsActivation, type TabsOrientation }
 
 export type TabsElementLike = {
   id: string

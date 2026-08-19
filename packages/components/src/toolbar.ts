@@ -4,8 +4,10 @@ import {
   resolveCollectionOrientation,
   syncRovingTabIndex,
 } from './collection'
+import { toolbarOrientations } from './values/toolbar'
+import type { ToolbarOrientation } from './values/toolbar'
 
-export type ToolbarOrientation = 'horizontal' | 'vertical'
+export { toolbarOrientations, type ToolbarOrientation }
 
 export type ToolbarItemLike = {
   focus(): void

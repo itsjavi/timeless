@@ -1,14 +1,9 @@
 import { attr, boolAttr, createUIElementClass, element, listen, watch } from '@timelessui/core'
 
+import { toasterPlacements, toasterStacks } from './values/toast'
+import type { ToasterPlacement, ToasterStack } from './values/toast'
+
 export type ToastDismissReason = 'programmatic' | 'timeout' | 'user'
-export type ToasterPlacement =
-  | 'top-start'
-  | 'top-center'
-  | 'top-end'
-  | 'bottom-start'
-  | 'bottom-center'
-  | 'bottom-end'
-export type ToasterStack = 'overlap' | 'list'
 
 export type ToastDismissDetail = {
   readonly reason: ToastDismissReason
@@ -54,16 +49,7 @@ const TOAST_CLOSE_GLYPH = `<svg aria-hidden="true" focusable="false" viewBox="0 
   <path d="m4.5 4.5 7 7m0-7-7 7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1"/>
 </svg>`
 
-export const toasterPlacements = [
-  'top-start',
-  'top-center',
-  'top-end',
-  'bottom-start',
-  'bottom-center',
-  'bottom-end',
-] as const satisfies readonly ToasterPlacement[]
-
-export const toasterStacks = ['overlap', 'list'] as const satisfies readonly ToasterStack[]
+export { toasterPlacements, toasterStacks, type ToasterPlacement, type ToasterStack }
 
 export type UIToasterElementConstructor = CustomElementConstructor & {
   elementName?: string

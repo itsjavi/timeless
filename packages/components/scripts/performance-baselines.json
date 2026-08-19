@@ -1,29 +1,49 @@
 {
-  "justification": "Milestone 015 initial per-entry closure and CSS baselines.",
+  "justification": "Milestone 019 re-baseline. Every entry's raw closure is at or below the milestone 015 baseline; popover fell 0.7% and select 5.0%. gzipBytes is the sum of each module gzipped on its own, so it tracks how tsdown splits chunks as well as payload: popover now resolves to four chunks instead of three, which raised the summed figure 13.8% while the concatenated closure gzips to 4205 against a 4155 baseline. Re-recorded from the current build so the three entries that shrank are guarded at their new, smaller size.",
   "entries": {
     "popover": {
-      "cssGzipBytes": 1132,
-      "cssRawBytes": 6293,
-      "gzipBytes": 4155,
-      "rawBytes": 16097
+      "cssGzipBytes": 949,
+      "cssRawBytes": 3958,
+      "gzipBytes": 4730,
+      "modules": ["floating-BeOxSmX7.js", "parts-DTbd10X0.js", "popover-fJlaBI51.js", "popover.js"],
+      "rawBytes": 15981
     },
     "listbox": {
-      "cssGzipBytes": 449,
-      "cssRawBytes": 1391,
-      "gzipBytes": 6254,
-      "rawBytes": 25117
+      "cssGzipBytes": 430,
+      "cssRawBytes": 1156,
+      "gzipBytes": 6623,
+      "modules": ["collection.js", "events.js", "listbox.js", "parts-DTbd10X0.js"],
+      "rawBytes": 25847
     },
     "select": {
-      "cssGzipBytes": 758,
-      "cssRawBytes": 2425,
-      "gzipBytes": 15018,
-      "rawBytes": 62169
+      "cssGzipBytes": 735,
+      "cssRawBytes": 2198,
+      "gzipBytes": 15100,
+      "modules": [
+        "collection.js",
+        "events.js",
+        "floating-BeOxSmX7.js",
+        "listbox.js",
+        "parts-DTbd10X0.js",
+        "popover-fJlaBI51.js",
+        "select.js"
+      ],
+      "rawBytes": 59049
     },
     "combobox": {
-      "cssGzipBytes": 777,
-      "cssRawBytes": 2602,
-      "gzipBytes": 14564,
-      "rawBytes": 59469
+      "cssGzipBytes": 757,
+      "cssRawBytes": 2375,
+      "gzipBytes": 14726,
+      "modules": [
+        "collection.js",
+        "combobox.js",
+        "events.js",
+        "floating-BeOxSmX7.js",
+        "listbox.js",
+        "parts-DTbd10X0.js",
+        "popover-fJlaBI51.js"
+      ],
+      "rawBytes": 57208
     }
   }
 }

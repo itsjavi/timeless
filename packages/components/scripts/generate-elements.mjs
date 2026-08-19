@@ -2,10 +2,41 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { format } from 'oxfmt'
-import { components, elements } from './component-registry.mjs'
+import { components, elements, valueSets } from './component-registry.mjs'
+import { createCssCustomData, createHtmlCustomData, createWebTypes } from './emit-editor-data.mjs'
+import {
+  createPreactTypes,
+  createReactTypes,
+  createSolidTypes,
+  createSvelteTypes,
+  createVueTypes,
+} from './emit-framework-types.mjs'
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const check = process.argv.includes('--check')
+
+const formatOptions = {
+  arrowParens: 'always',
+  printWidth: 100,
+  proseWrap: 'always',
+  quoteProps: 'as-needed',
+  semi: false,
+  singleQuote: true,
+  tabWidth: 2,
+  trailingComma: 'all',
+}
+
+async function formattedJson(name, data) {
+  return formatted(name, `${JSON.stringify(data, null, 2)}\n`)
+}
+
+async function formatted(name, source) {
+  const result = await format(name, source, formatOptions)
+  if (result.errors.length > 0) {
+    throw new Error(`Could not format generated ${name}: ${result.errors[0].message}`)
+  }
+  return result.code
+}
 
 const outputs = new Map()
 for (const item of elements) {
@@ -20,28 +51,42 @@ for (const item of elements) {
   )
 }
 outputs.set(resolve(packageRoot, 'src/define.ts'), createAggregateDefine())
-const formattedContracts = await format('contracts.ts', createComponentContracts(), {
-  arrowParens: 'always',
-  printWidth: 100,
-  proseWrap: 'always',
-  quoteProps: 'as-needed',
-  semi: false,
-  singleQuote: true,
-  tabWidth: 2,
-  trailingComma: 'all',
-})
-if (formattedContracts.errors.length > 0) {
-  throw new Error(
-    `Could not format generated component contracts: ${formattedContracts.errors[0].message}`,
+for (const [module, source] of createValues()) {
+  outputs.set(
+    resolve(packageRoot, `src/values/${module}.ts`),
+    await formatted(`${module}.ts`, source),
   )
 }
-outputs.set(resolve(packageRoot, 'src/contracts.ts'), formattedContracts.code)
+outputs.set(
+  resolve(packageRoot, 'src/contracts.ts'),
+  await formatted('contracts.ts', createComponentContracts()),
+)
+outputs.set(
+  resolve(packageRoot, 'src/attributes.ts'),
+  await formatted('attributes.ts', createAttributeHelper()),
+)
 
 outputs.set(
   resolve(packageRoot, 'custom-elements.json'),
-  `${JSON.stringify(createManifest(), null, 2)}\n`,
+  await formattedJson('custom-elements.json', createManifest()),
 )
-outputs.set(resolve(packageRoot, 'src/jsx/react.ts'), createReactTypes())
+for (const [path, source] of [
+  ['src/react.ts', createReactTypes(elements)],
+  ['src/preact.ts', createPreactTypes(elements)],
+  ['src/solid.ts', createSolidTypes(elements)],
+  ['src/vue.ts', createVueTypes(elements)],
+  ['src/svelte.ts', createSvelteTypes(elements)],
+]) {
+  outputs.set(resolve(packageRoot, path), await formatted(path.split('/').at(-1), source))
+}
+
+for (const [path, data] of [
+  ['vscode.html-custom-data.json', createHtmlCustomData(elements)],
+  ['vscode.css-custom-data.json', createCssCustomData(components, await readTokenGroups())],
+  ['web-types.json', createWebTypes(elements, await readPackageVersion())],
+]) {
+  outputs.set(resolve(packageRoot, path), await formattedJson(path, data))
+}
 
 let stale = false
 for (const [path, content] of outputs) {
@@ -56,6 +101,27 @@ for (const [path, content] of outputs) {
 
 if (check && stale) {
   throw new Error('Generated element contracts are stale. Run pnpm generate.')
+}
+
+/**
+ * `atmosphereTokenGroups` is authored TypeScript, so it is read as text rather than imported. The
+ * same list is already proven against `tokens.css` by `validate-contracts.mjs` in both directions.
+ */
+async function readTokenGroups() {
+  const source = await readFile(resolve(packageRoot, 'src/tokens.ts'), 'utf8')
+  const body = /atmosphereTokenGroups = \{([\s\S]*?)\n\} as const/.exec(source)?.[1]
+  if (!body) throw new Error('Could not read atmosphereTokenGroups from src/tokens.ts')
+  const groups = {}
+  for (const match of body.matchAll(/(\w+): \[([^\]]*)\]/g)) {
+    groups[match[1]] = [...match[2].matchAll(/'(--ui-[a-z0-9-]+)'/g)].map((token) => token[1])
+  }
+  if (Object.keys(groups).length === 0) throw new Error('atmosphereTokenGroups parsed as empty')
+  return groups
+}
+
+async function readPackageVersion() {
+  const source = await readFile(resolve(packageRoot, 'package.json'), 'utf8')
+  return JSON.parse(source).version
 }
 
 function createManifest() {
@@ -95,6 +161,19 @@ function createManifest() {
                 ),
               }
             : {}),
+          // Not `cssParts`: Timeless anatomy is authored Light DOM, so `::part()` never applies to
+          // it. The manifest reports the real selector under a namespaced key rather than claiming
+          // a shadow contract this library does not have.
+          ...(item.parts.length > 0
+            ? {
+                'timeless:parts': item.parts.map((part) => ({
+                  name: part.name,
+                  selector: part.selector,
+                  required: part.required,
+                  description: part.description,
+                })),
+              }
+            : {}),
         },
       ],
       exports: [
@@ -106,6 +185,170 @@ function createManifest() {
       ],
     })),
   }
+}
+
+/**
+ * Every public value set, as an `as const` array plus its union type.
+ *
+ * Split one file per declaring module rather than one file for all of them, and kept out of
+ * `src/contracts.ts` entirely, because the per-element entrypoints re-export these. Importing
+ * `@timelessui/components/popover` must pull in Popover's four roles, not all thirty-seven arrays and
+ * certainly not the whole `componentContracts` object. `check-performance.mjs` measures the real
+ * import closure, so a shared barrel would show up there as growth on every entrypoint.
+ */
+function createValues() {
+  const usage = new Map()
+  for (const component of components) {
+    for (const attribute of component.attributes) {
+      if (!attribute.set) continue
+      const users = usage.get(attribute.set) ?? []
+      users.push(`\`${component.root.name}\` \`${attribute.name}\``)
+      usage.set(attribute.set, users)
+    }
+  }
+
+  const byModule = new Map()
+  for (const [name, set] of Object.entries(valueSets)) {
+    const users = usage.get(name) ?? []
+    const values = set.values.map((value) => `'${value}'`).join(', ')
+    const declaration = `/** Permitted values for ${listSentence(users)}. */\nexport const ${name} = [${values}] as const\nexport type ${set.type} = (typeof ${name})[number]`
+    byModule.set(set.module, [...(byModule.get(set.module) ?? []), declaration])
+  }
+  return [...byModule].map(([module, declarations]) => [module, `${declarations.join('\n\n')}\n`])
+}
+
+/** Type-only imports of value-set unions, grouped by the module that declares each set. */
+function valueImports(setNames, prefix) {
+  const byModule = new Map()
+  for (const name of setNames) {
+    const set = valueSets[name]
+    byModule.set(set.module, [...(byModule.get(set.module) ?? []), set.type])
+  }
+  return [...byModule]
+    .map(
+      ([module, types]) =>
+        `import type { ${[...new Set(types)].sort().join(', ')} } from '${prefix}${module}'`,
+    )
+    .join('\n')
+}
+
+/**
+ * The typed answer to the one gap no editor closes.
+ *
+ * A `ui-*` tag is a tag, so every framework typing and the editor data complete it. A CSS-only
+ * component is `class="ui-button"` plus `data-ui-*` on a native tag, and the only editor hook there
+ * is a global attribute that would offer Card's values inside a Button. This helper moves that
+ * surface into the type system instead: the keys are the component's attributes, the values are the
+ * sets the stylesheets prove, and the output is the markup a consumer would have written by hand.
+ *
+ * Opt-in through `@timelessui/components/attributes`. Nothing in the default entrypoint imports it.
+ */
+function createAttributeHelper() {
+  const classComponents = components.filter((component) => component.root.kind === 'class')
+  const used = new Set()
+  const configs = classComponents
+    .map((component) => {
+      const members = component.attributes
+        .map((attribute) => {
+          const key = attribute.name.slice('data-ui-'.length)
+          if (attribute.set) used.add(attribute.set)
+          const type = attribute.set
+            ? valueSets[attribute.set].type
+            : attribute.type === 'boolean'
+              ? 'boolean'
+              : 'string'
+          return `    /** ${attribute.description} */\n    ${key}?: ${type}`
+        })
+        .join('\n')
+      return `  ${component.name}: {\n${members}${members ? '\n' : ''}  }`
+    })
+    .join('\n')
+  const imports = used.size > 0 ? `${valueImports([...used].sort(), './values/')}\n\n` : ''
+
+  return `${imports}import { componentContracts } from './contracts'
+
+/** Configuration accepted by each CSS-only component root, keyed by contract name. */
+export type UIAttributeConfig = {
+${configs}
+}
+
+export type UIAttributeComponent = keyof UIAttributeConfig
+
+/** Attributes ready to spread onto a native element, in any framework or template language. */
+export type UIAttributeResult = { class: string } & Record<\`data-ui-\${string}\`, string>
+
+/**
+ * Builds the root class and \`data-ui-*\` attributes for a CSS-only component.
+ *
+ * \`\`\`ts
+ * uiAttributes('button', { variant: 'primary', size: 'lg' })
+ * // { class: 'ui-button', 'data-ui-variant': 'primary', 'data-ui-size': 'lg' }
+ * \`\`\`
+ *
+ * Boolean attributes are presence-based, so \`true\` emits an empty value and \`false\` omits the
+ * attribute entirely. Extra classes are appended after the root class, never in place of it.
+ */
+export function uiAttributes<TComponent extends UIAttributeComponent>(
+  component: TComponent,
+  config: UIAttributeConfig[TComponent] & { class?: string } = {} as UIAttributeConfig[TComponent],
+): UIAttributeResult {
+  const { class: extraClass, ...values } = config as Record<string, unknown>
+  const result: UIAttributeResult = {
+    class: [componentContracts[component].root.name, extraClass].filter(Boolean).join(' '),
+  }
+  for (const [key, value] of Object.entries(values)) {
+    if (value === undefined || value === false) continue
+    result[\`data-ui-\${key}\`] = value === true ? '' : String(value)
+  }
+  return result
+}
+
+export type UIAttributeStringOptions = {
+  /**
+   * Omit any value that equals the contract default, because the default is the stylesheet's base
+   * rule and needs no attribute. Keeps generated markup as short as hand-authored markup. Defaults
+   * to \`true\`.
+   */
+  readonly omitDefaults?: boolean
+}
+
+/**
+ * The same attributes, serialized for a template literal.
+ *
+ * \`\`\`ts
+ * \`<button \${uiAttributeString('button', { variant: 'danger' })} type="button">Delete</button>\`
+ * // <button class="ui-button" data-ui-variant="danger" type="button">Delete</button>
+ * \`\`\`
+ *
+ * Defaults are dropped by default, so the contract owns which values are worth writing down and a
+ * template never restates them.
+ */
+export function uiAttributeString<TComponent extends UIAttributeComponent>(
+  component: TComponent,
+  config: UIAttributeConfig[TComponent] & { class?: string } = {} as UIAttributeConfig[TComponent],
+  options: UIAttributeStringOptions = {},
+): string {
+  const defaults = new Map<string, string | undefined>(
+    componentContracts[component].attributes.map((attribute) => [
+      attribute.name,
+      'default' in attribute ? attribute.default : undefined,
+    ]),
+  )
+  const entries = Object.entries(uiAttributes(component, config)).filter(
+    ([name, value]) => options.omitDefaults === false || defaults.get(name) !== value,
+  )
+  return entries.map(([name, value]) => \`\${name}="\${escapeAttribute(value)}"\`).join(' ')
+}
+
+function escapeAttribute(value: string): string {
+  return value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;')
+}
+`
+}
+
+function listSentence(items) {
+  if (items.length <= 1) return items[0] ?? 'no attribute'
+  return `${items.slice(0, -1).join(', ')} and ${items.at(-1)}`
 }
 
 function createAggregateDefine() {
@@ -155,6 +398,11 @@ export type ComponentAttributeContract = {
   readonly name: string
   /** \`boolean\` attributes are presence-based: author the attribute, never a value. */
   readonly type: string
+  /**
+   * Name of the exported \`as const\` array holding these values, for example \`buttonVariants\`.
+   * Import it from the package root to drive a control, a validator, or a test.
+   */
+  readonly set?: string
   /** Absent when the attribute takes free-form input such as an element id or a CSS color. */
   readonly values?: readonly string[]
   /** The value that applies when the attribute is absent. Absent when omitting it means "off". */
@@ -258,16 +506,4 @@ function manifestMembers(attribute) {
         'Live value. Assigning it does not rewrite the authored default and does not dispatch transition events.',
     },
   ]
-}
-
-function createReactTypes() {
-  const imports = [
-    ...new Set(
-      elements.map((item) => `import type { ${item.classExport} } from '../${item.module}'`),
-    ),
-  ].join('\n')
-  const entries = elements
-    .map((item) => `  '${item.tag}': TimelessElementProps<${item.classExport}>`)
-    .join('\n')
-  return `${imports}\nimport type { UITransitionDetail } from '../events'\n\ntype DataAttributes = { [name: \`data-\${string}\`]: unknown }\ntype AriaAttributes = { [name: \`aria-\${string}\`]: string | number | boolean | undefined }\n\nexport type TimelessElementProps<TElement extends HTMLElement> = Partial<\n  Omit<TElement, keyof HTMLElement>\n> &\n  DataAttributes &\n  AriaAttributes & {\n    children?: unknown\n    class?: string\n    className?: string\n    id?: string\n    ref?: unknown\n    role?: string\n    slot?: string\n    style?: Record<string, string | number>\n    title?: string\n    'onui-before-change'?: (event: CustomEvent<UITransitionDetail<unknown>>) => void\n    'onui-change'?: (event: CustomEvent<UITransitionDetail<unknown>>) => void\n  }\n\nexport interface TimelessIntrinsicElements {\n${entries}\n}\n\n// @ts-ignore React is an optional consumer dependency.\ndeclare module 'react' {\n  namespace JSX {\n    interface IntrinsicElements extends TimelessIntrinsicElements {}\n  }\n}\n\n// @ts-ignore React is an optional consumer dependency.\ndeclare module 'react/jsx-runtime' {\n  namespace JSX {\n    interface IntrinsicElements extends TimelessIntrinsicElements {}\n  }\n}\n\nexport {}\n`
 }

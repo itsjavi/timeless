@@ -70,6 +70,7 @@ export {
 } from './overlays'
 
 export {
+  dialogKinds,
   enhanceDialogParts,
   focusInitialDialogTarget,
   resolveDialogKind,
@@ -108,17 +109,20 @@ export {
 
 export {
   enhanceHoverCardParts,
+  hoverCardVariants,
   readDelay,
   UIHoverCardElement,
   type HoverCardElementLike,
   type HoverCardEnhancementOptions,
   type HoverCardEnhancementParts,
   type HoverCardEnhancementResult,
+  type HoverCardVariant,
 } from './hover-card'
 
 export {
   enhancePopoverParts,
   isPopoverOpen,
+  popoverRoles,
   resolvePopoverRole,
   syncPopoverExpanded,
   UIPopoverElement,
@@ -127,6 +131,7 @@ export {
   type PopoverEnhancementOptions,
   type PopoverEnhancementParts,
   type PopoverEnhancementResult,
+  type PopoverRole,
   type PopoverTriggerLike,
 } from './popover'
 
@@ -135,6 +140,7 @@ export {
   findMenuItems,
   isMenuItemDisabled,
   menuNavigationTarget,
+  menuOrientations,
   menuTypeaheadTarget,
   resolveMenuOrientation,
   resolveMenuRole,
@@ -165,6 +171,7 @@ export {
   enhanceToolbarParts,
   findToolbarItems,
   resolveToolbarOrientation,
+  toolbarOrientations,
   UIToolbarElement,
   type ToolbarEnhancementOptions,
   type ToolbarEnhancementParts,
@@ -183,6 +190,7 @@ export {
   resolveToggleGroupSelection,
   syncToggleGroupSelection,
   toggleButtonValue,
+  toggleGroupOrientations,
   toggleGroupSelections,
   UIToggleGroupElement,
   type ToggleButtonLike,
@@ -357,12 +365,14 @@ export {
   avatarStatuses,
   badgeVariants,
   cardVariants,
+  compactDensities,
   groupOrientations,
   isAlertVariant,
   isAvatarShape,
   isAvatarStatus,
   isBadgeVariant,
   isCardVariant,
+  isCompactDensity,
   isGroupOrientation,
   isLinkVariant,
   isListVariant,
@@ -373,6 +383,7 @@ export {
   isSkeletonShape,
   isSkeletonWidth,
   isSpinnerVariant,
+  isTableAlignment,
   linkVariants,
   listVariants,
   primitiveDensities,
@@ -382,11 +393,13 @@ export {
   skeletonShapes,
   skeletonWidths,
   spinnerVariants,
+  tableAlignments,
   type AlertVariant,
   type AvatarShape,
   type AvatarStatus,
   type BadgeVariant,
   type CardVariant,
+  type CompactDensity,
   type GroupOrientation,
   type LinkVariant,
   type ListVariant,
@@ -397,4 +410,5 @@ export {
   type SkeletonShape,
   type SkeletonWidth,
   type SpinnerVariant,
+  type TableAlignment,
 } from './primitives'
