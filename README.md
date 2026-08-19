@@ -54,6 +54,11 @@ documented value is a value the CSS implements.
 
 Colour utilities are published separately from `@timelessui/components/color`.
 
+What Timeless deliberately does not ship — and why, per component — is written down at
+`/docs/reference/scope/`. Aspect Ratio, Scroll Area, and Carousel are declarations the platform
+already provides; Chart, Data Table, and Tree View are libraries rather than primitives; sidebars,
+chat surfaces, and command palettes are composition. Date Picker is deferred rather than refused.
+
 ## The enhancement model, by example
 
 Popover shows the pattern every enhanced component follows. Author this:

@@ -33,6 +33,11 @@ export type CollapsibleItem = {
 export type CollapsibleProps = {
   readonly items: readonly CollapsibleItem[]
   readonly density?: 'compact' | 'normal'
+  /**
+   * Shared `<details name>` for the stack. The platform then keeps one panel open at a time and
+   * closes the previous one itself, so an exclusive accordion needs no script.
+   */
+  readonly name?: string
 }
 
 export type DialogProps = {
@@ -186,11 +191,12 @@ function selectedTabValue(props: TabsProps): string {
 
 export function createCollapsible(props: CollapsibleProps): string {
   const density = optionalAttribute('data-ui-density', props.density, 'normal')
+  const name = props.name ? ` name="${escapeAttribute(props.name)}"` : ''
 
   return `<div>
   ${props.items
     .map(
-      (item) => `<details class="ui-collapsible"${density}${item.open ? ' open' : ''}>
+      (item) => `<details class="ui-collapsible"${density}${name}${item.open ? ' open' : ''}>
     <summary>${escapeHtml(item.title)}</summary>
     <div>
       <p>${escapeHtml(item.content)}</p>

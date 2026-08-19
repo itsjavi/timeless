@@ -62,6 +62,39 @@ test.describe('stories progressive overlays', () => {
     await expectNoPageOverflow(page)
   })
 
+  /**
+   * A tooltip is one short label, so its box must not be the popover panel's. Computed values are
+   * the only way to hold this: the previous tooltip inherited `overflow: auto`, a viewport-tall
+   * `max-block-size`, and the panel's leading, and nothing failed when it did.
+   */
+  test('gives the tooltip a label box, not the popover panel box', async ({ page }) => {
+    await page.goto('/stories/library-overlays-tooltip--against-hover-card/')
+    await expectRouteDocumentReady(page)
+
+    const tooltip = page.locator('#compare-tooltip')
+    const panel = page.locator('#compare-hover-card')
+
+    await page.locator('#compare-tooltip-anchor').focus()
+    await expect(tooltip).toBeVisible()
+
+    // The UA stylesheet gives every `[popover]` `overflow: auto`, so this has to be declared away.
+    await expect(tooltip).toHaveCSS('overflow', 'visible')
+    await expect(tooltip).toHaveCSS('max-block-size', 'none')
+    await expect(tooltip).toHaveCSS('line-height', /^17\./)
+    await expect(tooltip).toHaveCSS('padding', '6px 8px')
+
+    const tooltipMax = await maxInlineSizeOf(tooltip)
+    const tooltipHeight = (await rectOf(tooltip)).height
+    await page.keyboard.press('Escape')
+    await expect(tooltip).toBeHidden()
+
+    await page.getByRole('button', { name: 'Hover card' }).focus()
+    await expect(panel).toBeVisible()
+    await expect(panel).toHaveCSS('overflow', 'auto')
+    expect(await maxInlineSizeOf(panel)).toBeGreaterThan(tooltipMax)
+    expect((await rectOf(panel)).height).toBeGreaterThan(tooltipHeight)
+  })
+
   test('opens and closes hover card content from focus and click', async ({ page }) => {
     await page.goto('/stories/library-overlays-hover-card--default/')
     await expectRouteDocumentReady(page)
@@ -278,8 +311,61 @@ test.describe('stories progressive overlays', () => {
     await expect(usagePanel).toBeVisible()
   })
 
+  /**
+   * Milestone 021 merged Disclosure into Collapsible. `.ui-disclosure` set its trigger custom
+   * properties on the root and then re-declared them on `> summary`, where the summary's own
+   * declaration shadowed the inherited value, so `data-ui-density="compact"` changed nothing. The
+   * merged stylesheet declares on the root, so the compact trigger is measurably shorter.
+   */
+  test('renders a shorter collapsible trigger at compact density', async ({ page }) => {
+    await page.goto('/stories/library-overlays-collapsible--default/')
+    await expectRouteDocumentReady(page)
+
+    const summary = page.locator('.ui-collapsible > summary').first()
+    const normalHeight = (await rectOf(summary)).height
+
+    await page
+      .locator('.ui-collapsible')
+      .first()
+      .evaluate((element) => {
+        for (const details of element.parentElement?.querySelectorAll('.ui-collapsible') ?? []) {
+          details.setAttribute('data-ui-density', 'compact')
+        }
+      })
+
+    const compactHeight = (await rectOf(summary)).height
+    expect(compactHeight).toBeLessThan(normalHeight)
+    await expect(summary).toHaveCSS('cursor', 'default')
+  })
+
   test.describe('without JavaScript', () => {
     test.use({ javaScriptEnabled: false })
+
+    /**
+     * The whole point of `<details name>`: exclusivity is the browser's, not a script's. This runs
+     * with scripting off so nothing can be crediting a custom element for it.
+     */
+    test('closes the open panel when a shared-name sibling opens, with no script', async ({
+      page,
+    }) => {
+      await page.goto('/stories/library-overlays-collapsible--exclusive-and-independent/')
+      await expectRouteDocumentReady(page)
+
+      const exclusive = page.locator('[aria-label="Exclusive accordion"] .ui-collapsible')
+      await expect(exclusive).toHaveCount(3)
+      await expect(exclusive.nth(0)).toHaveAttribute('open', '')
+      await expect(exclusive.nth(1)).not.toHaveAttribute('open', '')
+
+      await exclusive.nth(1).locator('summary').click()
+      await expect(exclusive.nth(1)).toHaveAttribute('open', '')
+      await expect(exclusive.nth(0)).not.toHaveAttribute('open', '')
+
+      const independent = page.locator('[aria-label="Independent stack"] .ui-collapsible')
+      await independent.nth(1).locator('summary').click()
+      await expect(independent.nth(0)).toHaveAttribute('open', '')
+      await expect(independent.nth(1)).toHaveAttribute('open', '')
+      await expectNoPageOverflow(page)
+    })
 
     test('keeps popover content hidden before custom element enhancement', async ({ page }) => {
       await page.goto('/stories/library-overlays-popover--default/')
@@ -447,6 +533,12 @@ async function expectReadableSurface(locator: Locator, minimumContrast = 3): Pro
 
   expect(contrastRatio(styles.color, styles.background)).toBeGreaterThanOrEqual(minimumContrast)
   expect(styles.boxShadow).not.toBe('none')
+}
+
+async function maxInlineSizeOf(locator: Locator): Promise<number> {
+  return locator.evaluate((element) =>
+    Number.parseFloat(window.getComputedStyle(element).maxInlineSize),
+  )
 }
 
 async function rectOf(locator: Locator): Promise<Rect> {

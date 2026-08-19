@@ -1,5 +1,5 @@
 import type { StoryLiteStoryDefinition } from '@storylite/storylite'
-import { createTooltip } from '../overlays.html'
+import { createHoverCard, createTooltip } from '../overlays.html'
 import { createProgressiveOverlayMeta } from './shared'
 
 const meta = createProgressiveOverlayMeta('Tooltip')
@@ -53,6 +53,41 @@ ${createTooltip({
         id: 'docs-tooltip',
         triggerLabel: 'Docs',
         description: 'Open component documentation',
+      })}
+    </section>
+  </main>`,
+} satisfies StoryLiteStoryDefinition
+
+export const AgainstHoverCard = {
+  source: () => `${createTooltip({
+    id: 'compare-tooltip',
+    triggerLabel: 'Tooltip',
+    description: 'Open component documentation',
+  })}
+${createHoverCard({
+  id: 'compare-hover-card',
+  triggerLabel: 'Hover card',
+  title: 'Component documentation',
+  description:
+    'The reference page lists every attribute, part, public state, and CSS custom property this component declares.',
+})}`,
+  render: () => `<main class="ui-demo-page">
+    <header>
+      <h1>Tooltip against Hover Card</h1>
+      <p>One custom element, two boxes. The tooltip sizes to its single line, never scrolls, and reserves no viewport height. The hover card is a panel: it caps its width and height and scrolls its own content. Hover or focus each trigger to compare them.</p>
+    </header>
+    <section class="ui-demo-row" aria-label="Tooltip and hover card comparison">
+      ${createTooltip({
+        id: 'compare-tooltip',
+        triggerLabel: 'Tooltip',
+        description: 'Open component documentation',
+      })}
+      ${createHoverCard({
+        id: 'compare-hover-card',
+        triggerLabel: 'Hover card',
+        title: 'Component documentation',
+        description:
+          'The reference page lists every attribute, part, public state, and CSS custom property this component declares.',
       })}
     </section>
   </main>`,

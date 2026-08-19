@@ -10,6 +10,7 @@ import {
   watch,
   type FocusTarget,
 } from '@timelessui/core'
+import { supportsNativeDialog } from './capabilities'
 import {
   closeCommand,
   commandFromEvent,
@@ -330,13 +331,6 @@ function invalidDialogParts(parts: DialogEnhancementParts): readonly string[] {
   if (!parts.trigger) missing.push('trigger')
   if (!parts.dialog) missing.push('dialog')
   return missing
-}
-
-function supportsNativeDialog(targetWindow: Window | null | undefined): boolean {
-  const timelessWindow = targetWindow as (Window & typeof globalThis) | null | undefined
-  return Boolean(
-    timelessWindow?.HTMLDialogElement && 'showModal' in timelessWindow.HTMLDialogElement.prototype,
-  )
 }
 
 function closestOwnedElement(

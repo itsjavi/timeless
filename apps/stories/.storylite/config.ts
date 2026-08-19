@@ -9,7 +9,6 @@ function resolveStoryId(path: string, suggestedId: string): string {
     badge: 'feedback',
     button: 'actions',
     card: 'content',
-    disclosure: 'content',
     empty: 'feedback',
     group: 'content',
     list: 'content',

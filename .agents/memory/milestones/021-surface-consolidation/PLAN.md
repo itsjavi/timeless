@@ -1,5 +1,5 @@
 ---
-status: Accepted
+status: Implemented
 ---
 
 # Milestone 021 Plan: Surface Consolidation and the Published Boundary

@@ -81,6 +81,8 @@ type GroupProps = {
 type ListProps = {
   variant?: ListVariant
   density?: Extract<PrimitiveDensity, 'compact' | 'normal'>
+  /** Renders `<ol>` instead of `<ul>`. Numbering comes from the element, never from an attribute. */
+  ordered?: boolean
 }
 
 type SpinnerProps = {
@@ -261,7 +263,7 @@ export function createGroup(props: GroupProps = {}): string {
 export function createList(props: ListProps = {}): string {
   const variant = optionalAttribute('data-ui-variant', props.variant, 'plain')
   const density = optionalAttribute('data-ui-density', props.density, 'normal')
-  const tag = props.variant === 'ordered' ? 'ol' : 'ul'
+  const tag = props.ordered ? 'ol' : 'ul'
   const items: ReadonlyArray<readonly [string, string]> = [
     ['Install package CSS', 'Import tokens and only the components you use.'],
     ['Author native markup', 'Keep behavior available when CSS is absent.'],
@@ -305,31 +307,9 @@ export function createTable(): string {
         <td><code class="ui-code">.ui-card</code></td>
         <td data-ui-align="end">Flat</td>
       </tr>
-      <tr>
-        <th scope="row">Disclosure</th>
-        <td><code class="ui-code">details.ui-disclosure</code></td>
-        <td data-ui-align="end">Native</td>
-      </tr>
     </tbody>
   </table>
 </div>`
-}
-
-export function createDisclosure(): string {
-  return `<section aria-label="Disclosure examples">
-  <details class="ui-disclosure" open>
-    <summary>Why details and summary?</summary>
-    <div>
-      <p>Native disclosure keeps keyboard interaction and semantics in the platform while Timeless styles the public anatomy.</p>
-    </div>
-  </details>
-  <details class="ui-disclosure">
-    <summary>Can consumers customize the content?</summary>
-    <div>
-      <p>Yes. The panel is author-owned Light DOM, so app CSS can target it without crossing a shadow boundary.</p>
-    </div>
-  </details>
-</section>`
 }
 
 export function createSpinner(props: SpinnerProps): string {

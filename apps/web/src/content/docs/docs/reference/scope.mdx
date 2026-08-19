@@ -1,0 +1,55 @@
+---
+title: What Timeless does not ship
+description:
+  The components Timeless deliberately leaves out, the reasoning behind each one, and the one that
+  is deferred rather than refused.
+sidebar:
+  order: 4
+---
+
+Timeless is a library of primitives over the web platform. That is a boundary as much as a goal:
+some widely shipped components are outside it, and saying which ones is more useful than leaving the
+question to be re-argued per pull request.
+
+Each row below is a decision, not an omission. Two tests decide them. Does the platform already do
+this in a line or two of CSS? Then a component would only be a worse way to reach the same
+declaration. Does it need domain machinery — a locale database, a layout engine, a virtualiser? Then
+it is a library in its own right, and wrapping one is not a primitive.
+
+Everything here is buildable on top of Timeless. Nothing here is a gap someone needs to fill before
+the library is usable.
+
+## The platform already does it
+
+| Not shipping     | Because                                                                                                                                                                                                                                                           |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Aspect Ratio** | `aspect-ratio: 16 / 9` is one declaration. A component around it adds a class to learn and a stylesheet to load in exchange for nothing.                                                                                                                          |
+| **Scroll Area**  | Custom scrollbars fight momentum scrolling, trackpad inertia, and platform conventions, and they routinely drop keyboard and assistive-technology access. `scrollbar-color`, `scrollbar-width`, and `scrollbar-gutter` are Baseline and keep the native scroller. |
+| **Carousel**     | Almost every implementation wraps a third-party engine. CSS scroll snap with scroll-marker and scroll-button pseudo-elements is the platform answer, and it keeps native swipe, keyboard, and scroll-anchoring behavior.                                          |
+
+## It is a library, not a primitive
+
+| Not shipping   | Because                                                                                                                                                                           |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Chart**      | Scales, axes, ticks, legends, and stacking are a charting library's whole surface area. Timeless would either wrap one or reimplement it badly.                                   |
+| **Data Table** | Sorting, filtering, column resizing, pagination, and virtualisation belong to a table library. The CSS [Table](/docs/components/table/) stays: it styles the markup one produces. |
+| **Tree View**  | The hardest pattern in the ARIA Authoring Practices Guide — typeahead, expand/collapse, multi-select across levels — with the least reuse across products.                        |
+
+## It is composition, not a component
+
+| Not shipping               | Because                                                                                                                                                                                                    |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Sidebar and app shells** | A shell is a layout decision that belongs to the application. It is grid, [Separator](/docs/components/separator/), and whatever navigation the product needs.                                             |
+| **Chat and AI surfaces**   | Message lists, streaming indicators, and prompt composers are product surfaces. They are built out of primitives; they are not primitives.                                                                 |
+| **Command palette**        | [Combobox](/docs/components/combobox/) inside a [Dialog](/docs/components/dialog/), which is composition rather than a new contract. It will be documented as a recipe rather than shipped as a component. |
+
+## Deferred, not refused
+
+**Date Picker and Calendar.** `<input type="date">` covers the common case today with a native
+picker, native validation, and native form behavior, and it is the right default for most forms. A
+real calendar is a different project: month grids across locales, week-start rules, non-Gregorian
+calendars, ranges, and the APG grid pattern's full keyboard contract. That is worth doing properly
+or not at all, so it is on the list to revisit rather than ruled out.
+
+Until then, use `<input type="date">` with [Field](/docs/components/field/) for labelling,
+description, and error wiring.

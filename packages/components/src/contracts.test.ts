@@ -61,7 +61,13 @@ describe('component contracts', () => {
 
   it('guards catalog names', () => {
     expect(isComponentName('dialog')).toBe(true)
-    expect(isComponentName('tooltip')).toBe(false)
+    // A configuration of another component's element is still a contract of its own.
+    expect(isComponentName('tooltip')).toBe(true)
+    expect(componentContracts.tooltip.root).toEqual({
+      kind: 'selector',
+      name: "ui-hover-card[variant='tooltip']",
+    })
+    expect(isComponentName('disclosure')).toBe(false)
     expect(isComponentName('unknown')).toBe(false)
   })
 })

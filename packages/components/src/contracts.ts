@@ -3,6 +3,8 @@ export type ComponentKind = 'css' | 'custom-element'
 export type ComponentRoot =
   | { readonly kind: 'class'; readonly name: `ui-${string}` }
   | { readonly kind: 'element'; readonly name: `ui-${string}` }
+  /** A configuration of another component's element, named by the selector that selects it. */
+  | { readonly kind: 'selector'; readonly name: `ui-${string}` }
 
 /** One public configuration attribute, with the values the stylesheets actually implement. */
 export type ComponentAttributeContract = {
@@ -90,7 +92,6 @@ export type ComponentName =
   | 'group'
   | 'list'
   | 'table'
-  | 'disclosure'
   | 'collapsible'
   | 'spinner'
   | 'empty'
@@ -115,6 +116,7 @@ export type ComponentName =
   | 'sheet'
   | 'popover'
   | 'hoverCard'
+  | 'tooltip'
   | 'menu'
   | 'menuButton'
   | 'toolbar'
@@ -721,10 +723,10 @@ export const componentContracts = {
         name: 'data-ui-variant',
         type: 'string',
         set: 'listVariants',
-        values: ['plain', 'divided', 'inset', 'ordered'],
+        values: ['plain', 'divided', 'inset'],
         default: 'plain',
         description:
-          'Row treatment. Use `ordered` together with an `<ol>` element, not instead of one.',
+          'Row treatment. Numbering is the element\'s job, not the attribute\'s: use `<ol class="ui-list">` for a numbered list and `<ul class="ui-list">` for an unnumbered one.',
       },
       {
         name: 'data-ui-density',
@@ -756,7 +758,20 @@ export const componentContracts = {
       },
     ],
     states: [],
-    variables: [],
+    variables: [
+      {
+        name: '--ui-list-gap',
+        description: 'Gap between rows. `divided` collapses it to zero.',
+      },
+      {
+        name: '--ui-list-item-padding-block',
+        description: 'Block padding of a `divided` row.',
+      },
+      {
+        name: '--ui-list-item-padding-inline',
+        description: 'Inline padding of a `divided` row.',
+      },
+    ],
     events: [],
   },
   table: {
@@ -809,28 +824,6 @@ export const componentContracts = {
     variables: [],
     events: [],
   },
-  disclosure: {
-    kind: 'css',
-    root: {
-      kind: 'class',
-      name: 'ui-disclosure',
-    },
-    css: ['disclosure.css'],
-    attributes: [
-      {
-        name: 'data-ui-density',
-        type: 'string',
-        set: 'compactDensities',
-        values: ['compact', 'normal'],
-        default: 'normal',
-        description: 'Summary and content padding.',
-      },
-    ],
-    parts: [],
-    states: [],
-    variables: [],
-    events: [],
-  },
   collapsible: {
     kind: 'css',
     root: {
@@ -850,8 +843,44 @@ export const componentContracts = {
     ],
     parts: [],
     states: [],
-    variables: [],
+    variables: [
+      {
+        name: '--ui-collapsible-line',
+        description: 'Divider color between rows.',
+      },
+      {
+        name: '--ui-collapsible-trigger-min-block-size',
+        description: 'Minimum summary height.',
+      },
+      {
+        name: '--ui-collapsible-trigger-padding-block',
+        description: 'Block padding inside the summary.',
+      },
+      {
+        name: '--ui-collapsible-trigger-gap',
+        description: 'Gap between the summary text and the indicator.',
+      },
+      {
+        name: '--ui-collapsible-panel-padding-block-end',
+        description: 'Block-end padding below the panel.',
+      },
+      {
+        name: '--ui-collapsible-icon-size',
+        description: 'Size of the chevron indicator.',
+      },
+      {
+        name: '--ui-collapsible-duration',
+        description: 'Indicator and panel transition duration.',
+      },
+    ],
     events: [],
+    accessibility: {
+      pattern: 'disclosure',
+      patternLabel: 'Disclosure',
+      keys: [],
+      notes:
+        'Every key comes from native `<details>` and `<summary>`: Enter and Space toggle, Tab reaches the summary, and find-in-page opens a closed panel to reveal a match. Timeless adds no script and no ARIA, because the platform already exposes the button, its expanded state, and the region it controls. For an accordion where only one panel is open at a time, give every `<details>` in the stack the same `name`; the browser closes the previously open one, with no JavaScript involved.',
+    },
   },
   spinner: {
     kind: 'css',
@@ -1794,6 +1823,53 @@ export const componentContracts = {
       ],
       notes:
         'The card opens on both pointer hover and keyboard focus, so it is reachable without a mouse. `close-delay` keeps it open while the pointer crosses the gap into the surface. Never put the only copy of important content here.',
+    },
+  },
+  tooltip: {
+    kind: 'css',
+    root: {
+      kind: 'selector',
+      name: "ui-hover-card[variant='tooltip']",
+    },
+    css: ['popover.css'],
+    attributes: [],
+    parts: [
+      {
+        name: 'trigger',
+        required: true,
+        selector: "[data-ui-part~='trigger']",
+        description: 'Control the label describes. Point its `aria-describedby` at the surface.',
+      },
+      {
+        name: 'content',
+        required: true,
+        selector: '[popover]',
+        description: 'The label. One short, non-interactive line; give it `role="tooltip"`.',
+      },
+    ],
+    states: [],
+    variables: [
+      {
+        name: '--ui-tooltip-bg',
+        description: 'Surface background. Inverted against the page by default.',
+      },
+      {
+        name: '--ui-tooltip-fg',
+        description: 'Label color, and the border tint is mixed from it.',
+      },
+    ],
+    events: [],
+    accessibility: {
+      pattern: 'tooltip',
+      patternLabel: 'Tooltip',
+      keys: [
+        {
+          key: 'Escape',
+          action: 'Close the label while the trigger has focus.',
+        },
+      ],
+      notes:
+        'A tooltip names or describes its trigger and nothing else. Point the trigger at it with `aria-describedby` and give the surface `role="tooltip"`; Timeless wires relationships, never content. It opens on hover and on keyboard focus, so it is reachable without a mouse. Because it holds no interactive content and cannot be reached by Tab, never put the only copy of anything here — for content the user may want to read at length or click, use Hover Card instead.',
     },
   },
   menu: {

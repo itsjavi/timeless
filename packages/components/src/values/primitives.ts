@@ -34,7 +34,7 @@ export const linkVariants = ['default', 'muted', 'danger'] as const
 export type LinkVariant = (typeof linkVariants)[number]
 
 /** Permitted values for `ui-list` `data-ui-variant`. */
-export const listVariants = ['plain', 'divided', 'inset', 'ordered'] as const
+export const listVariants = ['plain', 'divided', 'inset'] as const
 export type ListVariant = (typeof listVariants)[number]
 
 /** Permitted values for `ui-separator` `data-ui-variant`. */
@@ -65,7 +65,7 @@ export type PrimitiveSize = (typeof primitiveSizes)[number]
 export const primitiveDensities = ['compact', 'normal', 'spacious'] as const
 export type PrimitiveDensity = (typeof primitiveDensities)[number]
 
-/** Permitted values for `ui-alert` `data-ui-density`, `ui-card` `data-ui-density`, `ui-progress` `data-ui-density`, `ui-list` `data-ui-density`, `ui-table` `data-ui-density`, `ui-disclosure` `data-ui-density` and `ui-collapsible` `data-ui-density`. */
+/** Permitted values for `ui-alert` `data-ui-density`, `ui-card` `data-ui-density`, `ui-progress` `data-ui-density`, `ui-list` `data-ui-density`, `ui-table` `data-ui-density` and `ui-collapsible` `data-ui-density`. */
 export const compactDensities = ['compact', 'normal'] as const
 export type CompactDensity = (typeof compactDensities)[number]
 

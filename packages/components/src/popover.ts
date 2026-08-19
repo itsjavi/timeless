@@ -1,4 +1,5 @@
 import { attr, createId, createUIElementClass, element, watch } from '@timelessui/core'
+import { supportsNativePopover } from './capabilities'
 import {
   applyFloatingPosition,
   clearFloatingPosition,
@@ -236,13 +237,6 @@ function invalidPopoverParts(parts: PopoverEnhancementParts): readonly string[] 
   if (!parts.trigger) missing.push('trigger')
   if (!parts.content) missing.push('content')
   return missing
-}
-
-function supportsNativePopover(targetWindow: Window | null | undefined): boolean {
-  const timelessWindow = targetWindow as (Window & typeof globalThis) | null | undefined
-  return Boolean(
-    timelessWindow?.HTMLElement && 'showPopover' in timelessWindow.HTMLElement.prototype,
-  )
 }
 
 function nextAvailablePopoverInstanceId(ownerDocument: Document): string {

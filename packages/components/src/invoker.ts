@@ -11,6 +11,11 @@
  * does not match its target silently no-ops rather than throwing.
  */
 
+import { supportsInvokerCommands } from './capabilities'
+
+/** Re-exported from `capabilities.ts`, which owns every platform probe. */
+export { supportsInvokerCommands }
+
 /** Built-in `command` values Timeless recognises on a native `<dialog>` target. */
 export const showModalCommand = 'show-modal'
 export const closeCommand = 'close'
@@ -18,13 +23,6 @@ export const requestCloseCommand = 'request-close'
 
 export type InvokerElementLike = {
   getAttribute(name: string): string | null
-}
-
-export function supportsInvokerCommands(targetWindow: Window | null | undefined): boolean {
-  const timelessWindow = targetWindow as (Window & typeof globalThis) | null | undefined
-  return Boolean(
-    timelessWindow?.HTMLButtonElement && 'command' in timelessWindow.HTMLButtonElement.prototype,
-  )
 }
 
 /** The id in `commandfor`, or null when the attribute is absent or empty. */

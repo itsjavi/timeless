@@ -4,27 +4,51 @@
     display: contents;
   }
 
+  /* The frame all floating surfaces share. Sizing and padding belong to the per-component boxes. */
   :where(ui-popover, ui-hover-card) > [popover],
   ui-hover-card[anchor] {
     box-sizing: border-box;
     inline-size: max-content;
-    max-inline-size: min(22rem, calc(100vw - 2rem));
-    max-block-size: calc(100dvh - 6rem);
-    overflow: auto;
-    overscroll-behavior: contain;
     border: 1px solid var(--ui-line);
-    border-radius: var(--ui-radius-lg);
     margin: 0;
-    padding: var(--ui-space-4);
     background: var(--ui-bg-surface);
     box-shadow: var(--ui-shadow-floating);
     color: var(--ui-fg);
     font: inherit;
+  }
+
+  /* The panel box. Excludes tooltips so they never inherit a scroll container to override back. */
+  :where(ui-popover, ui-hover-card:not([variant='tooltip'])) > [popover],
+  ui-hover-card[anchor]:not([variant='tooltip']) {
+    max-inline-size: min(22rem, calc(100vw - 2rem));
+    max-block-size: calc(100dvh - 6rem);
+    overflow: auto;
+    overscroll-behavior: contain;
+    border-radius: var(--ui-radius-lg);
+    padding: var(--ui-space-4);
     line-height: 1.5;
   }
 
   ui-popover > [popover] {
     min-inline-size: 16rem;
+  }
+
+  /* The label box. `overflow` is not redundant: the UA gives every `[popover]` `overflow: auto`. */
+  ui-hover-card[variant='tooltip'] > [popover],
+  ui-hover-card[variant='tooltip'][anchor] {
+    --ui-tooltip-bg: light-dark(#17171a, #f4f4f5);
+    --ui-tooltip-fg: light-dark(#ffffff, #17171a);
+
+    max-inline-size: min(16rem, calc(100vw - 2rem));
+    overflow: visible;
+    border-radius: var(--ui-radius-md);
+    padding: var(--ui-space-2) var(--ui-space-3);
+    border-color: color-mix(in oklab, var(--ui-tooltip-bg), var(--ui-tooltip-fg) 24%);
+    background: var(--ui-tooltip-bg);
+    box-shadow: var(--ui-shadow-tooltip);
+    color: var(--ui-tooltip-fg);
+    font-size: 0.8125rem;
+    line-height: 1.35;
   }
 
   :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]) :where(h2, h3, p) {
@@ -37,23 +61,13 @@
     font-weight: 750;
   }
 
-  :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]) p {
+  /* Scoped off tooltips, whose label inherits the surface colour instead. */
+  :where(
+      :where(ui-popover, ui-hover-card:not([variant='tooltip'])) > [popover],
+      ui-hover-card[anchor]:not([variant='tooltip'])
+    )
+    p {
     color: var(--ui-fg-muted);
-  }
-
-  ui-hover-card:where([variant='tooltip']) > [popover],
-  ui-hover-card:where([variant='tooltip'][anchor]) {
-    --ui-tooltip-bg: light-dark(#17171a, #f4f4f5);
-    --ui-tooltip-fg: light-dark(#ffffff, #17171a);
-
-    max-inline-size: 18rem;
-    border-radius: var(--ui-radius-md);
-    padding: var(--ui-space-2) var(--ui-space-3);
-    border-color: color-mix(in oklab, var(--ui-tooltip-bg), var(--ui-tooltip-fg) 24%);
-    background: var(--ui-tooltip-bg);
-    color: var(--ui-tooltip-fg);
-    box-shadow: var(--ui-shadow-floating);
-    font-size: 0.8125rem;
   }
 
   :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]):not(:popover-open) {
@@ -123,9 +137,5 @@
       position-area: left center;
       translate: calc(var(--ui-floating-offset, 0.375rem) * -1) 0;
     }
-  }
-
-  ui-hover-card:where([variant='tooltip']) :where(p) {
-    color: inherit !important;
   }
 }

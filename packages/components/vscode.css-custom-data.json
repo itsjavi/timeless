@@ -442,6 +442,16 @@
       ]
     },
     {
+      "name": "--ui-shadow-tooltip",
+      "description": "Timeless Atmosphere token (shadow). Override it on `:root` or on any subtree.",
+      "references": [
+        {
+          "name": "Theming",
+          "url": "https://timeless.build/docs/styling/theming/"
+        }
+      ]
+    },
+    {
       "name": "--ui-shadow-inset",
       "description": "Timeless Atmosphere token (shadow). Override it on `:root` or on any subtree.",
       "references": [
@@ -702,6 +712,106 @@
       ]
     },
     {
+      "name": "--ui-list-gap",
+      "description": "Gap between rows. `divided` collapses it to zero. Set on `ui-list`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-list-item-padding-block",
+      "description": "Block padding of a `divided` row. Set on `ui-list`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-list-item-padding-inline",
+      "description": "Inline padding of a `divided` row. Set on `ui-list`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-collapsible-line",
+      "description": "Divider color between rows. Set on `ui-collapsible`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-collapsible-trigger-min-block-size",
+      "description": "Minimum summary height. Set on `ui-collapsible`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-collapsible-trigger-padding-block",
+      "description": "Block padding inside the summary. Set on `ui-collapsible`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-collapsible-trigger-gap",
+      "description": "Gap between the summary text and the indicator. Set on `ui-collapsible`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-collapsible-panel-padding-block-end",
+      "description": "Block-end padding below the panel. Set on `ui-collapsible`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-collapsible-icon-size",
+      "description": "Size of the chevron indicator. Set on `ui-collapsible`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-collapsible-duration",
+      "description": "Indicator and panel transition duration. Set on `ui-collapsible`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
       "name": "--ui-range-track",
       "description": "Track thickness. Set on `ui-range`.",
       "references": [
@@ -714,6 +824,26 @@
     {
       "name": "--ui-range-thumb",
       "description": "Thumb diameter. Set on `ui-range`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-tooltip-bg",
+      "description": "Surface background. Inverted against the page by default. Set on `ui-hover-card[variant='tooltip']`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-tooltip-fg",
+      "description": "Label color, and the border tint is mixed from it. Set on `ui-hover-card[variant='tooltip']`.",
       "references": [
         {
           "name": "Component reference",

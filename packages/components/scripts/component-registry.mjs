@@ -128,6 +128,38 @@ const css = (
   accessibility: a11y,
 })
 
+/**
+ * A contract for a component that is a *configuration* of another component's element, not an
+ * element of its own. The root is the selector that selects it, so the reference gets a real page
+ * with its own anatomy, variables, and accessibility pattern, while the runtime keeps exactly one
+ * registered element. Tooltip is Hover Card with `variant="tooltip"`; adding a `ui-tooltip` tag
+ * would mean a second element, define entrypoint, and manifest declaration for the same controller.
+ *
+ * `kind` stays `css` because the contract declares styling over authored markup and contributes no
+ * element. `uiAttributes` skips it: the root is not a class, so there is nothing to spread.
+ */
+const selector = (
+  name,
+  root,
+  stylesheet,
+  attributes = [],
+  parts = [],
+  states = [],
+  variables = [],
+  a11y = null,
+) => ({
+  name,
+  kind: 'css',
+  root: { kind: 'selector', name: root },
+  css: [stylesheet],
+  attributes,
+  parts,
+  states,
+  variables,
+  events: [],
+  accessibility: a11y,
+})
+
 const customElement = (
   name,
   tag,
@@ -218,7 +250,7 @@ export const valueSets = {
   listVariants: {
     type: 'ListVariant',
     module: 'primitives',
-    values: ['plain', 'divided', 'inset', 'ordered'],
+    values: ['plain', 'divided', 'inset'],
   },
   separatorVariants: {
     type: 'SeparatorVariant',
@@ -555,7 +587,7 @@ export const components = [
         set: 'listVariants',
         default: 'plain',
         description:
-          'Row treatment. Use `ordered` together with an `<ol>` element, not instead of one.',
+          'Row treatment. Numbering is the element\'s job, not the attribute\'s: use `<ol class="ui-list">` for a numbered list and `<ul class="ui-list">` for an unnumbered one.',
       }),
       density('compactDensities', 'Row padding.'),
     ],
@@ -563,6 +595,12 @@ export const components = [
       part('item', false, undefined, 'One row. Use `<li>`.'),
       part('title', false, undefined, 'Primary row text.'),
       part('description', false, undefined, 'Secondary row text.'),
+    ],
+    [],
+    [
+      variable('--ui-list-gap', 'Gap between rows. `divided` collapses it to zero.'),
+      variable('--ui-list-item-padding-block', 'Block padding of a `divided` row.'),
+      variable('--ui-list-item-padding-inline', 'Inline padding of a `divided` row.'),
     ],
   ),
   css(
@@ -584,12 +622,29 @@ export const components = [
       part('empty', false, undefined, 'Row shown in place of data when the table has none.'),
     ],
   ),
-  css('disclosure', 'ui-disclosure', 'disclosure.css', [
-    density('compactDensities', 'Summary and content padding.'),
-  ]),
-  css('collapsible', 'ui-collapsible', 'collapsible.css', [
-    density('compactDensities', 'Summary and content padding.'),
-  ]),
+  css(
+    'collapsible',
+    'ui-collapsible',
+    'collapsible.css',
+    [density('compactDensities', 'Summary and content padding.')],
+    [],
+    [],
+    [
+      variable('--ui-collapsible-line', 'Divider color between rows.'),
+      variable('--ui-collapsible-trigger-min-block-size', 'Minimum summary height.'),
+      variable('--ui-collapsible-trigger-padding-block', 'Block padding inside the summary.'),
+      variable('--ui-collapsible-trigger-gap', 'Gap between the summary text and the indicator.'),
+      variable('--ui-collapsible-panel-padding-block-end', 'Block-end padding below the panel.'),
+      variable('--ui-collapsible-icon-size', 'Size of the chevron indicator.'),
+      variable('--ui-collapsible-duration', 'Indicator and panel transition duration.'),
+    ],
+    accessibility(
+      'disclosure',
+      'Disclosure',
+      [],
+      'Every key comes from native `<details>` and `<summary>`: Enter and Space toggle, Tab reaches the summary, and find-in-page opens a closed panel to reveal a match. Timeless adds no script and no ARIA, because the platform already exposes the button, its expanded state, and the region it controls. For an accordion where only one panel is open at a time, give every `<details>` in the stack the same `name`; the browser closes the previously open one, with no JavaScript involved.',
+    ),
+  ),
   css(
     'spinner',
     'ui-spinner',
@@ -1045,6 +1100,37 @@ export const components = [
       'Tooltip',
       [key('Escape', 'Close the surface while the trigger has focus.')],
       'The card opens on both pointer hover and keyboard focus, so it is reachable without a mouse. `close-delay` keeps it open while the pointer crosses the gap into the surface. Never put the only copy of important content here.',
+    ),
+  ),
+  selector(
+    'tooltip',
+    "ui-hover-card[variant='tooltip']",
+    'popover.css',
+    [],
+    [
+      part(
+        'trigger',
+        true,
+        undefined,
+        'Control the label describes. Point its `aria-describedby` at the surface.',
+      ),
+      part(
+        'content',
+        true,
+        '[popover]',
+        'The label. One short, non-interactive line; give it `role="tooltip"`.',
+      ),
+    ],
+    [],
+    [
+      variable('--ui-tooltip-bg', 'Surface background. Inverted against the page by default.'),
+      variable('--ui-tooltip-fg', 'Label color, and the border tint is mixed from it.'),
+    ],
+    accessibility(
+      'tooltip',
+      'Tooltip',
+      [key('Escape', 'Close the label while the trigger has focus.')],
+      'A tooltip names or describes its trigger and nothing else. Point the trigger at it with `aria-describedby` and give the surface `role="tooltip"`; Timeless wires relationships, never content. It opens on hover and on keyboard focus, so it is reachable without a mouse. Because it holds no interactive content and cannot be reached by Tab, never put the only copy of anything here — for content the user may want to read at length or click, use Hover Card instead.',
     ),
   ),
   customElement(

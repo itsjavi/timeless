@@ -392,6 +392,8 @@ function contractTypes() {
 export type ComponentRoot =
   | { readonly kind: 'class'; readonly name: \`ui-\${string}\` }
   | { readonly kind: 'element'; readonly name: \`ui-\${string}\` }
+  /** A configuration of another component's element, named by the selector that selects it. */
+  | { readonly kind: 'selector'; readonly name: \`ui-\${string}\` }
 
 /** One public configuration attribute, with the values the stylesheets actually implement. */
 export type ComponentAttributeContract = {

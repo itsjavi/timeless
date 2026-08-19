@@ -52,6 +52,7 @@ export const atmosphereTokenGroups = {
     '--ui-shadow-control-danger',
     '--ui-shadow-outline-control',
     '--ui-shadow-floating',
+    '--ui-shadow-tooltip',
     '--ui-shadow-inset',
   ],
   space: ['--ui-space-1', '--ui-space-2', '--ui-space-3', '--ui-space-4', '--ui-space-5'],

@@ -7,6 +7,7 @@ import {
   property,
   watch,
 } from '@timelessui/core'
+import { supportsNativePopover } from './capabilities'
 import {
   collectionNavigationTarget,
   firstEnabledCollectionItemIndex,
@@ -410,13 +411,6 @@ function invalidComboboxParts(parts: ComboboxEnhancementParts): readonly string[
   if (!parts.input) missing.push('input')
   if (!parts.listbox) missing.push('listbox')
   return missing
-}
-
-function supportsNativePopover(targetWindow: Window | null | undefined): boolean {
-  const timelessWindow = targetWindow as (Window & typeof globalThis) | null | undefined
-  return Boolean(
-    timelessWindow?.HTMLElement && 'showPopover' in timelessWindow.HTMLElement.prototype,
-  )
 }
 
 function nextAvailableComboboxInstanceId(ownerDocument: Document): string {
