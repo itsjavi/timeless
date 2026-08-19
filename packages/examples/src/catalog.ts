@@ -38,7 +38,6 @@ import {
   createAvatar,
   createBadge,
   createCard,
-  createDisclosure,
   createGroup,
   createList,
   createProgress,
@@ -226,20 +225,6 @@ export const examples = [
         description: 'Review the public anatomy before publishing.',
         meta: 'Reference',
       }),
-  }),
-  example({
-    id: 'disclosure',
-    domain: 'content',
-    guidance:
-      'Use Disclosure for a single expandable region. Use [Collapsible](/docs/components/collapsible/) when several regions sit together as a stack, such as an FAQ or a settings accordion.',
-    group: 'Content',
-    contracts: ['disclosure'],
-    component: 'Disclosure',
-    title: 'Disclosure',
-    description: 'Native details and summary with stable styling hooks.',
-    definitions: [],
-    styles: ['tokens.css', 'disclosure.css'],
-    render: () => createDisclosure(),
   }),
   example({
     id: 'group',
@@ -677,7 +662,7 @@ export const examples = [
     id: 'collapsible',
     domain: 'overlays',
     guidance:
-      'Use Collapsible for a stack of expandable regions. For one standalone region, [Disclosure](/docs/components/disclosure/) is the same `<details>` element with lighter styling.',
+      'One expandable region or a whole stack of them: both are `<details>` with `.ui-collapsible`, so there is no second component to choose. Give every `<details>` in a stack the same `name` to get an accordion where only one panel is open at a time — the browser closes the previous one, so no script is involved. Omit `name` and the panels open independently.',
     group: 'Content',
     contracts: ['collapsible'],
     component: 'Collapsible',
@@ -687,11 +672,17 @@ export const examples = [
     styles: ['tokens.css', 'collapsible.css'],
     render: () =>
       createCollapsible({
+        name: 'catalog-collapsible',
         items: [
           {
             title: 'What ships?',
             content: 'CSS, explicit element definitions, and public types.',
             open: true,
+          },
+          {
+            title: 'Does it need JavaScript?',
+            content:
+              'No. Native details and summary own the open state, the keyboard, and find-in-page.',
           },
         ],
       }),

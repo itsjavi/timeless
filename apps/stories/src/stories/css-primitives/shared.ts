@@ -5,7 +5,6 @@ import badgeCss from '@timelessui/components/css/badge.css?raw'
 import buttonCss from '@timelessui/components/css/button.css?raw'
 import cardCss from '@timelessui/components/css/card.css?raw'
 import codeCss from '@timelessui/components/css/code.css?raw'
-import disclosureCss from '@timelessui/components/css/disclosure.css?raw'
 import groupCss from '@timelessui/components/css/group.css?raw'
 import kbdCss from '@timelessui/components/css/kbd.css?raw'
 import linkCss from '@timelessui/components/css/link.css?raw'
@@ -37,7 +36,6 @@ const cssPrimitiveParameters = {
     groupCss,
     listCss,
     tableCss,
-    disclosureCss,
     spinnerCss,
     demoCss,
     primitiveDemoCss,
@@ -50,7 +48,7 @@ export function createCssPrimitiveMeta(component: string): StoryLiteMeta {
       ? 'Foundations'
       : component === 'Toggle'
         ? 'Actions'
-        : ['Avatar', 'Card', 'Disclosure', 'Group', 'List', 'Table'].includes(component)
+        : ['Avatar', 'Card', 'Group', 'List', 'Table'].includes(component)
           ? 'Content'
           : 'Feedback'
   const displayName = component === 'Text' ? 'Text and Code' : component

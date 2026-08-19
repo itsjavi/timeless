@@ -12,7 +12,7 @@
     list-style-position: inside;
   }
 
-  ul.ui-list:where(:not([data-ui-variant='ordered'])) {
+  ul.ui-list {
     list-style: none;
   }
 

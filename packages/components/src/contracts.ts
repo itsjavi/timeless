@@ -90,7 +90,6 @@ export type ComponentName =
   | 'group'
   | 'list'
   | 'table'
-  | 'disclosure'
   | 'collapsible'
   | 'spinner'
   | 'empty'
@@ -721,10 +720,10 @@ export const componentContracts = {
         name: 'data-ui-variant',
         type: 'string',
         set: 'listVariants',
-        values: ['plain', 'divided', 'inset', 'ordered'],
+        values: ['plain', 'divided', 'inset'],
         default: 'plain',
         description:
-          'Row treatment. Use `ordered` together with an `<ol>` element, not instead of one.',
+          'Row treatment. Numbering is the element\'s job, not the attribute\'s: use `<ol class="ui-list">` for a numbered list and `<ul class="ui-list">` for an unnumbered one.',
       },
       {
         name: 'data-ui-density',
@@ -809,28 +808,6 @@ export const componentContracts = {
     variables: [],
     events: [],
   },
-  disclosure: {
-    kind: 'css',
-    root: {
-      kind: 'class',
-      name: 'ui-disclosure',
-    },
-    css: ['disclosure.css'],
-    attributes: [
-      {
-        name: 'data-ui-density',
-        type: 'string',
-        set: 'compactDensities',
-        values: ['compact', 'normal'],
-        default: 'normal',
-        description: 'Summary and content padding.',
-      },
-    ],
-    parts: [],
-    states: [],
-    variables: [],
-    events: [],
-  },
   collapsible: {
     kind: 'css',
     root: {
@@ -850,8 +827,44 @@ export const componentContracts = {
     ],
     parts: [],
     states: [],
-    variables: [],
+    variables: [
+      {
+        name: '--ui-collapsible-line',
+        description: 'Divider color between rows.',
+      },
+      {
+        name: '--ui-collapsible-trigger-min-block-size',
+        description: 'Minimum summary height.',
+      },
+      {
+        name: '--ui-collapsible-trigger-padding-block',
+        description: 'Block padding inside the summary.',
+      },
+      {
+        name: '--ui-collapsible-trigger-gap',
+        description: 'Gap between the summary text and the indicator.',
+      },
+      {
+        name: '--ui-collapsible-panel-padding-block-end',
+        description: 'Block-end padding below the panel.',
+      },
+      {
+        name: '--ui-collapsible-icon-size',
+        description: 'Size of the chevron indicator.',
+      },
+      {
+        name: '--ui-collapsible-duration',
+        description: 'Indicator and panel transition duration.',
+      },
+    ],
     events: [],
+    accessibility: {
+      pattern: 'disclosure',
+      patternLabel: 'Disclosure',
+      keys: [],
+      notes:
+        'Every key comes from native `<details>` and `<summary>`: Enter and Space toggle, Tab reaches the summary, and find-in-page opens a closed panel to reveal a match. Timeless adds no script and no ARIA, because the platform already exposes the button, its expanded state, and the region it controls. For an accordion where only one panel is open at a time, give every `<details>` in the stack the same `name`; the browser closes the previously open one, with no JavaScript involved.',
+    },
   },
   spinner: {
     kind: 'css',

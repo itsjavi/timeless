@@ -104,7 +104,7 @@ export type UIAttributeConfig = {
     attached?: boolean
   }
   list: {
-    /** Row treatment. Use `ordered` together with an `<ol>` element, not instead of one. */
+    /** Row treatment. Numbering is the element's job, not the attribute's: use `<ol class="ui-list">` for a numbered list and `<ul class="ui-list">` for an unnumbered one. */
     variant?: ListVariant
     /** Row padding. */
     density?: CompactDensity
@@ -114,10 +114,6 @@ export type UIAttributeConfig = {
     density?: CompactDensity
     /** Cell text alignment. Set it on a `<th>` or `<td>`, not on the table. `end` also enables tabular numerals. */
     align?: TableAlignment
-  }
-  disclosure: {
-    /** Summary and content padding. */
-    density?: CompactDensity
   }
   collapsible: {
     /** Summary and content padding. */

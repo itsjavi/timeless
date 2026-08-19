@@ -218,7 +218,7 @@ export const valueSets = {
   listVariants: {
     type: 'ListVariant',
     module: 'primitives',
-    values: ['plain', 'divided', 'inset', 'ordered'],
+    values: ['plain', 'divided', 'inset'],
   },
   separatorVariants: {
     type: 'SeparatorVariant',
@@ -555,7 +555,7 @@ export const components = [
         set: 'listVariants',
         default: 'plain',
         description:
-          'Row treatment. Use `ordered` together with an `<ol>` element, not instead of one.',
+          'Row treatment. Numbering is the element\'s job, not the attribute\'s: use `<ol class="ui-list">` for a numbered list and `<ul class="ui-list">` for an unnumbered one.',
       }),
       density('compactDensities', 'Row padding.'),
     ],
@@ -584,12 +584,29 @@ export const components = [
       part('empty', false, undefined, 'Row shown in place of data when the table has none.'),
     ],
   ),
-  css('disclosure', 'ui-disclosure', 'disclosure.css', [
-    density('compactDensities', 'Summary and content padding.'),
-  ]),
-  css('collapsible', 'ui-collapsible', 'collapsible.css', [
-    density('compactDensities', 'Summary and content padding.'),
-  ]),
+  css(
+    'collapsible',
+    'ui-collapsible',
+    'collapsible.css',
+    [density('compactDensities', 'Summary and content padding.')],
+    [],
+    [],
+    [
+      variable('--ui-collapsible-line', 'Divider color between rows.'),
+      variable('--ui-collapsible-trigger-min-block-size', 'Minimum summary height.'),
+      variable('--ui-collapsible-trigger-padding-block', 'Block padding inside the summary.'),
+      variable('--ui-collapsible-trigger-gap', 'Gap between the summary text and the indicator.'),
+      variable('--ui-collapsible-panel-padding-block-end', 'Block-end padding below the panel.'),
+      variable('--ui-collapsible-icon-size', 'Size of the chevron indicator.'),
+      variable('--ui-collapsible-duration', 'Indicator and panel transition duration.'),
+    ],
+    accessibility(
+      'disclosure',
+      'Disclosure',
+      [],
+      'Every key comes from native `<details>` and `<summary>`: Enter and Space toggle, Tab reaches the summary, and find-in-page opens a closed panel to reveal a match. Timeless adds no script and no ARIA, because the platform already exposes the button, its expanded state, and the region it controls. For an accordion where only one panel is open at a time, give every `<details>` in the stack the same `name`; the browser closes the previously open one, with no JavaScript involved.',
+    ),
+  ),
   css(
     'spinner',
     'ui-spinner',

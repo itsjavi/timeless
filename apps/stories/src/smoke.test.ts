@@ -5,7 +5,6 @@ import { Default as Alert } from './stories/css-primitives/alert.stories'
 import { Default as Avatar } from './stories/css-primitives/avatar.stories'
 import { Default as Badge } from './stories/css-primitives/badge.stories'
 import { Default as Card } from './stories/css-primitives/card.stories'
-import { Default as Disclosure } from './stories/css-primitives/disclosure.stories'
 import { Default as Group } from './stories/css-primitives/group.stories'
 import { Default as List } from './stories/css-primitives/list.stories'
 import { Default as Progress } from './stories/css-primitives/progress.stories'
@@ -89,7 +88,6 @@ describe('catalog stories', () => {
     expect(Table.render()).toContain('<div class="ui-table"')
     expect(Table.render()).toContain('<table>')
     expect(Table.render()).toContain('aria-label="Primitive coverage table"')
-    expect(Disclosure.render()).toContain('<details class="ui-disclosure"')
     expect(Spinner.render()).toContain('class="ui-spinner"')
   })
 

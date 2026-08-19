@@ -117,3 +117,48 @@ export const ReleaseChecklist = {
     </section>
   </main>`,
 } satisfies StoryLiteStoryDefinition
+
+const faqItems = [
+  {
+    title: 'Is a single expandable region a different component?',
+    content:
+      'No. One details element with .ui-collapsible is the whole component; a stack is several of them.',
+  },
+  {
+    title: 'What closes the previously open panel?',
+    content:
+      'The browser does, because every details element in the stack shares the same name attribute.',
+  },
+  {
+    title: 'How much of this needs JavaScript?',
+    content:
+      'None of it. Open state, keyboard, find-in-page, and exclusivity are all platform-owned.',
+  },
+] as const
+
+export const ExclusiveAndIndependent = {
+  source:
+    () => `${createCollapsible({ name: 'faq', items: faqItems.map((item, index) => ({ ...item, open: index === 0 })) })}
+${createCollapsible({ items: faqItems.map((item, index) => ({ ...item, open: index === 0 })) })}`,
+  render: () => `<main class="ui-demo-page">
+    <header>
+      <h1>Exclusive and independent stacks</h1>
+      <p>The only difference between these two stacks is the <code class="ui-code">name</code> attribute on each <code class="ui-code">details</code>. Shared names make an accordion; omitting them lets every panel open at once. No script is involved either way, so both behave the same with JavaScript disabled.</p>
+    </header>
+    <section class="ui-overlay-demo-panel" aria-label="Exclusive accordion">
+      <h2>Shared <code class="ui-code">name="faq"</code></h2>
+      <p>Opening one panel closes the other. The browser enforces it.</p>
+      ${createCollapsible({
+        name: 'faq',
+        items: faqItems.map((item, index) => ({ ...item, open: index === 0 })),
+      })}
+    </section>
+    <section class="ui-overlay-demo-panel" aria-label="Independent stack">
+      <h2>No <code class="ui-code">name</code></h2>
+      <p>Every panel opens and closes on its own.</p>
+      ${createCollapsible({
+        items: faqItems.map((item, index) => ({ ...item, open: index === 0 })),
+      })}
+    </section>
+  </main>`,
+} satisfies StoryLiteStoryDefinition
