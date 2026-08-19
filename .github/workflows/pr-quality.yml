@@ -14,6 +14,7 @@ concurrency:
 
 jobs:
   package-contracts:
+    name: package-contracts
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -47,6 +48,7 @@ jobs:
           pnpm -F @timelessui/components attw
 
   static-site:
+    name: static-site
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -65,15 +67,19 @@ jobs:
       - name: Build composed site
         run: pnpm build:site
       - name: Validate examples and documentation
+        # `test` reads source and runs in package-contracts too. `test:dist` reads the emitted site, so
+        # it can only run here, after `build:site` — that split is why `apps/web` has two test scripts.
         run: |
           pnpm -F @timelessui/examples test
           pnpm -F @apps/web test
+          pnpm -F @apps/web test:dist
       - uses: actions/upload-artifact@v6
         with:
           name: static-site
           path: dist-site
 
   browser-contracts:
+    name: browser-contracts
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:

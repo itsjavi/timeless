@@ -4,6 +4,19 @@ import { storiesUrl } from '../../lib/stories'
 type Props = { home?: boolean }
 const { home = false } = Astro.props
 const sectionPrefix = home ? '' : '/'
+
+/**
+ * One declaration for both surfaces: the inline bar on wide viewports and the popover panel the
+ * hamburger opens once the bar no longer fits. Only ever one of the two is rendered.
+ */
+const sections = [
+  { href: `${sectionPrefix}#ingredients`, label: 'Ingredients' },
+  { href: `${sectionPrefix}#principles`, label: 'Principles' },
+  { href: `${sectionPrefix}#enhancement`, label: 'Before JS' },
+  { href: '/docs/', label: 'Docs' },
+  { href: '/docs/reference/agents/', label: 'AI' },
+  { href: storiesUrl(), label: 'Stories' },
+]
 ---
 
 <header class="site-nav" aria-label="Primary">
@@ -13,13 +26,25 @@ const sectionPrefix = home ? '' : '/'
     </a>
 
     <nav class="nav-links" aria-label="Page sections">
-      <a href={`${sectionPrefix}#ingredients`}>Ingredients</a>
-      <a href={`${sectionPrefix}#principles`}>Principles</a>
-      <a href={`${sectionPrefix}#enhancement`}>Before JS</a>
-      <a href="/docs/">Docs</a>
-      <a href={storiesUrl()}>Stories</a>
+      {sections.map((section) => <a href={section.href}>{section.label}</a>)}
     </nav>
+
+    <button
+      class="nav-toggle"
+      type="button"
+      popovertarget="site-nav-panel"
+      aria-expanded="false"
+      aria-label="Page sections"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M3 6h18v2.2H3V6Zm0 4.9h18v2.2H3v-2.2ZM3 15.8h18V18H3v-2.2Z"></path>
+      </svg>
+    </button>
   </div>
+
+  <nav class="nav-panel" id="site-nav-panel" popover="auto" aria-label="Page sections">
+    {sections.map((section) => <a href={section.href}>{section.label}</a>)}
+  </nav>
 
   <a
     class="github-link"
@@ -36,3 +61,25 @@ const sectionPrefix = home ? '' : '/'
     <span>GitHub</span>
   </a>
 </header>
+
+<script>
+  /**
+   * The panel opens, light-dismisses, and Escape-closes natively. This adds the two things
+   * `popovertarget` does not: the disclosure state on the trigger, and closing the panel when a
+   * link inside it only moves to a fragment of the page already loaded.
+   */
+  const panel = document.getElementById('site-nav-panel')
+  const toggle = document.querySelector('.nav-toggle')
+
+  if (panel && toggle) {
+    panel.addEventListener('toggle', (event) => {
+      toggle.setAttribute('aria-expanded', String((event as ToggleEvent).newState === 'open'))
+    })
+
+    panel.addEventListener('click', (event) => {
+      if (event.target instanceof Element && event.target.closest('a')) {
+        panel.hidePopover()
+      }
+    })
+  }
+</script>

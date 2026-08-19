@@ -36,7 +36,7 @@
     "qa": "pnpm test:full-qa",
     "test": "pnpm -r --if-present --parallel --stream run test",
     "test:e2e": "pnpm -F @apps/e2e run e2e",
-    "test:full-qa": "pnpm typecheck && pnpm format:check && pnpm build && pnpm test && pnpm contracts:check && pnpm publint && pnpm attw && pnpm test:e2e",
+    "test:full-qa": "pnpm typecheck && pnpm format:check && pnpm build && pnpm test && pnpm -F @apps/web test:dist && pnpm contracts:check && pnpm publint && pnpm attw && pnpm test:e2e",
     "typecheck": "pnpm -r --if-present --parallel --stream run typecheck",
     "update-deps": "pnpm -r update --latest && sleep 1 && pnpm install"
   },

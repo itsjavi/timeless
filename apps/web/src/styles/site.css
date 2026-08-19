@@ -119,8 +119,11 @@ input {
 }
 
 .site-nav {
+  --site-nav-top: 16px;
+  --site-nav-inline: 12px;
+
   position: fixed;
-  top: 16px;
+  top: var(--site-nav-top);
   left: 50%;
   z-index: 10;
   width: min(calc(100% - 24px), var(--site-width));
@@ -132,6 +135,7 @@ input {
 }
 
 .site-nav__menu {
+  anchor-name: --site-nav-menu;
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
@@ -192,6 +196,81 @@ input {
 .nav-links a:focus-visible {
   background: var(--chrome-accent-3);
   color: var(--chrome-ink);
+}
+
+.nav-panel {
+  position: fixed;
+  inset: auto;
+  top: calc(var(--site-nav-top) + 68px);
+  left: var(--site-nav-inline);
+  gap: 2px;
+  width: max-content;
+  min-width: 190px;
+  max-width: calc(100% - (var(--site-nav-inline) * 2));
+  margin: 0;
+  border: 2px solid var(--chrome-border);
+  border-radius: var(--chrome-radius-lg);
+  background: var(--chrome-surface);
+  box-shadow: 8px 8px 0 rgba(51, 37, 29, 0.12);
+  padding: 8px;
+  overflow: visible;
+}
+
+/* Display stays with the open state so the closed panel keeps the UA's `display: none`. */
+.nav-panel:popover-open {
+  display: grid;
+}
+
+@supports (position-area: bottom span-right) {
+  .nav-panel {
+    position-anchor: --site-nav-menu;
+    position-area: bottom span-right;
+    top: auto;
+    left: auto;
+    margin-top: 10px;
+    max-width: calc(100vw - (var(--site-nav-inline) * 2));
+  }
+}
+
+.nav-panel a {
+  border-radius: var(--chrome-radius);
+  padding: 10px 12px;
+  color: var(--chrome-fg-muted);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.nav-panel a:hover,
+.nav-panel a:focus-visible {
+  background: var(--chrome-accent-3);
+  color: var(--chrome-ink);
+}
+
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--chrome-border);
+  border-radius: var(--chrome-radius);
+  background: var(--chrome-surface);
+  box-shadow: 3px 3px 0 var(--chrome-border);
+  padding: 8px;
+  color: var(--chrome-ink);
+}
+
+.nav-toggle svg {
+  width: 21px;
+  height: 21px;
+  fill: currentColor;
+}
+
+.nav-toggle:hover,
+.nav-toggle:focus-visible {
+  background: var(--chrome-accent-3);
 }
 
 .github-link {
@@ -1083,9 +1162,14 @@ main > section:not(.hero) {
   }
 
   .site-nav__menu {
-    grid-template-columns: auto;
+    grid-template-columns: auto auto;
+    gap: 14px;
     width: fit-content;
     max-width: 100%;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
   }
 
   .nav-links {
@@ -1177,7 +1261,10 @@ main > section:not(.hero) {
   }
 
   .site-nav {
-    top: 10px;
+    --site-nav-top: 10px;
+    --site-nav-inline: 10px;
+
+    top: var(--site-nav-top);
     right: 10px;
     left: 10px;
     width: auto;

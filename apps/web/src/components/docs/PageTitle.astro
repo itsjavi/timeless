@@ -1,0 +1,77 @@
+---
+/**
+ * Starlight's `PageTitle`, plus a link to the page's Markdown twin.
+ *
+ * The Markdown routes are the point of milestone 027, and a route nobody can find is a route nobody
+ * fetches — this link is how a reader gets the URL to paste into a chat. Base UI puts the same link
+ * in the same place.
+ *
+ * Not every Starlight route has a twin: the component index at `/docs/components/` is a plain Astro
+ * page, and the preview documents are framed rather than read. So the twin is looked up rather than
+ * assumed, and the link is absent when there is nothing to link to.
+ *
+ * `_top` is Starlight's `PAGE_TITLE_ID`, the anchor its "back to top" control targets. Overriding this
+ * component means owning that id.
+ */
+import { getCollection } from 'astro:content'
+import { examples } from '@timelessui/examples'
+
+const docs = await getCollection('docs')
+const guideIds = new Set(docs.map((doc) => doc.id))
+const componentIds = new Set(
+  examples.filter((example) => example.domain !== 'recipes').map((example) => example.id),
+)
+
+/** `/docs/styling/css/` -> `docs/styling/css`. Trailing and leading slashes are Starlight's. */
+const route = Astro.url.pathname.replace(/^\/+|\/+$/g, '')
+
+const markdownHref = guideIds.has(route)
+  ? `/${route}.md`
+  : route.startsWith('docs/components/') && componentIds.has(route.slice('docs/components/'.length))
+    ? `/${route}.md`
+    : null
+---
+
+<div class="page-title">
+  <h1 id="_top">{Astro.locals.starlightRoute.entry.data.title}</h1>
+  {
+    markdownHref ? (
+      <a class="page-title__markdown" href={markdownHref} data-markdown-twin>
+        View as Markdown
+      </a>
+    ) : null
+  }
+</div>
+
+<style>
+  @layer starlight.core {
+    h1 {
+      margin-top: 1rem;
+      font-size: var(--sl-text-h1);
+      line-height: var(--sl-line-height-headings);
+      font-weight: 600;
+      color: var(--sl-color-white);
+    }
+  }
+
+  .page-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+  }
+
+  .page-title__markdown {
+    flex: none;
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-xs);
+    text-decoration: none;
+  }
+
+  .page-title__markdown:hover,
+  .page-title__markdown:focus-visible {
+    color: var(--sl-color-text-accent);
+    text-decoration: underline;
+  }
+</style>

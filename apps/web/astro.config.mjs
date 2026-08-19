@@ -1,22 +1,16 @@
 import sitemap from '@astrojs/sitemap'
 import starlight from '@astrojs/starlight'
+import starlightDotMd from 'starlight-dot-md'
 import { examples } from '@timelessui/examples'
 import { defineConfig } from 'astro/config'
+import { GROUP_ORDER } from './src/lib/agent-surfaces.ts'
 
 /**
  * The sidebar is derived from the example catalog so the component list, the documentation groups,
  * and the routes cannot drift apart. Reorder or regroup in `packages/examples/src/catalog.ts`.
+ *
+ * `GROUP_ORDER` is shared with `/llms.txt`, which presents the same components in the same order.
  */
-const GROUP_ORDER = [
-  'Foundations',
-  'Actions',
-  'Forms',
-  'Navigation',
-  'Content',
-  'Feedback',
-  'Overlays',
-  'Color',
-]
 
 const documented = examples.filter((example) => example.domain !== 'recipes')
 const componentGroups = GROUP_ORDER.map((group) => ({
@@ -54,6 +48,8 @@ export default defineConfig({
       customCss: ['./src/styles/docs-theme.css'],
       lastUpdated: true,
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/itsjavi/timeless' }],
+      plugins: [starlightDotMd()],
+      components: { PageTitle: './src/components/docs/PageTitle.astro' },
       sidebar: [
         { label: 'Overview', slug: 'docs' },
         {

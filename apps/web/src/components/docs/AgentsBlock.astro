@@ -1,0 +1,19 @@
+---
+/**
+ * The paste-able `AGENTS.md` block, rendered from the generated grammar rather than written out again.
+ *
+ * This was the fourth hand-written copy of the authoring grammar. It now reads the same
+ * `reference/grammar.md` that `/llms.txt` and the agent skill are built from, so a change to
+ * `packages/components/scripts/authoring-grammar.mjs` reaches all four and `pnpm generate:check` fails
+ * if any generated copy is stale.
+ *
+ * The rules are shown in their imperative one-line form, which is what a consumer wants to paste into
+ * their own `AGENTS.md` — the prose version lives at the URL the block points to.
+ */
+import { Code } from '@astrojs/starlight/components'
+import { agentsBlock } from '../../lib/grammar.ts'
+
+const code = await agentsBlock()
+---
+
+<Code code={code} lang="markdown" title="AGENTS.md" />
