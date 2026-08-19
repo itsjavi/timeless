@@ -1,0 +1,101 @@
+# Milestone 026 Tasks
+
+## 0. Baseline, measured before any change
+
+- [ ] Confirm `ui-copy-button` appears in no catalog entry, no registry entry, and no stylesheet on
+      `main`
+- [ ] Record `performance:check` output as the baseline budget
+- [ ] Confirm `pnpm attw` currently reports one package, and record which
+
+## 1. Contract
+
+- [ ] Add the `copyButton` `customElement()` entry to `component-registry.mjs` with tag
+      `ui-copy-button`, module `copy-button`, stylesheet `copy-button.css`
+- [ ] Declare `value`, `from`, and `feedback-duration` as plain host attributes with no `set`, and
+      confirm no `valueSets` entry was added
+- [ ] Declare the `trigger`, `idle`, `copied`, and `status` parts, with only `trigger` required
+- [ ] Declare `--copied` as a **public** custom state, and confirm it reads as public in the
+      generated contract
+- [ ] Declare the `ui-copy` event as `CustomEvent<CopyDetail>`
+- [ ] Declare accessibility as pattern `button` with no keys, and notes covering the stable
+      accessible name, the decorative label swap, and the authored `status` region
+
+## 2. Behavior
+
+- [ ] Create `src/copy-button.ts` with `createCopyButtonElementClass(targetWindow?)`, following the
+      `number-stepper.ts` shape
+- [ ] Export `CopyDetail` and `CopyFailureReason`, and re-export both from `src/index.ts`
+- [ ] Implement `resolveCopyValue`: `value`, then `from`, then empty; `from` reads `.value` for
+      `input`, `textarea`, and `select`, and `textContent` otherwise
+- [ ] Implement the copy path: `writeText`, set `--copied`, write the `copied` part's text into the
+      `status` region, clear after `feedback-duration` (default 1800)
+- [ ] Dispatch exactly one `ui-copy` per activation on every path, including `unsupported`,
+      `denied`, and `empty`
+- [ ] Implement the opt-in reveal: remove `hidden` from the trigger only when registration succeeds
+      and `navigator.clipboard` exists
+- [ ] Create `src/copy-button.test.ts` covering value precedence, all three failure reasons, the
+      single-dispatch guarantee, and that an absent `status` region is not an error
+- [ ] Confirm `copy-button.ts` contains no `createElement`, `insertAdjacentHTML`, or `innerHTML`,
+      and that `check-generated-dom.mjs` was not given a new allowlist entry
+
+## 3. Stylesheet
+
+- [ ] Create `src/css/copy-button.css` in the `ui.components` layer selecting `ui-copy-button`
+- [ ] Implement the `idle`/`copied` swap through `:state(--copied)` only, and visually hide `status`
+- [ ] Confirm no visual declaration is written from `copy-button.ts`
+
+## 4. Generation
+
+- [ ] Run `pnpm -F @timelessui/components run generate`
+- [ ] Confirm `src/define/ui-copy-button.ts`, the five framework typings, `custom-elements.json`,
+      and both editor data files were rewritten, and that none was hand-edited
+- [ ] Run `generate:check`, `contracts:validate`, `manifest:validate`, `exports:validate`
+
+## 5. Examples, catalog, and story
+
+- [ ] Create `packages/examples/src/copy-button.html.ts` exporting a typed `createCopyButton`, using
+      the shared escaping helpers
+- [ ] Add the catalog entry under **Actions**, referencing `copy-button.css` in its `styles`
+- [ ] Confirm the build no longer reports `Undocumented custom elements` or
+      `Undocumented CSS exports`
+- [ ] Add the story titled `Library/Actions/Copy Button` with a `Default` export
+- [ ] Confirm the copyable `source` is factory output and contains no `data-ui-internal-*` and no
+      demo wrapper
+- [ ] Confirm the generated reference page renders at `/docs/components/copy-button`
+
+## 6. End-to-end
+
+- [ ] Extend `no-javascript.spec.ts`: a trigger authored `hidden` stays hidden without JavaScript
+- [ ] Add the copy-path spec: click, assert clipboard content, assert `ui-copy` fired with
+      `status: 'copied'`, assert the accessible name did not change
+- [ ] Confirm the new story is swept by the existing axe pass in `a11y.spec.ts`
+
+## 7. Publish metadata
+
+- [ ] Add `repository` with `directory`, `homepage`, `bugs`, `keywords`, and `author` to
+      `packages/components/package.json`
+- [ ] Add the same to `packages/core/package.json`
+- [ ] Confirm `pnpm publint` still passes for both
+
+## 8. attw for core
+
+- [ ] Add `@arethetypeswrong/cli` to `packages/core` devDependencies
+- [ ] Add `"attw": "attw --pack --profile esm-only"` to `packages/core` scripts
+- [ ] Add core to the attw step in `.github/workflows/pr-quality.yml`
+- [ ] Confirm `pnpm attw` now reports two packages
+
+## 9. README
+
+- [ ] Add the `pnpm add @timelessui/components` install line to `packages/components/README.md`
+- [ ] Confirm `packages/core/README.md` was left alone, and that nothing now contradicts
+      `reference/packages.mdx`
+
+## 10. Close
+
+- [ ] Run `pnpm qa` and record the output
+- [ ] Record the color-picker migration as a follow-up rather than doing it here
+- [ ] Record decisions, trade-offs, and results in `RESULTS.md`
+
+---
+
+Generated by Claude Opus 5 - High reasoning

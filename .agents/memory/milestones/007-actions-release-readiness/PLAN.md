@@ -1,8 +1,12 @@
 ---
-status: Proposed
+status: Rejected
 ---
 
 # Actions And Release Readiness Plan
+
+Rejected. Most of this milestone was delivered under later numbers, and the remainder moved to
+milestone 026. `RESULTS.md` maps every item to where it landed. Kept to respect sequential milestone
+numbering, and left otherwise unedited as the static record of what was planned.
 
 ## Summary
 
