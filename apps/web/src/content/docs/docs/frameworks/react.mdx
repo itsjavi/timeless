@@ -15,7 +15,7 @@ React 19 supports custom-element properties on the client and primitive attribut
 rendering. Import Timeless JSX declarations once in your application types:
 
 ```ts
-import '@timelessui/components/jsx/react'
+import '@timelessui/components/react'
 ```
 
 The declaration is types-only. Timeless does not add a runtime wrapper or React dependency.
@@ -59,4 +59,32 @@ browser upgrades the custom element without replacing that anatomy.
 ## Events
 
 Attach namespaced custom events with a ref and `addEventListener` when an application needs typed,
-cancelable transition handling. Import event detail types from `@timelessui/components/events`.
+cancelable transition handling. `onui-change` and `onui-before-change` props are also declared and
+carry the detail type the element actually dispatches, so a `ui-tabs` handler receives a
+`CustomEvent<TabsChangeDetail>` rather than a generic one. Detail types import from
+`@timelessui/components/events` and from each element's own entrypoint.
+
+`on*` props on custom elements and non-string attribute values both require React 19. On React 18
+the declarations still type your markup, but pass primitives as attributes and bind events with a
+ref.
+
+## CSS-only components
+
+Most Timeless components are plain CSS over native HTML and have no custom element at all. Those are
+a root class plus `data-ui-*` on a native tag, and JSX cannot check that per element without
+loosening every element in your app. Use the typed helper:
+
+```tsx
+import { uiAttributes } from '@timelessui/components/attributes'
+
+export function PublishButton() {
+  return (
+    <button {...uiAttributes('button', { variant: 'primary', size: 'lg' })} type="button">
+      Publish
+    </button>
+  )
+}
+```
+
+`variant` accepts only the seven button variants, and Card's `filled` is a type error on a Button.
+See [Editor setup](/docs/reference/editor-setup/) for what each editor completes.

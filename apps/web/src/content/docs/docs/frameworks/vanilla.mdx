@@ -46,5 +46,30 @@ group.addEventListener('ui-before-change', (event) => {
 group.addEventListener('ui-change', (event) => save(event.detail.value))
 ```
 
-Use TypeScript with the exported element classes and event detail types when querying or creating
-elements. No hydration runtime is required.
+Each element declares the detail type it dispatches, so `event.detail` is typed per element rather
+than shared: a `ui-toggle-group` change carries `ToggleGroupChangeDetail`. No hydration runtime is
+required.
+
+## Editors and TypeScript
+
+There is no JSX layer here, so nothing type-checks your HTML by default. Two things close that gap:
+
+- Register the shipped editor data once, and `ui-*` tags, their attributes, and their permitted
+  values complete in any `.html` file. See [Editor setup](/docs/reference/editor-setup/).
+- For markup assembled in TypeScript, `@timelessui/components/attributes` gives CSS-only components
+  a typed surface, and `@timelessui/components/validate` reports authored values that no contract
+  permits:
+
+```ts
+import { uiAttributeString } from '@timelessui/components/attributes'
+
+const markup = `<button ${uiAttributeString('button', { variant: 'primary' })} type="button">Publish</button>`
+
+if (import.meta.env.DEV) {
+  const { validateTimelessMarkup } = await import('@timelessui/components/validate')
+  validateTimelessMarkup()
+}
+```
+
+The validator walks the document and warns about a `data-ui-*` attribute no contract declares or a
+value outside its permitted set — the class of typo that renders without complaint.

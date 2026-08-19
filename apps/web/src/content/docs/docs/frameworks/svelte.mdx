@@ -2,14 +2,25 @@
 title: Svelte
 description: Use Timeless elements as native custom elements in Svelte.
 sidebar:
-  order: 4
+  order: 5
 ---
 
-## Install
+## Install and TypeScript
 
 ```sh
 pnpm add @timelessui/components
 ```
+
+Import the Svelte declarations once in your application types:
+
+```ts
+import '@timelessui/components/svelte'
+```
+
+They extend `svelteHTML.IntrinsicElements`, so `svelte-check` knows every `ui-*` tag and the values
+each attribute accepts. Both event spellings are declared — Svelte 5 `onui-change` and Svelte 4
+`on:ui-change` — so the same declaration checks either version. It is types-only and adds no runtime
+code and no Svelte dependency.
 
 ## CSS and registration
 
@@ -39,6 +50,26 @@ Author the element normally:
 ## SSR, hydration, properties, and events
 
 SSR emits the complete Light DOM anatomy before the definition loads. Plain attributes express
-authored defaults. Use `bind:this` to assign live properties or attach a typed `ui-change` listener
-in `onMount`, then remove the listener during cleanup. Timeless element classes and event detail
-types can be imported into TypeScript without registering elements on the server.
+authored defaults. Bind namespaced events directly, and use `bind:this` when you need to assign live
+properties:
+
+```svelte
+<ui-tabs value="details" onui-change={(event) => console.log(event.detail.value)}>
+  <!-- tablist and panels -->
+</ui-tabs>
+```
+
+The handler receives a `CustomEvent<TabsChangeDetail>`, because each element declares the detail
+type it dispatches rather than sharing one generic signature. Element classes and detail types
+import into TypeScript without registering anything on the server.
+
+CSS-only components are a root class plus `data-ui-*` on a native tag, which Svelte cannot check per
+element. Spread the typed helper instead:
+
+```svelte
+<script lang="ts">
+  import { uiAttributes } from '@timelessui/components/attributes'
+</script>
+
+<button {...uiAttributes('button', { variant: 'primary' })} type="button">Publish</button>
+```

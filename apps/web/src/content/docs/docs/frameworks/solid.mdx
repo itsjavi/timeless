@@ -2,14 +2,25 @@
 title: Solid
 description: Render Timeless custom elements directly from Solid.
 sidebar:
-  order: 6
+  order: 7
 ---
 
-## Install
+## Install and TypeScript
 
 ```sh
 pnpm add @timelessui/components
 ```
+
+Import the Solid declarations once in your application types:
+
+```ts
+import '@timelessui/components/solid'
+```
+
+They extend Solid's `JSX.IntrinsicElements`, so every `ui-*` tag and every permitted attribute value
+type-checks. Both event spellings are declared: `on:ui-change`, the namespaced form Solid recommends
+for custom events, and `onui-change`. The declaration is types-only and adds no runtime code and no
+Solid dependency.
 
 ## CSS and registration
 
@@ -39,6 +50,33 @@ Solid forwards custom-element attributes and properties without a Timeless adapt
 ## SSR, hydration, events, and TypeScript
 
 SSR emits the authored attributes and Light DOM. Keep registration in client code so custom-element
-upgrade happens after hydration. Use a typed ref for live property assignment and namespaced event
-listeners. Public classes and transition detail types are available from granular TypeScript
-entrypoints.
+upgrade happens after hydration. Bind namespaced events in JSX, and use a ref when you need to
+assign live properties:
+
+```tsx
+<ui-radio-group
+  value="system"
+  aria-label="Theme"
+  on:ui-change={(event) => setTheme(event.detail.value)}
+>
+  {/* radios */}
+</ui-radio-group>
+```
+
+The handler receives a `CustomEvent<RadioGroupChangeDetail>`. Public classes and detail types are
+available from the granular entrypoints.
+
+CSS-only components are a root class plus `data-ui-*` on a native tag. Spread the typed helper
+rather than writing those attributes by hand:
+
+```tsx
+import { uiAttributes } from '@timelessui/components/attributes'
+
+export function PublishButton() {
+  return (
+    <button {...uiAttributes('button', { variant: 'primary' })} type="button">
+      Publish
+    </button>
+  )
+}
+```

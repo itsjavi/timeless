@@ -1,0 +1,115 @@
+---
+title: Preact
+description: Use custom elements directly with opt-in JSX types and no runtime wrapper.
+sidebar:
+  order: 3
+---
+
+## Install and TypeScript
+
+```sh
+pnpm add @timelessui/components
+```
+
+Preact passes unknown props straight through to the DOM and registers any `on*` prop as an event
+listener, so Timeless elements work without a wrapper on any recent version. Import the JSX
+declarations once in your application types:
+
+```ts
+import '@timelessui/components/preact'
+```
+
+The declaration is types-only. It adds no runtime code, no Preact dependency, and no peer
+dependency. With it imported, `ui-*` tags are known intrinsic elements and their attributes complete
+and type-check:
+
+```tsx
+<ui-tabs orientation="vertical" activation="manual" />
+```
+
+`orientation` accepts only `horizontal` or `vertical`, and `activation` only `automatic` or
+`manual`, because both are generated from the same declaration the stylesheets are proven against.
+
+If you use `preact/compat` to run React libraries alongside Preact, import the React declarations
+instead — `@timelessui/components/react` — because `preact/compat` aliases the `react` module that
+those declarations augment.
+
+## CSS and registration
+
+Import CSS and registration from a client entrypoint:
+
+```ts
+import '@timelessui/components/css/tokens.css'
+import '@timelessui/components/css/tabs.css'
+import '@timelessui/components/define/ui-tabs'
+```
+
+CSS and class-only imports are safe during server rendering. Keep `define/*` imports in browser-only
+modules, because they call `customElements.define`.
+
+## Markup and hydration
+
+Use the element directly. The markup you author is the markup that ships:
+
+```tsx
+export function ProjectTabs() {
+  return (
+    <ui-tabs value="details">
+      <div role="tablist" aria-label="Project">
+        <button type="button" role="tab" value="details">
+          Details
+        </button>
+        <button type="button" role="tab" value="activity">
+          Activity
+        </button>
+      </div>
+      <section role="tabpanel">Project details</section>
+      <section role="tabpanel">Recent activity</section>
+    </ui-tabs>
+  )
+}
+```
+
+Preact hydrates the authored Light DOM, then the browser upgrades the custom element without
+replacing that anatomy. Attributes carry the authored default; assign DOM properties for live state
+after the element upgrades.
+
+## Events
+
+Preact turns an `on*` prop into an `addEventListener` call, so namespaced Timeless events bind
+directly and arrive typed with the detail the element actually dispatches:
+
+```tsx
+<ui-tabs
+  value="details"
+  onui-change={(event) => {
+    // event.detail is TabsChangeDetail
+    console.log(event.detail.value, event.detail.reason)
+  }}
+/>
+```
+
+`onui-before-change` is cancelable: call `event.preventDefault()` to reject the transition and keep
+the current value. Detail types are also importable from `@timelessui/components/events` and from
+each element's own entrypoint.
+
+## CSS-only components
+
+Most Timeless components are plain CSS over native HTML and have no custom element at all. Those are
+a root class plus `data-ui-*` attributes, which JSX cannot check per element without loosening every
+element in your app. Use the typed helper instead:
+
+```tsx
+import { uiAttributes } from '@timelessui/components/attributes'
+
+export function PublishButton() {
+  return (
+    <button {...uiAttributes('button', { variant: 'primary', size: 'lg' })} type="button">
+      Publish
+    </button>
+  )
+}
+```
+
+See [Editor setup](/docs/reference/editor-setup/) for why that gap exists and what completes in each
+editor.

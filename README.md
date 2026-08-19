@@ -36,8 +36,8 @@ queries, and Declarative Shadow DOM are compatible with this approach but are no
 current component. They are candidates, not claims.
 
 There is no CSS framework and no component framework runtime. Consumers use the same primitives from
-plain HTML, React, Vue, Svelte, Solid, Astro, or any other environment that can render custom
-elements.
+plain HTML, React, Preact, Vue, Svelte, Solid, Astro, or any other environment that can render
+custom elements.
 
 ## Component catalog
 

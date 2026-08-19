@@ -2,7 +2,7 @@
 title: Vue
 description: Configure Vue to treat ui elements as native custom elements.
 sidebar:
-  order: 5
+  order: 6
 ---
 
 ## Install and compiler configuration
@@ -17,6 +17,17 @@ Tell the Vue compiler that `ui-` tags are custom elements:
 // vite.config.ts
 vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith('ui-') } } })
 ```
+
+Then import the Vue declarations once in your application types:
+
+```ts
+import '@timelessui/components/vue'
+```
+
+They register every `ui-*` tag on `GlobalComponents`, so `vue-tsc` checks attributes and their
+permitted values in templates. Vue camelizes a dashed event name, so `ui-change` binds as
+`@ui-change` in a template and is typed as `onUiChange`. The declaration is types-only and adds no
+runtime code and no Vue dependency.
 
 ## CSS and registration
 
@@ -42,5 +53,28 @@ Use attributes for authored defaults and DOM properties for live state:
 ## SSR, hydration, events, and TypeScript
 
 Vue can hydrate the server-rendered Light DOM before the element definition upgrades it. Keep
-registration in browser code. Use a typed template ref to assign properties and `addEventListener`
-for namespaced custom events. Import public element classes and event detail types for TypeScript.
+registration in browser code. Use a typed template ref to assign properties, and bind namespaced
+events in the template:
+
+```vue
+<ui-listbox value="draft" role="listbox" aria-label="Status" @ui-change="onChange">
+  <div role="option" data-ui-value="draft">Draft</div>
+</ui-listbox>
+```
+
+Each element's events carry the detail type it actually dispatches, so `onChange` receives a
+`CustomEvent<ListboxChangeDetail>`. Public element classes and detail types import without
+registering anything on the server.
+
+For CSS-only components, which are a root class plus `data-ui-*` on a native tag, bind the typed
+helper instead of writing the attributes by hand:
+
+```vue
+<script setup lang="ts">
+import { uiAttributes } from '@timelessui/components/attributes'
+</script>
+
+<template>
+  <button v-bind="uiAttributes('button', { variant: 'primary' })" type="button">Publish</button>
+</template>
+```

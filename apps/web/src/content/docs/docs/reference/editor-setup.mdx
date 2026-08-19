@@ -1,0 +1,116 @@
+---
+title: Editor setup
+description:
+  Register the shipped editor data so tags, attributes, values, and tokens complete in plain HTML
+  and CSS.
+sidebar:
+  order: 3
+---
+
+Timeless ships four machine-readable descriptions of its public grammar. TypeScript covers React,
+Preact, Solid, Vue, and Svelte through the [framework typings](/docs/reference/packages/). This page
+covers everything TypeScript cannot reach: a `.html` file, an Astro template, the markup half of a
+`.vue` or `.svelte` file, and CSS.
+
+| File                           | Read by                                        |
+| ------------------------------ | ---------------------------------------------- |
+| `vscode.html-custom-data.json` | VS Code HTML, Astro, Vue, and Svelte templates |
+| `vscode.css-custom-data.json`  | VS Code CSS, SCSS, and Less                    |
+| `web-types.json`               | JetBrains IDEs, resolved automatically         |
+| `custom-elements.json`         | Editors and generators that read the manifest  |
+
+All four are generated from the same declaration the stylesheets are proven against, so a value that
+completes is a value the CSS implements.
+
+## VS Code
+
+Point `html.customData` and `css.customData` at the shipped files in your workspace settings. Paths
+are relative to the workspace root:
+
+```json
+// .vscode/settings.json
+{
+  "html.customData": ["./node_modules/@timelessui/components/vscode.html-custom-data.json"],
+  "css.customData": ["./node_modules/@timelessui/components/vscode.css-custom-data.json"]
+}
+```
+
+Reload the window. In any `.html` file you then get:
+
+- Tag completion for every `ui-*` element, with its ARIA pattern and its events on hover.
+- Attribute completion per tag — `ui-tabs` offers `activation`, `orientation`, and `value`.
+- Value completion per attribute. Typing `<ui-tabs orientation="` offers `horizontal` and
+  `vertical`, and nothing else.
+- `data-ui-part` completion, with the selector each part is addressed by.
+
+In CSS you get completion and hover documentation for every Atmosphere token and every component
+custom property, including which root each property applies to.
+
+## JetBrains IDEs
+
+Nothing to configure. The package declares a `web-types` field, and WebStorm, IntelliJ IDEA, and
+PhpStorm read it from `node_modules` automatically. Completion covers the same tags, attributes, and
+values, in HTML and in JSX.
+
+## Other editors
+
+Any editor that reads the Custom Elements Manifest can consume `custom-elements.json`, exposed
+through the package's `customElements` field. It carries attributes with union types and defaults,
+reflecting properties under their real names, per-element event detail types, CSS custom properties,
+custom states, and the authored parts with their selectors.
+
+## The one gap: CSS-only components
+
+Most Timeless components are plain CSS over native HTML. Those have no tag of their own — they are a
+root class plus `data-ui-*` attributes on a native element:
+
+```html
+<button class="ui-button" data-ui-variant="primary" data-ui-size="lg" type="button">Publish</button>
+```
+
+No editor completes that precisely, and the reason is structural rather than a missing feature.
+Editor data and JSX both key completion off the tag name. The tag here is `button`, so the only hook
+available is a global attribute — one that applies to every element in the document and merges the
+values of every component sharing that attribute name. Declaring `data-ui-variant` globally would
+offer Card's `filled` inside a Button and Button's `ghost` inside an Alert. That is worse than
+offering nothing, so Timeless does not declare it.
+
+What is offered instead:
+
+- **Types.** `@timelessui/components/attributes` moves that surface into the type system:
+
+  ```ts
+  import { uiAttributes, uiAttributeString } from '@timelessui/components/attributes'
+
+  uiAttributes('button', { variant: 'primary', size: 'lg' })
+  // { class: 'ui-button', 'data-ui-variant': 'primary', 'data-ui-size': 'lg' }
+
+  uiAttributeString('alert', { variant: 'danger' })
+  // class="ui-alert" data-ui-variant="danger"
+  ```
+
+  The keys are the component's attributes and the values are its permitted set, so
+  `uiAttributes('card', { size: 'md' })` and `uiAttributes('button', { variant: 'nope' })` are both
+  type errors. `uiAttributeString` omits values that equal the contract default, because the default
+  is the stylesheet's base rule and needs no attribute.
+
+- **A runtime check.** `@timelessui/components/validate` walks real DOM and reports what neither the
+  editor nor the stylesheet can:
+
+  ```ts
+  if (import.meta.env.DEV) {
+    const { validateTimelessMarkup } = await import('@timelessui/components/validate')
+    validateTimelessMarkup()
+  }
+  ```
+
+  It warns on a `data-ui-*` attribute the component does not declare, a value outside its permitted
+  set, a value on a presence-based boolean, and `data-ui-*` used as configuration on a `ui-*` host,
+  where it is never correct. Both entrypoints are opt-in and neither is reachable from the default
+  import.
+
+## Keeping the data current
+
+The editor data is regenerated by `pnpm generate` and verified by `pnpm generate:check` in the
+build, so it cannot drift from the component registry. Reload your editor window after upgrading the
+package if completions look stale.

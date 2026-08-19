@@ -2,7 +2,7 @@
 title: Astro
 description: Render Timeless anatomy on the server and register behavior in the browser.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 ## Install
@@ -47,3 +47,19 @@ enhances the existing DOM. Class-only imports are SSR safe.
 Use plain attributes for authored state. Assign live properties from a client script after selecting
 the element. Listen for namespaced events with `addEventListener`, and import element or event
 detail types from the matching package entrypoint when the script uses TypeScript.
+
+Astro templates are HTML, not JSX, so no JSX declaration applies to them. Completion and hover
+documentation for `ui-*` tags, their attributes, and their permitted values come from the shipped
+editor data instead — see [Editor setup](/docs/reference/editor-setup/). If a page uses a React,
+Preact, or Solid island, import that framework's declarations for the island's `.tsx` files.
+
+CSS-only components are a root class plus `data-ui-*` on a native tag. Astro spreads attributes, so
+the typed helper works directly in a template:
+
+```astro
+---
+import { uiAttributes } from '@timelessui/components/attributes'
+---
+
+<button {...uiAttributes('button', { variant: 'primary' })} type="button">Publish</button>
+```

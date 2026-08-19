@@ -31,7 +31,13 @@ pnpm add @timelessui/components
 | `@timelessui/components/collection`          | Locale-aware matching and disabled-aware keyboard navigation.                                    | None                          |
 | `@timelessui/components/events`              | Transition event and detail types.                                                               | None                          |
 | `@timelessui/components/value-state`         | Authored-default and live-value helpers.                                                         | None                          |
-| `@timelessui/components/jsx/react`           | React 19 intrinsic-element declarations. Types only.                                             | None                          |
+| `@timelessui/components/attributes`          | Typed attribute builder for CSS-only components.                                                 | None                          |
+| `@timelessui/components/validate`            | Development-time check that authored markup matches the contracts.                               | None                          |
+| `@timelessui/components/react`               | React 19 intrinsic-element declarations. Types only.                                             | None                          |
+| `@timelessui/components/preact`              | Preact intrinsic-element declarations. Types only.                                               | None                          |
+| `@timelessui/components/solid`               | Solid intrinsic-element declarations. Types only.                                                | None                          |
+| `@timelessui/components/vue`                 | Vue `GlobalComponents` declarations. Types only.                                                 | None                          |
+| `@timelessui/components/svelte`              | Svelte `svelteHTML.IntrinsicElements` declarations. Types only.                                  | None                          |
 
 Only enhanced elements have a class entrypoint. CSS-only primitives such as Button, Alert, and Card
 are classes and attributes rather than JavaScript, so they have no per-component module at all —
@@ -52,18 +58,28 @@ componentContracts.tabs.parts.filter((part) => part.required).map((part) => part
 ```
 
 `componentContracts` records each component's root, stylesheets, attributes with their permitted
-values and defaults, authored parts, public state, and events. The build proves every documented
-value against the stylesheets in both directions, so this is the same data the reference tables
-render.
+values and defaults, authored parts, public state, and events. Every attribute that takes a fixed
+set of values also names the array that set is exported as, in its `set` field.
 
-Permitted values are also exported individually as `as const` arrays with matching union types:
-`buttonVariants`, `buttonSizes`, `alertVariants`, `badgeVariants`, `cardVariants`, `linkVariants`,
-`listVariants`, `separatorVariants`, `spinnerVariants`, `avatarShapes`, `avatarStatuses`,
-`skeletonShapes`, `skeletonWidths`, `primitiveSizes`, `primitiveDensities`, `groupOrientations`,
-`separatorOrientations`, `formControlSizes`, `fieldLayouts`, `formDensities`,
-`choiceGroupOrientations`, `floatingPlacements`, `sheetPositions`, `tabsOrientations`,
-`tabsActivations`, `toasterPlacements`, `toasterStacks`, `toggleGroupSelections`, and
-`colorPickerFormats`.
+The build proves those values against the stylesheets in both directions: a value a stylesheet
+selects must be declared, and a declared value must be selected or be the default, which is the base
+rule and so has no selector of its own. `pnpm contracts:validate` fails either way, which is why the
+reference tables cannot drift from the CSS.
+
+Permitted values are also exported individually as `as const` arrays with matching union types, each
+declared exactly once and generated from the same source as the contracts: `buttonVariants`,
+`buttonSizes`, `alertVariants`, `spinnerVariants`, `badgeVariants`, `avatarShapes`,
+`avatarStatuses`, `cardVariants`, `linkVariants`, `listVariants`, `separatorVariants`,
+`separatorOrientations`, `skeletonShapes`, `skeletonWidths`, `groupOrientations`, `primitiveSizes`,
+`primitiveDensities`, `compactDensities`, `tableAlignments`, `formControlSizes`, `fieldLayouts`,
+`formDensities`, `choiceGroupOrientations`, `floatingPlacements`, `tabsOrientations`,
+`tabsActivations`, `dialogKinds`, `sheetPositions`, `popoverRoles`, `hoverCardVariants`,
+`menuOrientations`, `toolbarOrientations`, `toasterPlacements`, `toasterStacks`,
+`toggleGroupOrientations`, `toggleGroupSelections`, and `colorPickerFormats`.
+
+Arrays with identical values keep separate names because they are separate public exports.
+`buttonSizes`, `primitiveSizes`, and `formControlSizes` are all `sm | md | lg`, and each names the
+set its own components implement.
 
 ## Design tokens
 
@@ -75,14 +91,61 @@ values and how to override them.
 
 `@timelessui/components/custom-elements.json` is exposed through the package's `customElements`
 field. It declares attributes with union types and defaults, reflecting properties under their real
-names, events with their detail types, CSS custom properties, and custom states — for editors,
-generators, and downstream tooling.
+names, events with the detail type each element actually dispatches, CSS custom properties, and
+custom states — for editors, generators, and downstream tooling.
 
-## React JSX declarations
+Authored parts appear under a namespaced `timeless:parts` key rather than the manifest's `cssParts`,
+each with the selector it is addressed by. `cssParts` describes `::part()`, which only crosses a
+shadow boundary; Timeless anatomy is Light DOM you author yourself, so `[data-ui-part~='trigger']`
+is the real contract and claiming a shadow one would be wrong.
 
-Import `@timelessui/components/jsx/react` once in your application types to augment React 19
-intrinsic elements. The declaration is types-only and adds no runtime wrapper and no React
-dependency.
+## Framework typings
+
+Every framework typing is generated from the manifest and is types-only: importing one adds no
+runtime code, no wrapper, and no dependency on that framework. Import the one you need once in your
+application types.
+
+| Import                          | Augments                                |
+| ------------------------------- | --------------------------------------- |
+| `@timelessui/components/react`  | `react` and `react/jsx-runtime` `JSX`   |
+| `@timelessui/components/preact` | `preact` and `preact/jsx-runtime` `JSX` |
+| `@timelessui/components/solid`  | `solid-js` `JSX`                        |
+| `@timelessui/components/vue`    | `@vue/runtime-dom` `GlobalComponents`   |
+| `@timelessui/components/svelte` | `svelteHTML.IntrinsicElements`          |
+
+Each declares, per element, the attributes an author writes typed to their permitted values, the DOM
+properties those attributes reflect under the element's real property names, and the element's own
+events with its own detail type. `data-*` and `aria-*` stay open as an escape hatch.
+
+Two boundaries worth knowing:
+
+- **React 19 is required** for `on*` event props on custom elements and for non-string attribute
+  values. On React 18 the declarations still type your markup; pass primitives as attributes and
+  bind events with a ref.
+- **Angular** has no type-level checking for unknown elements beyond `CUSTOM_ELEMENTS_SCHEMA`, which
+  disables checking rather than adding it. There is nothing to ship for Angular, so nothing is
+  shipped. Timeless elements work there; their attributes are simply unchecked.
+
+Qwik is not covered. Its JSX module moved between major versions and its custom-event prop
+convention differs from the frameworks above, so no declaration is published rather than one that
+might be wrong.
+
+## Authoring CSS-only components
+
+`ui-*` tags are tags, so every typing above and the editor data complete them precisely. CSS-only
+components are a root class plus `data-ui-*` on a native tag, which no editor can complete per
+element. `@timelessui/components/attributes` is the typed answer:
+
+```ts
+import { uiAttributes } from '@timelessui/components/attributes'
+
+uiAttributes('button', { variant: 'primary', size: 'lg' })
+// { class: 'ui-button', 'data-ui-variant': 'primary', 'data-ui-size': 'lg' }
+```
+
+`uiAttributeString` returns the same attributes serialized for a template literal. Both are opt-in
+and neither is reachable from the default import. See [Editor setup](/docs/reference/editor-setup/)
+for the full explanation and for the development-time validator.
 
 ## Server rendering
 

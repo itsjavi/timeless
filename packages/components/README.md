@@ -181,7 +181,7 @@ import { ValueState } from '@timelessui/components/value-state'
 React 19 consumers can opt into intrinsic element and custom event types without a runtime wrapper:
 
 ```ts
-import '@timelessui/components/jsx/react'
+import '@timelessui/components/react'
 ```
 
 Package tooling can read the public-only Custom Elements Manifest from the standard `customElements`
@@ -230,3 +230,44 @@ toast('Preview queued', {
 as static markup near the app or story root, then use `placement` to choose `top-start`,
 `top-center`, `top-end`, `bottom-start`, `bottom-center`, or `bottom-end`. Use `stack="overlap"` for
 the default card-pile effect, or `stack="list"` for a regular spaced list.
+
+## Typed authoring
+
+Every attribute, its permitted values, and every event detail type are declared once and generated
+into the type system, the Custom Elements Manifest, and the editor data. Import the framework
+declarations you need once in your application types — each is types-only and adds no runtime code
+and no dependency on that framework:
+
+```ts
+import '@timelessui/components/react' // React 19
+import '@timelessui/components/preact' // Preact
+import '@timelessui/components/solid' // Solid
+import '@timelessui/components/vue' // Vue
+import '@timelessui/components/svelte' // Svelte
+```
+
+With one imported, `ui-*` tags are known elements and their values are checked:
+
+```tsx
+<ui-tabs orientation="vertical" activation="manual" />
+```
+
+Permitted values are also exported as `as const` arrays with matching union types —
+`buttonVariants`, `sheetPositions`, `colorPickerFormats`, and the rest — for controls, validators,
+and tests.
+
+CSS-only components are a root class plus `data-ui-*` on a native tag, which no editor can complete
+per element. Use the typed helper:
+
+```ts
+import { uiAttributes } from '@timelessui/components/attributes'
+
+uiAttributes('button', { variant: 'primary', size: 'lg' })
+// { class: 'ui-button', 'data-ui-variant': 'primary', 'data-ui-size': 'lg' }
+```
+
+For plain HTML and CSS, the package ships `vscode.html-custom-data.json`,
+`vscode.css-custom-data.json`, and `web-types.json`. Registering the first two gives tag, attribute,
+and value completion in any `.html` file; JetBrains IDEs read `web-types.json` automatically. In
+development, `@timelessui/components/validate` reports authored `data-ui-*` values that no contract
+permits.
