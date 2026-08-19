@@ -6,6 +6,7 @@ Agent-facing context for Timeless UI. One canonical tree, shared by every coding
 .agents/
   memory/         planning artifacts and the design language  — see memory/README.md
   reference/      shared facts the skills link to rather than repeat
+  research/       finished research write-ups, kept as a record — not context to load
   skills/         invocable procedures, one directory per skill
   subagents/      Claude Code subagent definitions
 ```
@@ -31,6 +32,27 @@ Code and Codex both read.
   no script covers.
 
 Skills link to these rather than restating them, so a fact changes in one place.
+
+## Research
+
+`research/` holds finished research write-ups: competitive comparisons, prior-art studies, and
+investigations whose conclusions have already been acted on.
+
+**Do not load these as working context.** They are a historical record, not a source of truth. Each
+one is a snapshot of what was true on its `date`, and the code has moved since — a claim here may
+have been fixed, reversed, or superseded by the milestones it produced. `reference/` is the place
+for facts a skill should rely on; `memory/milestones/` is the place for what is planned or done.
+
+Read a research document when you want to know **why** a decision was made, or to avoid redoing an
+investigation someone already finished. Verify anything you intend to act on against the source.
+
+| Document                                                           | Question it answered                                                                                                                 |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| [`research/library-comparison.md`](research/library-comparison.md) | Does Timeless ship too much, too little, or the wrong things, measured against Base UI and shadcn/ui? Produced milestones 021 to 025 |
+
+Every document carries `model` and `date` frontmatter naming what produced it and when, and ends
+with a section recording what it led to. Add new ones with the same shape and a row in the table
+above.
 
 ## How each tool discovers this
 
