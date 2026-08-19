@@ -45,6 +45,7 @@ jobs:
           pnpm -F @timelessui/components generated-dom:check
           pnpm -F @timelessui/components performance:check
           pnpm publint
+          pnpm -F @timelessui/components attw
 
   static-site:
     runs-on: ubuntu-latest
