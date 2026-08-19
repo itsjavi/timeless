@@ -9,7 +9,8 @@
     "build": "astro build",
     "preview": "vite preview --host 0.0.0.0 --port ${PORT:-6339} --outDir dist",
     "typecheck": "astro check",
-    "test": "node scripts/validate-claims.mjs && node scripts/validate-docs.mjs && node scripts/validate-agent-surfaces.mjs"
+    "test": "node scripts/validate-claims.mjs && node scripts/validate-docs.mjs",
+    "test:dist": "node scripts/validate-agent-surfaces.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",

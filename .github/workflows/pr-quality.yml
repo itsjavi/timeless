@@ -65,9 +65,12 @@ jobs:
       - name: Build composed site
         run: pnpm build:site
       - name: Validate examples and documentation
+        # `test` reads source and runs in package-contracts too. `test:dist` reads the emitted site, so
+        # it can only run here, after `build:site` — that split is why `apps/web` has two test scripts.
         run: |
           pnpm -F @timelessui/examples test
           pnpm -F @apps/web test
+          pnpm -F @apps/web test:dist
       - uses: actions/upload-artifact@v6
         with:
           name: static-site

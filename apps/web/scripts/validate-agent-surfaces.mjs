@@ -5,7 +5,11 @@
  * the skill's contract reference matches the registry, but neither knows whether `/llms.txt` shipped
  * or whether the link it advertises for a new component resolves.
  *
- * Reads `dist`, so it runs after a build. `pnpm test:full-qa` builds first.
+ * **This reads `dist`, so it is not part of `apps/web`'s `test` script.** That script reads source and
+ * also runs in CI's `package-contracts` job, which builds packages only — putting a dist-dependent
+ * assertion there fails with "No dist directory" on a job that has no reason to build the site. It is
+ * wired as `pnpm -F @apps/web test:dist` instead, from the `static-site` CI job and from
+ * `test:full-qa`, both of which build before validating.
  */
 import { access, readFile, readdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
