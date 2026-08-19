@@ -247,6 +247,40 @@ export {
 } from './color-picker'
 
 export {
+  createFormElementClass,
+  findFormErrorElement,
+  UIFormElement,
+  type FormErrors,
+  type FormInvalidDetail,
+  type UIFormElementConstructor,
+} from './form'
+
+export {
+  clampRangePair,
+  createRangeFieldElementClass,
+  findRangeFieldParts,
+  rangeFillBounds,
+  UIRangeFieldElement,
+  type RangeFieldChangeDetail,
+  type RangeFieldParts,
+  type RangePair,
+  type UIRangeFieldElementConstructor,
+} from './range-field'
+
+export {
+  createOtpFieldElementClass,
+  distributeOtpValue,
+  otpCellsValue,
+  otpTraversalTarget,
+  UIOtpFieldElement,
+  type OtpDistribution,
+  type OtpDistributionOptions,
+  type OtpFieldChangeDetail,
+  type OtpFieldCompleteDetail,
+  type UIOtpFieldElementConstructor,
+} from './otp-field'
+
+export {
   checkedChoiceValues,
   enhanceCheckboxGroupParts,
   enhanceRadioGroupParts,

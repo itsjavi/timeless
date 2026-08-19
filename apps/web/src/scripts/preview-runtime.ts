@@ -35,6 +35,11 @@ const loaders: Record<string, () => Promise<ElementDefiner>> = {
     (await import('@timelessui/components/define/ui-number-stepper')).defineNumberStepperElement,
   'ui-color-picker': async () =>
     (await import('@timelessui/components/define/ui-color-picker')).defineColorPickerElement,
+  'ui-form': async () => (await import('@timelessui/components/define/ui-form')).defineFormElement,
+  'ui-range-field': async () =>
+    (await import('@timelessui/components/define/ui-range-field')).defineRangeFieldElement,
+  'ui-otp-field': async () =>
+    (await import('@timelessui/components/define/ui-otp-field')).defineOtpFieldElement,
 }
 
 const definitions = JSON.parse(document.body.dataset.definitions ?? '[]') as string[]

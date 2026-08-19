@@ -396,11 +396,11 @@ function createRadioChoice(name: string, item: MenuItem, value: string | undefin
   const disabled = item.disabled ? ' disabled' : ''
   const checked = value === choiceValue ? ' checked' : ''
 
-  return `<label>
-  <input type="radio" name="${escapeAttribute(name)}" value="${escapeAttribute(
+  return `<label class="ui-choice">
+  <input class="ui-radio" type="radio" name="${escapeAttribute(name)}" value="${escapeAttribute(
     choiceValue,
   )}"${checked}${disabled}>
-  ${escapeHtml(item.label)}
+  <span data-ui-part="body">${escapeHtml(item.label)}</span>
 </label>`
 }
 
@@ -409,11 +409,11 @@ function createCheckboxChoice(name: string, item: MenuItem, values: ReadonlySet<
   const disabled = item.disabled ? ' disabled' : ''
   const checked = values.has(choiceValue) ? ' checked' : ''
 
-  return `<label>
-  <input type="checkbox" name="${escapeAttribute(name)}" value="${escapeAttribute(
+  return `<label class="ui-choice">
+  <input class="ui-checkbox" type="checkbox" name="${escapeAttribute(name)}" value="${escapeAttribute(
     choiceValue,
   )}"${checked}${disabled}>
-  ${escapeHtml(item.label)}
+  <span data-ui-part="body">${escapeHtml(item.label)}</span>
 </label>`
 }
 

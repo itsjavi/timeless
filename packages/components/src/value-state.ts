@@ -1,5 +1,11 @@
 export type CollectionValidityOptions = {
   readonly anchor?: HTMLElement | null
+  /**
+   * A message set through `setCustomValidity`, which outranks every constraint the element derives
+   * for itself. A form-associated custom element owns its validity through `ElementInternals`, so a
+   * caller cannot reach past it the way `setCustomValidity` reaches past a native input.
+   */
+  readonly customError?: string
   readonly disabled: boolean
   readonly message?: string
   readonly required: boolean
@@ -33,17 +39,26 @@ export function collectionFormValue(
 }
 
 /**
- * Applies `valueMissing` to a collection's internals.
+ * Applies `valueMissing`, and any caller-supplied custom error, to a collection's internals.
  *
  * The anchor is the visible trigger, never the custom-element host: the browser positions its native
  * validation bubble against whatever element it is handed, and an `inline-grid` host with no layout
  * of its own puts the bubble in the wrong place.
+ *
+ * A custom error wins over `valueMissing`, matching how a native control reports the message set
+ * through `setCustomValidity` ahead of the constraint it would otherwise fail.
  */
 export function applyCollectionValidity(
   internals: ElementInternals | undefined,
   options: CollectionValidityOptions,
 ): void {
   if (!internals?.setValidity) return
+
+  const anchor = options.anchor ?? undefined
+  if (options.customError) {
+    internals.setValidity({ customError: true }, options.customError, anchor)
+    return
+  }
 
   const missing = options.required && !options.disabled && options.values.length === 0
   if (!missing) {
@@ -53,7 +68,7 @@ export function applyCollectionValidity(
   internals.setValidity(
     { valueMissing: true },
     options.message ?? 'Please select an option.',
-    options.anchor ?? undefined,
+    anchor,
   )
 }
 

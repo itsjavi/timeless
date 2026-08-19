@@ -85,6 +85,10 @@
   .ui-file {
     min-block-size: var(--ui-form-control-height, 2.5rem);
     padding-block: 0.5rem;
+  }
+
+  .ui-input,
+  .ui-file {
     padding-inline: 0.75rem;
   }
 
@@ -100,6 +104,10 @@
     --ui-form-control-height: 2rem;
     font-size: 0.875rem;
     padding-block: 0.375rem;
+  }
+
+  .ui-input:where([data-ui-size='sm']),
+  .ui-file:where([data-ui-size='sm']) {
     padding-inline: 0.625rem;
   }
 
@@ -109,6 +117,10 @@
     --ui-form-control-height: 3rem;
     font-size: 1rem;
     padding-block: 0.625rem;
+  }
+
+  .ui-input:where([data-ui-size='lg']),
+  .ui-file:where([data-ui-size='lg']) {
     padding-inline: 0.875rem;
   }
 
@@ -167,7 +179,7 @@
   .ui-radio:disabled,
   .ui-switch:disabled,
   .ui-range > input[type='range']:disabled {
-    opacity: 0.55;
+    opacity: var(--ui-disabled-opacity);
   }
 
   .ui-input:read-only,
@@ -175,10 +187,56 @@
     --ui-form-bg: var(--ui-bg-surface-subtle);
   }
 
+  /*
+   * The indicator is drawn by Timeless rather than the platform. `appearance: auto` leaves the
+   * arrow at a fixed engine-chosen offset that no author padding moves, and WebKit additionally
+   * drops `padding` and `min-block-size` on a native select, so the control cannot be made to match
+   * `.ui-input` while the UA draws it. `color-scheme` still matters: the dropdown popup itself stays
+   * UA-drawn.
+   *
+   * The mark is two half-square gradients rather than an icon asset, so it inherits `currentColor`,
+   * scales from one variable, and ships no icon opinion. Replace it wholesale by redeclaring
+   * `background-image` on your own selector.
+   */
   .ui-select {
+    --ui-select-indicator: 0.625rem;
+
+    appearance: none;
     color-scheme: light dark;
+    padding-inline: 0.75rem calc(0.75rem + var(--ui-select-indicator) + var(--ui-space-3));
+    background-image:
+      linear-gradient(45deg, transparent 50%, currentColor 50%),
+      linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-repeat: no-repeat;
+    background-position:
+      right calc(0.75rem + var(--ui-select-indicator) / 2) center,
+      right 0.75rem center;
+    background-size: calc(var(--ui-select-indicator) / 2) calc(var(--ui-select-indicator) / 2);
   }
 
+  .ui-select:where([data-ui-size='sm']) {
+    --ui-select-indicator: 0.5rem;
+
+    padding-inline: 0.625rem calc(0.625rem + var(--ui-select-indicator) + var(--ui-space-3));
+    background-position:
+      right calc(0.625rem + var(--ui-select-indicator) / 2) center,
+      right 0.625rem center;
+  }
+
+  .ui-select:where([data-ui-size='lg']) {
+    --ui-select-indicator: 0.75rem;
+
+    padding-inline: 0.875rem calc(0.875rem + var(--ui-select-indicator) + var(--ui-space-3));
+    background-position:
+      right calc(0.875rem + var(--ui-select-indicator) / 2) center,
+      right 0.875rem center;
+  }
+
+  /*
+   * The choice controls, wherever they appear. `ui-radio-group` and `ui-checkbox-group` load this
+   * stylesheet too, so the accent colour, the focus ring above, and the disabled treatment are each
+   * declared exactly once for both the CSS-only fieldset and the two custom-element groups.
+   */
   .ui-checkbox,
   .ui-radio {
     box-sizing: border-box;
@@ -207,7 +265,8 @@
   }
 
   .ui-choice:has(:disabled) {
-    opacity: 0.6;
+    color: var(--ui-fg-muted);
+    opacity: var(--ui-disabled-opacity);
   }
 
   .ui-choice :where(.ui-checkbox, .ui-radio, .ui-switch) {
@@ -233,8 +292,14 @@
     line-height: 1.45;
   }
 
+  /*
+   * One layout model for both orientations, shared with `ui-radio-group` and `ui-checkbox-group` in
+   * `choice-groups.css`: a column flex container that becomes a wrapping row. The two roots differ
+   * only in which attribute selects the row, because one is a class and the other a custom element.
+   */
   .ui-choice-group {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: var(--ui-space-3);
     min-inline-size: 0;
     margin: 0;
@@ -248,9 +313,15 @@
   }
 
   .ui-choice-group:where([data-ui-orientation='horizontal']) {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), max-content));
-    align-items: start;
+    flex-flow: row wrap;
+    align-items: center;
     column-gap: var(--ui-space-5);
+  }
+
+  /* Group-level copy describes the whole row, so it takes a row of its own rather than a column. */
+  .ui-choice-group:where([data-ui-orientation='horizontal'])
+    > :where([data-ui-part~='description'], [data-ui-part~='error']) {
+    flex-basis: 100%;
   }
 
   .ui-choice-group > legend {
@@ -264,6 +335,66 @@
   }
 
   .ui-choice-group :where([data-ui-part~='error']) {
+    color: var(--ui-danger);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+
+  /*
+   * A standalone `<fieldset>` for any grouped controls, not only choices. `.ui-choice-group` strips
+   * the native chrome because a radio or checkbox set reads as one field; this keeps it, because a
+   * group of unrelated controls needs a visible boundary to be a group at all.
+   */
+  .ui-fieldset {
+    --ui-fieldset-gap: var(--ui-space-4);
+    --ui-fieldset-padding: var(--ui-space-5);
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-fieldset-gap);
+    min-inline-size: 0;
+    margin: 0;
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius-md);
+    padding: var(--ui-fieldset-padding);
+    color: var(--ui-fg);
+  }
+
+  .ui-fieldset:where([data-ui-density='compact']) {
+    --ui-fieldset-gap: var(--ui-space-3);
+    --ui-fieldset-padding: var(--ui-space-4);
+  }
+
+  .ui-fieldset:where([data-ui-density='spacious']) {
+    --ui-fieldset-gap: var(--ui-space-5);
+    --ui-fieldset-padding: calc(var(--ui-space-5) * 1.5);
+  }
+
+  .ui-fieldset > legend {
+    padding-inline: var(--ui-space-2);
+    color: var(--ui-fg);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .ui-fieldset:where([aria-invalid='true']) {
+    border-color: var(--ui-danger);
+  }
+
+  .ui-fieldset:disabled {
+    opacity: var(--ui-disabled-opacity);
+  }
+
+  .ui-fieldset :where([data-ui-part~='description']) {
+    margin: 0;
+    color: var(--ui-fg-muted);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+
+  .ui-fieldset :where([data-ui-part~='error']) {
+    margin: 0;
     color: var(--ui-danger);
     font-size: 0.8125rem;
     line-height: 1.45;

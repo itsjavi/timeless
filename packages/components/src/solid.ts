@@ -37,6 +37,9 @@ import type {
 } from './combobox'
 import type { ToastDismissDetail } from './toast'
 import type { ToggleGroupChangeDetail } from './toggle-group'
+import type { FormInvalidDetail } from './form'
+import type { RangeFieldChangeDetail } from './range-field'
+import type { OtpFieldChangeDetail, OtpFieldCompleteDetail } from './otp-field'
 
 /**
  * Consumer-authored `data-*` and `aria-*` attributes stay open. The generated members above are
@@ -386,6 +389,47 @@ export interface UIColorPickerElementProps extends TimelessGlobalProps {
   onchange?: (event: Event) => void
 }
 
+export interface UIFormElementProps extends TimelessGlobalProps {
+  /** Dispatched after `setErrors` has put at least one message on a control, naming the fields that matched. Clearing errors dispatches nothing. */
+  'on:ui-invalid'?: (event: CustomEvent<FormInvalidDetail>) => void
+  /** Dispatched after `setErrors` has put at least one message on a control, naming the fields that matched. Clearing errors dispatches nothing. */
+  'onui-invalid'?: (event: CustomEvent<FormInvalidDetail>) => void
+}
+
+export interface UIRangeFieldElementProps extends TimelessGlobalProps {
+  /** Dispatched after either thumb moves, carrying the clamped pair and which thumb moved. Bubbles and is composed. */
+  'on:ui-change'?: (event: CustomEvent<RangeFieldChangeDetail>) => void
+  /** Dispatched after either thumb moves, carrying the clamped pair and which thumb moved. Bubbles and is composed. */
+  'onui-change'?: (event: CustomEvent<RangeFieldChangeDetail>) => void
+}
+
+export interface UIOtpFieldElementProps extends TimelessGlobalProps {
+  /** Form field name. The joined code submits as one entry through `ElementInternals`; the cells themselves carry no `name`. */
+  name?: string
+  /** How many characters the code has. Defaults to the number of authored cells, and is what a partly filled field is measured against. */
+  length?: number
+  /** The code on load and after a form reset. Assign the `value` property for live changes; once the user types, the attribute stops applying, the way it does on a native input. */
+  value?: string
+  /** Present to block submission while the field is empty, with `valueMissing`. */
+  required?: boolean
+  /** Present to disable the field. A field inside a disabled `<fieldset>` is disabled too, and submits nothing either way. */
+  disabled?: boolean
+  /** Authored default and form-reset value, reflecting the `value` attribute. */
+  defaultValue?: string
+  /** Cancelable proposal dispatched before the code changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'on:ui-before-change'?: (event: CustomEvent<OtpFieldChangeDetail>) => void
+  /** Cancelable proposal dispatched before the code changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'onui-before-change'?: (event: CustomEvent<OtpFieldChangeDetail>) => void
+  /** Dispatched after the code has changed. Bubbles and is composed. */
+  'on:ui-change'?: (event: CustomEvent<OtpFieldChangeDetail>) => void
+  /** Dispatched after the code has changed. Bubbles and is composed. */
+  'onui-change'?: (event: CustomEvent<OtpFieldChangeDetail>) => void
+  /** Dispatched once every character the field expects has been entered, which is where an auto-submit belongs. */
+  'on:ui-complete'?: (event: CustomEvent<OtpFieldCompleteDetail>) => void
+  /** Dispatched once every character the field expects has been entered, which is where an auto-submit belongs. */
+  'onui-complete'?: (event: CustomEvent<OtpFieldCompleteDetail>) => void
+}
+
 export interface TimelessIntrinsicElements {
   'ui-tabs': UITabsElementProps
   'ui-dialog': UIDialogElementProps
@@ -405,6 +449,9 @@ export interface TimelessIntrinsicElements {
   'ui-toggle-group': UIToggleGroupElementProps
   'ui-number-stepper': UINumberStepperElementProps
   'ui-color-picker': UIColorPickerElementProps
+  'ui-form': UIFormElementProps
+  'ui-range-field': UIRangeFieldElementProps
+  'ui-otp-field': UIOtpFieldElementProps
 }
 
 // @ts-ignore Solid is an optional consumer dependency.

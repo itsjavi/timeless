@@ -6,7 +6,7 @@ export type FormControlSize = (typeof formControlSizes)[number]
 export const fieldLayouts = ['stacked', 'inline'] as const
 export type FieldLayout = (typeof fieldLayouts)[number]
 
-/** Permitted values for `ui-field` `data-ui-density`, `ui-choice` `data-ui-density` and `ui-choice-group` `data-ui-density`. */
+/** Permitted values for `ui-field` `data-ui-density`, `ui-fieldset` `data-ui-density`, `ui-choice` `data-ui-density` and `ui-choice-group` `data-ui-density`. */
 export const formDensities = ['compact', 'normal', 'spacious'] as const
 export type FormDensity = (typeof formDensities)[number]
 

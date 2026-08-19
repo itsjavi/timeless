@@ -1,0 +1,27 @@
+@layer ui.components {
+  /*
+   * Layout for the two custom-element group hosts, and nothing else.
+   *
+   * The choices inside them are the same `.ui-choice` anatomy the CSS-only `.ui-choice-group` uses,
+   * so the accent colour, the focus ring, the disabled treatment, and the control-beside-label
+   * layout are each declared exactly once, in `forms.css`, which both groups also load. This file
+   * used to restate a drifted subset of them.
+   *
+   * One layout model covers both orientations: a column flex container that becomes a wrapping row.
+   * `.ui-choice-group` uses the same model, keyed off `data-ui-orientation` because its root is a
+   * class rather than a custom-element host.
+   */
+  :where(ui-radio-group, ui-checkbox-group) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-3);
+    min-inline-size: 0;
+    color: var(--ui-fg);
+  }
+
+  :where(ui-radio-group, ui-checkbox-group):where([orientation='horizontal']) {
+    flex-flow: row wrap;
+    align-items: center;
+    column-gap: var(--ui-space-5);
+  }
+}

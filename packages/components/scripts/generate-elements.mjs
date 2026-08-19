@@ -444,8 +444,12 @@ export type ComponentEventContract = {
 
 /** Keyboard and focus behavior the component implements itself. */
 export type ComponentAccessibilityContract = {
-  /** ARIA Authoring Practices pattern slug, e.g. \`tabs\`. */
-  readonly pattern: string
+  /**
+   * ARIA Authoring Practices pattern slug, e.g. \`tabs\`. Null when the APG has no pattern for
+   * this composition, in which case \`patternLabel\` names the contract the component documents
+   * instead. Never a slug invented to fill the gap.
+   */
+  readonly pattern: string | null
   readonly patternLabel: string
   readonly keys: readonly { readonly key: string; readonly action: string }[]
   /** What the platform handles, and what the author still owns. */

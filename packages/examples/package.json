@@ -8,6 +8,7 @@
     ".": "./src/index.ts",
     "./primitives": "./src/primitives.html.ts",
     "./forms": "./src/forms.html.ts",
+    "./form-fields": "./src/form-fields.html.ts",
     "./collections": "./src/collections.html.ts",
     "./overlays": "./src/overlays.html.ts",
     "./color-picker": "./src/color-picker.html.ts",

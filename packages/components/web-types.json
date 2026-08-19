@@ -750,6 +750,91 @@
               "description": "Native `change` event dispatched when the edit is committed."
             }
           ]
+        },
+        {
+          "name": "ui-form",
+          "description": "Timeless `ui-form`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Form errors pattern. Dispatches `ui-invalid`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [],
+          "events": [
+            {
+              "name": "ui-invalid",
+              "description": "Dispatched after `setErrors` has put at least one message on a control, naming the fields that matched. Clearing errors dispatches nothing."
+            }
+          ]
+        },
+        {
+          "name": "ui-range-field",
+          "description": "Timeless `ui-range-field`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Slider (Multi-Thumb) pattern. Dispatches `ui-change`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [],
+          "events": [
+            {
+              "name": "ui-change",
+              "description": "Dispatched after either thumb moves, carrying the clamped pair and which thumb moved. Bubbles and is composed."
+            }
+          ]
+        },
+        {
+          "name": "ui-otp-field",
+          "description": "Timeless `ui-otp-field`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA One-time code pattern. Dispatches `ui-before-change`, `ui-change`, `ui-complete`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [
+            {
+              "name": "name",
+              "description": "Form field name. The joined code submits as one entry through `ElementInternals`; the cells themselves carry no `name`.",
+              "value": {
+                "kind": "plain",
+                "type": "string"
+              }
+            },
+            {
+              "name": "length",
+              "description": "How many characters the code has. Defaults to the number of authored cells, and is what a partly filled field is measured against.",
+              "value": {
+                "kind": "plain",
+                "type": "number"
+              }
+            },
+            {
+              "name": "value",
+              "description": "The code on load and after a form reset. Assign the `value` property for live changes; once the user types, the attribute stops applying, the way it does on a native input.",
+              "value": {
+                "kind": "plain",
+                "type": "string"
+              }
+            },
+            {
+              "name": "required",
+              "description": "Present to block submission while the field is empty, with `valueMissing`. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "disabled",
+              "description": "Present to disable the field. A field inside a disabled `<fieldset>` is disabled too, and submits nothing either way. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the code changes. Call `preventDefault()` to reject the transition and keep the current value."
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the code has changed. Bubbles and is composed."
+            },
+            {
+              "name": "ui-complete",
+              "description": "Dispatched once every character the field expects has been entered, which is where an auto-submit belongs."
+            }
+          ]
         }
       ]
     }

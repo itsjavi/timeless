@@ -37,6 +37,9 @@ import type {
 } from './combobox'
 import type { ToastDismissDetail } from './toast'
 import type { ToggleGroupChangeDetail } from './toggle-group'
+import type { FormInvalidDetail } from './form'
+import type { RangeFieldChangeDetail } from './range-field'
+import type { OtpFieldChangeDetail, OtpFieldCompleteDetail } from './otp-field'
 
 type OpenAttributes = {
   [name: `data-${string}`]: unknown
@@ -316,6 +319,37 @@ export interface UIColorPickerElementProps extends TimelessGlobalProps {
   onChange?: (event: Event) => void
 }
 
+export interface UIFormElementProps extends TimelessGlobalProps {
+  /** Dispatched after `setErrors` has put at least one message on a control, naming the fields that matched. Clearing errors dispatches nothing. */
+  onUiInvalid?: (event: CustomEvent<FormInvalidDetail>) => void
+}
+
+export interface UIRangeFieldElementProps extends TimelessGlobalProps {
+  /** Dispatched after either thumb moves, carrying the clamped pair and which thumb moved. Bubbles and is composed. */
+  onUiChange?: (event: CustomEvent<RangeFieldChangeDetail>) => void
+}
+
+export interface UIOtpFieldElementProps extends TimelessGlobalProps {
+  /** Form field name. The joined code submits as one entry through `ElementInternals`; the cells themselves carry no `name`. */
+  name?: string
+  /** How many characters the code has. Defaults to the number of authored cells, and is what a partly filled field is measured against. */
+  length?: number
+  /** The code on load and after a form reset. Assign the `value` property for live changes; once the user types, the attribute stops applying, the way it does on a native input. */
+  value?: string
+  /** Present to block submission while the field is empty, with `valueMissing`. */
+  required?: boolean
+  /** Present to disable the field. A field inside a disabled `<fieldset>` is disabled too, and submits nothing either way. */
+  disabled?: boolean
+  /** Authored default and form-reset value, reflecting the `value` attribute. */
+  defaultValue?: string
+  /** Cancelable proposal dispatched before the code changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  onUiBeforeChange?: (event: CustomEvent<OtpFieldChangeDetail>) => void
+  /** Dispatched after the code has changed. Bubbles and is composed. */
+  onUiChange?: (event: CustomEvent<OtpFieldChangeDetail>) => void
+  /** Dispatched once every character the field expects has been entered, which is where an auto-submit belongs. */
+  onUiComplete?: (event: CustomEvent<OtpFieldCompleteDetail>) => void
+}
+
 // @ts-ignore Vue is an optional consumer dependency.
 declare module '@vue/runtime-dom' {
   interface GlobalComponents {
@@ -337,6 +371,9 @@ declare module '@vue/runtime-dom' {
     'ui-toggle-group': new () => { $props: UIToggleGroupElementProps }
     'ui-number-stepper': new () => { $props: UINumberStepperElementProps }
     'ui-color-picker': new () => { $props: UIColorPickerElementProps }
+    'ui-form': new () => { $props: UIFormElementProps }
+    'ui-range-field': new () => { $props: UIRangeFieldElementProps }
+    'ui-otp-field': new () => { $props: UIOtpFieldElementProps }
   }
 }
 
