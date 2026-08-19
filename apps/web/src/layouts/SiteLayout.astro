@@ -18,7 +18,7 @@ const shareImage = new URL(image, Astro.site ?? Astro.url).href
 /**
  * Analytics is for the deployed site only. A local `astro build` looks identical to a deploy, so this
  * is an explicit opt-in set by the deploy workflow — otherwise the script warns into the console on
- * every local preview and Docker smoke test.
+ * every local preview.
  */
 const analytics = import.meta.env.PUBLIC_ENABLE_ANALYTICS === 'true'
 ---
