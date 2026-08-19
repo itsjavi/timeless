@@ -176,7 +176,7 @@ export function createCustomSelect(props: CustomSelectProps): string {
     props.hiddenInput
       ? `\n  <input type="hidden" name="${escapeAttribute(props.name ?? '')}" value="${escapeAttribute(value)}">`
       : ''
-  }${props.multiple ? `\n  <div data-ui-part="chips"></div>` : ''}
+  }${props.multiple ? createChipAnatomy() : ''}
   <button class="ui-button" data-ui-part="trigger" type="button" popovertarget="${surfaceId}" aria-labelledby="${id}-label ${id}-value">
     <span data-ui-part="value" id="${id}-value">${escapeHtml(
       selectedOptionLabel(props, value) ?? props.placeholder ?? 'Select',
@@ -211,9 +211,7 @@ export function createCombobox(props: ComboboxProps): string {
     'required',
     props.required,
   )}>
-  <label for="${id}">${escapeHtml(props.label)}</label>${
-    props.multiple ? `\n  <div data-ui-part="chips"></div>` : ''
-  }
+  <label for="${id}">${escapeHtml(props.label)}</label>${props.multiple ? createChipAnatomy() : ''}
   <input id="${id}" role="combobox" type="text" aria-autocomplete="list"${
     props.placeholder ? ` placeholder="${escapeAttribute(props.placeholder)}"` : ''
   }>${props.clear ? `\n  <button class="ui-button" data-ui-variant="ghost" data-ui-part="clear" type="button">Clear</button>` : ''}
@@ -274,6 +272,23 @@ function createCollectionSurface(props: CollectionSurfaceProps, options: Surface
       .filter(Boolean)
       .join('\n    ')}
   </div>`
+}
+
+/**
+ * The chips container plus the template Timeless clones into it, one clone per selected value.
+ *
+ * The template is what keeps chip markup author-owned: every element and class here is yours, and
+ * Timeless only fills in the label, the value, and the remove button's accessible name.
+ */
+function createChipAnatomy(): string {
+  return `
+  <div data-ui-part="chips"></div>
+  <template data-ui-part="chip-template">
+    <span data-ui-part="chip">
+      <span data-ui-part="chip-label"></span>
+      <button data-ui-part="chip-remove" type="button">&times;</button>
+    </span>
+  </template>`
 }
 
 /** Boundary buttons stay focusable and take `aria-disabled`, so the boundary is discoverable. */

@@ -50,6 +50,7 @@ import {
   listboxOptionValue,
   selectedListboxValues,
   syncListboxActiveDescendant,
+  syncListboxChips,
   syncListboxRegions,
   syncListboxSelection,
   syncListboxValue as syncBaseListboxValue,
@@ -170,6 +171,7 @@ const VALUE_SELECTOR = "[data-ui-part~='value']"
 const SEARCH_SELECTOR = "[data-ui-part~='search']"
 const CHIPS_SELECTOR = "[data-ui-part~='chips']"
 const CHIP_REMOVE_SELECTOR = "[data-ui-part~='chip-remove']"
+const CHIP_TEMPLATE_SELECTOR = "template[data-ui-part~='chip-template']"
 const CLEAR_SELECTOR = "[data-ui-part~='clear']"
 const EMPTY_SELECTOR = "[data-ui-part~='empty']"
 const STATUS_SELECTOR = "[data-ui-part~='status']"
@@ -765,46 +767,12 @@ export function createSelectElementClass(targetWindow?: Window): UISelectElement
       return [...visibleOptions(this.options)]
     }
 
-    /**
-     * Renders one chip per selected value. This is behavior support, not decoration: the chips
-     * container is authored, every chip is real focusable markup, and `options.css` decides how any
-     * of it looks.
-     */
     private syncChips(): void {
-      const chips = queryOwnedPart<HTMLElement>(this, CHIPS_SELECTOR)
-      if (!chips) return
-
-      const selected = this.options.filter(
-        (option) => option.getAttribute('aria-selected') === 'true',
+      syncListboxChips(
+        queryOwnedPart<HTMLElement>(this, CHIPS_SELECTOR),
+        queryOwnedPart<HTMLTemplateElement>(this, CHIP_TEMPLATE_SELECTOR),
+        this.options.filter((option) => option.getAttribute('aria-selected') === 'true'),
       )
-      // Rewriting identical chips would re-trigger the parts MutationObserver forever.
-      const rendered = Array.from(chips.children).map(
-        (chip) => chip.querySelector(CHIP_REMOVE_SELECTOR)?.getAttribute('data-ui-value') ?? '',
-      )
-      const values = selected.map((option) => listboxOptionValue(option))
-      if (sameValues(rendered, values)) return
-
-      chips.replaceChildren(
-        ...selected.map((option) => this.createChip(option, chips.ownerDocument)),
-      )
-    }
-
-    private createChip(option: HTMLElement, ownerDocument: Document): HTMLElement {
-      const value = listboxOptionValue(option)
-      const label = listboxOptionLabel(option)
-      const chip = ownerDocument.createElement('span')
-      chip.setAttribute('data-ui-part', 'chip')
-      chip.append(label)
-
-      const remove = ownerDocument.createElement('button')
-      remove.type = 'button'
-      remove.setAttribute('data-ui-part', 'chip-remove')
-      remove.setAttribute('data-ui-value', value)
-      remove.setAttribute('aria-label', `Remove ${label}`)
-      remove.append('×')
-      chip.append(remove)
-
-      return chip
     }
 
     /** The clear control is disabled while there is nothing to clear, and named only if unnamed. */

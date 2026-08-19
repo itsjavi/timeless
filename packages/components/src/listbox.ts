@@ -133,6 +133,9 @@ export type ListboxPageDetail = {
 }
 
 const LISTBOX_SELECTOR = "[data-ui-part~='listbox']"
+const CHIP_SELECTOR = "[data-ui-part~='chip']"
+const CHIP_LABEL_SELECTOR = "[data-ui-part~='chip-label']"
+const CHIP_REMOVE_SELECTOR = "[data-ui-part~='chip-remove']"
 const GROUP_LABEL_SELECTOR = "[data-ui-part~='group-label']"
 const EMPTY_SELECTOR = "[data-ui-part~='empty']"
 const STATUS_SELECTOR = "[data-ui-part~='status']"
@@ -738,6 +741,65 @@ export function syncListboxRegions(
     // Writing an unchanged text node re-triggers the parts MutationObserver forever.
     if (status.textContent !== label) status.textContent = label
   }
+}
+
+/**
+ * Renders one chip per selected value by cloning the author's `chip-template`.
+ *
+ * Nothing here invents markup: every element and class in a chip is authored, and this fills in the
+ * label, the value, and the accessible name. Without a template the container gets a plain
+ * comma-separated summary, so `multiple` is still legible with no extra anatomy to author.
+ */
+export function syncListboxChips(
+  chips: HTMLElement | null,
+  template: HTMLTemplateElement | null,
+  selected: readonly HTMLElement[],
+): void {
+  if (!chips) return
+
+  if (!template) {
+    const summary = selected.map(listboxOptionLabel).join(', ')
+    if (chips.textContent !== summary) chips.textContent = summary
+    return
+  }
+
+  // Rewriting identical chips would re-trigger the parts MutationObserver forever.
+  const values = selected.map(listboxOptionValue)
+  const rendered = Array.from(chips.children).map(
+    (chip) => chip.getAttribute('data-ui-value') ?? '',
+  )
+  if (values.length === rendered.length && values.every((v, i) => v === rendered[i])) return
+
+  chips.replaceChildren(...selected.map((option) => renderListboxChip(template, option)))
+}
+
+function renderListboxChip(template: HTMLTemplateElement, option: HTMLElement): DocumentFragment {
+  const fragment = template.content.cloneNode(true) as DocumentFragment
+  const chip = fragment.querySelector<HTMLElement>(CHIP_SELECTOR) ?? fragment.firstElementChild
+  if (!chip) return fragment
+
+  const value = listboxOptionValue(option)
+  const label = listboxOptionLabel(option)
+  chip.setAttribute('data-ui-value', value)
+
+  const labelNode = chip.querySelector<HTMLElement>(CHIP_LABEL_SELECTOR)
+  if (labelNode) {
+    labelNode.textContent = label
+  } else if (chip.childElementCount === 0) {
+    chip.textContent = label
+  }
+
+  const remove = chip.querySelector<HTMLElement>(CHIP_REMOVE_SELECTOR)
+  if (remove) {
+    remove.setAttribute('data-ui-value', value)
+    // A shared template cannot name the value it removes, and "×" for every chip is not a name.
+    // An `aria-label` authored in the template still wins.
+    if (!remove.hasAttribute('aria-label')) {
+      remove.setAttribute('aria-label', `Remove ${label}`)
+    }
+  }
+
+  return fragment
 }
 
 /**

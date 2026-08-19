@@ -193,6 +193,10 @@
     line-height: 1.6;
   }
 
+  :where(ui-select, ui-combobox) :where([data-ui-part~='chip-template']) {
+    display: none;
+  }
+
   :where(ui-select, ui-combobox) :where([data-ui-part~='chip-remove']) {
     display: inline-flex;
     align-items: center;

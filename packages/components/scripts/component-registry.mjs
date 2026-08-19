@@ -194,12 +194,24 @@ const COLLECTION_TRIGGER_PARTS = () => [
     undefined,
     'Container the selected values are rendered into under `multiple`.',
   ),
-  part('chip', false, undefined, 'One selected value.'),
+  part(
+    'chip-template',
+    false,
+    "template[data-ui-part~='chip-template']",
+    'A `<template>` holding the markup for one chip. Timeless clones it per selected value and fills it in, so every element and class in a chip is yours. Without it a `chips` container receives a plain comma-separated summary instead.',
+  ),
+  part('chip', false, undefined, 'One selected value, authored inside `chip-template`.'),
+  part(
+    'chip-label',
+    false,
+    undefined,
+    'Where the selected label is written inside a chip. Omit it only when the chip has no other content.',
+  ),
   part(
     'chip-remove',
     false,
     undefined,
-    'Removes its chip. A real button whose accessible name says which value it removes.',
+    'Removes its chip. Author it as a real button; Timeless gives it the value it removes and an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins.',
   ),
   part(
     'clear',

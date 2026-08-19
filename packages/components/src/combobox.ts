@@ -39,10 +39,10 @@ import {
   enhanceListboxParts,
   filterListboxOptions,
   findListboxOptions,
-  listboxOptionLabel,
   listboxOptionValue,
   selectedListboxValues,
   syncListboxActiveDescendant,
+  syncListboxChips,
   syncListboxRegions,
   syncListboxSelection,
   type ListboxEnhancementParts,
@@ -158,6 +158,7 @@ const LISTBOX_SELECTOR = '[role="listbox"]'
 const SURFACE_SELECTOR = "[data-ui-part~='surface']"
 const CHIPS_SELECTOR = "[data-ui-part~='chips']"
 const CHIP_REMOVE_SELECTOR = "[data-ui-part~='chip-remove']"
+const CHIP_TEMPLATE_SELECTOR = "template[data-ui-part~='chip-template']"
 const CLEAR_SELECTOR = "[data-ui-part~='clear']"
 const EMPTY_SELECTOR = "[data-ui-part~='empty']"
 const STATUS_SELECTOR = "[data-ui-part~='status']"
@@ -661,21 +662,10 @@ export function createComboboxElementClass(targetWindow?: Window): UIComboboxEle
     }
 
     private syncChips(): void {
-      const chips = queryOwnedPart<HTMLElement>(this, CHIPS_SELECTOR)
-      if (!chips) return
-
-      const selected = this.options.filter(
-        (option) => option.getAttribute('aria-selected') === 'true',
-      )
-      // Rewriting identical chips would re-trigger the parts MutationObserver forever.
-      const rendered = Array.from(chips.children).map(
-        (chip) => chip.querySelector(CHIP_REMOVE_SELECTOR)?.getAttribute('data-ui-value') ?? '',
-      )
-      const values = selected.map((option) => listboxOptionValue(option))
-      if (sameValues(rendered, values)) return
-
-      chips.replaceChildren(
-        ...selected.map((option) => createComboboxChip(option, chips.ownerDocument)),
+      syncListboxChips(
+        queryOwnedPart<HTMLElement>(this, CHIPS_SELECTOR),
+        queryOwnedPart<HTMLTemplateElement>(this, CHIP_TEMPLATE_SELECTOR),
+        this.options.filter((option) => option.getAttribute('aria-selected') === 'true'),
       )
     }
 
@@ -849,28 +839,6 @@ export function filterComboboxOptions(
 
 export function comboboxOptionValue(option: ComboboxOptionLike): string {
   return listboxOptionValue(option)
-}
-
-function createComboboxChip(option: HTMLElement, ownerDocument: Document): HTMLElement {
-  const value = listboxOptionValue(option)
-  const label = listboxOptionLabel(option)
-  const chip = ownerDocument.createElement('span')
-  chip.setAttribute('data-ui-part', 'chip')
-  chip.append(label)
-
-  const remove = ownerDocument.createElement('button')
-  remove.type = 'button'
-  remove.setAttribute('data-ui-part', 'chip-remove')
-  remove.setAttribute('data-ui-value', value)
-  remove.setAttribute('aria-label', `Remove ${label}`)
-  remove.append('×')
-  chip.append(remove)
-
-  return chip
-}
-
-function sameValues(left: readonly string[], right: readonly string[]): boolean {
-  return left.length === right.length && left.every((value, index) => value === right[index])
 }
 
 function invalidComboboxParts(parts: ComboboxEnhancementParts): readonly string[] {

@@ -119,6 +119,15 @@ same shape caused a subtler problem: writing an attribute its unchanged value st
 mutation record, which re-triggers enhancement, which writes again. The sync helpers compare before
 writing, which is what brought the large-dataset mutation budget back under its ceiling.
 
+**Component JS may not create DOM — `check-generated-dom.mjs` reserves that for Toast.** The first
+chips implementation built each chip with `createElement`, which the validator rejected and which
+also contradicted AGENTS.md's "enhance existing markup instead of creating visual elements". Chips
+are now an author-owned `<template>` the component clones once per selected value, filling in only
+the label, the value, and the remove button's accessible name — one shared template cannot name the
+value each chip removes, so that name is written rather than authored. Without a template the
+`chips` container gets a plain comma-separated summary, so `multiple` stays legible with no extra
+anatomy. This validator is not part of `pnpm qa`; CI runs it separately, which is how it reached CI.
+
 **`queryOwnedPart` stops at any ancestor carrying a `ui-*` class.** The `value` part sits inside a
 `.ui-button` trigger, so an ownership query from the host never reaches it and the trigger label
 silently stopped updating. Scoped to the trigger instead. Worth knowing before putting a part inside
