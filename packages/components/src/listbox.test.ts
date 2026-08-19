@@ -5,6 +5,7 @@ import {
   listboxOptionValue,
   selectedListboxValues,
   syncListboxActiveDescendant,
+  syncListboxSelection,
   syncListboxValue,
   type ListboxOptionLike,
 } from './listbox'
@@ -91,10 +92,74 @@ describe('enhanceListboxParts', () => {
 
     expect(syncListboxActiveDescendant(input, { host, options }, 1)).toBe(1)
     expect(input.getAttribute('aria-activedescendant')).toBe('banana')
-    expect(options.map((option) => option.getAttribute('aria-selected'))).toEqual(['false', 'true'])
+    expect(options.map((option) => option.hasAttribute('data-ui-internal-active'))).toEqual([
+      false,
+      true,
+    ])
+    // Focus never becomes a tab stop when a controller owns it.
+    expect(options.map((option) => option.getAttribute('tabindex'))).toEqual(['-1', '-1'])
 
     expect(syncListboxActiveDescendant(input, { host, options }, null)).toBeNull()
     expect(input.getAttribute('aria-activedescendant')).toBeNull()
+  })
+
+  it('moves the active option without touching the selection', () => {
+    const host = new FakeListboxElement()
+    const input = new FakeListboxElement()
+    const options = [
+      new FakeListboxElement('Apple'),
+      new FakeListboxElement('Banana'),
+      new FakeListboxElement('Cherry'),
+    ]
+    options.forEach((option, index) => {
+      option.id = `option-${index}`
+    })
+    syncListboxValue({ host, options }, 'Banana')
+    expect(options.map((option) => option.getAttribute('aria-selected'))).toEqual([
+      'false',
+      'true',
+      'false',
+    ])
+
+    // Arrow past the selected option: the highlight moves, the selection does not.
+    syncListboxActiveDescendant(input, { host, options }, 2)
+
+    expect(options.map((option) => option.getAttribute('aria-selected'))).toEqual([
+      'false',
+      'true',
+      'false',
+    ])
+    expect(options.map((option) => option.hasAttribute('data-ui-internal-active'))).toEqual([
+      false,
+      false,
+      true,
+    ])
+  })
+
+  it('replaces the whole selection for a multiple listbox', () => {
+    const host = new FakeListboxElement()
+    const options = [
+      new FakeListboxElement('Apple'),
+      new FakeListboxElement('Banana'),
+      new FakeListboxElement('Cherry'),
+    ]
+
+    expect(syncListboxSelection({ host, options }, ['Apple', 'Cherry'])).toEqual([
+      'Apple',
+      'Cherry',
+    ])
+    expect(options.map((option) => option.getAttribute('aria-selected'))).toEqual([
+      'true',
+      'false',
+      'true',
+    ])
+
+    expect(syncListboxSelection({ host, options }, [])).toEqual([])
+    expect(options.map((option) => option.getAttribute('aria-selected'))).toEqual([
+      'false',
+      'false',
+      'false',
+    ])
   })
 
   it('filters options and reports selected values', () => {

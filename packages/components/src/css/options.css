@@ -1,0 +1,321 @@
+/*
+ * The option collections share one ARIA family, one option core, and — from here — one stylesheet.
+ *
+ * `listbox.css`, `select.css`, and `combobox.css` used to carry three copies of the option row that
+ * had drifted apart: only two of the three highlighted the active option, only two hid a filtered
+ * option, and each wrapped its selected rule in a different amount of `:where()`. Everything that is
+ * genuinely common now lives here once, so the three can no longer disagree. Each component
+ * stylesheet keeps only what is actually its own.
+ *
+ * Every rule is wrapped in `:where()` past the root, so the whole file sits at a single low
+ * specificity and consumer CSS wins without a fight.
+ */
+
+@layer ui.components {
+  /* The option row. */
+  :where(ui-listbox, ui-select, ui-combobox) :where([role='option']) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--ui-space-2);
+    min-block-size: 2rem;
+    border-radius: var(--ui-radius-sm);
+    padding: var(--ui-space-2) var(--ui-space-3);
+    color: var(--ui-fg);
+    line-height: 1.25;
+  }
+
+  /*
+   * Hover, real focus, and the virtual highlight are one treatment, because they mean one thing to
+   * the reader: this is the option you are about to act on. `[data-ui-internal-active]` is the
+   * private hook the JS sets when DOM focus has to stay in a text field.
+   */
+  :where(ui-listbox, ui-select, ui-combobox)
+    :where([role='option']):where(:not([aria-disabled='true'])):where(
+      :hover,
+      :focus-visible,
+      [data-ui-internal-active]
+    ) {
+    outline: 0;
+    background: var(--ui-bg-surface-raised);
+  }
+
+  /*
+   * Selection, which is `aria-selected` and nothing else. It is deliberately distinct from the
+   * highlight above: arrowing through a list must not repaint every option you pass as selected.
+   */
+  :where(ui-listbox, ui-select, ui-combobox)
+    :where([role='option'][aria-selected='true']:not([aria-disabled='true'])) {
+    background: var(--ui-accent-soft);
+    color: var(--ui-accent);
+  }
+
+  :where(ui-listbox, ui-select, ui-combobox) :where([role='option'][aria-disabled='true']) {
+    background: transparent;
+    color: var(--ui-fg-muted);
+    opacity: var(--ui-disabled-opacity);
+  }
+
+  /* Filtering and paging both express themselves by setting `hidden`. */
+  :where(ui-listbox, ui-select, ui-combobox) :where([role='option'][hidden]) {
+    display: none;
+  }
+
+  :where(ui-listbox, ui-select, ui-combobox) :where([data-ui-part~='option-indicator']) {
+    display: none;
+    justify-self: end;
+    color: var(--ui-accent);
+    line-height: 1;
+  }
+
+  :where(ui-listbox, ui-select, ui-combobox)
+    :where([role='option'][aria-selected='true'] [data-ui-part~='option-indicator']) {
+    display: block;
+  }
+
+  /* Groups. */
+  :where(ui-listbox, ui-select, ui-combobox) :where([data-ui-part~='group']) {
+    display: grid;
+    gap: var(--ui-space-1);
+  }
+
+  :where(ui-listbox, ui-select, ui-combobox) :where([data-ui-part~='group-label']) {
+    padding: var(--ui-space-2) var(--ui-space-3) var(--ui-space-1);
+    color: var(--ui-fg-muted);
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  /*
+   * A group whose every option is filtered out collapses. Expressed with `:has()` rather than a JS
+   * `hidden` write, so the JS never has to decide what an empty group looks like.
+   */
+  :where(ui-listbox, ui-select, ui-combobox)
+    :where([data-ui-part~='group']:not(:has([role='option']:not([hidden])))) {
+    display: none;
+  }
+
+  :where(ui-listbox, ui-select, ui-combobox) :where([role='separator']) {
+    block-size: 1px;
+    border: 0;
+    margin: var(--ui-space-1) 0;
+    background: var(--ui-line);
+  }
+
+  /* The search field inside a surface. It is the surface's own edge, so it has no border of its own. */
+  :where(ui-select, ui-combobox) :where([data-ui-part~='search']) {
+    box-sizing: border-box;
+    inline-size: 100%;
+    border: 0;
+    border-block-end: 1px solid var(--ui-line);
+    border-radius: 0;
+    padding: var(--ui-space-2) var(--ui-space-3);
+    background: transparent;
+    color: var(--ui-fg);
+    font: inherit;
+    line-height: 1.3;
+  }
+
+  :where(ui-select, ui-combobox) :where([data-ui-part~='search']):focus-visible {
+    outline: 0;
+    border-block-end-color: var(--ui-focus);
+  }
+
+  /* Empty and status regions. */
+  :where(ui-listbox, ui-select, ui-combobox)
+    :where([data-ui-part~='empty'], [data-ui-part~='status']) {
+    padding: var(--ui-space-3);
+    color: var(--ui-fg-muted);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  /* Header and footer sit outside option navigation, so they read as their own bands. */
+  :where(ui-listbox, ui-select, ui-combobox) :where([data-ui-part~='header']) {
+    border-block-end: 1px solid var(--ui-line);
+    padding: var(--ui-space-2) var(--ui-space-3);
+  }
+
+  :where(ui-listbox, ui-select, ui-combobox) :where([data-ui-part~='footer']) {
+    border-block-start: 1px solid var(--ui-line);
+    padding: var(--ui-space-2) var(--ui-space-3);
+  }
+
+  /* The pager. Boundary buttons stay focusable and take `aria-disabled`, so they never disappear. */
+  :where(ui-listbox, ui-select, ui-combobox) :where([data-ui-part~='pager']) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ui-space-2);
+    border-block-start: 1px solid var(--ui-line);
+    padding: var(--ui-space-1) var(--ui-space-2);
+  }
+
+  :where(ui-listbox, ui-select, ui-combobox) :where([data-ui-part~='pager'][hidden]) {
+    display: none;
+  }
+
+  :where(ui-listbox, ui-select, ui-combobox) :where([data-ui-part~='page-status']) {
+    padding: 0;
+    color: var(--ui-fg-muted);
+    font-size: 0.8125rem;
+  }
+
+  :where(ui-listbox, ui-select, ui-combobox)
+    :where([data-ui-part~='page-previous'], [data-ui-part~='page-next'])[aria-disabled='true'] {
+    opacity: var(--ui-disabled-opacity);
+  }
+
+  /* Chips, for a multiple selection. */
+  :where(ui-select, ui-combobox) :where([data-ui-part~='chips']) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ui-space-1);
+  }
+
+  :where(ui-select, ui-combobox) :where([data-ui-part~='chips']:empty) {
+    display: none;
+  }
+
+  :where(ui-select, ui-combobox) :where([data-ui-part~='chip']) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius-sm);
+    padding: 0 var(--ui-space-1) 0 var(--ui-space-2);
+    background: var(--ui-bg-surface-raised);
+    color: var(--ui-fg);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+  }
+
+  :where(ui-select, ui-combobox) :where([data-ui-part~='chip-template']) {
+    display: none;
+  }
+
+  :where(ui-select, ui-combobox) :where([data-ui-part~='chip-remove']) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 1.25rem;
+    min-block-size: 1.25rem;
+    border: 0;
+    border-radius: var(--ui-radius-sm);
+    padding: 0;
+    background: transparent;
+    color: var(--ui-fg-muted);
+    font: inherit;
+    line-height: 1;
+  }
+
+  :where(ui-select, ui-combobox) :where([data-ui-part~='chip-remove']):hover {
+    color: var(--ui-fg);
+  }
+
+  /*
+   * The popover surface, shared by Select and Combobox.
+   *
+   * The surface and the `role="listbox"` inside it are two elements whenever the surface also holds
+   * a search field, a header, a footer, or a pager: a listbox may own only options and groups, so
+   * anything else has to be its sibling. When the surface holds nothing but options, the listbox is
+   * its own surface and both selectors below land on the same element.
+   */
+  :where(ui-select, ui-combobox) > :where([data-ui-part~='surface'], [role='listbox'][popover]) {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-inline-size: var(--ui-collection-surface-inline-size, 14rem);
+    max-inline-size: min(22rem, calc(100vw - 2rem));
+    /* Replaced by `max-block-size: 100%` under anchor positioning, where a percentage resolves
+       against the `position-area` tile and so self-clamps to the space actually available. */
+    max-block-size: min(18rem, calc(100dvh - 2rem));
+    overflow: hidden;
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius-lg);
+    margin: 0;
+    padding: 0;
+    background: var(--ui-bg-surface);
+    box-shadow: var(--ui-shadow-floating);
+    color: var(--ui-fg);
+  }
+
+  :where(ui-select, ui-combobox)
+    > :where([data-ui-part~='surface'], [role='listbox'][popover]):not(:popover-open) {
+    display: none;
+  }
+
+  /* The scrolling option list. It is the surface itself in the simple shape, a child in the rich one. */
+  :where(ui-select, ui-combobox) :where([role='listbox']) {
+    display: grid;
+    align-content: start;
+    gap: var(--ui-space-1);
+    flex: 1;
+    min-block-size: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: var(--ui-space-1);
+  }
+
+  /*
+   * The anchored surface, shared by Select and Combobox.
+   *
+   * `min-inline-size: anchor-size(width)` is the "never narrower than the trigger" rule, and it must
+   * stay inside the `@supports` guard: a declaration holding an invalid `anchor-size()` is invalid at
+   * computed-value time, so outside the guard the whole declaration drops and the surface silently
+   * falls back to `auto`.
+   *
+   * `position-area` is a 3x3 grid around the anchor. Two side keywords name a single corner tile,
+   * which is why `bottom left` sat diagonally below-and-left of the trigger and `bottom center`
+   * centred on it. A side plus `span-*` places the surface in that row and spans outward, which is
+   * what edge alignment means. Popover and Hover Card keep `bottom center` on purpose — a popover
+   * and a tooltip centre on their anchor by convention; only these collection surfaces edge-align.
+   *
+   * The gap is `margin-block`, not `translate`. A transform is applied after layout, so it does not
+   * participate in the overflow calculation `position-try-fallbacks` runs: the browser would judge
+   * the surface as fitting and then translate it part-way off screen.
+   *
+   * These rules must not be scoped to `:popover-open` if an exit transition is ever added, or the
+   * surface will jump to the UA-centred fallback mid-close.
+   */
+  @supports (anchor-name: --ui-anchor) {
+    :where(ui-select, ui-combobox) > :where([data-ui-part~='surface'], [role='listbox']) {
+      position-area: block-end span-inline-end;
+      min-inline-size: anchor-size(width);
+      max-block-size: 100%;
+      margin-block: var(--ui-floating-offset, 0.375rem);
+    }
+
+    :where(ui-select, ui-combobox):where([align='end'])
+      > :where([data-ui-part~='surface'], [role='listbox']) {
+      position-area: block-end span-inline-start;
+    }
+
+    :where(ui-select):where([placement='top'])
+      > :where([data-ui-part~='surface'], [role='listbox']) {
+      position-area: block-start span-inline-end;
+    }
+
+    :where(ui-select):where([placement='top'][align='end'])
+      > :where([data-ui-part~='surface'], [role='listbox']) {
+      position-area: block-start span-inline-start;
+    }
+
+    :where(ui-select):where([placement='right'])
+      > :where([data-ui-part~='surface'], [role='listbox']) {
+      position-area: inline-end span-block-end;
+      margin-block: 0;
+      margin-inline: var(--ui-floating-offset, 0.375rem);
+    }
+
+    :where(ui-select):where([placement='left'])
+      > :where([data-ui-part~='surface'], [role='listbox']) {
+      position-area: inline-start span-block-end;
+      margin-block: 0;
+      margin-inline: var(--ui-floating-offset, 0.375rem);
+    }
+  }
+}

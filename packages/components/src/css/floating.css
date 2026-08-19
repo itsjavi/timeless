@@ -1,0 +1,66 @@
+/*
+ * The anchoring layer every floating surface depends on.
+ *
+ * These rules used to live in `popover.css`, which made every anchored component — Select,
+ * Combobox, Menu Button, a menubar submenu — silently depend on a stylesheet its own contract never
+ * named. A consumer who imported `tokens.css`, `button.css`, and `select.css` got an unanchored,
+ * viewport-centred listbox. The dependency is now declared: every contract that anchors lists this
+ * file, and the three copies of the fallback reset that had been pasted into `select.css`,
+ * `menu.css`, and `popover.css` are one rule again.
+ *
+ * Every rule here selects a private runtime hook rather than a component root, because the set of
+ * components that anchor is a runtime fact, not a selector: `syncFloatingAnchor` marks whichever
+ * trigger and surface a component handed it. That also puts the three states — anchored, UA
+ * default, JS fallback — in one file in one order, so which one wins never depends on the order a
+ * consumer happens to import stylesheets in.
+ *
+ * Each component stylesheet adds only its own `position-area` and gap on top of this.
+ */
+
+@layer ui.components {
+  /*
+   * `--ui-floating-anchor` is a per-instance name written by `syncFloatingAnchor`, which is how two
+   * surfaces on one page avoid capturing each other's anchor. `anchor-scope` is the declarative form
+   * of the same idea, but it lands later than anchor positioning itself in every engine, so adopting
+   * it would narrow support for no behavioral gain.
+   */
+  [data-ui-internal-floating-anchor] {
+    anchor-name: var(--ui-floating-anchor);
+  }
+
+  [data-ui-internal-floating-content] {
+    position-anchor: var(--ui-floating-anchor);
+  }
+
+  @supports (anchor-name: --ui-anchor) {
+    [data-ui-internal-floating-content] {
+      inset: auto;
+      /* Positioning is `position-area` and `margin`; nothing anchored is placed with a transform. */
+      translate: none;
+      position-try-fallbacks:
+        flip-block,
+        flip-inline,
+        flip-block flip-inline;
+    }
+  }
+
+  /*
+   * The JavaScript fallback, for a browser with the Popover API but without anchor positioning.
+   * `applyFloatingPosition` stamps this hook and the two coordinates only when support is missing,
+   * so in a supporting browser this block never matches and no private hook is written.
+   *
+   * `:popover-open` is load-bearing rather than decorative: it raises the specificity above the UA
+   * default each component declares under `@supports not`, so this wins wherever it is imported.
+   */
+  [data-ui-internal-floating='fallback']:popover-open {
+    position: fixed;
+    inset: auto;
+    left: var(--ui-floating-left);
+    top: var(--ui-floating-top);
+    right: auto;
+    bottom: auto;
+    translate: 0 0;
+    position-area: none;
+    position-try-fallbacks: none;
+  }
+}

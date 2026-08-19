@@ -126,7 +126,7 @@ describe('combobox option helpers', () => {
     expect(options.map((option) => option.hidden)).toEqual([false, true, false])
   })
 
-  it('syncs active descendant and selected option state', () => {
+  it('syncs the active descendant without disturbing the selection', () => {
     const input = new FakeComboboxElement()
     const options: ComboboxOptionLike[] = [
       new FakeComboboxElement('Apple'),
@@ -134,12 +134,19 @@ describe('combobox option helpers', () => {
     ]
     options[0]!.id = 'apple'
     options[1]!.id = 'banana'
+    options[0]!.setAttribute('aria-selected', 'true')
+    options[1]!.setAttribute('aria-selected', 'false')
 
     expect(syncComboboxActiveDescendant(input, options, 1)).toBe(1)
     expect(input.getAttribute('aria-activedescendant')).toBe('banana')
-    expect(options.map((option) => option.getAttribute('aria-selected'))).toEqual(['false', 'true'])
+    expect(options.map((option) => option.getAttribute('aria-selected'))).toEqual(['true', 'false'])
+    expect(options.map((option) => option.hasAttribute('data-ui-internal-active'))).toEqual([
+      false,
+      true,
+    ])
 
     expect(syncComboboxActiveDescendant(input, options, null)).toBeNull()
     expect(input.getAttribute('aria-activedescendant')).toBeNull()
+    expect(options[0]!.getAttribute('aria-selected')).toBe('true')
   })
 })

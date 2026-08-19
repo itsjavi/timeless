@@ -28,7 +28,15 @@ export type FloatingAnchorOptions = {
   readonly anchorName: string
 }
 
+export type FloatingAlignment = 'center' | 'start' | 'end'
+
 export type FloatingPositionOptions = {
+  /**
+   * Which edge of the trigger the surface lines up with along the cross axis. `center` is the
+   * popover and tooltip convention; the collection surfaces edge-align, so their fallback has to
+   * agree with what `options.css` does under anchor positioning.
+   */
+  readonly align?: FloatingAlignment
   readonly content: FloatingRuntimeElement
   readonly offset?: number
   readonly placement: FloatingPlacement
@@ -86,8 +94,9 @@ export function applyFloatingPosition(options: FloatingPositionOptions): Floatin
   const offset = options.offset ?? DEFAULT_FLOATING_OFFSET
   const padding = options.viewportPadding ?? DEFAULT_VIEWPORT_PADDING
   const order = orderedFloatingPlacements(options.placement)
+  const align = options.align ?? 'center'
   const candidates = order.map((placement) =>
-    floatingCandidate(placement, triggerRect, contentRect, offset),
+    floatingCandidate(placement, triggerRect, contentRect, offset, align),
   )
   const fittingCandidate =
     candidates.find((candidate) =>
@@ -138,11 +147,12 @@ function floatingCandidate(
   trigger: DOMRectReadOnly,
   content: DOMRectReadOnly,
   offset: number,
+  align: FloatingAlignment,
 ): FloatingCandidate {
   if (placement === 'top') {
     return {
       placement,
-      x: trigger.left + trigger.width / 2 - content.width / 2,
+      x: alignedStart(trigger.left, trigger.width, content.width, align),
       y: trigger.top - content.height - offset,
     }
   }
@@ -150,22 +160,33 @@ function floatingCandidate(
     return {
       placement,
       x: trigger.right + offset,
-      y: trigger.top + trigger.height / 2 - content.height / 2,
+      y: alignedStart(trigger.top, trigger.height, content.height, align),
     }
   }
   if (placement === 'left') {
     return {
       placement,
       x: trigger.left - content.width - offset,
-      y: trigger.top + trigger.height / 2 - content.height / 2,
+      y: alignedStart(trigger.top, trigger.height, content.height, align),
     }
   }
 
   return {
     placement,
-    x: trigger.left + trigger.width / 2 - content.width / 2,
+    x: alignedStart(trigger.left, trigger.width, content.width, align),
     y: trigger.bottom + offset,
   }
+}
+
+function alignedStart(
+  triggerStart: number,
+  triggerSize: number,
+  contentSize: number,
+  align: FloatingAlignment,
+): number {
+  if (align === 'start') return triggerStart
+  if (align === 'end') return triggerStart + triggerSize - contentSize
+  return triggerStart + triggerSize / 2 - contentSize / 2
 }
 
 function floatingCandidateFits(

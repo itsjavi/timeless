@@ -1,5 +1,5 @@
 import { attr, createId, createUIElementClass, element, watch } from '@timelessui/core'
-import { supportsNativePopover } from './capabilities'
+import { supportsAnchorPositioning, supportsNativePopover } from './capabilities'
 import {
   applyFloatingPosition,
   clearFloatingPosition,
@@ -115,6 +115,11 @@ export function createPopoverElementClass(targetWindow?: Window): UIPopoverEleme
     @watch('placement')
     updateFloatingPosition(): void {
       if (!this.trigger || !this.content || !isPopoverOpen(this.content)) return
+
+      // The stylesheet positions the surface wherever anchor positioning exists; running the
+      // coordinate fallback there would stamp a private hook and compute values the `@supports` rule
+      // discards. This runs *because* support is missing, which is the only time it is the answer.
+      if (supportsAnchorPositioning(this.ownerDocument.defaultView)) return
 
       applyFloatingPosition({
         trigger: this.trigger,

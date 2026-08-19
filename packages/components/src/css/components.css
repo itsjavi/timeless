@@ -26,11 +26,13 @@
 @import './collapsible.css';
 @import './dialog.css';
 @import './sheet.css';
+@import './floating.css';
 @import './popover.css';
 @import './toast.css';
 @import './menu.css';
 @import './toolbar.css';
 @import './choice-group.css';
+@import './options.css';
 @import './listbox.css';
 @import './select.css';
 @import './combobox.css';

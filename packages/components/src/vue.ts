@@ -14,6 +14,7 @@ import type { HoverCardVariant } from './values/hover-card'
 import type { MenuOrientation } from './values/menu'
 import type { ToolbarOrientation } from './values/toolbar'
 import type { ChoiceGroupOrientation } from './values/forms'
+import type { CollectionAlignment, OptionFilterMode } from './values/options'
 import type { ToasterPlacement, ToasterStack } from './values/toast'
 import type { ToggleGroupOrientation, ToggleGroupSelection } from './values/toggle-group'
 import type { ColorPickerFormat } from './values/color-picker'
@@ -21,9 +22,19 @@ import type { TabsChangeDetail } from './tabs'
 import type { SheetEventDetail } from './sheet'
 import type { MenuButtonToggleDetail } from './menu-button'
 import type { CheckboxGroupChangeDetail, RadioGroupChangeDetail } from './choice-group'
-import type { ListboxChangeDetail } from './listbox'
-import type { SelectChangeDetail } from './select'
-import type { ComboboxChangeDetail } from './combobox'
+import type { ListboxChangeDetail, ListboxPageDetail } from './listbox'
+import type {
+  SelectChangeDetail,
+  SelectInputDetail,
+  SelectPageDetail,
+  SelectToggleDetail,
+} from './select'
+import type {
+  ComboboxChangeDetail,
+  ComboboxInputDetail,
+  ComboboxPageDetail,
+  ComboboxToggleDetail,
+} from './combobox'
 import type { ToastDismissDetail } from './toast'
 import type { ToggleGroupChangeDetail } from './toggle-group'
 
@@ -158,16 +169,28 @@ export interface UICheckboxGroupElementProps extends TimelessGlobalProps {
 }
 
 export interface UIListboxElementProps extends TimelessGlobalProps {
-  /** Present to allow more than one selected option. The `value` property then reads and writes an array. */
+  /** Present to allow more than one selected option, submitting one form entry per value under the same `name`. */
   multiple?: boolean
-  /** The option selected on load and after a form reset. Assign the `value` property for live changes. */
+  /** The option selected on load and after a form reset. Assign the `value` property for live changes; once the user commits a change the attribute stops applying, the way it does on a native input. */
   value?: string
+  /** Form field name. The element submits its own value through `ElementInternals`. */
+  name?: string
+  /** Present to block submission while nothing is selected, with `valueMissing`. */
+  required?: boolean
+  /** Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way. */
+  disabled?: boolean
+  /** Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property. */
+  'page-size'?: number
   /** Authored default and form-reset value, reflecting the `value` attribute. */
   defaultValue?: string
+  /** DOM property reflecting the `page-size` attribute. */
+  pageSize?: string
   /** Cancelable proposal dispatched before the selection changes. Call `preventDefault()` to reject the transition and keep the current value. */
   onUiBeforeChange?: (event: CustomEvent<ListboxChangeDetail>) => void
   /** Dispatched after the selection has changed. Bubbles and is composed. */
   onUiChange?: (event: CustomEvent<ListboxChangeDetail>) => void
+  /** Dispatched after the rendered page of a paged list changes. */
+  onUiPage?: (event: CustomEvent<ListboxPageDetail>) => void
 }
 
 export interface UISelectElementProps extends TimelessGlobalProps {
@@ -175,25 +198,75 @@ export interface UISelectElementProps extends TimelessGlobalProps {
   open?: boolean
   /** Preferred side of the trigger for the listbox surface. */
   placement?: FloatingPlacement
-  /** The option selected on load and after a form reset. Mirror it onto a hidden input to submit with a form. */
+  /** Present to filter from a `search` field inside the surface. Focus moves into that field on open and stays there; the highlight travels through `aria-activedescendant`. */
+  searchable?: boolean
+  /** The option selected on load and after a form reset. Once the user commits a change the attribute stops applying, the way it does on a native input. */
   value?: string
+  /** Which edge of the trigger the surface aligns to. The surface is never narrower than the trigger. */
+  align?: CollectionAlignment
+  /** How typed text narrows the options. `off` hands visibility to you: listen for `ui-input` and set `hidden` yourself, and navigation, the empty state, group collapse, and paging all follow. */
+  filter?: OptionFilterMode
+  /** Present to allow more than one selected option. Selected values render as chips and submit one form entry each under the same `name`. */
+  multiple?: boolean
+  /** Form field name. The element submits its own value through `ElementInternals`. */
+  name?: string
+  /** Present to block submission while nothing is selected, with `valueMissing`. */
+  required?: boolean
+  /** Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way. */
+  disabled?: boolean
+  /** Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property. */
+  'page-size'?: number
   /** Authored default and form-reset value, reflecting the `value` attribute. */
   defaultValue?: string
+  /** DOM property reflecting the `page-size` attribute. */
+  pageSize?: string
   /** Cancelable proposal dispatched before the selected option changes. Call `preventDefault()` to reject the transition and keep the current value. */
   onUiBeforeChange?: (event: CustomEvent<SelectChangeDetail>) => void
   /** Dispatched after the selected option has changed. Bubbles and is composed. */
   onUiChange?: (event: CustomEvent<SelectChangeDetail>) => void
+  /** Dispatched after the listbox opens. */
+  onUiOpen?: (event: CustomEvent<SelectToggleDetail>) => void
+  /** Dispatched after the listbox closes. */
+  onUiClose?: (event: CustomEvent<SelectToggleDetail>) => void
+  /** Dispatched when the query text changes, before options are filtered. Under `filter="off"` this is where you set `hidden` yourself. */
+  onUiInput?: (event: CustomEvent<SelectInputDetail>) => void
+  /** Dispatched after the rendered page of a paged list changes. */
+  onUiPage?: (event: CustomEvent<SelectPageDetail>) => void
 }
 
 export interface UIComboboxElementProps extends TimelessGlobalProps {
-  /** The option selected on load and after a form reset. Assign the `value` property for live changes. */
+  /** The option selected on load and after a form reset. Once the user commits a change the attribute stops applying, the way it does on a native input. */
   value?: string
+  /** Which edge of the trigger the surface aligns to. The surface is never narrower than the trigger. */
+  align?: CollectionAlignment
+  /** How typed text narrows the options. `off` hands visibility to you: listen for `ui-input` and set `hidden` yourself, and navigation, the empty state, group collapse, and paging all follow. */
+  filter?: OptionFilterMode
+  /** Present to allow more than one selected option. Selected values render as chips and submit one form entry each under the same `name`. */
+  multiple?: boolean
+  /** Form field name. The element submits its own value through `ElementInternals`. */
+  name?: string
+  /** Present to block submission while nothing is selected, with `valueMissing`. */
+  required?: boolean
+  /** Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way. */
+  disabled?: boolean
+  /** Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property. */
+  'page-size'?: number
   /** Authored default and form-reset value, reflecting the `value` attribute. */
   defaultValue?: string
+  /** DOM property reflecting the `page-size` attribute. */
+  pageSize?: string
   /** Cancelable proposal dispatched before the selected option changes. Call `preventDefault()` to reject the transition and keep the current value. */
   onUiBeforeChange?: (event: CustomEvent<ComboboxChangeDetail>) => void
   /** Dispatched after the selected option has changed. Bubbles and is composed. */
   onUiChange?: (event: CustomEvent<ComboboxChangeDetail>) => void
+  /** Dispatched after the listbox opens. */
+  onUiOpen?: (event: CustomEvent<ComboboxToggleDetail>) => void
+  /** Dispatched after the listbox closes. */
+  onUiClose?: (event: CustomEvent<ComboboxToggleDetail>) => void
+  /** Dispatched when the query text changes, before options are filtered. Under `filter="off"` this is where you set `hidden` yourself. */
+  onUiInput?: (event: CustomEvent<ComboboxInputDetail>) => void
+  /** Dispatched after the rendered page of a paged list changes. */
+  onUiPage?: (event: CustomEvent<ComboboxPageDetail>) => void
 }
 
 export interface UIToasterElementProps extends TimelessGlobalProps {

@@ -1,3 +1,11 @@
+/*
+ * Select: the trigger.
+ *
+ * The popover surface, the option row, and everything else inside the surface are shared with
+ * Listbox and Combobox and live in `options.css`. Anchoring, the fallback reset, and
+ * `position-try-fallbacks` live in `floating.css`.
+ */
+
 @layer ui.components {
   ui-select {
     display: inline-grid;
@@ -9,75 +17,9 @@
     justify-content: space-between;
   }
 
-  ui-select [role='listbox'] {
-    box-sizing: border-box;
-    display: grid;
-    gap: var(--ui-space-1);
-    inline-size: max-content;
-    min-inline-size: var(--ui-select-listbox-min-inline-size, 14rem);
-    max-inline-size: min(22rem, calc(100vw - 2rem));
-    max-block-size: min(18rem, calc(100vh - 2rem));
-    overflow: auto;
-    border: 1px solid var(--ui-line);
-    border-radius: var(--ui-radius-lg);
-    margin: 0;
-    padding: var(--ui-space-1);
-    background: var(--ui-bg-surface);
-    box-shadow: var(--ui-shadow-floating);
-    color: var(--ui-fg);
-  }
-
-  ui-select [role='listbox']:not(:popover-open) {
-    display: none;
-  }
-
-  ui-select [role='listbox'][data-ui-internal-floating='fallback'] {
-    position: fixed;
-    inset: auto;
-    left: var(--ui-floating-left);
-    top: var(--ui-floating-top);
-    right: auto;
-    bottom: auto;
-    translate: 0 0;
-    position-area: none;
-    position-try-fallbacks: none;
-  }
-
-  ui-select [role='option'] {
-    display: grid;
-    min-block-size: 2rem;
-    align-items: center;
-    border-radius: var(--ui-radius-sm);
-    padding: var(--ui-space-2) var(--ui-space-3);
-    color: var(--ui-fg);
-    line-height: 1.25;
-  }
-
-  ui-select [role='option']:where(:not([aria-disabled='true'])):where(:hover, :focus-visible) {
-    outline: 0;
-    background: var(--ui-bg-surface-raised);
-  }
-
-  ui-select :where([role='option'][aria-selected='true']:not([aria-disabled='true'])) {
-    background: var(--ui-accent-soft);
-    color: var(--ui-accent);
-  }
-
-  ui-select :where([role='option'][aria-disabled='true']) {
-    background: transparent;
-    color: var(--ui-fg-muted);
-    opacity: var(--ui-disabled-opacity);
-  }
-
-  @supports (anchor-name: --ui-anchor) {
-    ui-select > [role='listbox']:popover-open {
-      inset: auto;
-      position-area: bottom center;
-      translate: 0 var(--ui-floating-offset, 0.375rem);
-      position-try-fallbacks:
-        flip-block,
-        flip-inline,
-        flip-block flip-inline;
-    }
+  ui-select [data-ui-part~='value'] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }

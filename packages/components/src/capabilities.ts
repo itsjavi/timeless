@@ -38,6 +38,19 @@ export function supportsNativeDialog(targetWindow: Window | null | undefined): b
   )
 }
 
+/**
+ * Whether CSS anchor positioning is available, so a surface can be placed by the stylesheet.
+ *
+ * This is the only probe here that asks CSS rather than a constructor prototype, because anchor
+ * positioning has no JavaScript surface to feel for. It gates the coordinate-computing fallback in
+ * `floating.ts`: without it, that fallback stamped private hooks in browsers that did not need them
+ * and never ran in the browsers that did.
+ */
+export function supportsAnchorPositioning(targetWindow: Window | null | undefined): boolean {
+  const timelessWindow = targetWindow as TimelessWindow
+  return timelessWindow?.CSS?.supports?.('anchor-name: --ui-anchor') ?? false
+}
+
 /** Whether Invoker Commands are available, so an authored `command` runs before any script. */
 export function supportsInvokerCommands(targetWindow: Window | null | undefined): boolean {
   const timelessWindow = targetWindow as TimelessWindow

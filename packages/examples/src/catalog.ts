@@ -2,6 +2,7 @@ import type { ComponentName } from '@timelessui/components'
 import {
   createCheckboxGroup,
   createCombobox,
+  createCommandPalette,
   createCustomSelect,
   createListbox,
   createMenu,
@@ -543,9 +544,21 @@ export const examples = [
     component: 'Combobox',
     title: 'Combobox',
     description: 'Filter an authored listbox from a native text input.',
+    authoring:
+      'The input is both the trigger and the search field: Timeless wires `aria-expanded`, `aria-controls`, and `aria-activedescendant` onto it and leaves its editing behavior alone. Filtering sets `hidden` on non-matching options rather than removing them, which is also the extension point — set `filter="off"` and Timeless filters nothing, emits `ui-input` with the query, and lets you set `hidden` yourself. Navigation, the empty state, group collapse, and paging all keep working, because every one of them reads `hidden`.',
+    guidance:
+      'Combobox and [Select](/docs/components/select/) are the same ARIA pattern over the same option core, differing only in where you type. Reach for Combobox when the user should be able to type free text or filter from the control itself, and for a `searchable` Select when the trigger should stay a button that shows the chosen value.',
     definitions: ['ui-combobox'],
-    styles: ['tokens.css', 'combobox.css', 'listbox.css', 'popover.css'],
-    render: () => createCombobox({ id: 'component-search', label: 'Component', options }),
+    styles: ['tokens.css', 'button.css', 'combobox.css', 'options.css', 'floating.css'],
+    render: () =>
+      createCombobox({
+        id: 'component-search',
+        label: 'Component',
+        name: 'component',
+        placeholder: 'Type to filter…',
+        options,
+        empty: 'No component matches that filter.',
+      }),
   }),
   example({
     id: 'listbox',
@@ -555,9 +568,20 @@ export const examples = [
     component: 'Listbox',
     title: 'Listbox',
     description: 'Keyboard selection over authored options.',
+    authoring:
+      'The host carries `role="listbox"` and scrolls its own options. Add an `empty` region, a `status` region, or a pager and those cannot sit inside it — a listbox may own only options and groups — so wrap the options in an inner `listbox` part and let the host be the frame around it.',
+    guidance:
+      'Listbox is the inline core [Select](/docs/components/select/) and [Combobox](/docs/components/combobox/) compose: the same option semantics, selection, groups, typeahead, and paging, without a trigger or a popover. Use it directly when the choices should always be visible, and reach for one of the other two when they should not.',
     definitions: ['ui-listbox'],
-    styles: ['tokens.css', 'listbox.css'],
-    render: () => createListbox({ id: 'status-list', label: 'Status', value: 'ready', options }),
+    styles: ['tokens.css', 'listbox.css', 'options.css'],
+    render: () =>
+      createListbox({
+        id: 'status-list',
+        label: 'Status',
+        name: 'status',
+        value: 'ready',
+        options,
+      }),
   }),
   example({
     id: 'menu',
@@ -568,7 +592,7 @@ export const examples = [
     title: 'Menu',
     description: 'Roving keyboard navigation for commands.',
     definitions: ['ui-menu'],
-    styles: ['tokens.css', 'button.css', 'menu.css'],
+    styles: ['tokens.css', 'button.css', 'menu.css', 'floating.css'],
     render: () =>
       createMenu({
         label: 'Editor commands',
@@ -584,7 +608,7 @@ export const examples = [
     title: 'Menu Button',
     description: 'Connect a command trigger to a native popover menu.',
     definitions: ['ui-menu-button', 'ui-menu'],
-    styles: ['tokens.css', 'button.css', 'menu.css', 'popover.css'],
+    styles: ['tokens.css', 'button.css', 'menu.css', 'popover.css', 'floating.css'],
     render: () =>
       createMenuButton({
         id: 'actions',
@@ -627,15 +651,17 @@ export const examples = [
   example({
     id: 'select',
     domain: 'navigation',
+    authoring:
+      'The trigger carries `popovertarget` naming the surface, so it opens, light-dismisses, and closes on Escape before any script loads. Give the surface an explicit `id` for it to name. Focus stays on the trigger and the active option travels through `aria-activedescendant`; add `searchable` to move that focus into a `search` field inside the surface instead. A surface that holds a search field, a header, a footer, or a pager needs a `surface` part around the `listbox`, because a `role="listbox"` may own only options and groups.',
     guidance:
-      'Select replaces the native control with an authored trigger and listbox, which costs JavaScript. If plain text options are enough, [Native Select](/docs/components/native-select/) is the better default.',
+      'Select and [Combobox](/docs/components/combobox/) are the same ARIA pattern over the same option core; they differ only in where you type. A Select types into a `search` field inside its surface, or not at all; a Combobox types into the trigger and accepts free text. Both replace the native control and cost JavaScript, so if plain text options are enough, [Native Select](/docs/components/native-select/) is still the better default.',
     group: 'Forms',
     contracts: ['select'],
     component: 'Select',
     title: 'Select',
     description: 'Enhance authored trigger, value, and listbox anatomy.',
     definitions: ['ui-select'],
-    styles: ['tokens.css', 'button.css', 'select.css', 'listbox.css', 'popover.css'],
+    styles: ['tokens.css', 'button.css', 'select.css', 'options.css', 'floating.css'],
     render: () =>
       createCustomSelect({
         id: 'release-status',
@@ -717,7 +743,7 @@ export const examples = [
     title: 'Hover Card',
     description: 'Open supporting content from pointer or keyboard intent.',
     definitions: ['ui-hover-card'],
-    styles: ['tokens.css', 'button.css', 'popover.css'],
+    styles: ['tokens.css', 'button.css', 'popover.css', 'floating.css'],
     render: () =>
       createHoverCard({
         id: 'hover-reference',
@@ -737,7 +763,7 @@ export const examples = [
     title: 'Popover',
     description: 'Connect an authored trigger to a native popover.',
     definitions: ['ui-popover'],
-    styles: ['tokens.css', 'button.css', 'popover.css'],
+    styles: ['tokens.css', 'button.css', 'popover.css', 'floating.css'],
     render: () =>
       createPopover({
         id: 'release-popover',
@@ -798,7 +824,7 @@ export const examples = [
     title: 'Tooltip',
     description: 'A concise tooltip built on the hover-card controller.',
     definitions: ['ui-hover-card'],
-    styles: ['tokens.css', 'button.css', 'popover.css'],
+    styles: ['tokens.css', 'button.css', 'popover.css', 'floating.css'],
     render: () =>
       createTooltip({
         id: 'copy-tooltip',
@@ -845,6 +871,28 @@ export const examples = [
     render: () => createColorPalette({ colors: PALETTE, selected: '#3366cc' }),
   }),
   example({
+    id: 'command-palette',
+    domain: 'recipes',
+    contracts: ['select', 'dialog'],
+    component: 'Command Palette',
+    title: 'Command Palette',
+    description: 'Compose a searchable Select inside a dialog. No command element required.',
+    definitions: ['ui-select', 'ui-dialog'],
+    styles: ['tokens.css', 'button.css', 'dialog.css', 'select.css', 'options.css', 'floating.css'],
+    render: () =>
+      createCommandPalette({
+        id: 'command-palette',
+        label: 'Commands',
+        commands: [
+          { label: 'Go to file' },
+          { label: 'Go to symbol' },
+          { label: 'Toggle terminal' },
+          { label: 'Run build task' },
+          { label: 'Reload window' },
+        ],
+      }),
+  }),
+  example({
     id: 'team-presence',
     domain: 'recipes',
     contracts: ['list', 'avatar', 'badge'],
@@ -875,7 +923,7 @@ export const examples = [
     title: 'Popover Color Picker',
     description: 'Compose Color Picker and Popover.',
     definitions: ['ui-color-picker', 'ui-popover'],
-    styles: ['tokens.css', 'popover.css', 'color-picker.css', 'color-swatch.css'],
+    styles: ['tokens.css', 'popover.css', 'floating.css', 'color-picker.css', 'color-swatch.css'],
     script: colorPickerPopoverScript,
     render: () =>
       createColorPicker({

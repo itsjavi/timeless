@@ -832,6 +832,26 @@
       ]
     },
     {
+      "name": "--ui-floating-offset",
+      "description": "Gap between the trigger and the surface. Set on `ui-popover`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-floating-offset",
+      "description": "Gap between the anchor and the surface. Set on `ui-hover-card`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
       "name": "--ui-tooltip-bg",
       "description": "Surface background. Inverted against the page by default. Set on `ui-hover-card[variant='tooltip']`.",
       "references": [
@@ -844,6 +864,76 @@
     {
       "name": "--ui-tooltip-fg",
       "description": "Label color, and the border tint is mixed from it. Set on `ui-hover-card[variant='tooltip']`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-menu-min-inline-size",
+      "description": "Minimum width of the menu surface. Set on `ui-menu`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-floating-offset",
+      "description": "Gap between the trigger and the menu surface. Set on `ui-menu-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-collection-surface-inline-size",
+      "description": "Minimum width of an option surface. On the anchored Select and Combobox surfaces the trigger width wins whenever it is larger. Set on `ui-listbox`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-collection-surface-inline-size",
+      "description": "Minimum width of the listbox surface. The trigger width wins whenever it is larger. Set on `ui-select`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-floating-offset",
+      "description": "Gap between the trigger and the surface. Set on `ui-select`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-collection-surface-inline-size",
+      "description": "Minimum width of the listbox surface. The input width wins whenever it is larger. Set on `ui-combobox`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-floating-offset",
+      "description": "Gap between the input and the surface. Set on `ui-combobox`.",
       "references": [
         {
           "name": "Component reference",

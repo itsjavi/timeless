@@ -189,19 +189,22 @@ test.describe('stories collection navigation', () => {
     await expect(shipped).toHaveAttribute('aria-selected', 'true')
   })
 
-  test('select updates hidden submitted value and trigger label', async ({ page }) => {
+  test('select submits its own value and writes the trigger label', async ({ page }) => {
     await page.goto('/stories/library-navigation-select--default/')
     await expectRouteDocumentReady(page)
 
-    const trigger = page.getByRole('button', { name: 'Role' })
-    const hiddenInput = page.locator('input[name="role"]')
+    const host = page.locator('ui-select')
+    const trigger = page.getByRole('button', { name: /Role/ })
+    const value = trigger.locator("[data-ui-part~='value']")
 
-    await expect(hiddenInput).toHaveValue('engineer')
+    await expect(value).toHaveText('Engineer')
+    await expect(host).toHaveJSProperty('value', 'engineer')
+
     await trigger.click()
     await page.getByRole('option', { name: 'Manager' }).click()
 
-    await expect(hiddenInput).toHaveValue('manager')
-    await expect(trigger.locator("[data-ui-part~='label']")).toHaveText('Manager')
+    await expect(value).toHaveText('Manager')
+    await expect(host).toHaveJSProperty('value', 'manager')
 
     await trigger.click()
     const viewer = page.getByRole('option', { name: 'Viewer' })
@@ -209,10 +212,191 @@ test.describe('stories collection navigation', () => {
     await viewer.hover()
     await expect(viewer).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
     await expect(viewer).toBeDisabled()
-    await expect(hiddenInput).toHaveValue('manager')
+    await expect(host).toHaveJSProperty('value', 'manager')
   })
 
-  test('combobox filters options and selects active option with Enter', async ({ page }) => {
+  /**
+   * The defect this milestone was opened for. `position-area: bottom center` centred the surface on
+   * its trigger and `inline-size: max-content` let it be narrower; both assertions fail on `main`.
+   */
+  test('anchors the select surface to its trigger edge and never narrower', async ({ page }) => {
+    await page.goto('/stories/library-navigation-select--alignment/')
+    await expectRouteDocumentReady(page)
+
+    const startHost = page.locator('ui-select').first()
+    const startTrigger = startHost.getByRole('button')
+    await startTrigger.click()
+    const startSurface = startHost.locator("[role='listbox']")
+    await expect(startSurface).toBeVisible()
+
+    const startTriggerBox = await boundingBox(startTrigger)
+    const startSurfaceBox = await boundingBox(startSurface)
+    expect(Math.abs(startSurfaceBox.x - startTriggerBox.x)).toBeLessThan(2)
+    expect(startSurfaceBox.width).toBeGreaterThanOrEqual(startTriggerBox.width - 1)
+    await page.keyboard.press('Escape')
+
+    const endHost = page.locator('ui-select').nth(1)
+    const endTrigger = endHost.getByRole('button')
+    await endTrigger.click()
+    const endSurface = endHost.locator("[role='listbox']")
+    await expect(endSurface).toBeVisible()
+
+    const endTriggerBox = await boundingBox(endTrigger)
+    const endSurfaceBox = await boundingBox(endSurface)
+    expect(
+      Math.abs(endSurfaceBox.x + endSurfaceBox.width - (endTriggerBox.x + endTriggerBox.width)),
+    ).toBeLessThan(2)
+    expect(endSurfaceBox.width).toBeGreaterThanOrEqual(endTriggerBox.width - 1)
+  })
+
+  /**
+   * The fallback used to run in every browser, stamping a private hook and coordinates the
+   * `@supports` rule then discarded. Where anchor positioning exists, none of it should appear.
+   */
+  test('leaves no floating fallback hooks where anchor positioning is supported', async ({
+    page,
+  }) => {
+    await page.goto('/stories/library-navigation-select--default/')
+    await expectRouteDocumentReady(page)
+
+    const supported = await page.evaluate(() => CSS.supports('anchor-name: --ui-anchor'))
+    test.skip(!supported, 'this browser has no anchor positioning')
+
+    const surface = page.locator("ui-select [role='listbox']")
+    await page.getByRole('button', { name: /Role/ }).click()
+    await expect(surface).toBeVisible()
+
+    await expect(surface).not.toHaveAttribute('data-ui-internal-floating', /.*/)
+    await expect
+      .poll(() =>
+        surface.evaluate((element: HTMLElement) =>
+          element.style.getPropertyValue('--ui-floating-left'),
+        ),
+      )
+      .toBe('')
+  })
+
+  test('searchable select keeps focus in the search field and collapses empty groups', async ({
+    page,
+  }) => {
+    await page.goto('/stories/library-navigation-select--grouped-and-searchable/')
+    await expectRouteDocumentReady(page)
+
+    const trigger = page.getByRole('button', { name: /Team/ })
+    const search = page.locator("[data-ui-part~='search']")
+    await trigger.click()
+    await expect(search).toBeFocused()
+
+    // Every group is labelled, and options inside one stay in a single navigation order.
+    for (const group of await page.getByRole('group').all()) {
+      await expect(group).toHaveAttribute('aria-labelledby', /.+/)
+    }
+
+    await page.keyboard.press('ArrowDown')
+    await expect(search).toBeFocused()
+    await expect(search).toHaveAttribute('aria-activedescendant', /option/)
+
+    // Horizontal arrows are caret movement, so the highlight must not move.
+    const active = await search.getAttribute('aria-activedescendant')
+    await page.keyboard.press('ArrowRight')
+    await expect(search).toHaveAttribute('aria-activedescendant', String(active))
+
+    await search.fill('fro')
+    await expect(page.getByRole('option', { name: 'Frontend' })).toBeVisible()
+    await expect(page.getByRole('group', { name: 'Product' })).toBeHidden()
+
+    await search.fill('zzz')
+    await expect(page.locator("[data-ui-part~='empty']")).toBeVisible()
+  })
+
+  test('multiple select renders removable chips and submits one entry per value', async ({
+    page,
+  }) => {
+    await page.goto('/stories/library-navigation-select--multiple-with-chips/')
+    await expectRouteDocumentReady(page)
+
+    const host = page.locator('ui-select')
+    const chips = page.locator("[data-ui-part~='chips']")
+    const clear = page.getByRole('button', { name: 'Clear' })
+
+    await expect(clear).toBeDisabled()
+    await page.getByRole('button', { name: /Reviewers/ }).click()
+    await page.getByRole('option', { name: 'Designer' }).click()
+    await page.getByRole('option', { name: 'Manager' }).click()
+
+    await expect(chips.locator("[data-ui-part~='chip']")).toHaveCount(2)
+    await expect(page.getByRole('button', { name: 'Remove Designer' })).toBeVisible()
+    await expect(clear).toBeEnabled()
+    await expect
+      .poll(() => host.evaluate((element: HTMLElement & { values: string[] }) => element.values))
+      .toEqual(['designer', 'manager'])
+
+    // Backspace in the empty search field removes the last chip.
+    await page.locator("[data-ui-part~='search']").focus()
+    await page.keyboard.press('Backspace')
+    await expect(chips.locator("[data-ui-part~='chip']")).toHaveCount(1)
+
+    await page.getByRole('button', { name: 'Remove Designer' }).click()
+    await expect(chips.locator("[data-ui-part~='chip']")).toHaveCount(0)
+    await expect(clear).toBeDisabled()
+  })
+
+  test('pages a long option list and keeps the boundary discoverable', async ({ page }) => {
+    await page.goto('/stories/library-navigation-select--paged-long-list/')
+    await expectRouteDocumentReady(page)
+
+    await page.getByRole('button', { name: /City/ }).click()
+    const pageStatus = page.locator("[data-ui-part~='page-status']")
+    const previous = page.getByRole('button', { name: 'Previous' })
+    const next = page.getByRole('button', { name: 'Next' })
+
+    await expect(pageStatus).toHaveText('Page 1 of 3')
+    await expect(page.getByRole('option', { name: 'Amsterdam' })).toBeVisible()
+    await expect(page.getByRole('option', { name: 'Dublin' })).toBeHidden()
+    // `aria-disabled` rather than `disabled`, so the boundary is announced instead of unreachable.
+    await expect(previous).toHaveAttribute('aria-disabled', 'true')
+    await expect(previous).not.toHaveAttribute('disabled', /.*/)
+    await previous.focus()
+    await expect(previous).toBeFocused()
+
+    await next.click()
+    await expect(pageStatus).toHaveText('Page 2 of 3')
+    await expect(page.getByRole('option', { name: 'Dublin' })).toBeVisible()
+    await expect(previous).toHaveAttribute('aria-disabled', 'false')
+  })
+
+  test('select in a form blocks on required, submits, and restores on reset', async ({ page }) => {
+    await page.goto('/stories/library-navigation-select--form-participation/')
+    await expectRouteDocumentReady(page)
+
+    const reviewer = page.locator('ui-select').nth(1)
+    await expect
+      .poll(() =>
+        reviewer.evaluate((element: HTMLElement & { checkValidity(): boolean }) =>
+          element.checkValidity(),
+        ),
+      )
+      .toBe(false)
+
+    await page.getByRole('button', { name: /Reviewer/ }).click()
+    await page.getByRole('option', { name: 'Manager' }).click()
+
+    await expect
+      .poll(() =>
+        page.evaluate(() => [
+          ...new FormData(document.querySelector('form') as HTMLFormElement).entries(),
+        ]),
+      )
+      .toEqual([
+        ['assignee', 'designer'],
+        ['reviewer', 'manager'],
+      ])
+
+    await page.evaluate(() => (document.querySelector('form') as HTMLFormElement).reset())
+    await expect(reviewer).toHaveJSProperty('value', '')
+  })
+
+  test('combobox filters options and selects the active option with Enter', async ({ page }) => {
     await page.goto('/stories/library-navigation-combobox--default/')
     await expectRouteDocumentReady(page)
 
@@ -231,7 +415,34 @@ test.describe('stories collection navigation', () => {
     await expect(input).toHaveValue('apple')
     await expect(listbox).toBeHidden()
   })
+
+  /** Consumer-owned filtering runs through `hidden`, so everything downstream follows unchanged. */
+  test('honours consumer-owned filtering under filter="off"', async ({ page }) => {
+    await page.goto('/stories/library-navigation-combobox--consumer-owned-filtering/')
+    await expectRouteDocumentReady(page)
+
+    const input = page.getByRole('combobox', { name: 'Command' })
+
+    // The demo matches the end of each label, which no built-in mode does.
+    await input.fill('production')
+    await expect(page.getByRole('option', { name: 'Deploy to production' })).toBeVisible()
+    await expect(page.getByRole('option', { name: 'Deploy to staging' })).toBeHidden()
+
+    await input.fill('nothing')
+    await expect(page.locator("[data-ui-part~='empty']")).toBeVisible()
+  })
 })
+
+async function boundingBox(locator: Locator): Promise<{
+  height: number
+  width: number
+  x: number
+  y: number
+}> {
+  const box = await locator.boundingBox()
+  expect(box).not.toBeNull()
+  return box!
+}
 
 async function expectMenuAlignedToTrigger(trigger: Locator, menu: Locator): Promise<void> {
   const triggerBox = await trigger.boundingBox()

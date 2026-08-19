@@ -18,6 +18,7 @@ Agent-facing context for Timeless UI. One canonical tree, shared by every coding
 | `author-component`          | Adding or changing a component's public surface, end to end |
 | `author-component-story`    | Writing or revising a StoryLite story                       |
 | `manage-milestone`          | Opening, advancing, or closing a milestone                  |
+| `author-ui-pull-request`    | Opening a PR for a change with a visual delta               |
 | `verify-apg-conformance`    | Checking a component against its APG pattern                |
 | `audit-component-contracts` | Sweeping for authoring rules no validator enforces          |
 | `audit-docs-drift`          | Sweeping prose against the source it describes              |

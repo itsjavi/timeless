@@ -12,6 +12,7 @@
   "scripts": {
     "attw": "pnpm -r --if-present --stream run attw",
     "boundaries:check": "node scripts/check-boundaries.mjs",
+    "contracts:check": "pnpm boundaries:check && pnpm -F @timelessui/components exports:validate && pnpm -F @timelessui/components generated-dom:check && pnpm -F @timelessui/components performance:check",
     "build": "pnpm -r --if-present run build",
     "build:apps": "pnpm --filter \"./apps/*\" run build",
     "build:avif": "magick mogrify -format avif -quality 80% -path ./apps/web/public/assets/avif ./apps/web/public/assets/*.{png}",
@@ -35,7 +36,7 @@
     "qa": "pnpm test:full-qa",
     "test": "pnpm -r --if-present --parallel --stream run test",
     "test:e2e": "pnpm -F @apps/e2e run e2e",
-    "test:full-qa": "pnpm typecheck && pnpm format:check && pnpm build && pnpm test && pnpm publint && pnpm attw && pnpm test:e2e",
+    "test:full-qa": "pnpm typecheck && pnpm format:check && pnpm build && pnpm test && pnpm contracts:check && pnpm publint && pnpm attw && pnpm test:e2e",
     "typecheck": "pnpm -r --if-present --parallel --stream run typecheck",
     "update-deps": "pnpm -r update --latest && sleep 1 && pnpm install"
   },

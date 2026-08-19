@@ -1698,7 +1698,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-popover',
     },
-    css: ['popover.css'],
+    css: ['popover.css', 'floating.css'],
     attributes: [
       {
         name: 'placement',
@@ -1735,7 +1735,12 @@ export const componentContracts = {
       },
     ],
     states: [],
-    variables: [],
+    variables: [
+      {
+        name: '--ui-floating-offset',
+        description: 'Gap between the trigger and the surface.',
+      },
+    ],
     events: [],
     accessibility: {
       pattern: 'disclosure',
@@ -1756,7 +1761,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-hover-card',
     },
-    css: ['popover.css'],
+    css: ['popover.css', 'floating.css'],
     attributes: [
       {
         name: 'anchor',
@@ -1810,7 +1815,12 @@ export const componentContracts = {
       },
     ],
     states: [],
-    variables: [],
+    variables: [
+      {
+        name: '--ui-floating-offset',
+        description: 'Gap between the anchor and the surface.',
+      },
+    ],
     events: [],
     accessibility: {
       pattern: 'tooltip',
@@ -1831,7 +1841,7 @@ export const componentContracts = {
       kind: 'selector',
       name: "ui-hover-card[variant='tooltip']",
     },
-    css: ['popover.css'],
+    css: ['popover.css', 'floating.css'],
     attributes: [],
     parts: [
       {
@@ -1878,7 +1888,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-menu',
     },
-    css: ['menu.css'],
+    css: ['menu.css', 'floating.css'],
     attributes: [
       {
         name: 'orientation',
@@ -1907,7 +1917,12 @@ export const componentContracts = {
       },
     ],
     states: [],
-    variables: [],
+    variables: [
+      {
+        name: '--ui-menu-min-inline-size',
+        description: 'Minimum width of the menu surface.',
+      },
+    ],
     events: [],
     accessibility: {
       pattern: 'menubar',
@@ -1944,7 +1959,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-menu-button',
     },
-    css: ['menu.css'],
+    css: ['menu.css', 'floating.css'],
     attributes: [
       {
         name: 'open',
@@ -1975,7 +1990,12 @@ export const componentContracts = {
       },
     ],
     states: [],
-    variables: [],
+    variables: [
+      {
+        name: '--ui-floating-offset',
+        description: 'Gap between the trigger and the menu surface.',
+      },
+    ],
     events: [
       {
         name: 'ui-open',
@@ -2201,19 +2221,42 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-listbox',
     },
-    css: ['listbox.css'],
+    css: ['listbox.css', 'options.css'],
     attributes: [
       {
         name: 'multiple',
         type: 'boolean',
         description:
-          'Present to allow more than one selected option. The `value` property then reads and writes an array.',
+          'Present to allow more than one selected option, submitting one form entry per value under the same `name`.',
       },
       {
         name: 'value',
         type: 'string',
         description:
-          'The option selected on load and after a form reset. Assign the `value` property for live changes.',
+          'The option selected on load and after a form reset. Assign the `value` property for live changes; once the user commits a change the attribute stops applying, the way it does on a native input.',
+      },
+      {
+        name: 'name',
+        type: 'string',
+        description:
+          'Form field name. The element submits its own value through `ElementInternals`.',
+      },
+      {
+        name: 'required',
+        type: 'boolean',
+        description: 'Present to block submission while nothing is selected, with `valueMissing`.',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        description:
+          'Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way.',
+      },
+      {
+        name: 'page-size',
+        type: 'number',
+        description:
+          'Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property.',
       },
     ],
     parts: [
@@ -2221,14 +2264,93 @@ export const componentContracts = {
         name: 'listbox',
         required: true,
         selector: "[role='listbox']",
-        description: 'The option container.',
+        description: 'The option container, which is the host itself.',
       },
       {
         name: 'option',
         required: true,
         selector: "[role='option']",
         description:
-          'One option. Its value comes from `value`, then `data-ui-value`, then the element id. Mark unavailable options `aria-disabled="true"`.',
+          'One option. Its value comes from `value`, then `data-ui-value`, then its text. Its filterable label comes from `label`, then `data-ui-label`, then `aria-label`, then its text — none of which change the accessible name. Mark unavailable options `aria-disabled="true"`.',
+      },
+      {
+        name: 'option-indicator',
+        required: false,
+        selector: "[data-ui-part~='option-indicator']",
+        description:
+          'Decorative affordance inside an option showing that it is selected. Style it from `[aria-selected="true"]`; it is hidden from assistive technology.',
+      },
+      {
+        name: 'group',
+        required: false,
+        selector: "[data-ui-part~='group']",
+        description:
+          'A `role="group"` wrapper around related options. Options inside it stay navigable, and the group collapses when every option it holds is filtered out.',
+      },
+      {
+        name: 'group-label',
+        required: false,
+        selector: "[data-ui-part~='group-label']",
+        description: 'The label for a `group`, wired to it with `aria-labelledby`.',
+      },
+      {
+        name: 'separator',
+        required: false,
+        selector: "[role='separator']",
+        description: 'A visual divider between options. Navigation and typeahead skip it.',
+      },
+      {
+        name: 'empty',
+        required: false,
+        selector: "[data-ui-part~='empty']",
+        description: 'Shown when no option is visible. Hidden again as soon as one is.',
+      },
+      {
+        name: 'status',
+        required: false,
+        selector: "[data-ui-part~='status']",
+        description:
+          'A `role="status" aria-live="polite"` region for result counts, loading, and errors.',
+      },
+      {
+        name: 'header',
+        required: false,
+        selector: "[data-ui-part~='header']",
+        description:
+          'Optional content at the top of the surface. Excluded from arrow navigation and reachable with `Tab`.',
+      },
+      {
+        name: 'footer',
+        required: false,
+        selector: "[data-ui-part~='footer']",
+        description:
+          'Optional content at the bottom of the surface. Excluded from arrow navigation and reachable with `Tab`.',
+      },
+      {
+        name: 'pager',
+        required: false,
+        selector: "[data-ui-part~='pager']",
+        description:
+          'Wraps the page controls. Hidden unless `page-size` is set and the options span more than one page.',
+      },
+      {
+        name: 'page-previous',
+        required: false,
+        selector: "[data-ui-part~='page-previous']",
+        description:
+          'Moves to the previous page. Stays focusable at the first page and takes `aria-disabled`, so the boundary is discoverable rather than gone.',
+      },
+      {
+        name: 'page-next',
+        required: false,
+        selector: "[data-ui-part~='page-next']",
+        description: 'Moves to the next page, with the same boundary behavior.',
+      },
+      {
+        name: 'page-status',
+        required: false,
+        selector: "[data-ui-part~='page-status']",
+        description: 'A `role="status" aria-live="polite"` region announcing the current page.',
       },
     ],
     states: [
@@ -2239,7 +2361,13 @@ export const componentContracts = {
         description: '`aria-selected="true"` on selected options.',
       },
     ],
-    variables: [],
+    variables: [
+      {
+        name: '--ui-collection-surface-inline-size',
+        description:
+          'Minimum width of an option surface. On the anchored Select and Combobox surfaces the trigger width wins whenever it is larger.',
+      },
+    ],
     events: [
       {
         name: 'ui-before-change',
@@ -2252,6 +2380,12 @@ export const componentContracts = {
         name: 'ui-change',
         type: 'CustomEvent<ListboxChangeDetail>',
         description: 'Dispatched after the selection has changed. Bubbles and is composed.',
+        cancelable: false,
+      },
+      {
+        name: 'ui-page',
+        type: 'CustomEvent<ListboxPageDetail>',
+        description: 'Dispatched after the rendered page of a paged list changes.',
         cancelable: false,
       },
     ],
@@ -2282,7 +2416,7 @@ export const componentContracts = {
         },
       ],
       notes:
-        'Selection follows `aria-selected`, and the active option is tracked with `aria-activedescendant` so focus stays on the listbox.',
+        'Roving `tabindex` moves real focus between options, so selection follows `aria-selected` and never the focus ring. Options inside a `group` stay in one flat navigation order. `header`, `footer`, and the pager sit outside that order and are reached with `Tab`.',
     },
   },
   select: {
@@ -2291,7 +2425,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-select',
     },
-    css: ['select.css'],
+    css: ['select.css', 'options.css', 'floating.css'],
     attributes: [
       {
         name: 'open',
@@ -2307,10 +2441,63 @@ export const componentContracts = {
         description: 'Preferred side of the trigger for the listbox surface.',
       },
       {
+        name: 'searchable',
+        type: 'boolean',
+        description:
+          'Present to filter from a `search` field inside the surface. Focus moves into that field on open and stays there; the highlight travels through `aria-activedescendant`.',
+      },
+      {
         name: 'value',
         type: 'string',
         description:
-          'The option selected on load and after a form reset. Mirror it onto a hidden input to submit with a form.',
+          'The option selected on load and after a form reset. Once the user commits a change the attribute stops applying, the way it does on a native input.',
+      },
+      {
+        name: 'align',
+        type: 'string',
+        set: 'collectionAlignments',
+        values: ['start', 'end'],
+        default: 'start',
+        description:
+          'Which edge of the trigger the surface aligns to. The surface is never narrower than the trigger.',
+      },
+      {
+        name: 'filter',
+        type: 'string',
+        set: 'optionFilterModes',
+        values: ['contains', 'starts-with', 'off'],
+        default: 'contains',
+        description:
+          'How typed text narrows the options. `off` hands visibility to you: listen for `ui-input` and set `hidden` yourself, and navigation, the empty state, group collapse, and paging all follow.',
+      },
+      {
+        name: 'multiple',
+        type: 'boolean',
+        description:
+          'Present to allow more than one selected option. Selected values render as chips and submit one form entry each under the same `name`.',
+      },
+      {
+        name: 'name',
+        type: 'string',
+        description:
+          'Form field name. The element submits its own value through `ElementInternals`.',
+      },
+      {
+        name: 'required',
+        type: 'boolean',
+        description: 'Present to block submission while nothing is selected, with `valueMissing`.',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        description:
+          'Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way.',
+      },
+      {
+        name: 'page-size',
+        type: 'number',
+        description:
+          'Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property.',
       },
     ],
     parts: [
@@ -2321,27 +2508,170 @@ export const componentContracts = {
         description: 'Native button that opens the listbox.',
       },
       {
+        name: 'value',
+        required: false,
+        selector: "[data-ui-part~='value']",
+        description:
+          'Element inside the trigger that shows the selected label. Timeless writes its text and nothing else.',
+      },
+      {
+        name: 'search',
+        required: false,
+        selector: "[data-ui-part~='search']",
+        description:
+          'Text field inside the surface that filters the options under `searchable`. Left and Right move the caret rather than the highlight.',
+      },
+      {
+        name: 'surface',
+        required: false,
+        selector: "[data-ui-part~='surface']",
+        description:
+          'The popover the listbox sits in. Author it whenever the surface also holds a `search` field, a `header`, a `footer`, or a pager: a `role="listbox"` may own only options and groups, so those siblings belong beside the listbox rather than inside it. With none of them, the `listbox` is its own surface and this part is unnecessary.',
+      },
+      {
         name: 'listbox',
         required: true,
         selector: "[role='listbox']",
-        description: 'The option container and popover surface.',
+        description: 'The option container.',
       },
       {
         name: 'option',
         required: true,
         selector: "[role='option']",
         description:
-          'One option. Its value comes from `value`, then `data-ui-value`, then the element id.',
+          'One option. Its value comes from `value`, then `data-ui-value`, then its text. Its filterable label comes from `label`, then `data-ui-label`, then `aria-label`, then its text — none of which change the accessible name. Mark unavailable options `aria-disabled="true"`.',
       },
       {
-        name: 'label',
+        name: 'option-indicator',
         required: false,
-        selector: "[data-ui-part~='label']",
-        description: 'Element inside the trigger that shows the selected label.',
+        selector: "[data-ui-part~='option-indicator']",
+        description:
+          'Decorative affordance inside an option showing that it is selected. Style it from `[aria-selected="true"]`; it is hidden from assistive technology.',
+      },
+      {
+        name: 'group',
+        required: false,
+        selector: "[data-ui-part~='group']",
+        description:
+          'A `role="group"` wrapper around related options. Options inside it stay navigable, and the group collapses when every option it holds is filtered out.',
+      },
+      {
+        name: 'group-label',
+        required: false,
+        selector: "[data-ui-part~='group-label']",
+        description: 'The label for a `group`, wired to it with `aria-labelledby`.',
+      },
+      {
+        name: 'separator',
+        required: false,
+        selector: "[role='separator']",
+        description: 'A visual divider between options. Navigation and typeahead skip it.',
+      },
+      {
+        name: 'empty',
+        required: false,
+        selector: "[data-ui-part~='empty']",
+        description: 'Shown when no option is visible. Hidden again as soon as one is.',
+      },
+      {
+        name: 'status',
+        required: false,
+        selector: "[data-ui-part~='status']",
+        description:
+          'A `role="status" aria-live="polite"` region for result counts, loading, and errors.',
+      },
+      {
+        name: 'header',
+        required: false,
+        selector: "[data-ui-part~='header']",
+        description:
+          'Optional content at the top of the surface. Excluded from arrow navigation and reachable with `Tab`.',
+      },
+      {
+        name: 'footer',
+        required: false,
+        selector: "[data-ui-part~='footer']",
+        description:
+          'Optional content at the bottom of the surface. Excluded from arrow navigation and reachable with `Tab`.',
+      },
+      {
+        name: 'pager',
+        required: false,
+        selector: "[data-ui-part~='pager']",
+        description:
+          'Wraps the page controls. Hidden unless `page-size` is set and the options span more than one page.',
+      },
+      {
+        name: 'page-previous',
+        required: false,
+        selector: "[data-ui-part~='page-previous']",
+        description:
+          'Moves to the previous page. Stays focusable at the first page and takes `aria-disabled`, so the boundary is discoverable rather than gone.',
+      },
+      {
+        name: 'page-next',
+        required: false,
+        selector: "[data-ui-part~='page-next']",
+        description: 'Moves to the next page, with the same boundary behavior.',
+      },
+      {
+        name: 'page-status',
+        required: false,
+        selector: "[data-ui-part~='page-status']",
+        description: 'A `role="status" aria-live="polite"` region announcing the current page.',
+      },
+      {
+        name: 'chips',
+        required: false,
+        selector: "[data-ui-part~='chips']",
+        description: 'Container the selected values are rendered into under `multiple`.',
+      },
+      {
+        name: 'chip-template',
+        required: false,
+        selector: "template[data-ui-part~='chip-template']",
+        description:
+          'A `<template>` holding the markup for one chip. Timeless clones it per selected value and fills it in, so every element and class in a chip is yours. Without it a `chips` container receives a plain comma-separated summary instead.',
+      },
+      {
+        name: 'chip',
+        required: false,
+        selector: "[data-ui-part~='chip']",
+        description: 'One selected value, authored inside `chip-template`.',
+      },
+      {
+        name: 'chip-label',
+        required: false,
+        selector: "[data-ui-part~='chip-label']",
+        description:
+          'Where the selected label is written inside a chip. Omit it only when the chip has no other content.',
+      },
+      {
+        name: 'chip-remove',
+        required: false,
+        selector: "[data-ui-part~='chip-remove']",
+        description:
+          'Removes its chip. Author it as a real button; Timeless gives it the value it removes and an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins.',
+      },
+      {
+        name: 'clear',
+        required: false,
+        selector: "[data-ui-part~='clear']",
+        description: 'Empties the whole selection. Disabled while there is nothing to clear.',
       },
     ],
     states: [],
-    variables: [],
+    variables: [
+      {
+        name: '--ui-collection-surface-inline-size',
+        description:
+          'Minimum width of the listbox surface. The trigger width wins whenever it is larger.',
+      },
+      {
+        name: '--ui-floating-offset',
+        description: 'Gap between the trigger and the surface.',
+      },
+    ],
     events: [
       {
         name: 'ui-before-change',
@@ -2354,6 +2684,31 @@ export const componentContracts = {
         name: 'ui-change',
         type: 'CustomEvent<SelectChangeDetail>',
         description: 'Dispatched after the selected option has changed. Bubbles and is composed.',
+        cancelable: false,
+      },
+      {
+        name: 'ui-open',
+        type: 'CustomEvent<SelectToggleDetail>',
+        description: 'Dispatched after the listbox opens.',
+        cancelable: false,
+      },
+      {
+        name: 'ui-close',
+        type: 'CustomEvent<SelectToggleDetail>',
+        description: 'Dispatched after the listbox closes.',
+        cancelable: false,
+      },
+      {
+        name: 'ui-input',
+        type: 'CustomEvent<SelectInputDetail>',
+        description:
+          'Dispatched when the query text changes, before options are filtered. Under `filter="off"` this is where you set `hidden` yourself.',
+        cancelable: false,
+      },
+      {
+        name: 'ui-page',
+        type: 'CustomEvent<SelectPageDetail>',
+        description: 'Dispatched after the rendered page of a paged list changes.',
         cancelable: false,
       },
     ],
@@ -2375,11 +2730,16 @@ export const componentContracts = {
         },
         {
           key: 'Printable characters',
-          action: 'Typeahead over the option labels.',
+          action:
+            'Typeahead over the option labels. On a closed Select this selects a match without opening, as the native control does.',
+        },
+        {
+          key: 'Backspace',
+          action: 'In an empty `search` field under `multiple`, removes the last chip.',
         },
       ],
       notes:
-        'The trigger keeps focus and the active option is announced through `aria-activedescendant`. Light dismiss comes from the Popover API. Mirror `value` onto a hidden input to submit with a form.',
+        'Focus stays on the trigger and the active option is announced through `aria-activedescendant`; under `searchable` focus moves into the `search` field instead and the same mechanism carries the highlight. The trigger carries `popovertarget`, so it opens the surface before any script runs. Light dismiss and Escape come from the Popover API. `header`, `footer`, and the pager sit outside arrow navigation and are reached with `Tab`.',
     },
   },
   combobox: {
@@ -2388,22 +2748,76 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-combobox',
     },
-    css: ['combobox.css'],
+    css: ['combobox.css', 'options.css', 'floating.css'],
     attributes: [
       {
         name: 'value',
         type: 'string',
         description:
-          'The option selected on load and after a form reset. Assign the `value` property for live changes.',
+          'The option selected on load and after a form reset. Once the user commits a change the attribute stops applying, the way it does on a native input.',
+      },
+      {
+        name: 'align',
+        type: 'string',
+        set: 'collectionAlignments',
+        values: ['start', 'end'],
+        default: 'start',
+        description:
+          'Which edge of the trigger the surface aligns to. The surface is never narrower than the trigger.',
+      },
+      {
+        name: 'filter',
+        type: 'string',
+        set: 'optionFilterModes',
+        values: ['contains', 'starts-with', 'off'],
+        default: 'contains',
+        description:
+          'How typed text narrows the options. `off` hands visibility to you: listen for `ui-input` and set `hidden` yourself, and navigation, the empty state, group collapse, and paging all follow.',
+      },
+      {
+        name: 'multiple',
+        type: 'boolean',
+        description:
+          'Present to allow more than one selected option. Selected values render as chips and submit one form entry each under the same `name`.',
+      },
+      {
+        name: 'name',
+        type: 'string',
+        description:
+          'Form field name. The element submits its own value through `ElementInternals`.',
+      },
+      {
+        name: 'required',
+        type: 'boolean',
+        description: 'Present to block submission while nothing is selected, with `valueMissing`.',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        description:
+          'Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way.',
+      },
+      {
+        name: 'page-size',
+        type: 'number',
+        description:
+          'Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property.',
       },
     ],
     parts: [
       {
-        name: 'input',
+        name: 'trigger',
         required: true,
-        selector: "[role='combobox']",
+        selector: "input[role='combobox']",
         description:
-          'The native text input. Timeless wires `aria-expanded`, `aria-controls`, and `aria-activedescendant`.',
+          'The native text input. It is both the trigger and the search field: Timeless wires `aria-expanded`, `aria-controls`, and `aria-activedescendant` onto it and leaves its editing behavior alone.',
+      },
+      {
+        name: 'surface',
+        required: false,
+        selector: "[data-ui-part~='surface']",
+        description:
+          'The popover the listbox sits in. Author it whenever the surface also holds a `header`, a `footer`, or a pager: a `role="listbox"` may own only options and groups. With none of them, the `listbox` is its own surface and this part is unnecessary.',
       },
       {
         name: 'listbox',
@@ -2416,11 +2830,139 @@ export const componentContracts = {
         required: true,
         selector: "[role='option']",
         description:
-          'One option. Its value comes from `value`, then `data-ui-value`, then the element id. Filtering hides non-matching options.',
+          'One option. Its value comes from `value`, then `data-ui-value`, then its text. Its filterable label comes from `label`, then `data-ui-label`, then `aria-label`, then its text — none of which change the accessible name. Mark unavailable options `aria-disabled="true"`.',
+      },
+      {
+        name: 'option-indicator',
+        required: false,
+        selector: "[data-ui-part~='option-indicator']",
+        description:
+          'Decorative affordance inside an option showing that it is selected. Style it from `[aria-selected="true"]`; it is hidden from assistive technology.',
+      },
+      {
+        name: 'group',
+        required: false,
+        selector: "[data-ui-part~='group']",
+        description:
+          'A `role="group"` wrapper around related options. Options inside it stay navigable, and the group collapses when every option it holds is filtered out.',
+      },
+      {
+        name: 'group-label',
+        required: false,
+        selector: "[data-ui-part~='group-label']",
+        description: 'The label for a `group`, wired to it with `aria-labelledby`.',
+      },
+      {
+        name: 'separator',
+        required: false,
+        selector: "[role='separator']",
+        description: 'A visual divider between options. Navigation and typeahead skip it.',
+      },
+      {
+        name: 'empty',
+        required: false,
+        selector: "[data-ui-part~='empty']",
+        description: 'Shown when no option is visible. Hidden again as soon as one is.',
+      },
+      {
+        name: 'status',
+        required: false,
+        selector: "[data-ui-part~='status']",
+        description:
+          'A `role="status" aria-live="polite"` region for result counts, loading, and errors.',
+      },
+      {
+        name: 'header',
+        required: false,
+        selector: "[data-ui-part~='header']",
+        description:
+          'Optional content at the top of the surface. Excluded from arrow navigation and reachable with `Tab`.',
+      },
+      {
+        name: 'footer',
+        required: false,
+        selector: "[data-ui-part~='footer']",
+        description:
+          'Optional content at the bottom of the surface. Excluded from arrow navigation and reachable with `Tab`.',
+      },
+      {
+        name: 'pager',
+        required: false,
+        selector: "[data-ui-part~='pager']",
+        description:
+          'Wraps the page controls. Hidden unless `page-size` is set and the options span more than one page.',
+      },
+      {
+        name: 'page-previous',
+        required: false,
+        selector: "[data-ui-part~='page-previous']",
+        description:
+          'Moves to the previous page. Stays focusable at the first page and takes `aria-disabled`, so the boundary is discoverable rather than gone.',
+      },
+      {
+        name: 'page-next',
+        required: false,
+        selector: "[data-ui-part~='page-next']",
+        description: 'Moves to the next page, with the same boundary behavior.',
+      },
+      {
+        name: 'page-status',
+        required: false,
+        selector: "[data-ui-part~='page-status']",
+        description: 'A `role="status" aria-live="polite"` region announcing the current page.',
+      },
+      {
+        name: 'chips',
+        required: false,
+        selector: "[data-ui-part~='chips']",
+        description: 'Container the selected values are rendered into under `multiple`.',
+      },
+      {
+        name: 'chip-template',
+        required: false,
+        selector: "template[data-ui-part~='chip-template']",
+        description:
+          'A `<template>` holding the markup for one chip. Timeless clones it per selected value and fills it in, so every element and class in a chip is yours. Without it a `chips` container receives a plain comma-separated summary instead.',
+      },
+      {
+        name: 'chip',
+        required: false,
+        selector: "[data-ui-part~='chip']",
+        description: 'One selected value, authored inside `chip-template`.',
+      },
+      {
+        name: 'chip-label',
+        required: false,
+        selector: "[data-ui-part~='chip-label']",
+        description:
+          'Where the selected label is written inside a chip. Omit it only when the chip has no other content.',
+      },
+      {
+        name: 'chip-remove',
+        required: false,
+        selector: "[data-ui-part~='chip-remove']",
+        description:
+          'Removes its chip. Author it as a real button; Timeless gives it the value it removes and an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins.',
+      },
+      {
+        name: 'clear',
+        required: false,
+        selector: "[data-ui-part~='clear']",
+        description: 'Empties the whole selection. Disabled while there is nothing to clear.',
       },
     ],
     states: [],
-    variables: [],
+    variables: [
+      {
+        name: '--ui-collection-surface-inline-size',
+        description:
+          'Minimum width of the listbox surface. The input width wins whenever it is larger.',
+      },
+      {
+        name: '--ui-floating-offset',
+        description: 'Gap between the input and the surface.',
+      },
+    ],
     events: [
       {
         name: 'ui-before-change',
@@ -2433,6 +2975,31 @@ export const componentContracts = {
         name: 'ui-change',
         type: 'CustomEvent<ComboboxChangeDetail>',
         description: 'Dispatched after the selected option has changed. Bubbles and is composed.',
+        cancelable: false,
+      },
+      {
+        name: 'ui-open',
+        type: 'CustomEvent<ComboboxToggleDetail>',
+        description: 'Dispatched after the listbox opens.',
+        cancelable: false,
+      },
+      {
+        name: 'ui-close',
+        type: 'CustomEvent<ComboboxToggleDetail>',
+        description: 'Dispatched after the listbox closes.',
+        cancelable: false,
+      },
+      {
+        name: 'ui-input',
+        type: 'CustomEvent<ComboboxInputDetail>',
+        description:
+          'Dispatched when the query text changes, before options are filtered. Under `filter="off"` this is where you set `hidden` yourself.',
+        cancelable: false,
+      },
+      {
+        name: 'ui-page',
+        type: 'CustomEvent<ComboboxPageDetail>',
+        description: 'Dispatched after the rendered page of a paged list changes.',
         cancelable: false,
       },
     ],
@@ -2449,6 +3016,10 @@ export const componentContracts = {
           action: 'Move to the first or last matching option.',
         },
         {
+          key: 'Arrow Left / Arrow Right',
+          action: 'Move the text caret. They never move the highlight.',
+        },
+        {
           key: 'Enter',
           action: 'Commit the active option.',
         },
@@ -2456,9 +3027,13 @@ export const componentContracts = {
           key: 'Escape',
           action: 'Close the listbox, then clear the filter on a second press.',
         },
+        {
+          key: 'Backspace',
+          action: 'In an empty input under `multiple`, removes the last chip.',
+        },
       ],
       notes:
-        'Focus stays in the text input at all times; the active option is exposed with `aria-activedescendant`. Filtering hides non-matching options rather than removing them.',
+        'Focus stays in the text input at all times; the active option is exposed with `aria-activedescendant`. Filtering hides non-matching options rather than removing them, so find-in-page and the DOM still show the full authored list. `header`, `footer`, and the pager sit outside arrow navigation and are reached with `Tab`.',
     },
   },
   toaster: {

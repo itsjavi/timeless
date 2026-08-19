@@ -34,6 +34,7 @@ export declare abstract class UIElementHost extends HTMLElement implements UIEle
   protected observeParts(enhance: PartsEnhancer): void
   protected setCustomState(name: `--${string}`, active: boolean): void
   protected hasCustomState(name: `--${string}`): boolean
+  protected get internals(): ElementInternals | undefined
   protected on(
     target: ListenerTarget,
     type: string,
@@ -171,6 +172,18 @@ export function createUIElementClass(targetWindow?: Window): UIElementClass {
 
     protected hasCustomState(name: `--${string}`): boolean {
       return this.elementInternals()?.states?.has(name) ?? this.#customStates.has(name)
+    }
+
+    /**
+     * The element's `ElementInternals`, attached on first use.
+     *
+     * Undefined where `attachInternals` is unavailable or already claimed, which is why every call
+     * site treats form participation as an enhancement rather than a guarantee. A form-associated
+     * element must also declare `static formAssociated = true` on its own class; internals alone do
+     * not make the browser submit anything.
+     */
+    protected get internals(): ElementInternals | undefined {
+      return this.elementInternals()
     }
 
     protected on(

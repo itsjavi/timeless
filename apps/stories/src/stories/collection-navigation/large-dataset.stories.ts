@@ -1,7 +1,9 @@
 import type { StoryLiteMeta, StoryLiteStoryDefinition } from '@storylite/storylite'
 import buttonCss from '@timelessui/components/css/button.css?raw'
 import comboboxCss from '@timelessui/components/css/combobox.css?raw'
+import floatingCss from '@timelessui/components/css/floating.css?raw'
 import listboxCss from '@timelessui/components/css/listbox.css?raw'
+import optionsCss from '@timelessui/components/css/options.css?raw'
 import popoverCss from '@timelessui/components/css/popover.css?raw'
 import tokensCss from '@timelessui/components/css/tokens.css?raw'
 import demoCss from '../styles.css?raw'
@@ -12,7 +14,17 @@ const meta: StoryLiteMeta = {
   title: 'Recipes/Performance/Large Dataset',
   parameters: {
     renderer: 'html',
-    css: [tokensCss, buttonCss, popoverCss, listboxCss, comboboxCss, demoCss, fixtureCss],
+    css: [
+      tokensCss,
+      buttonCss,
+      floatingCss,
+      popoverCss,
+      optionsCss,
+      listboxCss,
+      comboboxCss,
+      demoCss,
+      fixtureCss,
+    ],
     defineCustomElements: defineLargeDatasetElements,
   },
 }

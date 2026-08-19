@@ -352,6 +352,12 @@
             }
           ],
           "events": [],
+          "cssProperties": [
+            {
+              "name": "--ui-floating-offset",
+              "description": "Gap between the trigger and the surface."
+            }
+          ],
           "timeless:parts": [
             {
               "name": "trigger",
@@ -476,6 +482,12 @@
             }
           ],
           "events": [],
+          "cssProperties": [
+            {
+              "name": "--ui-floating-offset",
+              "description": "Gap between the anchor and the surface."
+            }
+          ],
           "timeless:parts": [
             {
               "name": "trigger",
@@ -534,6 +546,12 @@
             }
           ],
           "events": [],
+          "cssProperties": [
+            {
+              "name": "--ui-menu-min-inline-size",
+              "description": "Minimum width of the menu surface."
+            }
+          ],
           "timeless:parts": [
             {
               "name": "menu",
@@ -621,6 +639,12 @@
               "type": {
                 "text": "CustomEvent<MenuButtonToggleDetail>"
               }
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--ui-floating-offset",
+              "description": "Gap between the trigger and the menu surface."
             }
           ],
           "timeless:parts": [
@@ -872,16 +896,44 @@
           "attributes": [
             {
               "name": "multiple",
-              "description": "Present to allow more than one selected option. The `value` property then reads and writes an array.",
+              "description": "Present to allow more than one selected option, submitting one form entry per value under the same `name`.",
               "type": {
                 "text": "boolean"
               }
             },
             {
               "name": "value",
-              "description": "The option selected on load and after a form reset. Assign the `value` property for live changes.",
+              "description": "The option selected on load and after a form reset. Assign the `value` property for live changes; once the user commits a change the attribute stops applying, the way it does on a native input.",
               "type": {
                 "text": "string"
+              }
+            },
+            {
+              "name": "name",
+              "description": "Form field name. The element submits its own value through `ElementInternals`.",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "required",
+              "description": "Present to block submission while nothing is selected, with `valueMissing`.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "disabled",
+              "description": "Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "page-size",
+              "description": "Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property.",
+              "type": {
+                "text": "number"
               }
             }
           ],
@@ -893,7 +945,7 @@
               "type": {
                 "text": "boolean"
               },
-              "description": "Present to allow more than one selected option. The `value` property then reads and writes an array."
+              "description": "Present to allow more than one selected option, submitting one form entry per value under the same `name`."
             },
             {
               "kind": "field",
@@ -911,6 +963,42 @@
                 "text": "string"
               },
               "description": "Live value. Assigning it does not rewrite the authored default and does not dispatch transition events."
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "attribute": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name. The element submits its own value through `ElementInternals`."
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "attribute": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to block submission while nothing is selected, with `valueMissing`."
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "attribute": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way."
+            },
+            {
+              "kind": "field",
+              "name": "pageSize",
+              "attribute": "page-size",
+              "type": {
+                "text": "string"
+              },
+              "description": "Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property."
             }
           ],
           "events": [
@@ -927,6 +1015,19 @@
               "type": {
                 "text": "CustomEvent<ListboxChangeDetail>"
               }
+            },
+            {
+              "name": "ui-page",
+              "description": "Dispatched after the rendered page of a paged list changes.",
+              "type": {
+                "text": "CustomEvent<ListboxPageDetail>"
+              }
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--ui-collection-surface-inline-size",
+              "description": "Minimum width of an option surface. On the anchored Select and Combobox surfaces the trigger width wins whenever it is larger."
             }
           ],
           "timeless:parts": [
@@ -934,13 +1035,85 @@
               "name": "listbox",
               "selector": "[role='listbox']",
               "required": true,
-              "description": "The option container."
+              "description": "The option container, which is the host itself."
             },
             {
               "name": "option",
               "selector": "[role='option']",
               "required": true,
-              "description": "One option. Its value comes from `value`, then `data-ui-value`, then the element id. Mark unavailable options `aria-disabled=\"true\"`."
+              "description": "One option. Its value comes from `value`, then `data-ui-value`, then its text. Its filterable label comes from `label`, then `data-ui-label`, then `aria-label`, then its text — none of which change the accessible name. Mark unavailable options `aria-disabled=\"true\"`."
+            },
+            {
+              "name": "option-indicator",
+              "selector": "[data-ui-part~='option-indicator']",
+              "required": false,
+              "description": "Decorative affordance inside an option showing that it is selected. Style it from `[aria-selected=\"true\"]`; it is hidden from assistive technology."
+            },
+            {
+              "name": "group",
+              "selector": "[data-ui-part~='group']",
+              "required": false,
+              "description": "A `role=\"group\"` wrapper around related options. Options inside it stay navigable, and the group collapses when every option it holds is filtered out."
+            },
+            {
+              "name": "group-label",
+              "selector": "[data-ui-part~='group-label']",
+              "required": false,
+              "description": "The label for a `group`, wired to it with `aria-labelledby`."
+            },
+            {
+              "name": "separator",
+              "selector": "[role='separator']",
+              "required": false,
+              "description": "A visual divider between options. Navigation and typeahead skip it."
+            },
+            {
+              "name": "empty",
+              "selector": "[data-ui-part~='empty']",
+              "required": false,
+              "description": "Shown when no option is visible. Hidden again as soon as one is."
+            },
+            {
+              "name": "status",
+              "selector": "[data-ui-part~='status']",
+              "required": false,
+              "description": "A `role=\"status\" aria-live=\"polite\"` region for result counts, loading, and errors."
+            },
+            {
+              "name": "header",
+              "selector": "[data-ui-part~='header']",
+              "required": false,
+              "description": "Optional content at the top of the surface. Excluded from arrow navigation and reachable with `Tab`."
+            },
+            {
+              "name": "footer",
+              "selector": "[data-ui-part~='footer']",
+              "required": false,
+              "description": "Optional content at the bottom of the surface. Excluded from arrow navigation and reachable with `Tab`."
+            },
+            {
+              "name": "pager",
+              "selector": "[data-ui-part~='pager']",
+              "required": false,
+              "description": "Wraps the page controls. Hidden unless `page-size` is set and the options span more than one page."
+            },
+            {
+              "name": "page-previous",
+              "selector": "[data-ui-part~='page-previous']",
+              "required": false,
+              "description": "Moves to the previous page. Stays focusable at the first page and takes `aria-disabled`, so the boundary is discoverable rather than gone."
+            },
+            {
+              "name": "page-next",
+              "selector": "[data-ui-part~='page-next']",
+              "required": false,
+              "description": "Moves to the next page, with the same boundary behavior."
+            },
+            {
+              "name": "page-status",
+              "selector": "[data-ui-part~='page-status']",
+              "required": false,
+              "description": "A `role=\"status\" aria-live=\"polite\"` region announcing the current page."
             }
           ]
         }
@@ -982,10 +1155,68 @@
               "default": "bottom"
             },
             {
+              "name": "searchable",
+              "description": "Present to filter from a `search` field inside the surface. Focus moves into that field on open and stays there; the highlight travels through `aria-activedescendant`.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
               "name": "value",
-              "description": "The option selected on load and after a form reset. Mirror it onto a hidden input to submit with a form.",
+              "description": "The option selected on load and after a form reset. Once the user commits a change the attribute stops applying, the way it does on a native input.",
               "type": {
                 "text": "string"
+              }
+            },
+            {
+              "name": "align",
+              "description": "Which edge of the trigger the surface aligns to. The surface is never narrower than the trigger.",
+              "type": {
+                "text": "'start' | 'end'"
+              },
+              "default": "start"
+            },
+            {
+              "name": "filter",
+              "description": "How typed text narrows the options. `off` hands visibility to you: listen for `ui-input` and set `hidden` yourself, and navigation, the empty state, group collapse, and paging all follow.",
+              "type": {
+                "text": "'contains' | 'starts-with' | 'off'"
+              },
+              "default": "contains"
+            },
+            {
+              "name": "multiple",
+              "description": "Present to allow more than one selected option. Selected values render as chips and submit one form entry each under the same `name`.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "name",
+              "description": "Form field name. The element submits its own value through `ElementInternals`.",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "required",
+              "description": "Present to block submission while nothing is selected, with `valueMissing`.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "disabled",
+              "description": "Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "page-size",
+              "description": "Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property.",
+              "type": {
+                "text": "number"
               }
             }
           ],
@@ -1010,6 +1241,15 @@
             },
             {
               "kind": "field",
+              "name": "searchable",
+              "attribute": "searchable",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to filter from a `search` field inside the surface. Focus moves into that field on open and stays there; the highlight travels through `aria-activedescendant`."
+            },
+            {
+              "kind": "field",
               "name": "defaultValue",
               "attribute": "value",
               "type": {
@@ -1024,6 +1264,69 @@
                 "text": "string"
               },
               "description": "Live value. Assigning it does not rewrite the authored default and does not dispatch transition events."
+            },
+            {
+              "kind": "field",
+              "name": "align",
+              "attribute": "align",
+              "type": {
+                "text": "'start' | 'end'"
+              },
+              "description": "Which edge of the trigger the surface aligns to. The surface is never narrower than the trigger."
+            },
+            {
+              "kind": "field",
+              "name": "filter",
+              "attribute": "filter",
+              "type": {
+                "text": "'contains' | 'starts-with' | 'off'"
+              },
+              "description": "How typed text narrows the options. `off` hands visibility to you: listen for `ui-input` and set `hidden` yourself, and navigation, the empty state, group collapse, and paging all follow."
+            },
+            {
+              "kind": "field",
+              "name": "multiple",
+              "attribute": "multiple",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to allow more than one selected option. Selected values render as chips and submit one form entry each under the same `name`."
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "attribute": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name. The element submits its own value through `ElementInternals`."
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "attribute": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to block submission while nothing is selected, with `valueMissing`."
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "attribute": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way."
+            },
+            {
+              "kind": "field",
+              "name": "pageSize",
+              "attribute": "page-size",
+              "type": {
+                "text": "string"
+              },
+              "description": "Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property."
             }
           ],
           "events": [
@@ -1040,6 +1343,44 @@
               "type": {
                 "text": "CustomEvent<SelectChangeDetail>"
               }
+            },
+            {
+              "name": "ui-open",
+              "description": "Dispatched after the listbox opens.",
+              "type": {
+                "text": "CustomEvent<SelectToggleDetail>"
+              }
+            },
+            {
+              "name": "ui-close",
+              "description": "Dispatched after the listbox closes.",
+              "type": {
+                "text": "CustomEvent<SelectToggleDetail>"
+              }
+            },
+            {
+              "name": "ui-input",
+              "description": "Dispatched when the query text changes, before options are filtered. Under `filter=\"off\"` this is where you set `hidden` yourself.",
+              "type": {
+                "text": "CustomEvent<SelectInputDetail>"
+              }
+            },
+            {
+              "name": "ui-page",
+              "description": "Dispatched after the rendered page of a paged list changes.",
+              "type": {
+                "text": "CustomEvent<SelectPageDetail>"
+              }
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--ui-collection-surface-inline-size",
+              "description": "Minimum width of the listbox surface. The trigger width wins whenever it is larger."
+            },
+            {
+              "name": "--ui-floating-offset",
+              "description": "Gap between the trigger and the surface."
             }
           ],
           "timeless:parts": [
@@ -1050,22 +1391,142 @@
               "description": "Native button that opens the listbox."
             },
             {
+              "name": "value",
+              "selector": "[data-ui-part~='value']",
+              "required": false,
+              "description": "Element inside the trigger that shows the selected label. Timeless writes its text and nothing else."
+            },
+            {
+              "name": "search",
+              "selector": "[data-ui-part~='search']",
+              "required": false,
+              "description": "Text field inside the surface that filters the options under `searchable`. Left and Right move the caret rather than the highlight."
+            },
+            {
+              "name": "surface",
+              "selector": "[data-ui-part~='surface']",
+              "required": false,
+              "description": "The popover the listbox sits in. Author it whenever the surface also holds a `search` field, a `header`, a `footer`, or a pager: a `role=\"listbox\"` may own only options and groups, so those siblings belong beside the listbox rather than inside it. With none of them, the `listbox` is its own surface and this part is unnecessary."
+            },
+            {
               "name": "listbox",
               "selector": "[role='listbox']",
               "required": true,
-              "description": "The option container and popover surface."
+              "description": "The option container."
             },
             {
               "name": "option",
               "selector": "[role='option']",
               "required": true,
-              "description": "One option. Its value comes from `value`, then `data-ui-value`, then the element id."
+              "description": "One option. Its value comes from `value`, then `data-ui-value`, then its text. Its filterable label comes from `label`, then `data-ui-label`, then `aria-label`, then its text — none of which change the accessible name. Mark unavailable options `aria-disabled=\"true\"`."
             },
             {
-              "name": "label",
-              "selector": "[data-ui-part~='label']",
+              "name": "option-indicator",
+              "selector": "[data-ui-part~='option-indicator']",
               "required": false,
-              "description": "Element inside the trigger that shows the selected label."
+              "description": "Decorative affordance inside an option showing that it is selected. Style it from `[aria-selected=\"true\"]`; it is hidden from assistive technology."
+            },
+            {
+              "name": "group",
+              "selector": "[data-ui-part~='group']",
+              "required": false,
+              "description": "A `role=\"group\"` wrapper around related options. Options inside it stay navigable, and the group collapses when every option it holds is filtered out."
+            },
+            {
+              "name": "group-label",
+              "selector": "[data-ui-part~='group-label']",
+              "required": false,
+              "description": "The label for a `group`, wired to it with `aria-labelledby`."
+            },
+            {
+              "name": "separator",
+              "selector": "[role='separator']",
+              "required": false,
+              "description": "A visual divider between options. Navigation and typeahead skip it."
+            },
+            {
+              "name": "empty",
+              "selector": "[data-ui-part~='empty']",
+              "required": false,
+              "description": "Shown when no option is visible. Hidden again as soon as one is."
+            },
+            {
+              "name": "status",
+              "selector": "[data-ui-part~='status']",
+              "required": false,
+              "description": "A `role=\"status\" aria-live=\"polite\"` region for result counts, loading, and errors."
+            },
+            {
+              "name": "header",
+              "selector": "[data-ui-part~='header']",
+              "required": false,
+              "description": "Optional content at the top of the surface. Excluded from arrow navigation and reachable with `Tab`."
+            },
+            {
+              "name": "footer",
+              "selector": "[data-ui-part~='footer']",
+              "required": false,
+              "description": "Optional content at the bottom of the surface. Excluded from arrow navigation and reachable with `Tab`."
+            },
+            {
+              "name": "pager",
+              "selector": "[data-ui-part~='pager']",
+              "required": false,
+              "description": "Wraps the page controls. Hidden unless `page-size` is set and the options span more than one page."
+            },
+            {
+              "name": "page-previous",
+              "selector": "[data-ui-part~='page-previous']",
+              "required": false,
+              "description": "Moves to the previous page. Stays focusable at the first page and takes `aria-disabled`, so the boundary is discoverable rather than gone."
+            },
+            {
+              "name": "page-next",
+              "selector": "[data-ui-part~='page-next']",
+              "required": false,
+              "description": "Moves to the next page, with the same boundary behavior."
+            },
+            {
+              "name": "page-status",
+              "selector": "[data-ui-part~='page-status']",
+              "required": false,
+              "description": "A `role=\"status\" aria-live=\"polite\"` region announcing the current page."
+            },
+            {
+              "name": "chips",
+              "selector": "[data-ui-part~='chips']",
+              "required": false,
+              "description": "Container the selected values are rendered into under `multiple`."
+            },
+            {
+              "name": "chip-template",
+              "selector": "template[data-ui-part~='chip-template']",
+              "required": false,
+              "description": "A `<template>` holding the markup for one chip. Timeless clones it per selected value and fills it in, so every element and class in a chip is yours. Without it a `chips` container receives a plain comma-separated summary instead."
+            },
+            {
+              "name": "chip",
+              "selector": "[data-ui-part~='chip']",
+              "required": false,
+              "description": "One selected value, authored inside `chip-template`."
+            },
+            {
+              "name": "chip-label",
+              "selector": "[data-ui-part~='chip-label']",
+              "required": false,
+              "description": "Where the selected label is written inside a chip. Omit it only when the chip has no other content."
+            },
+            {
+              "name": "chip-remove",
+              "selector": "[data-ui-part~='chip-remove']",
+              "required": false,
+              "description": "Removes its chip. Author it as a real button; Timeless gives it the value it removes and an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins."
+            },
+            {
+              "name": "clear",
+              "selector": "[data-ui-part~='clear']",
+              "required": false,
+              "description": "Empties the whole selection. Disabled while there is nothing to clear."
             }
           ]
         }
@@ -1093,9 +1554,60 @@
           "attributes": [
             {
               "name": "value",
-              "description": "The option selected on load and after a form reset. Assign the `value` property for live changes.",
+              "description": "The option selected on load and after a form reset. Once the user commits a change the attribute stops applying, the way it does on a native input.",
               "type": {
                 "text": "string"
+              }
+            },
+            {
+              "name": "align",
+              "description": "Which edge of the trigger the surface aligns to. The surface is never narrower than the trigger.",
+              "type": {
+                "text": "'start' | 'end'"
+              },
+              "default": "start"
+            },
+            {
+              "name": "filter",
+              "description": "How typed text narrows the options. `off` hands visibility to you: listen for `ui-input` and set `hidden` yourself, and navigation, the empty state, group collapse, and paging all follow.",
+              "type": {
+                "text": "'contains' | 'starts-with' | 'off'"
+              },
+              "default": "contains"
+            },
+            {
+              "name": "multiple",
+              "description": "Present to allow more than one selected option. Selected values render as chips and submit one form entry each under the same `name`.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "name",
+              "description": "Form field name. The element submits its own value through `ElementInternals`.",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "required",
+              "description": "Present to block submission while nothing is selected, with `valueMissing`.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "disabled",
+              "description": "Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "page-size",
+              "description": "Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property.",
+              "type": {
+                "text": "number"
               }
             }
           ],
@@ -1116,6 +1628,69 @@
                 "text": "string"
               },
               "description": "Live value. Assigning it does not rewrite the authored default and does not dispatch transition events."
+            },
+            {
+              "kind": "field",
+              "name": "align",
+              "attribute": "align",
+              "type": {
+                "text": "'start' | 'end'"
+              },
+              "description": "Which edge of the trigger the surface aligns to. The surface is never narrower than the trigger."
+            },
+            {
+              "kind": "field",
+              "name": "filter",
+              "attribute": "filter",
+              "type": {
+                "text": "'contains' | 'starts-with' | 'off'"
+              },
+              "description": "How typed text narrows the options. `off` hands visibility to you: listen for `ui-input` and set `hidden` yourself, and navigation, the empty state, group collapse, and paging all follow."
+            },
+            {
+              "kind": "field",
+              "name": "multiple",
+              "attribute": "multiple",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to allow more than one selected option. Selected values render as chips and submit one form entry each under the same `name`."
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "attribute": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name. The element submits its own value through `ElementInternals`."
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "attribute": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to block submission while nothing is selected, with `valueMissing`."
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "attribute": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way."
+            },
+            {
+              "kind": "field",
+              "name": "pageSize",
+              "attribute": "page-size",
+              "type": {
+                "text": "string"
+              },
+              "description": "Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property."
             }
           ],
           "events": [
@@ -1132,14 +1707,58 @@
               "type": {
                 "text": "CustomEvent<ComboboxChangeDetail>"
               }
+            },
+            {
+              "name": "ui-open",
+              "description": "Dispatched after the listbox opens.",
+              "type": {
+                "text": "CustomEvent<ComboboxToggleDetail>"
+              }
+            },
+            {
+              "name": "ui-close",
+              "description": "Dispatched after the listbox closes.",
+              "type": {
+                "text": "CustomEvent<ComboboxToggleDetail>"
+              }
+            },
+            {
+              "name": "ui-input",
+              "description": "Dispatched when the query text changes, before options are filtered. Under `filter=\"off\"` this is where you set `hidden` yourself.",
+              "type": {
+                "text": "CustomEvent<ComboboxInputDetail>"
+              }
+            },
+            {
+              "name": "ui-page",
+              "description": "Dispatched after the rendered page of a paged list changes.",
+              "type": {
+                "text": "CustomEvent<ComboboxPageDetail>"
+              }
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--ui-collection-surface-inline-size",
+              "description": "Minimum width of the listbox surface. The input width wins whenever it is larger."
+            },
+            {
+              "name": "--ui-floating-offset",
+              "description": "Gap between the input and the surface."
             }
           ],
           "timeless:parts": [
             {
-              "name": "input",
-              "selector": "[role='combobox']",
+              "name": "trigger",
+              "selector": "input[role='combobox']",
               "required": true,
-              "description": "The native text input. Timeless wires `aria-expanded`, `aria-controls`, and `aria-activedescendant`."
+              "description": "The native text input. It is both the trigger and the search field: Timeless wires `aria-expanded`, `aria-controls`, and `aria-activedescendant` onto it and leaves its editing behavior alone."
+            },
+            {
+              "name": "surface",
+              "selector": "[data-ui-part~='surface']",
+              "required": false,
+              "description": "The popover the listbox sits in. Author it whenever the surface also holds a `header`, a `footer`, or a pager: a `role=\"listbox\"` may own only options and groups. With none of them, the `listbox` is its own surface and this part is unnecessary."
             },
             {
               "name": "listbox",
@@ -1151,7 +1770,115 @@
               "name": "option",
               "selector": "[role='option']",
               "required": true,
-              "description": "One option. Its value comes from `value`, then `data-ui-value`, then the element id. Filtering hides non-matching options."
+              "description": "One option. Its value comes from `value`, then `data-ui-value`, then its text. Its filterable label comes from `label`, then `data-ui-label`, then `aria-label`, then its text — none of which change the accessible name. Mark unavailable options `aria-disabled=\"true\"`."
+            },
+            {
+              "name": "option-indicator",
+              "selector": "[data-ui-part~='option-indicator']",
+              "required": false,
+              "description": "Decorative affordance inside an option showing that it is selected. Style it from `[aria-selected=\"true\"]`; it is hidden from assistive technology."
+            },
+            {
+              "name": "group",
+              "selector": "[data-ui-part~='group']",
+              "required": false,
+              "description": "A `role=\"group\"` wrapper around related options. Options inside it stay navigable, and the group collapses when every option it holds is filtered out."
+            },
+            {
+              "name": "group-label",
+              "selector": "[data-ui-part~='group-label']",
+              "required": false,
+              "description": "The label for a `group`, wired to it with `aria-labelledby`."
+            },
+            {
+              "name": "separator",
+              "selector": "[role='separator']",
+              "required": false,
+              "description": "A visual divider between options. Navigation and typeahead skip it."
+            },
+            {
+              "name": "empty",
+              "selector": "[data-ui-part~='empty']",
+              "required": false,
+              "description": "Shown when no option is visible. Hidden again as soon as one is."
+            },
+            {
+              "name": "status",
+              "selector": "[data-ui-part~='status']",
+              "required": false,
+              "description": "A `role=\"status\" aria-live=\"polite\"` region for result counts, loading, and errors."
+            },
+            {
+              "name": "header",
+              "selector": "[data-ui-part~='header']",
+              "required": false,
+              "description": "Optional content at the top of the surface. Excluded from arrow navigation and reachable with `Tab`."
+            },
+            {
+              "name": "footer",
+              "selector": "[data-ui-part~='footer']",
+              "required": false,
+              "description": "Optional content at the bottom of the surface. Excluded from arrow navigation and reachable with `Tab`."
+            },
+            {
+              "name": "pager",
+              "selector": "[data-ui-part~='pager']",
+              "required": false,
+              "description": "Wraps the page controls. Hidden unless `page-size` is set and the options span more than one page."
+            },
+            {
+              "name": "page-previous",
+              "selector": "[data-ui-part~='page-previous']",
+              "required": false,
+              "description": "Moves to the previous page. Stays focusable at the first page and takes `aria-disabled`, so the boundary is discoverable rather than gone."
+            },
+            {
+              "name": "page-next",
+              "selector": "[data-ui-part~='page-next']",
+              "required": false,
+              "description": "Moves to the next page, with the same boundary behavior."
+            },
+            {
+              "name": "page-status",
+              "selector": "[data-ui-part~='page-status']",
+              "required": false,
+              "description": "A `role=\"status\" aria-live=\"polite\"` region announcing the current page."
+            },
+            {
+              "name": "chips",
+              "selector": "[data-ui-part~='chips']",
+              "required": false,
+              "description": "Container the selected values are rendered into under `multiple`."
+            },
+            {
+              "name": "chip-template",
+              "selector": "template[data-ui-part~='chip-template']",
+              "required": false,
+              "description": "A `<template>` holding the markup for one chip. Timeless clones it per selected value and fills it in, so every element and class in a chip is yours. Without it a `chips` container receives a plain comma-separated summary instead."
+            },
+            {
+              "name": "chip",
+              "selector": "[data-ui-part~='chip']",
+              "required": false,
+              "description": "One selected value, authored inside `chip-template`."
+            },
+            {
+              "name": "chip-label",
+              "selector": "[data-ui-part~='chip-label']",
+              "required": false,
+              "description": "Where the selected label is written inside a chip. Omit it only when the chip has no other content."
+            },
+            {
+              "name": "chip-remove",
+              "selector": "[data-ui-part~='chip-remove']",
+              "required": false,
+              "description": "Removes its chip. Author it as a real button; Timeless gives it the value it removes and an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins."
+            },
+            {
+              "name": "clear",
+              "selector": "[data-ui-part~='clear']",
+              "required": false,
+              "description": "Empties the whole selection. Disabled while there is nothing to clear."
             }
           ]
         }

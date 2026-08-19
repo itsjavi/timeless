@@ -2,7 +2,9 @@ import type { StoryLiteMeta } from '@storylite/storylite'
 import buttonCss from '@timelessui/components/css/button.css?raw'
 import choiceGroupCss from '@timelessui/components/css/choice-group.css?raw'
 import comboboxCss from '@timelessui/components/css/combobox.css?raw'
+import floatingCss from '@timelessui/components/css/floating.css?raw'
 import listboxCss from '@timelessui/components/css/listbox.css?raw'
+import optionsCss from '@timelessui/components/css/options.css?raw'
 import menuCss from '@timelessui/components/css/menu.css?raw'
 import popoverCss from '@timelessui/components/css/popover.css?raw'
 import selectCss from '@timelessui/components/css/select.css?raw'
@@ -17,10 +19,12 @@ const collectionNavigationParameters = {
   css: [
     tokensCss,
     buttonCss,
+    floatingCss,
     popoverCss,
     menuCss,
     toolbarCss,
     choiceGroupCss,
+    optionsCss,
     listboxCss,
     selectCss,
     comboboxCss,

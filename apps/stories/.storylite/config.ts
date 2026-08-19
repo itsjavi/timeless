@@ -28,9 +28,14 @@ function resolveStoryId(path: string, suggestedId: string): string {
   const filename = normalizedPath.match(/\/([^/]+)\.stories\.ts$/)?.[1] ?? suggestedId
 
   if (normalizedPath.includes('/recipes/')) {
-    const category =
-      filename === 'team-presence' ? 'identity' : filename === 'account-form' ? 'forms' : 'color'
-    return `recipes-${category}-${filename}${exportSuffix}`
+    // A table rather than a ternary chain, whose fallback filed every new recipe under Color.
+    const recipeCategories: Record<string, string> = {
+      'account-form': 'forms',
+      'command-palette': 'composition',
+      'popover-color-picker': 'color',
+      'team-presence': 'identity',
+    }
+    return `recipes-${recipeCategories[filename] ?? 'composition'}-${filename}${exportSuffix}`
   }
   if (filename === 'large-dataset') return `recipes-performance-large-dataset${exportSuffix}`
 

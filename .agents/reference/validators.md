@@ -9,16 +9,20 @@ decides it — and if one does, run the script instead of arguing from the sourc
 pnpm qa
 ```
 
-That is `typecheck` → `format:check` → `build` → `test` → `publint` → `attw` → `test:e2e`. `build`
-in `packages/components` runs `generate:check`, `contracts:validate`, and `manifest:validate` before
-`tsdown`, so a registry mistake fails the build rather than shipping.
+That is `typecheck` → `format:check` → `build` → `test` → `contracts:check` → `publint` → `attw` →
+`test:e2e`. `build` in `packages/components` runs `generate:check`, `contracts:validate`, and
+`manifest:validate` before `tsdown`, so a registry mistake fails the build rather than shipping.
+`contracts:check` is `boundaries:check`, `exports:validate`, `generated-dom:check`, and
+`performance:check`, and the CI job runs that same aggregate — so a green `pnpm qa` means a green
+job. It did not always: those four ran only in CI, which is how a `createElement` in a component
+reached a pull request past a green local gate.
 
 ## Failure → remedy
 
 | Failure                                                        | What it means                                                                                                           | Remedy                                                                                                            |
 | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | `Generated element contracts are stale. Run pnpm generate.`    | A generated file no longer matches the registry — usually a hand-edit, sometimes a registry change without regeneration | `pnpm -F @timelessui/components run generate`                                                                     |
-| `<component> root <name> is absent from <stylesheet>`          | The registry declares a root the stylesheet never selects                                                               | Add the selector, or fix the root name in the registry                                                            |
+| `<component> root <name> is absent from <stylesheets>`         | None of the contract's stylesheets selects the root it declares                                                         | Add the selector, or fix the root name in the registry                                                            |
 | `<stylesheet> selects uncatalogued public class ui-x`          | CSS uses a `.ui-*` root with no registry entry                                                                          | Declare the component, or rename the class                                                                        |
 | `<stylesheet> selects undeclared value`                        | CSS matches a `data-ui-*` value missing from the referenced `valueSets` entry                                           | Add the value to the set, or drop the selector                                                                    |
 | declared value is never selected                               | A `valueSets` value no CSS implements, and not the attribute default                                                    | Implement it, or remove it from the set                                                                           |
@@ -32,6 +36,19 @@ in `packages/components` runs `generate:check`, `contracts:validate`, and `manif
 | `The StoryLite catalog has no Library routes.`                 | Titles are wrong, or the build produced no stories                                                                      | Check `title` on the affected `meta`                                                                              |
 | `published packages cannot depend on @timelessui/examples`     | `packages/core` or `packages/components` imported the examples package                                                  | Invert the dependency                                                                                             |
 | `source cannot import from the ignored .local directory`       | An import reaches into `.local/`                                                                                        | Remove it                                                                                                         |
+| `<id> uses unknown part <token>`                               | An example authored a `data-ui-part` token no contract declares                                                         | Declare the part in the registry and regenerate, **before** the example emits it                                  |
+| `<id> uses unknown public attribute <name>`                    | Same, for a `data-ui-*` attribute                                                                                       | Declare the attribute, or use a plain attribute on the custom-element host                                        |
+| `<id> authors private runtime hook <name>`                     | A `data-ui-internal-*` attribute reached copyable example source                                                        | Let the component write it at runtime instead                                                                     |
+| `<id> renders unregistered element <tag>`                      | An example renders a `ui-*` tag with no manifest entry                                                                  | Register the element, or drop the tag                                                                             |
+| `<id> renders <tag> without declaring its definition`          | The tag is registered but missing from the example's `definitions`                                                      | Add it to `definitions`                                                                                           |
+| `<id> documents <name> but does not import its stylesheet <f>` | A contract's `css` array grew and the example's `styles` did not                                                        | Add the stylesheet to the example's `styles`                                                                      |
+| `<id> uses uncatalogued public class <name>`                   | An example uses a `.ui-*` class no contract declares                                                                    | Declare the component, or add it to `demoOnlyClasses`                                                             |
+| `<entry> <metric> grew from <a> to <b>`                        | A size budget moved by more than 10%                                                                                    | Justify the growth and re-baseline with `--measure`, recording before and after                                   |
+
+`packages/examples/scripts/validate.mjs` is the strictest gate in the repository and the one most
+likely to reject a change: it imports the registry, renders every canonical example, and throws on
+seventeen distinct conditions. That forces the ordering for any new part or attribute — **registry
+first, `pnpm generate` second, examples third.** Reversing it fails the build rather than warning.
 
 ## Scoped commands
 
@@ -43,10 +60,16 @@ pnpm -F @timelessui/components run manifest:validate
 pnpm -F @timelessui/components run exports:validate
 pnpm -F @timelessui/components run generated-dom:check
 pnpm -F @timelessui/components run performance:check
+pnpm -F @timelessui/components run performance:check -- --measure  # print current figures
+pnpm -F @timelessui/examples run test                # renders and validates every example
 pnpm -F @timelessui/components run test
 pnpm -F @timelessui/core run test
 pnpm boundaries:check
 pnpm test:e2e
+```
+
+```bash
+pnpm contracts:check   # the four checks that used to run only in CI
 ```
 
 ## What no script checks
@@ -54,7 +77,9 @@ pnpm test:e2e
 These are the rules a reviewer or an audit skill has to carry. See
 `.agents/skills/audit-component-contracts/SKILL.md`.
 
-- Visual declarations written from component JS.
+- Visual declarations written from component JS. `generated-dom:check` decides the narrower rule
+  that a component may not create elements at all — only Toast may, and everything else clones
+  authored markup or enhances it in place.
 - `data-ui-*` used as configuration on a `ui-*` custom-element host.
 - Boolean attributes carrying string values.
 - Value lists hand-copied into `argTypes.options`, a factory, or a test.

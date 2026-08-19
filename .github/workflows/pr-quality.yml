@@ -38,12 +38,11 @@ jobs:
       - name: Unit and contract tests
         run: pnpm test
       - name: Validate published package contracts
+        # `contracts:check` is the same aggregate `pnpm qa` runs, so a green local gate means a green
+        # CI job. Listing these here and not there is how a `createElement` reached CI once already.
         run: |
-          pnpm boundaries:check
+          pnpm contracts:check
           pnpm -F @timelessui/components manifest:validate
-          pnpm -F @timelessui/components exports:validate
-          pnpm -F @timelessui/components generated-dom:check
-          pnpm -F @timelessui/components performance:check
           pnpm publint
           pnpm -F @timelessui/components attw
 

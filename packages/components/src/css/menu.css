@@ -23,6 +23,10 @@
   ui-menu:where([popover]) {
     inline-size: max-content;
     max-inline-size: min(22rem, calc(100vw - 2rem));
+    /* A height clamp without a scroll container just truncates, so the two ship together. */
+    max-block-size: min(20rem, calc(100dvh - 2rem));
+    overflow: auto;
+    overscroll-behavior: contain;
     border: 1px solid var(--ui-line);
     border-radius: var(--ui-radius-lg);
     background: var(--ui-bg-surface);
@@ -32,18 +36,6 @@
 
   ui-menu:where([popover]):not(:popover-open) {
     display: none;
-  }
-
-  ui-menu:where([popover][data-ui-internal-floating='fallback']) {
-    position: fixed;
-    inset: auto;
-    left: var(--ui-floating-left);
-    top: var(--ui-floating-top);
-    right: auto;
-    bottom: auto;
-    translate: 0 0;
-    position-area: none;
-    position-try-fallbacks: none;
   }
 
   ui-menu :where([role='menuitem'], [role='menuitemcheckbox'], [role='menuitemradio']) {
@@ -88,40 +80,32 @@
     background: var(--ui-line);
   }
 
+  /* `inset`, `translate`, and `position-try-fallbacks` come from `floating.css`. */
   @supports (anchor-name: --ui-anchor) {
     ui-menu[role='menubar'] > ui-menu:where([popover]):popover-open {
-      inset: auto;
-      position-area: bottom span-right;
-      translate: 0 var(--ui-floating-offset, 0.375rem);
-      position-try-fallbacks:
-        flip-block,
-        flip-inline,
-        flip-block flip-inline;
+      position-area: block-end span-inline-end;
+      margin-block: var(--ui-floating-offset, 0.375rem);
     }
 
     ui-menu-button > ui-menu[popover]:popover-open {
-      inset: auto;
-      position-area: bottom center;
-      translate: 0 var(--ui-floating-offset, 0.375rem);
-      position-try-fallbacks:
-        flip-block,
-        flip-inline,
-        flip-block flip-inline;
+      position-area: block-end span-inline-end;
+      margin-block: var(--ui-floating-offset, 0.375rem);
     }
 
     ui-menu-button[placement='top'] > ui-menu[popover]:popover-open {
-      position-area: top center;
-      translate: 0 calc(var(--ui-floating-offset, 0.375rem) * -1);
+      position-area: block-start span-inline-end;
     }
 
     ui-menu-button[placement='right'] > ui-menu[popover]:popover-open {
-      position-area: right center;
-      translate: var(--ui-floating-offset, 0.375rem) 0;
+      position-area: inline-end span-block-end;
+      margin-block: 0;
+      margin-inline: var(--ui-floating-offset, 0.375rem);
     }
 
     ui-menu-button[placement='left'] > ui-menu[popover]:popover-open {
-      position-area: left center;
-      translate: calc(var(--ui-floating-offset, 0.375rem) * -1) 0;
+      position-area: inline-start span-block-end;
+      margin-block: 0;
+      margin-inline: var(--ui-floating-offset, 0.375rem);
     }
   }
 }

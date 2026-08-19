@@ -3,6 +3,7 @@ import buttonCss from '@timelessui/components/css/button.css?raw'
 import collapsibleCss from '@timelessui/components/css/collapsible.css?raw'
 import codeCss from '@timelessui/components/css/code.css?raw'
 import dialogCss from '@timelessui/components/css/dialog.css?raw'
+import floatingCss from '@timelessui/components/css/floating.css?raw'
 import popoverCss from '@timelessui/components/css/popover.css?raw'
 import sheetCss from '@timelessui/components/css/sheet.css?raw'
 import tabsCss from '@timelessui/components/css/tabs.css?raw'
@@ -22,6 +23,7 @@ const progressiveOverlayParameters = {
     collapsibleCss,
     dialogCss,
     sheetCss,
+    floatingCss,
     popoverCss,
     toastCss,
     demoCss,
