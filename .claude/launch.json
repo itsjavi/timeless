@@ -4,8 +4,9 @@
     {
       "name": "web",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["dev", "--filter=@apps/web"],
-      "port": 6339
+      "runtimeArgs": ["-F", "@apps/web", "run", "dev"],
+      "port": 6339,
+      "autoPort": true
     },
     {
       "name": "storylite",
@@ -17,20 +18,9 @@
     {
       "name": "dist-site",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": [
-        "-F",
-        "@apps/web",
-        "exec",
-        "vite",
-        "preview",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "4399",
-        "--outDir",
-        "../../dist-site"
-      ],
-      "port": 4399
+      "runtimeArgs": ["run", "preview:site"],
+      "port": 4399,
+      "autoPort": true
     }
   ]
 }
