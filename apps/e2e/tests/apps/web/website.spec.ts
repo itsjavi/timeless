@@ -13,6 +13,10 @@ test('renders the main Timeless website', async ({ page }) => {
     'href',
     '/docs/',
   )
+  await expect(page.getByRole('link', { name: 'AI', exact: true })).toHaveAttribute(
+    'href',
+    '/docs/reference/agents/',
+  )
   await expect(page.getByRole('link', { name: 'Stories', exact: true })).toHaveAttribute(
     'href',
     '/stories/',
@@ -124,4 +128,26 @@ test('keeps useful destinations on the custom 404 page', async ({ page }) => {
   )
   await expectNoPageOverflow(page)
   await expectNoBlockingA11yViolations(page, '/404.html', '#main')
+})
+
+test('reaches the page sections through the disclosure on narrow viewports', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+  await expectRouteDocumentReady(page)
+
+  const toggle = page.getByRole('button', { name: 'Page sections' })
+  await expect(toggle).toBeVisible()
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+
+  await toggle.click()
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true')
+  await expect(page.getByRole('navigation', { name: 'Page sections' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'AI', exact: true })).toHaveAttribute(
+    'href',
+    '/docs/reference/agents/',
+  )
+  await expectNoPageOverflow(page)
+
+  await page.keyboard.press('Escape')
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false')
 })
