@@ -353,17 +353,25 @@ const valueList = (values: readonly string[] | undefined, fallbackType: string) 
     accessibility.map(({ label, contract }) => (
       <>
         {accessibility.length > 1 ? <p><strong>{label}</strong></p> : null}
-        <p>
-          Follows the{' '}
-          <a
-            href={`https://www.w3.org/WAI/ARIA/apg/patterns/${contract.accessibility!.pattern}/`}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            {contract.accessibility!.patternLabel} pattern
-          </a>{' '}
-          from the ARIA Authoring Practices Guide.
-        </p>
+        {contract.accessibility!.pattern ? (
+          <p>
+            Follows the{' '}
+            <a
+              href={`https://www.w3.org/WAI/ARIA/apg/patterns/${contract.accessibility!.pattern}/`}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {contract.accessibility!.patternLabel} pattern
+            </a>{' '}
+            from the ARIA Authoring Practices Guide.
+          </p>
+        ) : (
+          <p>
+            The ARIA Authoring Practices Guide has no pattern for {contract.accessibility!.patternLabel}.
+            The contract below is a composition of behavior the platform already defines, not ARIA
+            invented to fill the gap.
+          </p>
+        )}
         {contract.accessibility!.keys.length > 0 ? (
           <table>
             <thead><tr><th>Key</th><th>Action</th></tr></thead>

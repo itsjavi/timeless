@@ -16,6 +16,9 @@ import { defineToastElement } from './define/ui-toast'
 import { defineToggleGroupElement } from './define/ui-toggle-group'
 import { defineNumberStepperElement } from './define/ui-number-stepper'
 import { defineColorPickerElement } from './define/ui-color-picker'
+import { defineFormElement } from './define/ui-form'
+import { defineRangeFieldElement } from './define/ui-range-field'
+import { defineOtpFieldElement } from './define/ui-otp-field'
 
 export {
   defineTabsElement,
@@ -36,6 +39,9 @@ export {
   defineToggleGroupElement,
   defineNumberStepperElement,
   defineColorPickerElement,
+  defineFormElement,
+  defineRangeFieldElement,
+  defineOtpFieldElement,
 }
 
 export function defineTimelessElements(targetWindow: Window = window): void {
@@ -57,4 +63,7 @@ export function defineTimelessElements(targetWindow: Window = window): void {
   defineToggleGroupElement(targetWindow)
   defineNumberStepperElement(targetWindow)
   defineColorPickerElement(targetWindow)
+  defineFormElement(targetWindow)
+  defineRangeFieldElement(targetWindow)
+  defineOtpFieldElement(targetWindow)
 }

@@ -27,6 +27,19 @@ import { Default as ChoiceGroup, RadioGroup } from './stories/form-primitives/ch
 import { Default as Field, Validation } from './stories/form-primitives/field.stories'
 import { Default as FileInput, InvalidFile } from './stories/form-primitives/file-input.stories'
 import { Default as Range } from './stories/form-primitives/range.stories'
+import {
+  AgainstChoiceGroup as FieldsetDensity,
+  Default as Fieldset,
+} from './stories/form-primitives/fieldset.stories'
+import { Default as Form } from './stories/form-primitives/form.stories'
+import {
+  Default as OtpField,
+  InSignInForm as OtpFieldInForm,
+} from './stories/form-primitives/otp-field.stories'
+import {
+  AgainstSingleThumb as RangeFieldPair,
+  Default as RangeField,
+} from './stories/form-primitives/range-field.stories'
 import { Default as NumberStepper } from './stories/form-primitives/number-stepper.stories'
 import { Default as Select } from './stories/form-primitives/select.stories'
 import { Default as Switch } from './stories/form-primitives/switch.stories'
@@ -113,6 +126,49 @@ describe('catalog stories', () => {
     expect(Range.render()).toContain('type="range"')
     expect(fileHtml).toContain('type="file"')
     expect(invalidFileHtml).toContain('aria-invalid="true"')
+  })
+
+  it('renders milestone 023 form completeness stories through authored native anatomy', () => {
+    const fieldsetHtml = Fieldset.render()
+    const otpHtml = OtpField.render()
+    const rangeFieldHtml = RangeField.render()
+    const formHtml = Form.render()
+
+    expect(fieldsetHtml).toContain('<fieldset class="ui-fieldset"')
+    expect(fieldsetHtml).toContain('<legend>Billing address</legend>')
+    expect(FieldsetDensity.render()).toContain('data-ui-density="compact"')
+
+    // The cells are authored, not generated, so the copyable source has to carry the whole contract.
+    expect(otpHtml).toContain('<ui-otp-field')
+    expect(otpHtml).toContain('autocomplete="one-time-code"')
+    expect(otpHtml.match(/autocomplete="one-time-code"/g)).toHaveLength(1)
+    expect(otpHtml).toContain('inputmode="numeric"')
+    expect(otpHtml).toContain('maxlength="1"')
+    expect(otpHtml).toContain('aria-label="Digit 1 of 6"')
+    expect(OtpFieldInForm.render()).toContain('type="submit"')
+
+    // Both thumbs carry their own name, so the pair submits with scripting off.
+    expect(rangeFieldHtml).toContain('<ui-range-field')
+    expect(rangeFieldHtml).toContain('name="budget-from"')
+    expect(rangeFieldHtml).toContain('name="budget-to"')
+    expect(rangeFieldHtml).toContain('data-ui-part="track"')
+    expect(RangeFieldPair.render()).toContain('data-ui-part="hint"')
+
+    expect(formHtml).toContain('<ui-form>')
+    expect(formHtml).toContain('data-ui-part="form"')
+    expect(formHtml).toContain('class="ui-error" data-ui-part="error"')
+  })
+
+  it('keeps milestone 023 copyable source free of demo wrappers and private hooks', () => {
+    for (const source of [
+      Fieldset.source(),
+      OtpField.source(),
+      RangeField.source(),
+      Form.source(),
+    ]) {
+      expect(source).not.toContain('ui-demo-page')
+      expect(source).not.toContain('data-ui-internal-')
+    }
   })
 
   it('renders milestone 009 controls with minimal public anatomy', () => {

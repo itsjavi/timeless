@@ -14,6 +14,13 @@ import { colorPickerPopoverScript, createColorPicker } from './color-picker.html
 import { createColorPalette, createColorSwatch } from './color-swatch.html.ts'
 import { createEmpty } from './empty.html.ts'
 import {
+  createFieldset,
+  createOtpField,
+  createRangeFieldPair,
+  createServerErrorForm,
+  serverErrorFormScript,
+} from './form-fields.html.ts'
+import {
   createAccountForm,
   createChoiceGroup,
   createFileField,
@@ -408,6 +415,104 @@ export const examples = [
       }),
   }),
   example({
+    id: 'fieldset',
+    domain: 'forms',
+    guidance:
+      'Use Fieldset to group controls that are not one field — an address block, a billing section. For a set of radios or checkboxes that answer one question, [Checkbox Group](/docs/components/checkbox-group/) and [Radio Group](/docs/components/radio-group/) sit on `.ui-choice-group`, which strips the native chrome because the set reads as a single field.',
+    authoring:
+      'Keep the `<legend>` the first child: that is what makes the browser treat it as the group name, and no ARIA substitutes for it. Native `disabled` on the `<fieldset>` disables and un-submits everything inside it, including form-associated custom elements, which is why the group needs no disabled attribute of its own.',
+    group: 'Forms',
+    contracts: ['fieldset', 'field', 'label', 'input', 'description'],
+    component: 'Fieldset',
+    title: 'Fieldset',
+    description: 'Group unrelated controls under one native legend.',
+    definitions: [],
+    styles: ['tokens.css', 'forms.css'],
+    render: () =>
+      createFieldset({
+        id: 'billing',
+        legend: 'Billing address',
+        description: 'Used on every invoice for this workspace.',
+        children: [
+          createTextField({
+            id: 'billing-street',
+            name: 'street',
+            label: 'Street',
+            placeholder: '12 Copperfield Way',
+          }),
+          createTextField({ id: 'billing-city', name: 'city', label: 'City' }),
+        ].join('\n  '),
+      }),
+  }),
+  example({
+    id: 'form',
+    domain: 'forms',
+    guidance:
+      'Reach for Form only when errors arrive from somewhere the browser cannot see — a server response, an async uniqueness check. Everything a `required`, a `type="email"`, or a `pattern` can decide is already decided by native constraint validation, and adding Form does not change it.',
+    authoring:
+      'Author an empty `error` part inside each field wrapper. Form resolves it as the single `error` part in the nearest wrapper holding no other named control, which is the shape `.ui-field`, `.ui-choice-group`, and `.ui-fieldset` already produce, then writes the message and points the field’s `aria-describedby` at it. A field with no wrapper gets no error element rather than someone else’s.',
+    group: 'Forms',
+    contracts: ['form', 'field', 'label', 'input', 'description', 'error'],
+    component: 'Form',
+    title: 'Form',
+    description: 'Put server-side errors back onto the fields they came from.',
+    definitions: ['ui-form'],
+    styles: ['tokens.css', 'forms.css', 'form.css', 'button.css'],
+    render: () => createServerErrorForm(),
+    script: serverErrorFormScript,
+  }),
+  example({
+    id: 'otp-field',
+    domain: 'forms',
+    authoring:
+      'Author every cell. `autocomplete="one-time-code"` goes on the first cell only, so the platform offers the SMS code once rather than per cell; every cell needs `maxlength="1"`, `inputmode="numeric"` for the numeric keyboard, and an accessible name naming its position. The cells carry no `name` — the joined code submits under the host `name`.',
+    guidance:
+      'Without JavaScript the cells are still usable native inputs, but only the enhanced field submits the code, because the joined value belongs to the host. That is the same bar [Select](/docs/components/select/) and [Combobox](/docs/components/combobox/) meet.',
+    group: 'Forms',
+    contracts: ['otpField', 'field', 'label', 'input', 'description'],
+    component: 'OTP Field',
+    title: 'OTP Field',
+    description: 'A one-time code across native single-character inputs.',
+    definitions: ['ui-otp-field'],
+    styles: ['tokens.css', 'forms.css', 'otp-field.css'],
+    render: () =>
+      createOtpField({
+        id: 'signin-code',
+        name: 'code',
+        label: 'Verification code',
+        length: 6,
+        groupAfter: [3],
+        description: 'Paste the whole code — it spreads across the cells.',
+      }),
+  }),
+  example({
+    id: 'range-field',
+    domain: 'forms',
+    guidance:
+      'Use Range Field when the value is a span. For a single value, [Range](/docs/components/range/) is CSS over one native input and needs no JavaScript at all.',
+    authoring:
+      'Both thumbs are native range inputs with their own `name`, so the pair submits as two entries and resets natively with scripting off. Give each one its own accessible name saying which end it is; nothing else can tell them apart in a screen reader.',
+    group: 'Forms',
+    contracts: ['rangeField', 'field', 'label', 'description'],
+    component: 'Range Field',
+    title: 'Range Field',
+    description: 'Two native thumbs on one track, kept in order.',
+    definitions: ['ui-range-field'],
+    styles: ['tokens.css', 'forms.css', 'range-field.css'],
+    render: () =>
+      createRangeFieldPair({
+        id: 'budget',
+        name: 'budget',
+        label: 'Monthly budget',
+        min: 0,
+        max: 500,
+        step: 10,
+        from: 120,
+        to: 380,
+        description: 'A thumb stops at its neighbour rather than swapping with it.',
+      }),
+  }),
+  example({
     id: 'file-input',
     domain: 'forms',
     group: 'Forms',
@@ -515,7 +620,7 @@ export const examples = [
     title: 'Checkbox Group',
     description: 'Coordinate a group of native checkboxes.',
     definitions: ['ui-checkbox-group'],
-    styles: ['tokens.css', 'forms.css', 'choice-group.css'],
+    styles: ['tokens.css', 'forms.css', 'choice-groups.css'],
     render: () =>
       [
         createCheckboxGroup({
@@ -627,7 +732,7 @@ export const examples = [
     title: 'Radio Group',
     description: 'Coordinate a roving native radio group.',
     definitions: ['ui-radio-group'],
-    styles: ['tokens.css', 'forms.css', 'choice-group.css'],
+    styles: ['tokens.css', 'forms.css', 'choice-groups.css'],
     render: () =>
       [
         createRadioGroup({

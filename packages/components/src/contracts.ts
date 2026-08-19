@@ -55,8 +55,12 @@ export type ComponentEventContract = {
 
 /** Keyboard and focus behavior the component implements itself. */
 export type ComponentAccessibilityContract = {
-  /** ARIA Authoring Practices pattern slug, e.g. `tabs`. */
-  readonly pattern: string
+  /**
+   * ARIA Authoring Practices pattern slug, e.g. `tabs`. Null when the APG has no pattern for
+   * this composition, in which case `patternLabel` names the contract the component documents
+   * instead. Never a slug invented to fill the gap.
+   */
+  readonly pattern: string | null
   readonly patternLabel: string
   readonly keys: readonly { readonly key: string; readonly action: string }[]
   /** What the platform handles, and what the author still owns. */
@@ -98,6 +102,7 @@ export type ComponentName =
   | 'meter'
   | 'colorSwatch'
   | 'field'
+  | 'fieldset'
   | 'label'
   | 'description'
   | 'error'
@@ -130,6 +135,9 @@ export type ComponentName =
   | 'toggleGroup'
   | 'numberStepper'
   | 'colorPicker'
+  | 'form'
+  | 'rangeField'
+  | 'otpField'
 
 export const componentContracts = {
   button: {
@@ -1057,6 +1065,63 @@ export const componentContracts = {
     variables: [],
     events: [],
   },
+  fieldset: {
+    kind: 'css',
+    root: {
+      kind: 'class',
+      name: 'ui-fieldset',
+    },
+    css: ['forms.css'],
+    attributes: [
+      {
+        name: 'data-ui-density',
+        type: 'string',
+        set: 'formDensities',
+        values: ['compact', 'normal', 'spacious'],
+        default: 'normal',
+        description: 'Gap between grouped controls, and the padding around them.',
+      },
+    ],
+    parts: [
+      {
+        name: 'legend',
+        required: true,
+        selector: 'legend',
+        description:
+          'The native `<legend>`, which names the group. Keep it the first child, because that is what makes the browser treat it as the group label.',
+      },
+      {
+        name: 'description',
+        required: false,
+        selector: "[data-ui-part~='description']",
+        description: 'Group-level help text under the legend.',
+      },
+      {
+        name: 'error',
+        required: false,
+        selector: "[data-ui-part~='error']",
+        description: 'Group-level validation message.',
+      },
+    ],
+    states: [
+      {
+        name: 'invalid',
+        source: 'aria',
+        public: true,
+        description:
+          'Set `aria-invalid="true"` on the `<fieldset>` and point `aria-describedby` at the error part.',
+      },
+      {
+        name: 'disabled',
+        source: 'native',
+        public: true,
+        description:
+          'Native `disabled` on the `<fieldset>`, which the browser propagates to every control inside it.',
+      },
+    ],
+    variables: [],
+    events: [],
+  },
   label: {
     kind: 'css',
     root: {
@@ -1180,7 +1245,7 @@ export const componentContracts = {
         set: 'formControlSizes',
         values: ['sm', 'md', 'lg'],
         default: 'md',
-        description: 'Control height, padding, and font size.',
+        description: 'Control height, padding, font size, and the size of the drop-down indicator.',
       },
     ],
     parts: [],
@@ -1198,7 +1263,13 @@ export const componentContracts = {
         description: 'Native `disabled`.',
       },
     ],
-    variables: [],
+    variables: [
+      {
+        name: '--ui-select-indicator',
+        description:
+          'Width of the drop-down indicator, which also sets the end padding reserved for it. Timeless draws the mark itself with `appearance: none`, because the platform arrow sits at a fixed engine-chosen offset no author padding moves, and WebKit drops `padding` and `min-block-size` on a UA-drawn select entirely. The mark is two gradient halves rather than an icon asset, so it follows `currentColor`; redeclare `background-image` to replace it. The drop-down list itself is still UA-drawn, which is what `color-scheme` on the control is for.',
+      },
+    ],
     events: [],
   },
   checkbox: {
@@ -2084,7 +2155,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-radio-group',
     },
-    css: ['choice-group.css'],
+    css: ['forms.css', 'choice-groups.css'],
     attributes: [
       {
         name: 'orientation',
@@ -2155,7 +2226,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-checkbox-group',
     },
-    css: ['choice-group.css'],
+    css: ['forms.css', 'choice-groups.css'],
     attributes: [
       {
         name: 'orientation',
@@ -3459,6 +3530,244 @@ export const componentContracts = {
         cancelable: false,
       },
     ],
+  },
+  form: {
+    kind: 'custom-element',
+    root: {
+      kind: 'element',
+      name: 'ui-form',
+    },
+    css: ['form.css'],
+    attributes: [],
+    parts: [
+      {
+        name: 'form',
+        required: true,
+        selector: 'form',
+        description:
+          'The native `<form>`. Submission, `method`, `action`, reset, and constraint validation are all still its job; `ui-form` only writes messages onto the fields inside it.',
+      },
+      {
+        name: 'error',
+        required: false,
+        selector: "[data-ui-part~='error']",
+        description:
+          'The message element for one field, resolved as the single `error` part inside the nearest wrapper that holds no other named control. `.ui-field`, `.ui-choice-group`, and `.ui-fieldset` all produce that shape, so no pairing attribute is needed. `ui-form` writes its text and points the field’s `aria-describedby` at it.',
+      },
+    ],
+    states: [],
+    variables: [],
+    events: [
+      {
+        name: 'ui-invalid',
+        type: 'CustomEvent<FormInvalidDetail>',
+        description:
+          'Dispatched after `setErrors` has put at least one message on a control, naming the fields that matched. Clearing errors dispatches nothing.',
+        cancelable: false,
+      },
+    ],
+    accessibility: {
+      pattern: null,
+      patternLabel: 'Form errors',
+      keys: [],
+      notes:
+        'There is no APG pattern for server-side error mapping. `ui-form` sets `aria-invalid` on each field it marks and points `aria-describedby` at the authored error text, then moves focus to the first field that took a message — which is what makes the error reachable rather than merely visible. Everything else, including the native validation bubble, stays with the platform.',
+    },
+  },
+  rangeField: {
+    kind: 'custom-element',
+    root: {
+      kind: 'element',
+      name: 'ui-range-field',
+    },
+    css: ['range-field.css'],
+    attributes: [],
+    parts: [
+      {
+        name: 'track',
+        required: true,
+        selector: "[data-ui-part~='track']",
+        description:
+          'Wrapper around the two thumbs. It is the shared track: both inputs stack inside it, and the fill between them is drawn on it from measured bounds.',
+      },
+      {
+        name: 'from',
+        required: true,
+        selector: "input[type='range']",
+        description:
+          'The lower thumb, a native range input. Give it its own `name`, `min`, `max`, `step`, and accessible name; it submits and resets on its own, with no JavaScript.',
+      },
+      {
+        name: 'to',
+        required: true,
+        selector: "input[type='range']",
+        description:
+          'The upper thumb. Same contract as `from`, with its own `name` so the pair submits as two entries.',
+      },
+      {
+        name: 'output',
+        required: false,
+        selector: "[data-ui-part~='output']",
+        description:
+          'Live readout of the pair. Timeless writes the current values into it as text, so omit the part when you want to format them yourself.',
+      },
+    ],
+    states: [
+      {
+        name: 'disabled',
+        source: 'native',
+        public: true,
+        description: 'Native `disabled` on either thumb.',
+      },
+    ],
+    variables: [
+      {
+        name: '--ui-range-track',
+        description: 'Track thickness.',
+      },
+      {
+        name: '--ui-range-thumb',
+        description: 'Thumb diameter.',
+      },
+      {
+        name: '--ui-range-fill',
+        description: 'Colour of the filled span between the two thumbs.',
+      },
+    ],
+    events: [
+      {
+        name: 'ui-change',
+        type: 'CustomEvent<RangeFieldChangeDetail>',
+        description:
+          'Dispatched after either thumb moves, carrying the clamped pair and which thumb moved. Bubbles and is composed.',
+        cancelable: false,
+      },
+    ],
+    accessibility: {
+      pattern: 'slider-multithumb',
+      patternLabel: 'Slider (Multi-Thumb)',
+      keys: [
+        {
+          key: 'Arrow keys, Home / End, Page Up / Page Down',
+          action: 'Move the focused thumb. Handled by the native range input, not by Timeless.',
+        },
+      ],
+      notes:
+        'Each thumb is a native `input[type=range]` and therefore its own tab stop, with its own accessible name and its own value announcement. Timeless only keeps the pair ordered: a thumb stops at its neighbour rather than swapping with it, so the key you are holding never starts moving the other thumb.',
+    },
+  },
+  otpField: {
+    kind: 'custom-element',
+    root: {
+      kind: 'element',
+      name: 'ui-otp-field',
+    },
+    css: ['forms.css', 'otp-field.css'],
+    attributes: [
+      {
+        name: 'name',
+        type: 'string',
+        description:
+          'Form field name. The joined code submits as one entry through `ElementInternals`; the cells themselves carry no `name`.',
+      },
+      {
+        name: 'length',
+        type: 'number',
+        description:
+          'How many characters the code has. Defaults to the number of authored cells, and is what a partly filled field is measured against.',
+      },
+      {
+        name: 'value',
+        type: 'string',
+        description:
+          'The code on load and after a form reset. Assign the `value` property for live changes; once the user types, the attribute stops applying, the way it does on a native input.',
+      },
+      {
+        name: 'required',
+        type: 'boolean',
+        description: 'Present to block submission while the field is empty, with `valueMissing`.',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        description:
+          'Present to disable the field. A field inside a disabled `<fieldset>` is disabled too, and submits nothing either way.',
+      },
+    ],
+    parts: [
+      {
+        name: 'cell',
+        required: true,
+        selector: "[data-ui-part~='cell']",
+        description:
+          'One native input holding one character. Author `maxlength="1"`, `inputmode="numeric"`, an accessible name naming its position, and `autocomplete="one-time-code"` on the first cell only. Give it `class="ui-input"` to pick up the shared control styling.',
+      },
+      {
+        name: 'separator',
+        required: false,
+        selector: "[data-ui-part~='separator']",
+        description:
+          'Decorative mark between groups of cells, as in `123-456`. Hide it from assistive technology with `aria-hidden="true"`.',
+      },
+    ],
+    states: [],
+    variables: [
+      {
+        name: '--ui-otp-cell',
+        description: 'Width of one cell.',
+      },
+    ],
+    events: [
+      {
+        name: 'ui-before-change',
+        type: 'CustomEvent<OtpFieldChangeDetail>',
+        description:
+          'Cancelable proposal dispatched before the code changes. Call `preventDefault()` to reject the transition and keep the current value.',
+        cancelable: true,
+      },
+      {
+        name: 'ui-change',
+        type: 'CustomEvent<OtpFieldChangeDetail>',
+        description: 'Dispatched after the code has changed. Bubbles and is composed.',
+        cancelable: false,
+      },
+      {
+        name: 'ui-complete',
+        type: 'CustomEvent<OtpFieldCompleteDetail>',
+        description:
+          'Dispatched once every character the field expects has been entered, which is where an auto-submit belongs.',
+        cancelable: false,
+      },
+    ],
+    accessibility: {
+      pattern: null,
+      patternLabel: 'One-time code',
+      keys: [
+        {
+          key: 'Printable characters',
+          action: 'Fill the focused cell and move focus to the next one.',
+        },
+        {
+          key: 'Backspace',
+          action:
+            'Clear the focused cell, or step back and clear the previous one when it is already empty.',
+        },
+        {
+          key: 'Arrow keys',
+          action: 'Move between cells.',
+        },
+        {
+          key: 'Home / End',
+          action: 'Move to the first or last cell.',
+        },
+        {
+          key: 'Paste',
+          action: 'Spread the pasted code across the cells from the focused one onward.',
+        },
+      ],
+      notes:
+        'There is no APG pattern for a one-time-code field, so the contract is a composition of things the platform already defines rather than invented ARIA: a named `role="group"` over native inputs, each independently tabbable and separately labelled by position. No roving `tabindex` is written, because every cell is a real tab stop. Autofill, the numeric keyboard, and paste come from the inputs themselves.',
+    },
   },
 } as const satisfies Readonly<Record<ComponentName, ComponentContract>>
 

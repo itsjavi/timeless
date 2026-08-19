@@ -458,6 +458,60 @@
           "description": "Initial and form-reset color, in any CSS color syntax. Unlike the collection elements, the picker reflects one `value` property rather than a separate authored default."
         }
       ]
+    },
+    {
+      "name": "ui-form",
+      "description": "Timeless `ui-form`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Form errors pattern. Dispatches `ui-invalid`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": []
+    },
+    {
+      "name": "ui-range-field",
+      "description": "Timeless `ui-range-field`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Slider (Multi-Thumb) pattern. Dispatches `ui-change`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": []
+    },
+    {
+      "name": "ui-otp-field",
+      "description": "Timeless `ui-otp-field`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA One-time code pattern. Dispatches `ui-before-change`, `ui-change`, `ui-complete`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "description": "Form field name. The joined code submits as one entry through `ElementInternals`; the cells themselves carry no `name`."
+        },
+        {
+          "name": "length",
+          "description": "How many characters the code has. Defaults to the number of authored cells, and is what a partly filled field is measured against."
+        },
+        {
+          "name": "value",
+          "description": "The code on load and after a form reset. Assign the `value` property for live changes; once the user types, the attribute stops applying, the way it does on a native input."
+        },
+        {
+          "name": "required",
+          "description": "Present to block submission while the field is empty, with `valueMissing`. Presence-based: author the attribute with no value."
+        },
+        {
+          "name": "disabled",
+          "description": "Present to disable the field. A field inside a disabled `<fieldset>` is disabled too, and submits nothing either way. Presence-based: author the attribute with no value."
+        }
+      ]
     }
   ],
   "globalAttributes": [

@@ -54,3 +54,63 @@ test('an authored popovertarget opens the select surface without JavaScript', as
   await page.keyboard.press('Escape')
   await expect(surface).toBeHidden()
 })
+
+/**
+ * The fieldset and the native select are CSS over native elements, so scripting off changes nothing
+ * about them. Milestone 023's acceptance names them as the two that must be *fully* functional.
+ */
+test('a fieldset and a native select stay fully functional without JavaScript', async ({
+  page,
+}) => {
+  await page.goto('/stories/library-forms-fieldset--default/')
+  const street = page.getByLabel('Street')
+  await street.fill('12 Copperfield Way')
+  await expect(street).toHaveValue('12 Copperfield Way')
+  await expect(page.getByRole('group', { name: 'Billing address' })).toBeVisible()
+
+  await page.goto('/stories/library-forms-native-select--default/')
+  const select = page.getByLabel('Role')
+  await select.selectOption('admin')
+  await expect(select).toHaveValue('admin')
+  // The indicator is drawn by CSS, so it is there before any script runs.
+  expect(await select.evaluate((element) => getComputedStyle(element).backgroundImage)).toContain(
+    'gradient',
+  )
+})
+
+/**
+ * The two enhanced fields degrade differently, and the docs say so per component. The range pair
+ * still submits, because both thumbs are native inputs with their own `name`. The OTP field is
+ * usable but submits nothing, because the joined code belongs to the host — the same bar Select and
+ * Combobox meet.
+ */
+test('the two-thumb range still submits without JavaScript', async ({ page }) => {
+  await page.goto('/stories/library-forms-range-field--default/')
+  const from = page.locator("ui-range-field [data-ui-part~='from']")
+  await expect(from).toBeVisible()
+
+  const submitted = await page.locator('ui-range-field').evaluate((host) => {
+    const form = host.ownerDocument.createElement('form')
+    host.parentElement?.insertBefore(form, host)
+    form.append(host)
+    return [...new FormData(form).entries()]
+  })
+  expect(submitted).toEqual([
+    ['budget-from', '120'],
+    ['budget-to', '380'],
+  ])
+})
+
+test('the one-time code cells stay usable without JavaScript', async ({ page }) => {
+  await page.goto('/stories/library-forms-otp-field--in-sign-in-form/')
+  const cells = page.locator("ui-otp-field [data-ui-part~='cell']")
+  await expect(cells).toHaveCount(6)
+
+  await cells.nth(0).fill('4')
+  await expect(cells.nth(0)).toHaveValue('4')
+  // No focus advance and no joined value: that behavior is the enhancement, and the docs say so.
+  await expect(page.locator('ui-otp-field')).toHaveAttribute('name', 'code')
+  expect(
+    await cells.nth(0).evaluate((cell: HTMLInputElement) => cell.getAttribute('autocomplete')),
+  ).toBe('one-time-code')
+})

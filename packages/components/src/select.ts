@@ -208,6 +208,7 @@ export type UISelectElementConstructor = CustomElementConstructor & {
     readonly willValidate: boolean
     checkValidity(): boolean
     reportValidity(): boolean
+    setCustomValidity(message: string): void
   }
 }
 
@@ -257,6 +258,7 @@ export function createSelectElementClass(targetWindow?: Window): UISelectElement
     }
 
     #activeIndex: number | null = null
+    #customValidity = ''
     #fieldsetDisabled = false
     #page = 0
     #syncingOpen = false
@@ -323,6 +325,17 @@ export function createSelectElementClass(targetWindow?: Window): UISelectElement
 
     reportValidity(): boolean {
       return this.internals?.reportValidity() ?? true
+    }
+
+    /**
+     * The native `setCustomValidity` contract, which a form-associated custom element does not get
+     * for free: its validity lives in `ElementInternals`, so an outside caller — `ui-form` mapping a
+     * server error onto a named field, say — has nothing to reach for unless the element forwards
+     * it. An empty message clears the error and restores the element's own constraints.
+     */
+    setCustomValidity(message: string): void {
+      this.#customValidity = message
+      this.commitFormValue()
     }
 
     protected override disconnected(): void {
@@ -800,6 +813,7 @@ export function createSelectElementClass(targetWindow?: Window): UISelectElement
         collectionFormValue(this.name, values, this.ownerDocument.defaultView),
       )
       applyCollectionValidity(internals, {
+        customError: this.#customValidity,
         anchor: this.trigger,
         disabled: this.isDisabled,
         required: this.required,

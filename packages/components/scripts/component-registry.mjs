@@ -76,8 +76,10 @@ const variable = (name, description) => ({ name, description })
 /**
  * Keyboard and focus behavior, for the accessibility section of each component page.
  *
- * `pattern` is an ARIA Authoring Practices pattern slug. `keys` documents only what the component
- * itself implements — keys the platform already handles are called out in `notes` instead, because
+ * `pattern` is an ARIA Authoring Practices pattern slug, or `null` where the APG has no pattern for
+ * the composition — `patternLabel` then names what the component documents instead, and `notes`
+ * carries the reasoning. Inventing a slug to fill the gap would document ARIA nobody specified.
+ * `keys` documents only what the component itself implements — keys the platform already handles are called out in `notes` instead, because
  * "the browser does this" is the more useful fact for a progressive-enhancement library.
  */
 const accessibility = (pattern, patternLabel, keys = [], notes = '') => ({
@@ -907,6 +909,36 @@ export const components = [
       ),
     ],
   ),
+  css(
+    'fieldset',
+    'ui-fieldset',
+    'forms.css',
+    [density('formDensities', 'Gap between grouped controls, and the padding around them.')],
+    [
+      part(
+        'legend',
+        true,
+        'legend',
+        'The native `<legend>`, which names the group. Keep it the first child, because that is what makes the browser treat it as the group label.',
+      ),
+      part('description', false, undefined, 'Group-level help text under the legend.'),
+      part('error', false, undefined, 'Group-level validation message.'),
+    ],
+    [
+      state(
+        'invalid',
+        'aria',
+        true,
+        'Set `aria-invalid="true"` on the `<fieldset>` and point `aria-describedby` at the error part.',
+      ),
+      state(
+        'disabled',
+        'native',
+        true,
+        'Native `disabled` on the `<fieldset>`, which the browser propagates to every control inside it.',
+      ),
+    ],
+  ),
   css('label', 'ui-label', 'forms.css'),
   css('description', 'ui-description', 'forms.css'),
   css('error', 'ui-error', 'forms.css'),
@@ -936,11 +968,22 @@ export const components = [
     'nativeSelect',
     'ui-select',
     'forms.css',
-    [size('formControlSizes')],
+    [
+      size(
+        'formControlSizes',
+        'Control height, padding, font size, and the size of the drop-down indicator.',
+      ),
+    ],
     [],
     [
       state('invalid', 'native', true, 'Native `:invalid`, or `aria-invalid="true"`.'),
       state('disabled', 'native', true, 'Native `disabled`.'),
+    ],
+    [
+      variable(
+        '--ui-select-indicator',
+        'Width of the drop-down indicator, which also sets the end padding reserved for it. Timeless draws the mark itself with `appearance: none`, because the platform arrow sits at a fixed engine-chosen offset no author padding moves, and WebKit drops `padding` and `min-block-size` on a UA-drawn select entirely. The mark is two gradient halves rather than an icon asset, so it follows `currentColor`; redeclare `background-image` to replace it. The drop-down list itself is still UA-drawn, which is what `color-scheme` on the control is for.',
+      ),
     ],
   ),
   css(
@@ -1454,7 +1497,7 @@ export const components = [
     'UIRadioGroupElement',
     'createRadioGroupElementClass',
     'defineRadioGroupElement',
-    'choice-group.css',
+    ['forms.css', 'choice-groups.css'],
     [
       attribute('orientation', 'string', {
         set: 'choiceGroupOrientations',
@@ -1492,7 +1535,7 @@ export const components = [
     'UICheckboxGroupElement',
     'createCheckboxGroupElementClass',
     'defineCheckboxGroupElement',
-    'choice-group.css',
+    ['forms.css', 'choice-groups.css'],
     [
       attribute('orientation', 'string', {
         set: 'choiceGroupOrientations',
@@ -1936,6 +1979,176 @@ export const components = [
       event('input', 'Event', 'Native `input` event dispatched while the color is being edited.'),
       event('change', 'Event', 'Native `change` event dispatched when the edit is committed.'),
     ],
+  ),
+  customElement(
+    'form',
+    'ui-form',
+    'form',
+    'UIFormElement',
+    'createFormElementClass',
+    'defineFormElement',
+    'form.css',
+    [],
+    [
+      part(
+        'form',
+        true,
+        'form',
+        'The native `<form>`. Submission, `method`, `action`, reset, and constraint validation are all still its job; `ui-form` only writes messages onto the fields inside it.',
+      ),
+      part(
+        'error',
+        false,
+        undefined,
+        'The message element for one field, resolved as the single `error` part inside the nearest wrapper that holds no other named control. `.ui-field`, `.ui-choice-group`, and `.ui-fieldset` all produce that shape, so no pairing attribute is needed. `ui-form` writes its text and points the field\u2019s `aria-describedby` at it.',
+      ),
+    ],
+    [],
+    [],
+    [
+      event(
+        'ui-invalid',
+        'CustomEvent<FormInvalidDetail>',
+        'Dispatched after `setErrors` has put at least one message on a control, naming the fields that matched. Clearing errors dispatches nothing.',
+      ),
+    ],
+    accessibility(
+      null,
+      'Form errors',
+      [],
+      'There is no APG pattern for server-side error mapping. `ui-form` sets `aria-invalid` on each field it marks and points `aria-describedby` at the authored error text, then moves focus to the first field that took a message \u2014 which is what makes the error reachable rather than merely visible. Everything else, including the native validation bubble, stays with the platform.',
+    ),
+  ),
+  customElement(
+    'rangeField',
+    'ui-range-field',
+    'range-field',
+    'UIRangeFieldElement',
+    'createRangeFieldElementClass',
+    'defineRangeFieldElement',
+    'range-field.css',
+    [],
+    [
+      part(
+        'track',
+        true,
+        undefined,
+        'Wrapper around the two thumbs. It is the shared track: both inputs stack inside it, and the fill between them is drawn on it from measured bounds.',
+      ),
+      part(
+        'from',
+        true,
+        "input[type='range']",
+        'The lower thumb, a native range input. Give it its own `name`, `min`, `max`, `step`, and accessible name; it submits and resets on its own, with no JavaScript.',
+      ),
+      part(
+        'to',
+        true,
+        "input[type='range']",
+        'The upper thumb. Same contract as `from`, with its own `name` so the pair submits as two entries.',
+      ),
+      part(
+        'output',
+        false,
+        undefined,
+        'Live readout of the pair. Timeless writes the current values into it as text, so omit the part when you want to format them yourself.',
+      ),
+    ],
+    [state('disabled', 'native', true, 'Native `disabled` on either thumb.')],
+    [
+      variable('--ui-range-track', 'Track thickness.'),
+      variable('--ui-range-thumb', 'Thumb diameter.'),
+      variable('--ui-range-fill', 'Colour of the filled span between the two thumbs.'),
+    ],
+    [
+      event(
+        'ui-change',
+        'CustomEvent<RangeFieldChangeDetail>',
+        'Dispatched after either thumb moves, carrying the clamped pair and which thumb moved. Bubbles and is composed.',
+      ),
+    ],
+    accessibility(
+      'slider-multithumb',
+      'Slider (Multi-Thumb)',
+      [
+        key(
+          'Arrow keys, Home / End, Page Up / Page Down',
+          'Move the focused thumb. Handled by the native range input, not by Timeless.',
+        ),
+      ],
+      'Each thumb is a native `input[type=range]` and therefore its own tab stop, with its own accessible name and its own value announcement. Timeless only keeps the pair ordered: a thumb stops at its neighbour rather than swapping with it, so the key you are holding never starts moving the other thumb.',
+    ),
+  ),
+  customElement(
+    'otpField',
+    'ui-otp-field',
+    'otp-field',
+    'UIOtpFieldElement',
+    'createOtpFieldElementClass',
+    'defineOtpFieldElement',
+    ['forms.css', 'otp-field.css'],
+    [
+      attribute('name', 'string', {
+        description:
+          'Form field name. The joined code submits as one entry through `ElementInternals`; the cells themselves carry no `name`.',
+      }),
+      attribute('length', 'number', {
+        property: { name: 'length', type: 'string' },
+        description:
+          'How many characters the code has. Defaults to the number of authored cells, and is what a partly filled field is measured against.',
+      }),
+      attribute('value', 'string', {
+        property: valueProperty,
+        description:
+          'The code on load and after a form reset. Assign the `value` property for live changes; once the user types, the attribute stops applying, the way it does on a native input.',
+      }),
+      attribute('required', 'boolean', {
+        description: 'Present to block submission while the field is empty, with `valueMissing`.',
+      }),
+      attribute('disabled', 'boolean', {
+        description:
+          'Present to disable the field. A field inside a disabled `<fieldset>` is disabled too, and submits nothing either way.',
+      }),
+    ],
+    [
+      part(
+        'cell',
+        true,
+        undefined,
+        'One native input holding one character. Author `maxlength="1"`, `inputmode="numeric"`, an accessible name naming its position, and `autocomplete="one-time-code"` on the first cell only. Give it `class="ui-input"` to pick up the shared control styling.',
+      ),
+      part(
+        'separator',
+        false,
+        undefined,
+        'Decorative mark between groups of cells, as in `123-456`. Hide it from assistive technology with `aria-hidden="true"`.',
+      ),
+    ],
+    [],
+    [variable('--ui-otp-cell', 'Width of one cell.')],
+    [
+      ...transitionEvents('the code', 'OtpFieldChangeDetail'),
+      event(
+        'ui-complete',
+        'CustomEvent<OtpFieldCompleteDetail>',
+        'Dispatched once every character the field expects has been entered, which is where an auto-submit belongs.',
+      ),
+    ],
+    accessibility(
+      null,
+      'One-time code',
+      [
+        key('Printable characters', 'Fill the focused cell and move focus to the next one.'),
+        key(
+          'Backspace',
+          'Clear the focused cell, or step back and clear the previous one when it is already empty.',
+        ),
+        key('Arrow keys', 'Move between cells.'),
+        key('Home / End', 'Move to the first or last cell.'),
+        key('Paste', 'Spread the pasted code across the cells from the focused one onward.'),
+      ],
+      'There is no APG pattern for a one-time-code field, so the contract is a composition of things the platform already defines rather than invented ARIA: a named `role="group"` over native inputs, each independently tabbable and separately labelled by position. No roving `tabindex` is written, because every cell is a real tab stop. Autofill, the numeric keyboard, and paste come from the inputs themselves.',
+    ),
   ),
 ]
 

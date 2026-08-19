@@ -137,6 +137,10 @@ export type UIAttributeConfig = {
     /** Gap between label, control, description, and error. */
     density?: FormDensity
   }
+  fieldset: {
+    /** Gap between grouped controls, and the padding around them. */
+    density?: FormDensity
+  }
   label: {}
   description: {}
   error: {}
@@ -149,7 +153,7 @@ export type UIAttributeConfig = {
     size?: FormControlSize
   }
   nativeSelect: {
-    /** Control height, padding, and font size. */
+    /** Control height, padding, font size, and the size of the drop-down indicator. */
     size?: FormControlSize
   }
   checkbox: {}

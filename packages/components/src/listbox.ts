@@ -167,6 +167,7 @@ export type UIListboxElementConstructor = CustomElementConstructor & {
     readonly willValidate: boolean
     checkValidity(): boolean
     reportValidity(): boolean
+    setCustomValidity(message: string): void
   }
 }
 
@@ -185,6 +186,7 @@ export function createListboxElementClass(targetWindow?: Window): UIListboxEleme
     @attr({ attribute: 'value' }) accessor defaultValue = ''
     @property accessor value = ''
 
+    #customValidity = ''
     #fieldsetDisabled = false
     #page = 0
     #syncingDefaultValue = false
@@ -245,6 +247,17 @@ export function createListboxElementClass(targetWindow?: Window): UIListboxEleme
 
     reportValidity(): boolean {
       return this.internals?.reportValidity() ?? true
+    }
+
+    /**
+     * The native `setCustomValidity` contract, which a form-associated custom element does not get
+     * for free: its validity lives in `ElementInternals`, so an outside caller — `ui-form` mapping a
+     * server error onto a named field, say — has nothing to reach for unless the element forwards
+     * it. An empty message clears the error and restores the element's own constraints.
+     */
+    setCustomValidity(message: string): void {
+      this.#customValidity = message
+      this.commitFormValue()
     }
 
     protected override disconnected(): void {
@@ -470,6 +483,7 @@ export function createListboxElementClass(targetWindow?: Window): UIListboxEleme
         collectionFormValue(this.name, values, this.ownerDocument.defaultView),
       )
       applyCollectionValidity(internals, {
+        customError: this.#customValidity,
         anchor: this.listbox,
         disabled: this.isDisabled,
         required: this.required,

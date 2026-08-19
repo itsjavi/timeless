@@ -19,7 +19,10 @@
 @import './table.css';
 @import './spinner.css';
 @import './forms.css';
+@import './form.css';
 @import './range.css';
+@import './range-field.css';
+@import './otp-field.css';
 @import './number-stepper.css';
 @import './color-picker.css';
 @import './tabs.css';
@@ -31,7 +34,7 @@
 @import './toast.css';
 @import './menu.css';
 @import './toolbar.css';
-@import './choice-group.css';
+@import './choice-groups.css';
 @import './options.css';
 @import './listbox.css';
 @import './select.css';

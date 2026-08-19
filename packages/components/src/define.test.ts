@@ -42,6 +42,9 @@ describe('define entrypoint', () => {
       'ui-toggle-group',
       'ui-number-stepper',
       'ui-color-picker',
+      'ui-form',
+      'ui-range-field',
+      'ui-otp-field',
     ])
     for (const constructor of registry.values()) {
       expect(RealmHTMLElement.prototype.isPrototypeOf(constructor.prototype)).toBe(true)

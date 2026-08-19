@@ -2428,6 +2428,283 @@
           }
         }
       ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/form.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIFormElement",
+          "customElement": true,
+          "tagName": "ui-form",
+          "attributes": [],
+          "members": [],
+          "events": [
+            {
+              "name": "ui-invalid",
+              "description": "Dispatched after `setErrors` has put at least one message on a control, naming the fields that matched. Clearing errors dispatches nothing.",
+              "type": {
+                "text": "CustomEvent<FormInvalidDetail>"
+              }
+            }
+          ],
+          "timeless:parts": [
+            {
+              "name": "form",
+              "selector": "form",
+              "required": true,
+              "description": "The native `<form>`. Submission, `method`, `action`, reset, and constraint validation are all still its job; `ui-form` only writes messages onto the fields inside it."
+            },
+            {
+              "name": "error",
+              "selector": "[data-ui-part~='error']",
+              "required": false,
+              "description": "The message element for one field, resolved as the single `error` part inside the nearest wrapper that holds no other named control. `.ui-field`, `.ui-choice-group`, and `.ui-fieldset` all produce that shape, so no pairing attribute is needed. `ui-form` writes its text and points the field’s `aria-describedby` at it."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIFormElement",
+          "declaration": {
+            "name": "UIFormElement",
+            "module": "dist/form.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/range-field.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIRangeFieldElement",
+          "customElement": true,
+          "tagName": "ui-range-field",
+          "attributes": [],
+          "members": [],
+          "events": [
+            {
+              "name": "ui-change",
+              "description": "Dispatched after either thumb moves, carrying the clamped pair and which thumb moved. Bubbles and is composed.",
+              "type": {
+                "text": "CustomEvent<RangeFieldChangeDetail>"
+              }
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--ui-range-track",
+              "description": "Track thickness."
+            },
+            {
+              "name": "--ui-range-thumb",
+              "description": "Thumb diameter."
+            },
+            {
+              "name": "--ui-range-fill",
+              "description": "Colour of the filled span between the two thumbs."
+            }
+          ],
+          "timeless:parts": [
+            {
+              "name": "track",
+              "selector": "[data-ui-part~='track']",
+              "required": true,
+              "description": "Wrapper around the two thumbs. It is the shared track: both inputs stack inside it, and the fill between them is drawn on it from measured bounds."
+            },
+            {
+              "name": "from",
+              "selector": "input[type='range']",
+              "required": true,
+              "description": "The lower thumb, a native range input. Give it its own `name`, `min`, `max`, `step`, and accessible name; it submits and resets on its own, with no JavaScript."
+            },
+            {
+              "name": "to",
+              "selector": "input[type='range']",
+              "required": true,
+              "description": "The upper thumb. Same contract as `from`, with its own `name` so the pair submits as two entries."
+            },
+            {
+              "name": "output",
+              "selector": "[data-ui-part~='output']",
+              "required": false,
+              "description": "Live readout of the pair. Timeless writes the current values into it as text, so omit the part when you want to format them yourself."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIRangeFieldElement",
+          "declaration": {
+            "name": "UIRangeFieldElement",
+            "module": "dist/range-field.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/otp-field.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "UIOtpFieldElement",
+          "customElement": true,
+          "tagName": "ui-otp-field",
+          "attributes": [
+            {
+              "name": "name",
+              "description": "Form field name. The joined code submits as one entry through `ElementInternals`; the cells themselves carry no `name`.",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "length",
+              "description": "How many characters the code has. Defaults to the number of authored cells, and is what a partly filled field is measured against.",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "value",
+              "description": "The code on load and after a form reset. Assign the `value` property for live changes; once the user types, the attribute stops applying, the way it does on a native input.",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "required",
+              "description": "Present to block submission while the field is empty, with `valueMissing`.",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "name": "disabled",
+              "description": "Present to disable the field. A field inside a disabled `<fieldset>` is disabled too, and submits nothing either way.",
+              "type": {
+                "text": "boolean"
+              }
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "name",
+              "attribute": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Form field name. The joined code submits as one entry through `ElementInternals`; the cells themselves carry no `name`."
+            },
+            {
+              "kind": "field",
+              "name": "length",
+              "attribute": "length",
+              "type": {
+                "text": "string"
+              },
+              "description": "How many characters the code has. Defaults to the number of authored cells, and is what a partly filled field is measured against."
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "attribute": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Authored default and form-reset value. Reflects the `value` attribute."
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Live value. Assigning it does not rewrite the authored default and does not dispatch transition events."
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "attribute": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to block submission while the field is empty, with `valueMissing`."
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "attribute": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Present to disable the field. A field inside a disabled `<fieldset>` is disabled too, and submits nothing either way."
+            }
+          ],
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before the code changes. Call `preventDefault()` to reject the transition and keep the current value.",
+              "type": {
+                "text": "CustomEvent<OtpFieldChangeDetail>"
+              }
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after the code has changed. Bubbles and is composed.",
+              "type": {
+                "text": "CustomEvent<OtpFieldChangeDetail>"
+              }
+            },
+            {
+              "name": "ui-complete",
+              "description": "Dispatched once every character the field expects has been entered, which is where an auto-submit belongs.",
+              "type": {
+                "text": "CustomEvent<OtpFieldCompleteDetail>"
+              }
+            }
+          ],
+          "cssProperties": [
+            {
+              "name": "--ui-otp-cell",
+              "description": "Width of one cell."
+            }
+          ],
+          "timeless:parts": [
+            {
+              "name": "cell",
+              "selector": "[data-ui-part~='cell']",
+              "required": true,
+              "description": "One native input holding one character. Author `maxlength=\"1\"`, `inputmode=\"numeric\"`, an accessible name naming its position, and `autocomplete=\"one-time-code\"` on the first cell only. Give it `class=\"ui-input\"` to pick up the shared control styling."
+            },
+            {
+              "name": "separator",
+              "selector": "[data-ui-part~='separator']",
+              "required": false,
+              "description": "Decorative mark between groups of cells, as in `123-456`. Hide it from assistive technology with `aria-hidden=\"true\"`."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UIOtpFieldElement",
+          "declaration": {
+            "name": "UIOtpFieldElement",
+            "module": "dist/otp-field.js"
+          }
+        }
+      ]
     }
   ]
 }

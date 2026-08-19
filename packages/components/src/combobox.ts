@@ -188,6 +188,7 @@ export type UIComboboxElementConstructor = CustomElementConstructor & {
     readonly willValidate: boolean
     checkValidity(): boolean
     reportValidity(): boolean
+    setCustomValidity(message: string): void
   }
 }
 
@@ -226,6 +227,7 @@ export function createComboboxElementClass(targetWindow?: Window): UIComboboxEle
     }
 
     #activeIndex: number | null = null
+    #customValidity = ''
     #fieldsetDisabled = false
     #open = false
     #page = 0
@@ -289,6 +291,17 @@ export function createComboboxElementClass(targetWindow?: Window): UIComboboxEle
 
     reportValidity(): boolean {
       return this.internals?.reportValidity() ?? true
+    }
+
+    /**
+     * The native `setCustomValidity` contract, which a form-associated custom element does not get
+     * for free: its validity lives in `ElementInternals`, so an outside caller — `ui-form` mapping a
+     * server error onto a named field, say — has nothing to reach for unless the element forwards
+     * it. An empty message clears the error and restores the element's own constraints.
+     */
+    setCustomValidity(message: string): void {
+      this.#customValidity = message
+      this.commitFormValue()
     }
 
     formDisabledCallback(disabled: boolean): void {
@@ -693,6 +706,7 @@ export function createComboboxElementClass(targetWindow?: Window): UIComboboxEle
         collectionFormValue(this.name, values, this.ownerDocument.defaultView),
       )
       applyCollectionValidity(internals, {
+        customError: this.#customValidity,
         anchor: this.input,
         disabled: this.isDisabled,
         required: this.required,
