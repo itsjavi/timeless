@@ -1,14 +1,12 @@
 import type { StoryLiteStoryDefinition } from '@storylite/storylite'
 import { createCombobox, createCustomSelect } from '../collections.html'
-import { defineOwnedFilterElement } from './owned-filter.fixture'
 import { createCollectionNavigationMeta } from './shared'
 
 const meta = createCollectionNavigationMeta('Combobox')
 export default meta
 
-// Registered at module scope rather than through `meta.parameters`, which the static build renders
-// without. The guard is what keeps this module importable on a server.
-if (typeof window !== 'undefined') defineOwnedFilterElement(window)
+// `story-owned-filter` is registered from `.storylite/setup.ts`, which is the only place that runs
+// against the window the story renders into.
 
 const fruitOptions = [
   { label: 'Apple' },
