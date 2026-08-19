@@ -1,4 +1,5 @@
 import type { StoryLiteArgTypes, StoryLiteStoryDefinition } from '@storylite/storylite'
+import { toolbarOrientations, type ToolbarOrientation } from '@timelessui/components'
 import { createToolbar } from '../collections.html'
 import { createCollectionNavigationMeta } from './shared'
 
@@ -6,7 +7,7 @@ const meta = createCollectionNavigationMeta('Toolbar')
 export default meta
 
 type ToolbarArgs = {
-  orientation: 'horizontal' | 'vertical'
+  orientation: ToolbarOrientation
 }
 
 const defaultArgs: ToolbarArgs = {
@@ -14,7 +15,7 @@ const defaultArgs: ToolbarArgs = {
 }
 
 const defaultArgTypes = {
-  orientation: { control: 'select', options: ['horizontal', 'vertical'] },
+  orientation: { control: 'select', options: toolbarOrientations },
 } satisfies StoryLiteArgTypes<ToolbarArgs>
 
 export const Default = {

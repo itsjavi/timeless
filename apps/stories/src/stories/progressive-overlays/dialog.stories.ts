@@ -1,4 +1,5 @@
 import type { StoryLiteArgTypes, StoryLiteStoryDefinition } from '@storylite/storylite'
+import { dialogKinds, type DialogKind } from '@timelessui/components'
 import { createDialog } from '../overlays.html'
 import { createProgressiveOverlayMeta } from './shared'
 
@@ -6,7 +7,7 @@ const meta = createProgressiveOverlayMeta('Dialog')
 export default meta
 
 type DialogArgs = {
-  kind: 'dialog' | 'alert'
+  kind: DialogKind
 }
 
 const defaultArgs: DialogArgs = {
@@ -14,7 +15,7 @@ const defaultArgs: DialogArgs = {
 }
 
 const defaultArgTypes = {
-  kind: { control: 'select', options: ['dialog', 'alert'] },
+  kind: { control: 'select', options: dialogKinds },
 } satisfies StoryLiteArgTypes<DialogArgs>
 
 export const Default = {

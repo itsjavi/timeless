@@ -1,4 +1,5 @@
 import type { StoryLiteArgTypes, StoryLiteStoryDefinition } from '@storylite/storylite'
+import { sheetPositions, type SheetPosition } from '@timelessui/components'
 import { createSheet } from '../overlays.html'
 import { createProgressiveOverlayMeta } from './shared'
 
@@ -7,7 +8,7 @@ export default meta
 
 type SheetArgs = {
   modal: boolean
-  position: 'top' | 'right' | 'bottom' | 'left'
+  position: SheetPosition
 }
 
 const defaultArgs: SheetArgs = {
@@ -17,7 +18,7 @@ const defaultArgs: SheetArgs = {
 
 const defaultArgTypes = {
   modal: { control: 'boolean' },
-  position: { control: 'select', options: ['top', 'right', 'bottom', 'left'] },
+  position: { control: 'select', options: sheetPositions },
 } satisfies StoryLiteArgTypes<SheetArgs>
 
 function formatPosition(position: SheetArgs['position']): string {

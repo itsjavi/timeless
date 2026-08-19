@@ -1,21 +1,22 @@
 import type { StoryLiteArgTypes, StoryLiteStoryDefinition } from '@storylite/storylite'
-import { alertVariants, type AlertVariant, type PrimitiveDensity } from '@timelessui/components'
+import {
+  alertVariants,
+  compactDensities,
+  type AlertVariant,
+  type CompactDensity,
+} from '@timelessui/components'
 import { createAlert } from '../primitives.html'
 import { createCssPrimitiveMeta } from './shared'
 
 const meta = createCssPrimitiveMeta('Alert')
 export default meta
 
-type AlertDensity = Extract<PrimitiveDensity, 'compact' | 'normal'>
-
 type AlertArgs = {
   title: string
   description: string
   variant: AlertVariant
-  density: AlertDensity
+  density: CompactDensity
 }
-
-const alertDensities = ['compact', 'normal'] as const satisfies readonly AlertDensity[]
 
 const alertArgs: AlertArgs = {
   title: 'Package published',
@@ -28,7 +29,7 @@ const alertArgTypes = {
   title: { control: 'text' },
   description: { control: 'text' },
   variant: { control: 'select', options: alertVariants },
-  density: { control: 'select', options: alertDensities },
+  density: { control: 'select', options: compactDensities },
 } satisfies StoryLiteArgTypes<AlertArgs>
 
 export const Default = {

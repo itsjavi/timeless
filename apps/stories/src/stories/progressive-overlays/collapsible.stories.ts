@@ -1,4 +1,5 @@
 import type { StoryLiteArgTypes, StoryLiteStoryDefinition } from '@storylite/storylite'
+import { compactDensities, type CompactDensity } from '@timelessui/components'
 import { createCollapsible } from '../overlays.html'
 import { createProgressiveOverlayMeta } from './shared'
 
@@ -7,7 +8,7 @@ export default meta
 
 type CollapsibleArgs = {
   firstOpen: boolean
-  density: 'compact' | 'normal'
+  density: CompactDensity
 }
 
 const defaultArgs: CollapsibleArgs = {
@@ -17,7 +18,7 @@ const defaultArgs: CollapsibleArgs = {
 
 const defaultArgTypes = {
   firstOpen: { control: 'boolean' },
-  density: { control: 'select', options: ['normal', 'compact'] },
+  density: { control: 'select', options: compactDensities },
 } satisfies StoryLiteArgTypes<CollapsibleArgs>
 
 const releaseItems = [

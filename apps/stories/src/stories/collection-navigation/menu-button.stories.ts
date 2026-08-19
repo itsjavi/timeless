@@ -1,4 +1,5 @@
 import type { StoryLiteArgTypes, StoryLiteStoryDefinition } from '@storylite/storylite'
+import { floatingPlacements, type FloatingPlacement } from '@timelessui/components'
 import { createMenuButton } from '../collections.html'
 import { createCollectionNavigationMeta } from './shared'
 
@@ -6,7 +7,7 @@ const meta = createCollectionNavigationMeta('Menu Button')
 export default meta
 
 type MenuButtonArgs = {
-  placement: 'bottom' | 'top' | 'right' | 'left'
+  placement: FloatingPlacement
 }
 
 const defaultArgs: MenuButtonArgs = {
@@ -14,7 +15,7 @@ const defaultArgs: MenuButtonArgs = {
 }
 
 const defaultArgTypes = {
-  placement: { control: 'select', options: ['bottom', 'top', 'right', 'left'] },
+  placement: { control: 'select', options: floatingPlacements },
 } satisfies StoryLiteArgTypes<MenuButtonArgs>
 
 const releaseMenuItems = [
