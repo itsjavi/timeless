@@ -72,6 +72,7 @@ describe('enhanceSelectParts', () => {
 
     expect(result).toEqual({
       status: 'enhanced',
+      triggerWiring: 'listener',
       listboxId: 'ui-select-1-listbox',
       optionIds: ['ui-select-1-option-1', 'ui-select-1-option-2', 'ui-select-1-option-3'],
       selectedIndex: 1,
@@ -101,7 +102,7 @@ describe('enhanceSelectParts', () => {
           supportsPopover: true,
         },
       ),
-    ).toEqual({ status: 'invalid', missing: ['input', 'trigger', 'listbox', 'options'] })
+    ).toEqual({ status: 'invalid', missing: ['trigger', 'listbox', 'options'] })
 
     const input = new FakeSelectElement()
     const trigger = new FakeSelectElement()

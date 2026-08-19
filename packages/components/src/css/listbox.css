@@ -1,48 +1,51 @@
+/*
+ * The inline listbox. The option row, groups, empty and status regions, and the pager are shared
+ * with Select and Combobox and live in `options.css`; what is left here is the box itself.
+ *
+ * Two shapes. In the simple one the host carries `role="listbox"` and scrolls its own options. When
+ * the author adds an `empty` region, a `status` region, or a pager, those cannot live inside a
+ * listbox — it may own only options and groups — so an inner `listbox` part holds the options and
+ * the host becomes the frame around it.
+ */
+
 @layer ui.components {
   ui-listbox {
-    display: grid;
-    gap: var(--ui-space-1);
-    min-inline-size: min(100%, 14rem);
+    box-sizing: border-box;
+    min-inline-size: min(100%, var(--ui-collection-surface-inline-size, 14rem));
+    /* A height clamp without a scroll container just truncates, so the two ship together. */
+    max-block-size: min(18rem, calc(100dvh - 2rem));
     margin: 0;
-    padding: var(--ui-space-1);
     border: 1px solid var(--ui-line);
     border-radius: var(--ui-radius-lg);
     background: var(--ui-bg-surface);
     color: var(--ui-fg);
   }
 
-  ui-listbox [role='option'] {
+  /* The simple shape: the host is the listbox and the scroll container. */
+  ui-listbox[role='listbox'] {
     display: grid;
-    min-block-size: 2rem;
-    align-items: center;
-    border-radius: var(--ui-radius-sm);
-    padding: var(--ui-space-2) var(--ui-space-3);
-    color: var(--ui-fg);
-    line-height: 1.25;
+    align-content: start;
+    gap: var(--ui-space-1);
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: var(--ui-space-1);
   }
 
-  ui-listbox
-    [role='option']:where(:not([aria-disabled='true'])):where(
-      :hover,
-      :focus-visible,
-      [data-ui-internal-active]
-    ) {
-    outline: 0;
-    background: var(--ui-bg-surface-raised);
+  /* The framed shape: the host holds the listbox plus whatever sits beside it. */
+  ui-listbox:not([role='listbox']) {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
-  ui-listbox [role='option'][aria-selected='true']:not([aria-disabled='true']) {
-    background: var(--ui-accent-soft);
-    color: var(--ui-accent);
-  }
-
-  ui-listbox [role='option'][aria-disabled='true'] {
-    background: transparent;
-    color: var(--ui-fg-muted);
-    opacity: var(--ui-disabled-opacity);
-  }
-
-  ui-listbox [role='option'][hidden] {
-    display: none;
+  ui-listbox [role='listbox'] {
+    display: grid;
+    align-content: start;
+    gap: var(--ui-space-1);
+    flex: 1;
+    min-block-size: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: var(--ui-space-1);
   }
 }

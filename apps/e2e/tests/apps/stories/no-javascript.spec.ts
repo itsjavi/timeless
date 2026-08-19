@@ -34,3 +34,23 @@ test('large dataset fixture retains a usable native input without JavaScript', a
   await expect(input).toHaveValue('Archive record 0100')
   await expect(page.getByText('Records load when the selector receives focus.')).toBeVisible()
 })
+
+/**
+ * Milestone 020 established the pattern for `ui-dialog`; the Select trigger now follows it with
+ * `popovertarget`. This test is the whole justification for authoring that attribute rather than
+ * calling `showPopover()` from a click listener.
+ */
+test('an authored popovertarget opens the select surface without JavaScript', async ({ page }) => {
+  await page.goto('/stories/library-navigation-select--default/')
+  const trigger = page.getByRole('button', { name: /Role/ })
+  const surface = page.locator("ui-select [role='listbox']")
+
+  await expect(surface).toBeHidden()
+  await trigger.click()
+  await expect(surface).toBeVisible()
+  // The options are readable markup before enhancement, which is the bar for an enhanced component.
+  await expect(surface.getByText('Manager')).toBeVisible()
+
+  await page.keyboard.press('Escape')
+  await expect(surface).toBeHidden()
+})

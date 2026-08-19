@@ -305,12 +305,12 @@
         },
         {
           "name": "ui-listbox",
-          "description": "Timeless `ui-listbox`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Listbox pattern. Dispatches `ui-before-change`, `ui-change`.",
+          "description": "Timeless `ui-listbox`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Listbox pattern. Dispatches `ui-before-change`, `ui-change`, `ui-page`.",
           "doc-url": "https://timeless.build/docs/components/",
           "attributes": [
             {
               "name": "multiple",
-              "description": "Present to allow more than one selected option. The `value` property then reads and writes an array. Presence-based: author the attribute with no value.",
+              "description": "Present to allow more than one selected option, submitting one form entry per value under the same `name`. Presence-based: author the attribute with no value.",
               "value": {
                 "kind": "plain",
                 "type": "boolean"
@@ -318,10 +318,42 @@
             },
             {
               "name": "value",
-              "description": "The option selected on load and after a form reset. Assign the `value` property for live changes.",
+              "description": "The option selected on load and after a form reset. Assign the `value` property for live changes; once the user commits a change the attribute stops applying, the way it does on a native input.",
               "value": {
                 "kind": "plain",
                 "type": "string"
+              }
+            },
+            {
+              "name": "name",
+              "description": "Form field name. The element submits its own value through `ElementInternals`.",
+              "value": {
+                "kind": "plain",
+                "type": "string"
+              }
+            },
+            {
+              "name": "required",
+              "description": "Present to block submission while nothing is selected, with `valueMissing`. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "disabled",
+              "description": "Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "page-size",
+              "description": "Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property.",
+              "value": {
+                "kind": "plain",
+                "type": "number"
               }
             }
           ],
@@ -333,12 +365,16 @@
             {
               "name": "ui-change",
               "description": "Dispatched after the selection has changed. Bubbles and is composed."
+            },
+            {
+              "name": "ui-page",
+              "description": "Dispatched after the rendered page of a paged list changes."
             }
           ]
         },
         {
           "name": "ui-select",
-          "description": "Timeless `ui-select`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Select-Only Combobox pattern. Dispatches `ui-before-change`, `ui-change`.",
+          "description": "Timeless `ui-select`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Select-Only Combobox pattern. Dispatches `ui-before-change`, `ui-change`, `ui-open`, `ui-close`, `ui-input`, `ui-page`.",
           "doc-url": "https://timeless.build/docs/components/",
           "attributes": [
             {
@@ -358,11 +394,75 @@
               }
             },
             {
+              "name": "searchable",
+              "description": "Present to filter from a `search` field inside the surface. Focus moves into that field on open and stays there; the highlight travels through `aria-activedescendant`. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
               "name": "value",
-              "description": "The option selected on load and after a form reset. Mirror it onto a hidden input to submit with a form.",
+              "description": "The option selected on load and after a form reset. Once the user commits a change the attribute stops applying, the way it does on a native input.",
               "value": {
                 "kind": "plain",
                 "type": "string"
+              }
+            },
+            {
+              "name": "align",
+              "description": "Which edge of the trigger the surface aligns to. The surface is never narrower than the trigger. Defaults to `start`. Exported as `collectionAlignments`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'start'", "'end'"]
+              }
+            },
+            {
+              "name": "filter",
+              "description": "How typed text narrows the options. `off` hands visibility to you: listen for `ui-input` and set `hidden` yourself, and navigation, the empty state, group collapse, and paging all follow. Defaults to `contains`. Exported as `optionFilterModes`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'contains'", "'starts-with'", "'off'"]
+              }
+            },
+            {
+              "name": "multiple",
+              "description": "Present to allow more than one selected option. Selected values render as chips and submit one form entry each under the same `name`. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "name",
+              "description": "Form field name. The element submits its own value through `ElementInternals`.",
+              "value": {
+                "kind": "plain",
+                "type": "string"
+              }
+            },
+            {
+              "name": "required",
+              "description": "Present to block submission while nothing is selected, with `valueMissing`. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "disabled",
+              "description": "Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "page-size",
+              "description": "Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property.",
+              "value": {
+                "kind": "plain",
+                "type": "number"
               }
             }
           ],
@@ -374,20 +474,92 @@
             {
               "name": "ui-change",
               "description": "Dispatched after the selected option has changed. Bubbles and is composed."
+            },
+            {
+              "name": "ui-open",
+              "description": "Dispatched after the listbox opens."
+            },
+            {
+              "name": "ui-close",
+              "description": "Dispatched after the listbox closes."
+            },
+            {
+              "name": "ui-input",
+              "description": "Dispatched when the query text changes, before options are filtered. Under `filter=\"off\"` this is where you set `hidden` yourself."
+            },
+            {
+              "name": "ui-page",
+              "description": "Dispatched after the rendered page of a paged list changes."
             }
           ]
         },
         {
           "name": "ui-combobox",
-          "description": "Timeless `ui-combobox`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Combobox pattern. Dispatches `ui-before-change`, `ui-change`.",
+          "description": "Timeless `ui-combobox`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Combobox pattern. Dispatches `ui-before-change`, `ui-change`, `ui-open`, `ui-close`, `ui-input`, `ui-page`.",
           "doc-url": "https://timeless.build/docs/components/",
           "attributes": [
             {
               "name": "value",
-              "description": "The option selected on load and after a form reset. Assign the `value` property for live changes.",
+              "description": "The option selected on load and after a form reset. Once the user commits a change the attribute stops applying, the way it does on a native input.",
               "value": {
                 "kind": "plain",
                 "type": "string"
+              }
+            },
+            {
+              "name": "align",
+              "description": "Which edge of the trigger the surface aligns to. The surface is never narrower than the trigger. Defaults to `start`. Exported as `collectionAlignments`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'start'", "'end'"]
+              }
+            },
+            {
+              "name": "filter",
+              "description": "How typed text narrows the options. `off` hands visibility to you: listen for `ui-input` and set `hidden` yourself, and navigation, the empty state, group collapse, and paging all follow. Defaults to `contains`. Exported as `optionFilterModes`.",
+              "value": {
+                "kind": "plain",
+                "type": ["'contains'", "'starts-with'", "'off'"]
+              }
+            },
+            {
+              "name": "multiple",
+              "description": "Present to allow more than one selected option. Selected values render as chips and submit one form entry each under the same `name`. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "name",
+              "description": "Form field name. The element submits its own value through `ElementInternals`.",
+              "value": {
+                "kind": "plain",
+                "type": "string"
+              }
+            },
+            {
+              "name": "required",
+              "description": "Present to block submission while nothing is selected, with `valueMissing`. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "disabled",
+              "description": "Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way. Presence-based: author the attribute with no value.",
+              "value": {
+                "kind": "plain",
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "page-size",
+              "description": "Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property.",
+              "value": {
+                "kind": "plain",
+                "type": "number"
               }
             }
           ],
@@ -399,6 +571,22 @@
             {
               "name": "ui-change",
               "description": "Dispatched after the selected option has changed. Bubbles and is composed."
+            },
+            {
+              "name": "ui-open",
+              "description": "Dispatched after the listbox opens."
+            },
+            {
+              "name": "ui-close",
+              "description": "Dispatched after the listbox closes."
+            },
+            {
+              "name": "ui-input",
+              "description": "Dispatched when the query text changes, before options are filtered. Under `filter=\"off\"` this is where you set `hidden` yourself."
+            },
+            {
+              "name": "ui-page",
+              "description": "Dispatched after the rendered page of a paged list changes."
             }
           ]
         },

@@ -49,6 +49,9 @@ test('large dataset fixture stays inside checked-in DOM and interaction budgets'
   await expect(options).toHaveCount(48)
   await input.fill('Archive record 01')
   await expect(options).toHaveCount(48)
+  // The surface is the width of its input and as tall as the space below it, so it covers the demo
+  // controls while open. Dismiss it first, the way a user reaching for them would.
+  await page.keyboard.press('Escape')
   await page.getByRole('button', { name: 'Next page' }).click()
   await expect(page.locator('[data-dataset-page]')).toContainText('Page 2')
   await settleAnimations(page)

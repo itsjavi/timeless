@@ -7,7 +7,7 @@ import {
   watch,
   type DismissableLayerController,
 } from '@timelessui/core'
-import { supportsNativePopover } from './capabilities'
+import { supportsAnchorPositioning, supportsNativePopover } from './capabilities'
 import {
   applyFloatingPosition,
   clearFloatingPosition,
@@ -175,6 +175,11 @@ export function createHoverCardElementClass(targetWindow?: Window): UIHoverCardE
       const trigger = this.triggerElement
       const content = this.contentElement
       if (!trigger || !content || !isPopoverOpen(content)) return
+
+      // The stylesheet positions the surface wherever anchor positioning exists; running the
+      // coordinate fallback there would stamp a private hook and compute values the `@supports` rule
+      // discards. This runs *because* support is missing, which is the only time it is the answer.
+      if (supportsAnchorPositioning(this.ownerDocument.defaultView)) return
 
       applyFloatingPosition({
         trigger,

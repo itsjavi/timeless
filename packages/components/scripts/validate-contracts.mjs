@@ -37,12 +37,23 @@ const IGNORED_SELECTOR_ATTRIBUTES = new Set([
   'value',
 ])
 
+/**
+ * A contract's root must be selected by the CSS it claims. The check is across the contract's
+ * stylesheets collectively rather than each one individually: a component whose CSS is split — the
+ * collection surfaces share `options.css`, and everything anchored shares `floating.css` — has files
+ * that legitimately select a private runtime hook rather than any one root. What the check is
+ * actually for is catching a contract pointed at the wrong stylesheet, and that still holds.
+ */
 for (const component of components) {
-  for (const stylesheet of component.css) {
-    const source = await readFile(resolve(packageRoot, 'src/css', stylesheet), 'utf8')
-    if (!source.includes(component.root.name)) {
-      throw new Error(`${component.name} root ${component.root.name} is absent from ${stylesheet}`)
-    }
+  const sources = await Promise.all(
+    component.css.map((stylesheet) =>
+      readFile(resolve(packageRoot, 'src/css', stylesheet), 'utf8'),
+    ),
+  )
+  if (!sources.some((source) => source.includes(component.root.name))) {
+    throw new Error(
+      `${component.name} root ${component.root.name} is absent from ${component.css.join(', ')}`,
+    )
   }
 }
 

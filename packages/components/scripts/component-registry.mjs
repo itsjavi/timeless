@@ -99,6 +99,155 @@ const COLLECTION_KEYS = (subject, axis = 'orientation') => [
   key('Page Up / Page Down', `Jump ten ${subject}s at a time.`),
 ]
 
+/**
+ * The anatomy every option collection shares.
+ *
+ * Listbox, Select, and Combobox are one ARIA family over one option core, so they document one
+ * vocabulary. Only the option container itself differs: on `ui-listbox` the host is the listbox, so
+ * the part is required; on the two popover surfaces it is an authored child.
+ *
+ * `header` and `footer` sit inside the surface but outside option navigation. Arrow keys skip them
+ * and `Tab` reaches them, which is stated in each accessibility note because a control inside a
+ * `role="listbox"` that arrows skip otherwise reads as a bug.
+ */
+const COLLECTION_PARTS = () => [
+  part(
+    'option',
+    true,
+    "[role='option']",
+    'One option. Its value comes from `value`, then `data-ui-value`, then its text. Its filterable label comes from `label`, then `data-ui-label`, then `aria-label`, then its text — none of which change the accessible name. Mark unavailable options `aria-disabled="true"`.',
+  ),
+  part(
+    'option-indicator',
+    false,
+    undefined,
+    'Decorative affordance inside an option showing that it is selected. Style it from `[aria-selected="true"]`; it is hidden from assistive technology.',
+  ),
+  part(
+    'group',
+    false,
+    undefined,
+    'A `role="group"` wrapper around related options. Options inside it stay navigable, and the group collapses when every option it holds is filtered out.',
+  ),
+  part(
+    'group-label',
+    false,
+    undefined,
+    'The label for a `group`, wired to it with `aria-labelledby`.',
+  ),
+  part(
+    'separator',
+    false,
+    "[role='separator']",
+    'A visual divider between options. Navigation and typeahead skip it.',
+  ),
+  part(
+    'empty',
+    false,
+    undefined,
+    'Shown when no option is visible. Hidden again as soon as one is.',
+  ),
+  part(
+    'status',
+    false,
+    undefined,
+    'A `role="status" aria-live="polite"` region for result counts, loading, and errors.',
+  ),
+  part(
+    'header',
+    false,
+    undefined,
+    'Optional content at the top of the surface. Excluded from arrow navigation and reachable with `Tab`.',
+  ),
+  part(
+    'footer',
+    false,
+    undefined,
+    'Optional content at the bottom of the surface. Excluded from arrow navigation and reachable with `Tab`.',
+  ),
+  part(
+    'pager',
+    false,
+    undefined,
+    'Wraps the page controls. Hidden unless `page-size` is set and the options span more than one page.',
+  ),
+  part(
+    'page-previous',
+    false,
+    undefined,
+    'Moves to the previous page. Stays focusable at the first page and takes `aria-disabled`, so the boundary is discoverable rather than gone.',
+  ),
+  part('page-next', false, undefined, 'Moves to the next page, with the same boundary behavior.'),
+  part(
+    'page-status',
+    false,
+    undefined,
+    'A `role="status" aria-live="polite"` region announcing the current page.',
+  ),
+]
+
+/** The multiple-selection and clear anatomy the two popover surfaces share. */
+const COLLECTION_TRIGGER_PARTS = () => [
+  part(
+    'chips',
+    false,
+    undefined,
+    'Container the selected values are rendered into under `multiple`.',
+  ),
+  part('chip', false, undefined, 'One selected value.'),
+  part(
+    'chip-remove',
+    false,
+    undefined,
+    'Removes its chip. A real button whose accessible name says which value it removes.',
+  ),
+  part(
+    'clear',
+    false,
+    undefined,
+    'Empties the whole selection. Disabled while there is nothing to clear.',
+  ),
+]
+
+/** The configuration Select and Combobox share, beyond what each declares for itself. */
+const COLLECTION_ATTRIBUTES = () => [
+  attribute('align', 'string', {
+    set: 'collectionAlignments',
+    default: 'start',
+    description:
+      'Which edge of the trigger the surface aligns to. The surface is never narrower than the trigger.',
+  }),
+  attribute('filter', 'string', {
+    set: 'optionFilterModes',
+    default: 'contains',
+    description:
+      'How typed text narrows the options. `off` hands visibility to you: listen for `ui-input` and set `hidden` yourself, and navigation, the empty state, group collapse, and paging all follow.',
+  }),
+  attribute('multiple', 'boolean', {
+    description:
+      'Present to allow more than one selected option. Selected values render as chips and submit one form entry each under the same `name`.',
+  }),
+]
+
+/** Form participation, identical on all three collections. */
+const FORM_ATTRIBUTES = () => [
+  attribute('name', 'string', {
+    description: 'Form field name. The element submits its own value through `ElementInternals`.',
+  }),
+  attribute('required', 'boolean', {
+    description: 'Present to block submission while nothing is selected, with `valueMissing`.',
+  }),
+  attribute('disabled', 'boolean', {
+    description:
+      'Present to disable the control. A control inside a disabled `<fieldset>` is disabled too, and submits nothing either way.',
+  }),
+  attribute('page-size', 'number', {
+    property: { name: 'pageSize', type: 'string' },
+    description:
+      'Options to render per page. Absent means unpaged, which is the default and adds no pager. The resolved number is available on the read-only `pageCount` property.',
+  }),
+]
+
 const event = (name, type, description, cancelable = false) => ({
   name,
   type,
@@ -151,7 +300,7 @@ const selector = (
   name,
   kind: 'css',
   root: { kind: 'selector', name: root },
-  css: [stylesheet],
+  css: [stylesheet].flat(),
   attributes,
   parts,
   states,
@@ -160,6 +309,12 @@ const selector = (
   accessibility: a11y,
 })
 
+/**
+ * `stylesheet` takes an array when a component's CSS is split across files. `validate-contracts.mjs`
+ * requires the root selector to appear in *every* stylesheet a contract claims, which is what keeps
+ * a shared stylesheet honest: `options.css` may be attributed to all three collection surfaces only
+ * because it selects all three roots.
+ */
 const customElement = (
   name,
   tag,
@@ -183,7 +338,7 @@ const customElement = (
   classExport,
   factory,
   defineExport,
-  css: [stylesheet],
+  css: [stylesheet].flat(),
   attributes,
   parts,
   states,
@@ -306,6 +461,16 @@ export const valueSets = {
     module: 'floating',
     values: ['bottom', 'top', 'right', 'left'],
   },
+  collectionAlignments: {
+    type: 'CollectionAlignment',
+    module: 'options',
+    values: ['start', 'end'],
+  },
+  optionFilterModes: {
+    type: 'OptionFilterMode',
+    module: 'options',
+    values: ['contains', 'starts-with', 'off'],
+  },
   tabsOrientations: { type: 'TabsOrientation', module: 'tabs', values: ['horizontal', 'vertical'] },
   tabsActivations: { type: 'TabsActivation', module: 'tabs', values: ['automatic', 'manual'] },
   dialogKinds: { type: 'DialogKind', module: 'dialog', values: ['dialog', 'alert'] },
@@ -377,6 +542,26 @@ const transitionEvents = (subject, detail) => [
 const overlayEvents = (subject, detail) => [
   event('ui-open', `CustomEvent<${detail}>`, `Dispatched after the ${subject} opens.`),
   event('ui-close', `CustomEvent<${detail}>`, `Dispatched after the ${subject} closes.`),
+]
+
+const pageEvent = (detail) =>
+  event(
+    'ui-page',
+    `CustomEvent<${detail}>`,
+    'Dispatched after the rendered page of a paged list changes.',
+  )
+
+/**
+ * Query and paging. `ui-input` belongs only to the two surfaces that own a text field: an inline
+ * listbox has nothing to type into, so declaring it there would document an event that never fires.
+ */
+const collectionEvents = (inputDetail, pageDetail) => [
+  event(
+    'ui-input',
+    `CustomEvent<${inputDetail}>`,
+    'Dispatched when the query text changes, before options are filtered. Under `filter="off"` this is where you set `hidden` yourself.',
+  ),
+  pageEvent(pageDetail),
 ]
 
 export const components = [
@@ -1017,7 +1202,7 @@ export const components = [
     'UIPopoverElement',
     'createPopoverElementClass',
     'definePopoverElement',
-    'popover.css',
+    ['popover.css', 'floating.css'],
     [
       attribute('placement', 'string', {
         set: 'floatingPlacements',
@@ -1043,7 +1228,7 @@ export const components = [
       ),
     ],
     [],
-    [],
+    [variable('--ui-floating-offset', 'Gap between the trigger and the surface.')],
     [],
     accessibility(
       'disclosure',
@@ -1059,7 +1244,7 @@ export const components = [
     'UIHoverCardElement',
     'createHoverCardElementClass',
     'defineHoverCardElement',
-    'popover.css',
+    ['popover.css', 'floating.css'],
     [
       attribute('anchor', 'string', {
         description:
@@ -1093,7 +1278,7 @@ export const components = [
       part('content', true, '[popover]', 'The surface.'),
     ],
     [],
-    [],
+    [variable('--ui-floating-offset', 'Gap between the anchor and the surface.')],
     [],
     accessibility(
       'tooltip',
@@ -1105,7 +1290,7 @@ export const components = [
   selector(
     'tooltip',
     "ui-hover-card[variant='tooltip']",
-    'popover.css',
+    ['popover.css', 'floating.css'],
     [],
     [
       part(
@@ -1140,7 +1325,7 @@ export const components = [
     'UIMenuElement',
     'createMenuElementClass',
     'defineMenuElement',
-    'menu.css',
+    ['menu.css', 'floating.css'],
     [
       attribute('orientation', 'string', {
         set: 'menuOrientations',
@@ -1164,7 +1349,7 @@ export const components = [
       ),
     ],
     [],
-    [],
+    [variable('--ui-menu-min-inline-size', 'Minimum width of the menu surface.')],
     [],
     accessibility(
       'menubar',
@@ -1189,7 +1374,7 @@ export const components = [
     'UIMenuButtonElement',
     'createMenuButtonElementClass',
     'defineMenuButtonElement',
-    'menu.css',
+    ['menu.css', 'floating.css'],
     [
       attribute('open', 'boolean', {
         description: 'Present to render the menu open on load.',
@@ -1205,7 +1390,7 @@ export const components = [
       part('content', true, '[popover]', 'The popover surface holding a `ui-menu`.'),
     ],
     [],
-    [],
+    [variable('--ui-floating-offset', 'Gap between the trigger and the menu surface.')],
     overlayEvents('menu', 'MenuButtonToggleDetail'),
     accessibility(
       'menu-button',
@@ -1328,30 +1513,31 @@ export const components = [
     'UIListboxElement',
     'createListboxElementClass',
     'defineListboxElement',
-    'listbox.css',
+    ['listbox.css', 'options.css'],
     [
       attribute('multiple', 'boolean', {
         description:
-          'Present to allow more than one selected option. The `value` property then reads and writes an array.',
+          'Present to allow more than one selected option, submitting one form entry per value under the same `name`.',
       }),
       attribute('value', 'string', {
         property: valueProperty,
         description:
-          'The option selected on load and after a form reset. Assign the `value` property for live changes.',
+          'The option selected on load and after a form reset. Assign the `value` property for live changes; once the user commits a change the attribute stops applying, the way it does on a native input.',
       }),
+      ...FORM_ATTRIBUTES(),
     ],
     [
-      part('listbox', true, "[role='listbox']", 'The option container.'),
-      part(
-        'option',
-        true,
-        "[role='option']",
-        'One option. Its value comes from `value`, then `data-ui-value`, then the element id. Mark unavailable options `aria-disabled="true"`.',
-      ),
+      part('listbox', true, "[role='listbox']", 'The option container, which is the host itself.'),
+      ...COLLECTION_PARTS(),
     ],
     [state('selected', 'aria', true, '`aria-selected="true"` on selected options.')],
-    [],
-    transitionEvents('the selection', 'ListboxChangeDetail'),
+    [
+      variable(
+        '--ui-collection-surface-inline-size',
+        'Minimum width of an option surface. On the anchored Select and Combobox surfaces the trigger width wins whenever it is larger.',
+      ),
+    ],
+    [...transitionEvents('the selection', 'ListboxChangeDetail'), pageEvent('ListboxPageDetail')],
     accessibility(
       'listbox',
       'Listbox',
@@ -1363,7 +1549,7 @@ export const components = [
           'Typeahead: jump to the next option whose text starts with what you typed.',
         ),
       ],
-      'Selection follows `aria-selected`, and the active option is tracked with `aria-activedescendant` so focus stays on the listbox.',
+      'Roving `tabindex` moves real focus between options, so selection follows `aria-selected` and never the focus ring. Options inside a `group` stay in one flat navigation order. `header`, `footer`, and the pager sit outside that order and are reached with `Tab`.',
     ),
   ),
   customElement(
@@ -1373,7 +1559,7 @@ export const components = [
     'UISelectElement',
     'createSelectElementClass',
     'defineSelectElement',
-    'select.css',
+    ['select.css', 'options.css', 'floating.css'],
     [
       attribute('open', 'boolean', {
         description: 'Present to render the listbox open on load.',
@@ -1383,26 +1569,55 @@ export const components = [
         default: 'bottom',
         description: 'Preferred side of the trigger for the listbox surface.',
       }),
+      attribute('searchable', 'boolean', {
+        description:
+          'Present to filter from a `search` field inside the surface. Focus moves into that field on open and stays there; the highlight travels through `aria-activedescendant`.',
+      }),
       attribute('value', 'string', {
         property: valueProperty,
         description:
-          'The option selected on load and after a form reset. Mirror it onto a hidden input to submit with a form.',
+          'The option selected on load and after a form reset. Once the user commits a change the attribute stops applying, the way it does on a native input.',
       }),
+      ...COLLECTION_ATTRIBUTES(),
+      ...FORM_ATTRIBUTES(),
     ],
     [
       part('trigger', true, undefined, 'Native button that opens the listbox.'),
-      part('listbox', true, "[role='listbox']", 'The option container and popover surface.'),
       part(
-        'option',
-        true,
-        "[role='option']",
-        'One option. Its value comes from `value`, then `data-ui-value`, then the element id.',
+        'value',
+        false,
+        undefined,
+        'Element inside the trigger that shows the selected label. Timeless writes its text and nothing else.',
       ),
-      part('label', false, undefined, 'Element inside the trigger that shows the selected label.'),
+      part(
+        'search',
+        false,
+        undefined,
+        'Text field inside the surface that filters the options under `searchable`. Left and Right move the caret rather than the highlight.',
+      ),
+      part(
+        'surface',
+        false,
+        undefined,
+        'The popover the listbox sits in. Author it whenever the surface also holds a `search` field, a `header`, a `footer`, or a pager: a `role="listbox"` may own only options and groups, so those siblings belong beside the listbox rather than inside it. With none of them, the `listbox` is its own surface and this part is unnecessary.',
+      ),
+      part('listbox', true, "[role='listbox']", 'The option container.'),
+      ...COLLECTION_PARTS(),
+      ...COLLECTION_TRIGGER_PARTS(),
     ],
     [],
-    [],
-    transitionEvents('the selected option', 'SelectChangeDetail'),
+    [
+      variable(
+        '--ui-collection-surface-inline-size',
+        'Minimum width of the listbox surface. The trigger width wins whenever it is larger.',
+      ),
+      variable('--ui-floating-offset', 'Gap between the trigger and the surface.'),
+    ],
+    [
+      ...transitionEvents('the selected option', 'SelectChangeDetail'),
+      ...overlayEvents('listbox', 'SelectToggleDetail'),
+      ...collectionEvents('SelectInputDetail', 'SelectPageDetail'),
+    ],
     accessibility(
       'combobox',
       'Select-Only Combobox',
@@ -1413,9 +1628,13 @@ export const components = [
         ),
         key('Arrow keys', 'Move the active option while the listbox is open.'),
         key('Escape', 'Close the listbox without changing the value.'),
-        key('Printable characters', 'Typeahead over the option labels.'),
+        key(
+          'Printable characters',
+          'Typeahead over the option labels. On a closed Select this selects a match without opening, as the native control does.',
+        ),
+        key('Backspace', 'In an empty `search` field under `multiple`, removes the last chip.'),
       ],
-      'The trigger keeps focus and the active option is announced through `aria-activedescendant`. Light dismiss comes from the Popover API. Mirror `value` onto a hidden input to submit with a form.',
+      'Focus stays on the trigger and the active option is announced through `aria-activedescendant`; under `searchable` focus moves into the `search` field instead and the same mechanism carries the highlight. The trigger carries `popovertarget`, so it opens the surface before any script runs. Light dismiss and Escape come from the Popover API. `header`, `footer`, and the pager sit outside arrow navigation and are reached with `Tab`.',
     ),
   ),
   customElement(
@@ -1425,42 +1644,58 @@ export const components = [
     'UIComboboxElement',
     'createComboboxElementClass',
     'defineComboboxElement',
-    'combobox.css',
+    ['combobox.css', 'options.css', 'floating.css'],
     [
       attribute('value', 'string', {
         property: valueProperty,
         description:
-          'The option selected on load and after a form reset. Assign the `value` property for live changes.',
+          'The option selected on load and after a form reset. Once the user commits a change the attribute stops applying, the way it does on a native input.',
       }),
+      ...COLLECTION_ATTRIBUTES(),
+      ...FORM_ATTRIBUTES(),
     ],
     [
       part(
-        'input',
+        'trigger',
         true,
-        "[role='combobox']",
-        'The native text input. Timeless wires `aria-expanded`, `aria-controls`, and `aria-activedescendant`.',
+        "input[role='combobox']",
+        'The native text input. It is both the trigger and the search field: Timeless wires `aria-expanded`, `aria-controls`, and `aria-activedescendant` onto it and leaves its editing behavior alone.',
+      ),
+      part(
+        'surface',
+        false,
+        undefined,
+        'The popover the listbox sits in. Author it whenever the surface also holds a `header`, a `footer`, or a pager: a `role="listbox"` may own only options and groups. With none of them, the `listbox` is its own surface and this part is unnecessary.',
       ),
       part('listbox', true, "[role='listbox']", 'The option container.'),
-      part(
-        'option',
-        true,
-        "[role='option']",
-        'One option. Its value comes from `value`, then `data-ui-value`, then the element id. Filtering hides non-matching options.',
-      ),
+      ...COLLECTION_PARTS(),
+      ...COLLECTION_TRIGGER_PARTS(),
     ],
     [],
-    [],
-    transitionEvents('the selected option', 'ComboboxChangeDetail'),
+    [
+      variable(
+        '--ui-collection-surface-inline-size',
+        'Minimum width of the listbox surface. The input width wins whenever it is larger.',
+      ),
+      variable('--ui-floating-offset', 'Gap between the input and the surface.'),
+    ],
+    [
+      ...transitionEvents('the selected option', 'ComboboxChangeDetail'),
+      ...overlayEvents('listbox', 'ComboboxToggleDetail'),
+      ...collectionEvents('ComboboxInputDetail', 'ComboboxPageDetail'),
+    ],
     accessibility(
       'combobox',
       'Combobox',
       [
         key('Arrow Down / Arrow Up', 'Open the listbox, then move the active option.'),
         key('Home / End', 'Move to the first or last matching option.'),
+        key('Arrow Left / Arrow Right', 'Move the text caret. They never move the highlight.'),
         key('Enter', 'Commit the active option.'),
         key('Escape', 'Close the listbox, then clear the filter on a second press.'),
+        key('Backspace', 'In an empty input under `multiple`, removes the last chip.'),
       ],
-      'Focus stays in the text input at all times; the active option is exposed with `aria-activedescendant`. Filtering hides non-matching options rather than removing them.',
+      'Focus stays in the text input at all times; the active option is exposed with `aria-activedescendant`. Filtering hides non-matching options rather than removing them, so find-in-page and the DOM still show the full authored list. `header`, `footer`, and the pager sit outside arrow navigation and are reached with `Tab`.',
     ),
   ),
   customElement(

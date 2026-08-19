@@ -88,18 +88,22 @@ test.describe('platform-dependent custom element behavior', () => {
     await expect(toast).not.toHaveAttribute('data-ui-state', /.*/)
   })
 
-  test('authored form input resets the live select value', async ({ page }) => {
-    await page.goto('/stories/library-navigation-select--grouped-form/')
+  /**
+   * `value` is the authored default, not the live value: it seeds the selection, stops applying once
+   * the user commits a change, and comes back on reset — which is how a native input behaves and what
+   * keeps a re-rendering framework from clobbering user input.
+   */
+  test('a form reset restores the authored select value', async ({ page }) => {
+    await page.goto('/stories/library-navigation-select--form-participation/')
     await expectRouteDocumentReady(page)
-    const host = page.locator('ui-select')
-    const trigger = page.getByRole('button', { name: 'Assignee' })
-    const input = page.locator('input[name="assignee"]')
+    const host = page.locator('ui-select').first()
 
-    await trigger.click()
+    await expect(host).toHaveJSProperty('value', 'designer')
+    await page.getByRole('button', { name: /Assignee/ }).click()
     await page.getByRole('option', { name: 'Manager' }).click()
-    await expect(input).toHaveValue('manager')
+    await expect(host).toHaveJSProperty('value', 'manager')
+
     await host.evaluate((element) => element.closest('form')?.reset())
-    await expect(input).toHaveValue('designer')
     await expect(host).toHaveJSProperty('value', 'designer')
   })
 })

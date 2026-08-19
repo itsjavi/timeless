@@ -1,4 +1,11 @@
-export { ValueState, type ValueStateSnapshot } from './value-state'
+export {
+  applyCollectionValidity,
+  collectionFormValue,
+  ValueState,
+  type CollectionValidityOptions,
+  type FormValueWindow,
+  type ValueStateSnapshot,
+} from './value-state'
 
 export {
   componentContracts,
@@ -25,6 +32,7 @@ export {
   isFloatingPlacement,
   resolveFloatingPlacement,
   syncFloatingAnchor,
+  type FloatingAlignment,
   type FloatingAnchorOptions,
   type FloatingAnchorParts,
   type FloatingElementLike,
@@ -259,13 +267,38 @@ export {
 } from './choice-group'
 
 export {
+  applyOptionFilter,
+  applyOptionWindow,
+  collectionAlignments,
+  enabledOptions,
+  findOptionByPrefix,
+  findOptionGroups,
+  findOptions,
+  matchOption,
+  optionFilterModes,
+  optionLabel,
+  optionPageWindow,
+  visibleOptions,
+  OPTION_TYPEAHEAD_RESET_MS,
+  type CollectionAlignment,
+  type OptionFilterMode,
+  type OptionLike,
+  type OptionWindow,
+  type OptionWindowOptions,
+} from './options'
+
+export {
   enhanceListboxParts,
   filterListboxOptions,
   findListboxOptions,
+  listboxOptionLabel,
   listboxOptionValue,
+  listboxPageWindow,
   selectedListboxValues,
   syncListboxActiveDescendant,
   syncListboxActiveOption,
+  syncListboxRegions,
+  syncListboxSelection,
   syncListboxValue,
   UIListboxElement,
   type ListboxChangeDetail,
@@ -274,8 +307,12 @@ export {
   type ListboxEnhancementOptions,
   type ListboxEnhancementParts,
   type ListboxEnhancementResult,
+  type ListboxGroupLike,
   type ListboxHostLike,
   type ListboxOptionLike,
+  type ListboxPageDetail,
+  type ListboxPagerParts,
+  type ListboxRegionLike,
 } from './listbox'
 
 export {
@@ -284,14 +321,19 @@ export {
   syncSelectValue,
   UISelectElement,
   type SelectChangeDetail,
+  type SelectChangeReason,
   type SelectElementLike,
   type SelectEnhancementOptions,
   type SelectEnhancementParts,
   type SelectEnhancementResult,
   type SelectInputLike,
+  type SelectInputDetail,
   type SelectListboxLike,
   type SelectOptionLike,
+  type SelectPageDetail,
+  type SelectToggleDetail,
   type SelectTriggerLike,
+  type SelectTriggerWiring,
 } from './select'
 
 export {
@@ -301,13 +343,17 @@ export {
   syncComboboxActiveDescendant,
   UIComboboxElement,
   type ComboboxChangeDetail,
+  type ComboboxChangeReason,
   type ComboboxEnhancementOptions,
   type ComboboxEnhancementParts,
   type ComboboxEnhancementResult,
   type ComboboxHostLike,
+  type ComboboxInputDetail,
   type ComboboxInputLike,
   type ComboboxListboxLike,
   type ComboboxOptionLike,
+  type ComboboxPageDetail,
+  type ComboboxToggleDetail,
 } from './combobox'
 
 export {
