@@ -76,6 +76,25 @@ Use `.agents/memory/` for agent-facing project context and implementation planni
   `ui-*` custom elements, contract-declared configuration on native roots, and `data-ui-part` for
   authored anatomy. Copied source must never contain `data-ui-internal-*`.
 
+## Rules for declaring permitted values
+
+- Permitted attribute values are declared once, in `valueSets` in
+  `packages/components/scripts/component-registry.mjs`. An attribute references a set by name
+  through `set:` and never inlines a value list.
+- `pnpm generate` projects those sets into `src/values.ts`, `src/contracts.ts`, `src/attributes.ts`,
+  `custom-elements.json`, the framework typings, and the editor data. Never hand-edit a generated
+  file; change the registry and regenerate.
+- Modules that already export a value array re-export it from `src/values.ts` and keep their own
+  type guards. A public export must never change name or module.
+- Sets with identical values keep separate names when they are separate public exports.
+  `buttonSizes`, `primitiveSizes`, and `formControlSizes` are all `sm | md | lg`.
+- `pnpm contracts:validate` proves every set against the stylesheets in both directions. A value the
+  CSS selects must be declared, and a declared value must be selected or be the attribute default.
+- Declare each element's events with the detail type that element actually dispatches, not the
+  shared `UITransitionDetail`. `pnpm manifest:validate` fails when the named type is not exported.
+- Never hand-copy a value list into `argTypes.options`, an example factory, or a test. Import the
+  exported array.
+
 ## Rules for writing `.stories.ts` files
 
 - Prefer one component per story file. Use a title path that groups related files, e.g.
