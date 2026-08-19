@@ -1,12 +1,18 @@
 {
-  "justification": "Milestone 019 re-baseline. Every entry's raw closure is at or below the milestone 015 baseline; popover fell 0.7% and select 5.0%. gzipBytes is the sum of each module gzipped on its own, so it tracks how tsdown splits chunks as well as payload: popover now resolves to four chunks instead of three, which raised the summed figure 13.8% while the concatenated closure gzips to 4205 against a 4155 baseline. Re-recorded from the current build so the three entries that shrank are guarded at their new, smaller size.",
+  "justification": "Milestone 021 re-baseline. Only the popover entry moved; listbox is byte-identical and select and combobox stayed inside the 10% ceiling. Three popover metrics needed a new baseline.\n\ncssRawBytes 3958 -> 4503 and cssGzipBytes 949 -> 1154 are the popover.css restructure. The shared [popover] base was a popover box that Hover Card and Tooltip inherited, so a tooltip picked up `overflow: auto`, `overscroll-behavior: contain`, a `max-block-size` of nearly the viewport, and the panel's leading, then overrode part of it back. It is now a frame plus two per-component boxes, with the tooltip scoped out of the panel rule rather than layered over it. Before re-baselining, 537 gzipped bytes of block comments were cut from the new rules to match the rest of src/css, which ships essentially comment-free and unminified; that was 96% of the original overage. The 205 gzipped bytes left are the new rules themselves.\n\ngzipBytes 4730 -> 5276 is mostly the chunk split this metric is known to track, not payload. Seven private copies of two feature detects became src/capabilities.ts, so tsdown emits capabilities-*.js as a fifth popover chunk and the summed per-module figure absorbs another chunk's gzip overhead. Concatenating the same closure gzips to 4595 against milestone 019's recorded 4205, a 9.3% rise, under the ceiling the summed figure breaches. The residual is real: the shared chunk carries all three probes, so a popover-only entry now ships supportsNativeDialog and supportsInvokerCommands unused. They are side-effect-free named exports, so a consumer bundler shakes them out; only the dist artifact carries them. popover rawBytes grew 8.0% and stayed inside the ceiling.\n\nRe-recorded from the current build so every entry, including the three that did not grow, is guarded at its present size.",
   "entries": {
     "popover": {
-      "cssGzipBytes": 949,
-      "cssRawBytes": 3958,
-      "gzipBytes": 4730,
-      "modules": ["floating-BeOxSmX7.js", "parts-DTbd10X0.js", "popover-fJlaBI51.js", "popover.js"],
-      "rawBytes": 15981
+      "cssGzipBytes": 1154,
+      "cssRawBytes": 4503,
+      "gzipBytes": 5276,
+      "modules": [
+        "capabilities-WbLBf5B4.js",
+        "floating-BeOxSmX7.js",
+        "parts-DTbd10X0.js",
+        "popover-DGkD-7ng.js",
+        "popover.js"
+      ],
+      "rawBytes": 17264
     },
     "listbox": {
       "cssGzipBytes": 430,
@@ -18,32 +24,34 @@
     "select": {
       "cssGzipBytes": 735,
       "cssRawBytes": 2198,
-      "gzipBytes": 15100,
+      "gzipBytes": 15622,
       "modules": [
+        "capabilities-WbLBf5B4.js",
         "collection.js",
         "events.js",
         "floating-BeOxSmX7.js",
         "listbox.js",
         "parts-DTbd10X0.js",
-        "popover-fJlaBI51.js",
+        "popover-DGkD-7ng.js",
         "select.js"
       ],
-      "rawBytes": 59049
+      "rawBytes": 60215
     },
     "combobox": {
       "cssGzipBytes": 757,
       "cssRawBytes": 2375,
-      "gzipBytes": 14726,
+      "gzipBytes": 15250,
       "modules": [
+        "capabilities-WbLBf5B4.js",
         "collection.js",
         "combobox.js",
         "events.js",
         "floating-BeOxSmX7.js",
         "listbox.js",
         "parts-DTbd10X0.js",
-        "popover-fJlaBI51.js"
+        "popover-DGkD-7ng.js"
       ],
-      "rawBytes": 57208
+      "rawBytes": 58374
     }
   }
 }

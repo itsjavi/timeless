@@ -4,12 +4,7 @@
     display: contents;
   }
 
-  /*
-   * The frame every floating surface shares: border, ground, lift, and inherited type. Sizing,
-   * padding, radius, overflow, and line-height are deliberately absent. A tooltip and a popover want
-   * different boxes, and layering one over the other is what left tooltips scrollable, viewport-tall,
-   * and loosely leaded.
-   */
+  /* The frame all floating surfaces share. Sizing and padding belong to the per-component boxes. */
   :where(ui-popover, ui-hover-card) > [popover],
   ui-hover-card[anchor] {
     box-sizing: border-box;
@@ -22,7 +17,7 @@
     font: inherit;
   }
 
-  /* Popover and Hover Card: a panel holding real content, which scrolls when there is too much. */
+  /* The panel box. Excludes tooltips so they never inherit a scroll container to override back. */
   :where(ui-popover, ui-hover-card:not([variant='tooltip'])) > [popover],
   ui-hover-card[anchor]:not([variant='tooltip']) {
     max-inline-size: min(22rem, calc(100vw - 2rem));
@@ -38,11 +33,7 @@
     min-inline-size: 16rem;
   }
 
-  /*
-   * Tooltip: one short, non-interactive label. It declares no `max-block-size`, so content sizes it,
-   * and `overflow: visible` because the UA stylesheet gives every `[popover]` `overflow: auto` —
-   * omitting the declaration would leave a tooltip scrollable, which is the bug being fixed.
-   */
+  /* The label box. `overflow` is not redundant: the UA gives every `[popover]` `overflow: auto`. */
   ui-hover-card[variant='tooltip'] > [popover],
   ui-hover-card[variant='tooltip'][anchor] {
     --ui-tooltip-bg: light-dark(#17171a, #f4f4f5);
@@ -60,39 +51,23 @@
     line-height: 1.35;
   }
 
-  :where(
-      :where(ui-popover, ui-hover-card:not([variant='tooltip'])) > [popover],
-      ui-hover-card[anchor]:not([variant='tooltip'])
-    )
-    :where(h2, h3, p) {
+  :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]) :where(h2, h3, p) {
     margin: 0;
   }
 
-  :where(
-      :where(ui-popover, ui-hover-card:not([variant='tooltip'])) > [popover],
-      ui-hover-card[anchor]:not([variant='tooltip'])
-    )
-    :where(h2, h3) {
+  :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]) :where(h2, h3) {
     color: var(--ui-fg);
     font-size: 0.95rem;
     font-weight: 750;
   }
 
+  /* Scoped off tooltips, whose label inherits the surface colour instead. */
   :where(
       :where(ui-popover, ui-hover-card:not([variant='tooltip'])) > [popover],
       ui-hover-card[anchor]:not([variant='tooltip'])
     )
     p {
     color: var(--ui-fg-muted);
-  }
-
-  /*
-   * The tooltip label is the whole surface, so it takes the surface colour by inheritance. The muted
-   * `p` colour above is scoped away from tooltips rather than overridden inside them, which is what
-   * the `color: inherit !important` this replaces was compensating for.
-   */
-  ui-hover-card[variant='tooltip'] :where(p) {
-    margin: 0;
   }
 
   :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]):not(:popover-open) {
