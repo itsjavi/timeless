@@ -9,9 +9,13 @@ decides it — and if one does, run the script instead of arguing from the sourc
 pnpm qa
 ```
 
-That is `typecheck` → `format:check` → `build` → `test` → `publint` → `attw` → `test:e2e`. `build`
-in `packages/components` runs `generate:check`, `contracts:validate`, and `manifest:validate` before
-`tsdown`, so a registry mistake fails the build rather than shipping.
+That is `typecheck` → `format:check` → `build` → `test` → `contracts:check` → `publint` → `attw` →
+`test:e2e`. `build` in `packages/components` runs `generate:check`, `contracts:validate`, and
+`manifest:validate` before `tsdown`, so a registry mistake fails the build rather than shipping.
+`contracts:check` is `boundaries:check`, `exports:validate`, `generated-dom:check`, and
+`performance:check`, and the CI job runs that same aggregate — so a green `pnpm qa` means a green
+job. It did not always: those four ran only in CI, which is how a `createElement` in a component
+reached a pull request past a green local gate.
 
 ## Failure → remedy
 
@@ -64,12 +68,18 @@ pnpm boundaries:check
 pnpm test:e2e
 ```
 
+```bash
+pnpm contracts:check   # the four checks that used to run only in CI
+```
+
 ## What no script checks
 
 These are the rules a reviewer or an audit skill has to carry. See
 `.agents/skills/audit-component-contracts/SKILL.md`.
 
-- Visual declarations written from component JS.
+- Visual declarations written from component JS. `generated-dom:check` decides the narrower rule
+  that a component may not create elements at all — only Toast may, and everything else clones
+  authored markup or enhances it in place.
 - `data-ui-*` used as configuration on a `ui-*` custom-element host.
 - Boolean attributes carrying string values.
 - Value lists hand-copied into `argTypes.options`, a factory, or a test.
