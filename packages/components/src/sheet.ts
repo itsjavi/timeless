@@ -11,6 +11,7 @@ import {
   watch,
   type FocusTarget,
 } from '@timelessui/core'
+import { supportsNativeDialog } from './capabilities'
 import {
   closeCommand,
   commandFromEvent,
@@ -458,16 +459,6 @@ function invalidSheetParts(parts: SheetEnhancementParts): readonly string[] {
   if (!parts.trigger) missing.push('trigger')
   if (!parts.panel) missing.push('panel')
   return missing
-}
-
-function supportsNativeDialog(targetWindow: Window | null | undefined): boolean {
-  const timelessWindow = targetWindow as (Window & typeof globalThis) | null | undefined
-  return Boolean(
-    timelessWindow?.HTMLDialogElement &&
-    'show' in timelessWindow.HTMLDialogElement.prototype &&
-    'showModal' in timelessWindow.HTMLDialogElement.prototype &&
-    'close' in timelessWindow.HTMLDialogElement.prototype,
-  )
 }
 
 function closestOwnedElement(

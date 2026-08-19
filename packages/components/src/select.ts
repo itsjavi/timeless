@@ -8,6 +8,7 @@ import {
   property,
   watch,
 } from '@timelessui/core'
+import { supportsNativePopover } from './capabilities'
 import { isCollectionItemDisabled, collectionNavigationTarget } from './collection'
 import {
   applyFloatingPosition,
@@ -449,13 +450,6 @@ function invalidSelectParts(parts: SelectEnhancementParts): readonly string[] {
   if (!parts.listbox) missing.push('listbox')
   if (parts.options.length === 0) missing.push('options')
   return missing
-}
-
-function supportsNativePopover(targetWindow: Window | null | undefined): boolean {
-  const timelessWindow = targetWindow as (Window & typeof globalThis) | null | undefined
-  return Boolean(
-    timelessWindow?.HTMLElement && 'showPopover' in timelessWindow.HTMLElement.prototype,
-  )
 }
 
 function nextAvailableSelectInstanceId(ownerDocument: Document): string {
