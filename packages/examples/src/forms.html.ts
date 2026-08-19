@@ -4,6 +4,7 @@ import type {
   FormControlSize,
   FormDensity,
 } from '@timelessui/components'
+import { uiAttributeString } from '@timelessui/components/attributes'
 import { escapeAttribute, escapeHtml } from './utils.ts'
 
 type FieldBaseProps = {
@@ -81,20 +82,14 @@ type FileFieldProps = FieldBaseProps & {
   accept?: string
 }
 
-function optionalAttribute(name: string, value: string | undefined, defaultValue?: string): string {
-  if (!value || value === defaultValue) {
-    return ''
-  }
-
-  return ` ${name}="${escapeAttribute(value)}"`
-}
-
 function booleanAttribute(name: string, value: boolean | undefined): string {
   return value ? ` ${name}` : ''
 }
 
-function fieldAttributes(props: FieldBaseProps): string {
-  return `${optionalAttribute('data-ui-layout', props.layout, 'stacked')}${optionalAttribute('data-ui-density', props.density, 'normal')}${props.invalid ? ' aria-invalid="true"' : ''}`
+/** Root attributes for the field wrapper, with the contract deciding which values are worth writing. */
+function fieldRoot(props: FieldBaseProps): string {
+  const root = uiAttributeString('field', { layout: props.layout, density: props.density })
+  return `${root}${props.invalid ? ' aria-invalid="true"' : ''}`
 }
 
 function descriptionId(props: FieldBaseProps): string | undefined {
@@ -132,13 +127,13 @@ export function createTextField(props: TextFieldProps): string {
   const placeholder = props.placeholder
     ? ` placeholder="${escapeAttribute(props.placeholder)}"`
     : ''
-  const size = optionalAttribute('data-ui-size', props.size, 'md')
+  const size = uiAttributeString('input', { size: props.size })
   const invalid = props.invalid ? ' aria-invalid="true"' : ''
 
-  return `<div class="ui-field"${fieldAttributes(props)}>
+  return `<div ${fieldRoot(props)}>
   <label class="ui-label" for="${escapeAttribute(props.id)}">${escapeHtml(props.label)}</label>
   <div data-ui-part="control">
-    <input class="ui-input"${size} id="${escapeAttribute(props.id)}" name="${escapeAttribute(props.name)}" type="${escapeAttribute(type)}"${placeholder}${value}${booleanAttribute('required', props.required)}${booleanAttribute('disabled', props.disabled)}${booleanAttribute('readonly', props.readonly)}${invalid}${describedBy(props)}>
+    <input ${size} id="${escapeAttribute(props.id)}" name="${escapeAttribute(props.name)}" type="${escapeAttribute(type)}"${placeholder}${value}${booleanAttribute('required', props.required)}${booleanAttribute('disabled', props.disabled)}${booleanAttribute('readonly', props.readonly)}${invalid}${describedBy(props)}>
     ${fieldMessages(props)}
   </div>
 </div>`
@@ -148,26 +143,26 @@ export function createTextareaField(props: TextareaFieldProps): string {
   const placeholder = props.placeholder
     ? ` placeholder="${escapeAttribute(props.placeholder)}"`
     : ''
-  const size = optionalAttribute('data-ui-size', props.size, 'md')
+  const size = uiAttributeString('textarea', { size: props.size })
   const invalid = props.invalid ? ' aria-invalid="true"' : ''
 
-  return `<div class="ui-field"${fieldAttributes(props)}>
+  return `<div ${fieldRoot(props)}>
   <label class="ui-label" for="${escapeAttribute(props.id)}">${escapeHtml(props.label)}</label>
   <div data-ui-part="control">
-    <textarea class="ui-textarea"${size} id="${escapeAttribute(props.id)}" name="${escapeAttribute(props.name)}"${placeholder}${booleanAttribute('required', props.required)}${booleanAttribute('disabled', props.disabled)}${booleanAttribute('readonly', props.readonly)}${invalid}${describedBy(props)}>${escapeHtml(props.value ?? '')}</textarea>
+    <textarea ${size} id="${escapeAttribute(props.id)}" name="${escapeAttribute(props.name)}"${placeholder}${booleanAttribute('required', props.required)}${booleanAttribute('disabled', props.disabled)}${booleanAttribute('readonly', props.readonly)}${invalid}${describedBy(props)}>${escapeHtml(props.value ?? '')}</textarea>
     ${fieldMessages(props)}
   </div>
 </div>`
 }
 
 export function createSelectField(props: SelectFieldProps): string {
-  const size = optionalAttribute('data-ui-size', props.size, 'md')
+  const size = uiAttributeString('nativeSelect', { size: props.size })
   const invalid = props.invalid ? ' aria-invalid="true"' : ''
 
-  return `<div class="ui-field"${fieldAttributes(props)}>
+  return `<div ${fieldRoot(props)}>
   <label class="ui-label" for="${escapeAttribute(props.id)}">${escapeHtml(props.label)}</label>
   <div data-ui-part="control">
-    <select class="ui-select"${size} id="${escapeAttribute(props.id)}" name="${escapeAttribute(props.name)}"${booleanAttribute('required', props.required)}${booleanAttribute('disabled', props.disabled)}${invalid}${describedBy(props)}>
+    <select ${size} id="${escapeAttribute(props.id)}" name="${escapeAttribute(props.name)}"${booleanAttribute('required', props.required)}${booleanAttribute('disabled', props.disabled)}${invalid}${describedBy(props)}>
       ${props.options
         .map(
           ([value, label]) =>
@@ -181,8 +176,10 @@ export function createSelectField(props: SelectFieldProps): string {
 }
 
 export function createChoiceGroup(props: ChoiceGroupProps): string {
-  const orientation = optionalAttribute('data-ui-orientation', props.orientation, 'vertical')
-  const density = optionalAttribute('data-ui-density', props.density, 'normal')
+  const root = uiAttributeString('choiceGroup', {
+    orientation: props.orientation,
+    density: props.density,
+  })
   const invalid = props.invalid ? ' aria-invalid="true"' : ''
   const descriptionId = props.description ? `${props.name}-description` : undefined
   const errorId = props.error ? `${props.name}-error` : undefined
@@ -193,7 +190,7 @@ export function createChoiceGroup(props: ChoiceGroupProps): string {
     ? `<p id="${escapeAttribute(errorId ?? '')}" data-ui-part="error">${escapeHtml(props.error)}</p>`
     : ''
 
-  return `<fieldset class="ui-choice-group"${orientation}${density}${invalid}${describedByIds([descriptionId, errorId])}>
+  return `<fieldset ${root}${invalid}${describedByIds([descriptionId, errorId])}>
   <legend class="ui-label">${escapeHtml(props.legend)}</legend>
   ${description}
   ${props.options.map((option) => createChoice(props, option)).join('\n  ')}
@@ -227,14 +224,14 @@ export function createSwitchField(props: SwitchFieldProps): string {
 }
 
 export function createRangeField(props: RangeFieldProps): string {
-  const size = optionalAttribute('data-ui-size', props.size, 'md')
+  const size = uiAttributeString('range', { size: props.size })
   const invalid = props.invalid ? ' aria-invalid="true"' : ''
   const step = typeof props.step === 'number' ? ` step="${props.step}"` : ''
   const description = props.description
     ? `<span class="ui-description" id="${escapeAttribute(descriptionId(props) ?? '')}" data-ui-part="hint">${escapeHtml(props.description)}</span>`
     : ''
 
-  return `<div class="ui-range"${size}>
+  return `<div ${size}>
   <label for="${escapeAttribute(props.id)}">${escapeHtml(props.label)}</label>
   <output for="${escapeAttribute(props.id)}">${props.value}</output>
   <input id="${escapeAttribute(props.id)}" name="${escapeAttribute(props.name)}" type="range" min="${props.min}" max="${props.max}" value="${props.value}"${step}${booleanAttribute('disabled', props.disabled)}${invalid}${describedBy(props)}>
@@ -246,7 +243,7 @@ export function createFileField(props: FileFieldProps): string {
   const accept = props.accept ? ` accept="${escapeAttribute(props.accept)}"` : ''
   const invalid = props.invalid ? ' aria-invalid="true"' : ''
 
-  return `<div class="ui-field"${fieldAttributes(props)}>
+  return `<div ${fieldRoot(props)}>
   <label class="ui-label" for="${escapeAttribute(props.id)}">${escapeHtml(props.label)}</label>
   <div data-ui-part="control">
     <input class="ui-file" id="${escapeAttribute(props.id)}" name="${escapeAttribute(props.name)}" type="file"${accept}${booleanAttribute('required', props.required)}${booleanAttribute('disabled', props.disabled)}${invalid}${describedBy(props)}>

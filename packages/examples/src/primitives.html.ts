@@ -4,6 +4,7 @@ import type {
   AvatarStatus,
   BadgeVariant,
   CardVariant,
+  CompactDensity,
   GroupOrientation,
   ListVariant,
   PrimitiveDensity,
@@ -14,13 +15,14 @@ import type {
   SkeletonWidth,
   SpinnerVariant,
 } from '@timelessui/components'
+import { uiAttributeString } from '@timelessui/components/attributes'
 import { escapeAttribute, escapeHtml } from './utils.ts'
 
 type AlertProps = {
   title: string
   description: string
   variant?: AlertVariant
-  density?: Extract<PrimitiveDensity, 'compact' | 'normal'>
+  density?: CompactDensity
   icon?: string
   role?: 'status' | 'alert' | 'note'
   actionLabel?: string
@@ -51,7 +53,7 @@ type CardProps = {
   description: string
   meta?: string
   variant?: CardVariant
-  density?: Extract<PrimitiveDensity, 'compact' | 'normal'>
+  density?: CompactDensity
 }
 
 type SkeletonProps = {
@@ -107,8 +109,7 @@ function idFragment(value: string): string {
 }
 
 export function createAlert(props: AlertProps): string {
-  const variant = optionalAttribute('data-ui-variant', props.variant, 'neutral')
-  const density = optionalAttribute('data-ui-density', props.density, 'normal')
+  const root = uiAttributeString('alert', { variant: props.variant, density: props.density })
   const role = props.role ? ` role="${escapeAttribute(props.role)}"` : ''
   const icon = props.icon
     ? `<span data-ui-part="icon" aria-hidden="true">${escapeHtml(props.icon)}</span>`
@@ -119,7 +120,7 @@ export function createAlert(props: AlertProps): string {
     </div>`
     : ''
 
-  return `<section class="ui-alert"${variant}${density}${role}>
+  return `<section ${root}${role}>
   ${icon}
   <div data-ui-part="content">
     <h2 data-ui-part="title">${escapeHtml(props.title)}</h2>
@@ -130,24 +131,25 @@ export function createAlert(props: AlertProps): string {
 }
 
 export function createAvatar(props: AvatarProps): string {
-  const size = optionalAttribute('data-ui-size', props.size, 'md')
-  const shape = optionalAttribute('data-ui-shape', props.shape, 'circle')
-  const status = optionalAttribute('data-ui-status', props.status)
+  const root = uiAttributeString('avatar', {
+    size: props.size,
+    shape: props.shape,
+    status: props.status,
+  })
   const statusSlot = props.status ? '<span data-ui-part="status" aria-hidden="true"></span>' : ''
   const label = props.status ? `${props.label}, ${props.status}` : props.label
 
-  return `<span class="ui-avatar"${size}${shape}${status} role="img" aria-label="${escapeAttribute(label)}">
+  return `<span ${root} role="img" aria-label="${escapeAttribute(label)}">
   <span data-ui-part="fallback">${escapeHtml(props.initials)}</span>
   ${statusSlot}
 </span>`
 }
 
 export function createBadge(props: BadgeProps): string {
-  const variant = optionalAttribute('data-ui-variant', props.variant, 'neutral')
-  const size = optionalAttribute('data-ui-size', props.size, 'md')
+  const root = uiAttributeString('badge', { variant: props.variant, size: props.size })
   const dot = props.dot ? '<span data-ui-part="dot" aria-hidden="true"></span>' : ''
 
-  return `<span class="ui-badge"${variant}${size}>${dot}${escapeHtml(props.label)}</span>`
+  return `<span ${root}>${dot}${escapeHtml(props.label)}</span>`
 }
 
 export function createSeparator(props: SeparatorProps = {}): string {
@@ -185,11 +187,10 @@ export function createVerticalLabeledSeparator(label?: {
 }
 
 export function createCard(props: CardProps): string {
-  const variant = optionalAttribute('data-ui-variant', props.variant, 'surface')
-  const density = optionalAttribute('data-ui-density', props.density, 'normal')
+  const root = uiAttributeString('card', { variant: props.variant, density: props.density })
   const meta = props.meta ? `<p data-ui-part="meta">${escapeHtml(props.meta)}</p>` : ''
 
-  return `<article class="ui-card"${variant}${density}>
+  return `<article ${root}>
   <header data-ui-part="header">
     ${meta}
     <h2 data-ui-part="title">${escapeHtml(props.title)}</h2>
@@ -205,11 +206,13 @@ export function createCard(props: CardProps): string {
 }
 
 export function createSkeleton(props: SkeletonProps = {}): string {
-  const shape = optionalAttribute('data-ui-shape', props.shape, 'text')
-  const size = optionalAttribute('data-ui-size', props.size, 'md')
-  const width = optionalAttribute('data-ui-width', props.width, 'full')
+  const root = uiAttributeString('skeleton', {
+    shape: props.shape,
+    size: props.size,
+    width: props.width,
+  })
 
-  return `<span class="ui-skeleton"${shape}${size}${width} aria-hidden="true"></span>`
+  return `<span ${root} aria-hidden="true"></span>`
 }
 
 export function createProgress(props: ProgressProps): string {
