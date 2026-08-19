@@ -34,8 +34,13 @@
     margin: 0;
   }
 
-  /* Demo prose only. Component anatomy keeps the colors its own stylesheet defines. */
-  .ui-demo-page p:not([data-ui-part]) {
+  /*
+   * Demo prose only. Component anatomy keeps the colors its own stylesheet defines, so this must not
+   * reach inside a component surface: `ui.showcase` is a later layer than `ui.components` and wins on
+   * layer order whatever the specificity. Overlay surfaces hold prose with no `data-ui-part`, which is
+   * how a tooltip label ended up muted against its inverted background.
+   */
+  .ui-demo-page p:not([data-ui-part]):not(:where([popover], dialog, ui-toast) *) {
     color: var(--ui-fg-muted);
     line-height: 1.6;
   }

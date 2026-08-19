@@ -710,7 +710,7 @@ export const examples = [
     id: 'hover-card',
     domain: 'overlays',
     guidance:
-      'Use Hover Card for a richer preview surface. For a single short label on hover or focus, [Tooltip](/docs/components/tooltip/) is the same element with tighter styling.',
+      'Use Hover Card for a surface holding content worth reading or clicking. For a single short label on hover or focus, [Tooltip](/docs/components/tooltip/) is the same element with `variant="tooltip"` and a box sized for one line.',
     group: 'Overlays',
     contracts: ['hoverCard'],
     component: 'Hover Card',
@@ -791,9 +791,9 @@ export const examples = [
     id: 'tooltip',
     domain: 'overlays',
     guidance:
-      'Tooltip is Hover Card configured as `variant="tooltip"` with `role="tooltip"`: one short, non-interactive label. Use [Hover Card](/docs/components/hover-card/) when the surface holds richer content the user may want to read or click.',
+      'Tooltip and [Hover Card](/docs/components/hover-card/) are one custom element with two boxes. `variant="tooltip"` gives a short non-interactive label that sizes to its content and never scrolls; omit it for a roomier surface holding content worth reading or clicking. Because both are `<ui-hover-card>`, the host attributes — `anchor`, `placement`, `open-delay`, `close-delay` — are the same for each and are documented once, on [Hover Card](/docs/components/hover-card/#attributes).',
     group: 'Overlays',
-    contracts: ['hoverCard'],
+    contracts: ['tooltip'],
     component: 'Tooltip',
     title: 'Tooltip',
     description: 'A concise tooltip built on the hover-card controller.',

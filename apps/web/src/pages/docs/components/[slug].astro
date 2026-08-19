@@ -235,7 +235,8 @@ const valueList = (values: readonly string[] | undefined, fallbackType: string) 
                       <td>
                         {member.attribute ? (
                           <>
-                            Reflects the <code>{member.attribute}</code> attribute, documented above.
+                            Reflects the <code>{member.attribute}</code> attribute
+                            {attributeContracts.length > 0 ? ', documented above.' : '.'}
                           </>
                         ) : (
                           <span set:html={inlineCode(member.description ?? '')} />
@@ -246,7 +247,7 @@ const valueList = (values: readonly string[] | undefined, fallbackType: string) 
                 </tbody>
               </table>
             ) : (
-              <p>This element adds no public properties. Configure it with the attributes above.</p>
+              <p>This element adds no public properties. Configure it with its attributes.</p>
             )}
             {(declaration.events?.length ?? 0) > 0 ? (
               <table>
