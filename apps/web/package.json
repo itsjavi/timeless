@@ -12,7 +12,7 @@
     "test": "node scripts/validate-claims.mjs && node scripts/validate-docs.mjs"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.7.0",
+    "@astrojs/sitemap": "^3.7.3",
     "@astrojs/starlight": "^0.41.7",
     "@lucide/astro": "^1.31.0",
     "@timelessui/components": "workspace:*",
