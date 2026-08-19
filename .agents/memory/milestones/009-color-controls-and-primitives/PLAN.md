@@ -1,3 +1,7 @@
+---
+status: Implemented
+---
+
 # Milestone 009: Color Controls and Primitives
 
 ## Goal

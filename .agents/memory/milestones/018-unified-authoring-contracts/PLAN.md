@@ -1,3 +1,7 @@
+---
+status: Implemented
+---
+
 # Milestone 018 Plan: Unified Component Authoring Contracts
 
 ## Goal

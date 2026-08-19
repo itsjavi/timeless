@@ -1,3 +1,7 @@
+---
+status: Accepted
+---
+
 # Milestone 020 Plan: Invoker Commands for Dialog and Sheet
 
 ## Goal

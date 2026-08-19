@@ -1,3 +1,7 @@
+---
+status: Implemented
+---
+
 # Milestone 013: Stable Component Contracts
 
 ## Objective

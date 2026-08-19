@@ -1,0 +1,103 @@
+# .agents
+
+Agent-facing context for Timeless UI. One canonical tree, shared by every coding agent.
+
+```text
+.agents/
+  memory/         planning artifacts and the design language  — see memory/README.md
+  reference/      shared facts the skills link to rather than repeat
+  skills/         invocable procedures, one directory per skill
+  subagents/      Claude Code subagent definitions
+```
+
+## Skills
+
+| Skill                       | Use it for                                                  |
+| --------------------------- | ----------------------------------------------------------- |
+| `author-component`          | Adding or changing a component's public surface, end to end |
+| `author-component-story`    | Writing or revising a StoryLite story                       |
+| `manage-milestone`          | Opening, advancing, or closing a milestone                  |
+| `verify-apg-conformance`    | Checking a component against its APG pattern                |
+| `audit-component-contracts` | Sweeping for authoring rules no validator enforces          |
+| `audit-docs-drift`          | Sweeping prose against the source it describes              |
+
+Each is a directory holding `SKILL.md` with `name` and `description` frontmatter — the format Claude
+Code and Codex both read.
+
+## Reference
+
+- `reference/generated-files.md` — every file written by `pnpm generate`, and what is safe to edit.
+- `reference/validators.md` — the validator scripts, what each failure message means, and the rules
+  no script covers.
+
+Skills link to these rather than restating them, so a fact changes in one place.
+
+## How each tool discovers this
+
+| Tool          | Path                                      | Mechanism                   |
+| ------------- | ----------------------------------------- | --------------------------- |
+| Codex         | `.agents/skills/`                         | Read natively               |
+| Codex         | `.codex/skills` → `../.agents/skills`     | Relative symlink            |
+| Claude Code   | `.claude/skills` → `../.agents/skills`    | Relative symlink            |
+| Claude Code   | `.claude/agents` → `../.agents/subagents` | Relative symlink            |
+| Anything else | `AGENTS.md`                               | The skill table points here |
+
+The symlinks are relative and committed, so a clone wires itself up with no install step. Nothing is
+duplicated: editing `.agents/skills/<name>/SKILL.md` changes what every tool reads.
+
+### Agents
+
+The two auditors exist in both tools from the same `SKILL.md`:
+
+- Codex reads `agents/openai.yaml` inside the skill directory, which supplies the display name,
+  short description, and default prompt.
+- Claude Code reads `.agents/subagents/*.md`, thin definitions that delegate to the same `SKILL.md`
+  and restrict the agent to read-only tools.
+
+`audit-docs-drift` sets `allow_implicit_invocation: false` for Codex, because a repo-wide prose
+sweep should be asked for rather than triggered. `audit-component-contracts` allows implicit
+invocation, since reviewing a diff is the common case.
+
+## Frontmatter, and what is portable
+
+Only five keys are safe in `SKILL.md`. Codex's validator rejects anything else outright, and its
+allowlist is the binding constraint:
+
+```python
+allowed_properties = {"name", "description", "license", "allowed-tools", "metadata"}
+```
+
+- `name` — required. Hyphen-case, must equal the directory name, 64 characters maximum.
+- `description` — required. 1024 characters maximum, and **no angle brackets**, which Codex rejects.
+- `allowed-tools` — optional. The _key_ is portable; the _values_ are not, since Claude Code and
+  Codex name their tools differently. Use it only where a restriction enforces something real: the
+  two auditors carry `Bash, Read, Grep, Glob` so "read-only" is a constraint rather than a request.
+  The authoring skills stay unrestricted, because they need Write and Edit and a stale list would
+  only break them.
+
+There is **no `triggers:` field** in either tool. Nothing does string matching — the `description`
+is injected as prose and the model routes on meaning, so quoted phrases in it are illustrative
+examples, never literal patterns. Synonyms match a listed phrase perfectly well. What the
+description has to be is _discriminating_: enough distinct intents to separate this skill from its
+neighbours, plus an explicit boundary naming the sibling skill that owns the adjacent case.
+Paraphrases of one intent add nothing and dilute the routing signal against every other description.
+
+`tools:` is a different field, valid only in a Claude Code subagent under `subagents/`. Codex would
+reject it in a `SKILL.md`.
+
+Codex-only configuration goes in `agents/openai.yaml`, whose own allowlist is `display_name`,
+`short_description`, `icon_small`, `icon_large`, `brand_color`, `default_prompt`, plus
+`dependencies.tools[]` and `policy.allow_implicit_invocation`. Note that `dependencies.tools[]`
+declares required MCP servers — what the skill _needs_ — and is unrelated to `allowed-tools`, which
+limits what it _may use_.
+
+## Adding a skill
+
+1. Create `.agents/skills/<verb-phrase-name>/SKILL.md`, observing the frontmatter rules above. Spend
+   the description on distinct intents and a boundary, not on synonyms.
+2. Link shared facts from `reference/` instead of restating them.
+3. Add a row to the table above and to the skill table in `AGENTS.md`.
+4. To expose it as a Codex agent, add `agents/openai.yaml`. To expose it as a Claude Code subagent,
+   add `.agents/subagents/<name>.md`.
+
+No symlink work is needed — the directories are already linked.

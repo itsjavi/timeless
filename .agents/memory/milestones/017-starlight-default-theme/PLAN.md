@@ -1,3 +1,7 @@
+---
+status: Implemented
+---
+
 # Milestone 017: Starlight default theme
 
 ## Summary

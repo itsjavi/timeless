@@ -1,3 +1,7 @@
+---
+status: Implemented
+---
+
 # CSS Primitives Plan
 
 ## Summary

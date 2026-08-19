@@ -1,3 +1,7 @@
+---
+status: Implemented
+---
+
 # Milestone 016 Plan: Astro and Starlight Documentation Site
 
 ## Goal

@@ -1,3 +1,7 @@
+---
+status: Proposed
+---
+
 # Actions And Release Readiness Plan
 
 ## Summary

@@ -1,3 +1,7 @@
+---
+status: Implemented
+---
+
 # Milestone 019 Plan: Typed Authoring Surface
 
 ## Goal

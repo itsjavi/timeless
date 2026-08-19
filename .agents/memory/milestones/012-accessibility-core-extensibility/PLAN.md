@@ -1,3 +1,7 @@
+---
+status: Implemented
+---
+
 # Milestone 012: Accessibility and Core Extensibility
 
 ## Objective

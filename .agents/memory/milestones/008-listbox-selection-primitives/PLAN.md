@@ -1,3 +1,7 @@
+---
+status: Implemented
+---
+
 # 008 Listbox and Selection Primitives Plan
 
 ## Objective

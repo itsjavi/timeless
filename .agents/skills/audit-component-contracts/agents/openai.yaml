@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Audit Timeless Contracts'
+  short_description: 'Check component conventions no validator enforces'
+  default_prompt:
+    'Use $audit-component-contracts to audit the current diff against the Timeless UI authoring
+    rules and report findings.'

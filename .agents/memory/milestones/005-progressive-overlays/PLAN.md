@@ -1,3 +1,7 @@
+---
+status: Implemented
+---
+
 # Progressive Overlays Plan
 
 ## Summary

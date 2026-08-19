@@ -1,0 +1,7 @@
+interface:
+  display_name: 'Audit Timeless Docs Drift'
+  short_description: 'Find prose the Timeless source no longer supports'
+  default_prompt:
+    'Use $audit-docs-drift to sweep Timeless UI documentation against the source and report drift.'
+policy:
+  allow_implicit_invocation: false

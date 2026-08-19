@@ -44,6 +44,29 @@ Examples:
 Choose the next number by inspecting the existing milestone folders. Keep slugs short and lowercase,
 using hyphens between words.
 
+## Milestone Status
+
+`PLAN.md` starts with YAML frontmatter declaring the milestone's status:
+
+```markdown
+---
+status: Accepted
+---
+
+# Milestone 021 Plan: ...
+```
+
+`status` is exactly one of:
+
+- `Proposed`: drafted, not yet agreed to run.
+- `Accepted`: agreed and scheduled, implementation not finished.
+- `Implemented`: the work landed and `RESULTS.md` records it.
+- `Rejected`: will not be implemented. The folder stays to keep milestone numbering sequential.
+
+The status lives only on `PLAN.md`, and it is the one part of that file that is expected to change
+after creation. Everything else in `PLAN.md` stays as written; the divergence between plan and
+outcome belongs in `RESULTS.md`.
+
 ## Milestone Files
 
 Each milestone must contain these files:

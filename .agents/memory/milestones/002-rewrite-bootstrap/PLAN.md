@@ -1,3 +1,7 @@
+---
+status: Implemented
+---
+
 # Timeless UI Rewrite Bootstrap Plan
 
 ## Summary
