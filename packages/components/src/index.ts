@@ -70,6 +70,19 @@ export {
 } from './overlays'
 
 export {
+  authoredCommand,
+  closeCommand,
+  commandFromEvent,
+  commandSource,
+  commandTarget,
+  hasAuthoredCommand,
+  requestCloseCommand,
+  showModalCommand,
+  supportsInvokerCommands,
+  type InvokerElementLike,
+} from './invoker'
+
+export {
   dialogKinds,
   enhanceDialogParts,
   focusInitialDialogTarget,
@@ -83,6 +96,7 @@ export {
   type DialogEnhancementResult,
   type DialogKind,
   type DialogTriggerLike,
+  type DialogTriggerWiring,
   type NativeDialogLike,
 } from './dialog'
 
@@ -105,6 +119,7 @@ export {
   type SheetEventSource,
   type SheetPosition,
   type SheetTriggerLike,
+  type SheetTriggerWiring,
 } from './sheet'
 
 export {

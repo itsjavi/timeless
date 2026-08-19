@@ -1,6 +1,6 @@
 /**
  * The landing page's "Modern ingredients" shelf says Timeless is *built with* these browser
- * features. It once advertised Invoker Commands and container queries, neither of which appears
+ * features. It once advertised container queries and Invoker Commands, neither of which appeared
  * anywhere in the library. Every tin now needs proof in the component or core source.
  *
  * Adding a tin without adding its proof here fails the build, which is the point.
@@ -16,6 +16,7 @@ const proofs = new Map([
   ['Native Overlays', /\bpopover\b|<dialog|showModal/],
   ['Cascade layers', /@layer\s+ui\./],
   ['Custom states', /:state\(|attachInternals/],
+  ['Invoker Commands', /commandfor|CommandEvent/],
   ['light-dark()', /light-dark\(/],
   ['Light DOM', /data-ui-part/],
 ])
@@ -24,10 +25,11 @@ const proofs = new Map([
  * Claims for features the library is committed to but has not shipped. Each one names the milestone
  * that will implement it, and each must graduate to `proofs` when that milestone lands — a planned
  * claim that already has an implementation is reported so it stops being treated as unverified.
+ * Invoker Commands sat here until milestone 020 wired up Dialog and Sheet. Nothing is planned now.
+ *
+ * @type {Map<string, { milestone: string, proof: RegExp }>}
  */
-const planned = new Map([
-  ['Invoker Commands', { milestone: '020', proof: /commandfor|CommandEvent/ }],
-])
+const planned = new Map()
 
 const sources = await collectSources([
   resolve(root, 'packages/components/src'),

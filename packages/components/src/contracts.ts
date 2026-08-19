@@ -1542,19 +1542,22 @@ export const componentContracts = {
         name: 'trigger',
         required: true,
         selector: "[data-ui-part~='trigger']",
-        description: 'Native button that opens the dialog.',
+        description:
+          'Native button that opens the dialog. Add `command="show-modal"` and `commandfor` naming the panel id to open it from markup, before any script runs. Timeless reads those attributes and stands down; it never writes them, because a generated attribute would only work once the bundle had loaded.',
       },
       {
         name: 'panel',
         required: true,
         selector: 'dialog',
-        description: 'The native `<dialog>` element. Author it, do not generate it.',
+        description:
+          'The native `<dialog>` element. Author it, do not generate it. Give it an explicit `id` when a trigger or close button invokes it, since an invoker can only name an id the author wrote.',
       },
       {
         name: 'close',
         required: false,
         selector: "[data-ui-part~='close']",
-        description: 'Optional explicit close button inside the panel.',
+        description:
+          'Optional explicit close button inside the panel. Add `command="close"` and `commandfor` to close it from markup; the platform then also copies the button `value` into `returnValue`.',
       },
     ],
     states: [],
@@ -1570,7 +1573,7 @@ export const componentContracts = {
         },
       ],
       notes:
-        'Focus trapping, the backdrop, and the top layer all come from `showModal()`. Timeless moves initial focus into the panel and returns it to the trigger on close. Give the panel an accessible name with `aria-labelledby`.',
+        'Focus trapping, the backdrop, and the top layer all come from `showModal()`. Timeless moves initial focus into the panel and returns it to the trigger on close. Give the panel an accessible name with `aria-labelledby`. A dialog invoker gets no implicit `aria-expanded` from the platform, so Timeless keeps writing it on both the authored-command and click paths.',
     },
   },
   sheet: {
@@ -1606,19 +1609,22 @@ export const componentContracts = {
         name: 'trigger',
         required: true,
         selector: "[data-ui-part~='trigger']",
-        description: 'Native button that opens the sheet.',
+        description:
+          'Native button that opens the sheet. On a `modal` sheet, add `command="show-modal"` and `commandfor` naming the panel id to open it from markup, before any script runs. A non-modal sheet has no declarative equivalent: the platform has no built-in command for `dialog.show()`, so its trigger stays on the click listener.',
       },
       {
         name: 'panel',
         required: true,
         selector: 'dialog',
-        description: 'The native `<dialog>` element.',
+        description:
+          'The native `<dialog>` element. Give it an explicit `id` when a trigger or close button invokes it, since an invoker can only name an id the author wrote.',
       },
       {
         name: 'close',
         required: false,
         selector: "[data-ui-part~='close']",
-        description: 'Optional explicit close button.',
+        description:
+          'Optional explicit close button. Add `command="close"` and `commandfor` to close it from markup, on modal and non-modal sheets alike; the platform then also copies the button `value` into `returnValue`.',
       },
     ],
     states: [],

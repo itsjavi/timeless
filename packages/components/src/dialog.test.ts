@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { enhanceDialogParts, resolveDialogKind, resolveDialogRole } from './dialog'
+import { showModalCommand } from './invoker'
 
 class FakeOverlayElement {
   id = ''
@@ -45,13 +46,19 @@ describe('enhanceDialogParts', () => {
 
     const result = enhanceDialogParts(
       { host, trigger, dialog },
-      { generatedId: 'ui-dialog-1', supportsDialog: true, kind: 'alert' },
+      {
+        generatedId: 'ui-dialog-1',
+        supportsDialog: true,
+        supportsInvokerCommands: true,
+        kind: 'alert',
+      },
     )
 
     expect(result).toEqual({
       status: 'enhanced',
       dialogId: 'ui-dialog-1',
       role: 'alertdialog',
+      triggerWiring: 'listener',
     })
     expect(dialog.id).toBe('ui-dialog-1')
     expect(dialog.getAttribute('role')).toBe('alertdialog')
@@ -61,13 +68,70 @@ describe('enhanceDialogParts', () => {
     expect(trigger.getAttribute('aria-expanded')).toBe('false')
   })
 
+  it('reports the authored trigger path when the markup invokes the dialog', () => {
+    const host = new FakeOverlayElement()
+    const trigger = new FakeOverlayElement()
+    const dialog = new FakeOverlayElement()
+    dialog.id = 'release-dialog'
+    trigger.setAttribute('command', showModalCommand)
+    trigger.setAttribute('commandfor', 'release-dialog')
+
+    expect(
+      enhanceDialogParts(
+        { host, trigger, dialog },
+        { generatedId: 'ui-dialog-4', supportsDialog: true, supportsInvokerCommands: true },
+      ),
+    ).toEqual({
+      status: 'enhanced',
+      dialogId: 'release-dialog',
+      role: 'dialog',
+      triggerWiring: 'authored',
+    })
+    // The invocation is the author's markup. Timeless reads it and never writes it, because a
+    // generated attribute would only work once the bundle had run.
+    expect(trigger.getAttribute('aria-controls')).toBe('release-dialog')
+    expect(trigger.getAttribute('aria-expanded')).toBe('false')
+  })
+
+  it('falls back to the click path when the browser lacks invoker commands', () => {
+    const host = new FakeOverlayElement()
+    const trigger = new FakeOverlayElement()
+    const dialog = new FakeOverlayElement()
+    dialog.id = 'release-dialog'
+    trigger.setAttribute('command', showModalCommand)
+    trigger.setAttribute('commandfor', 'release-dialog')
+
+    expect(
+      enhanceDialogParts(
+        { host, trigger, dialog },
+        { generatedId: 'ui-dialog-5', supportsDialog: true, supportsInvokerCommands: false },
+      ),
+    ).toMatchObject({ status: 'enhanced', triggerWiring: 'listener' })
+  })
+
+  it('keeps the click path when the invocation names another element', () => {
+    const host = new FakeOverlayElement()
+    const trigger = new FakeOverlayElement()
+    const dialog = new FakeOverlayElement()
+    trigger.setAttribute('command', showModalCommand)
+    trigger.setAttribute('commandfor', 'some-other-dialog')
+
+    // A generated id can never be invoked, because the author could not have referenced it.
+    expect(
+      enhanceDialogParts(
+        { host, trigger, dialog },
+        { generatedId: 'ui-dialog-6', supportsDialog: true, supportsInvokerCommands: true },
+      ),
+    ).toMatchObject({ status: 'enhanced', dialogId: 'ui-dialog-6', triggerWiring: 'listener' })
+  })
+
   it('reports missing or unsupported platform requirements', () => {
     const host = new FakeOverlayElement()
 
     expect(
       enhanceDialogParts(
         { host, trigger: null, dialog: null },
-        { generatedId: 'ui-dialog-2', supportsDialog: true },
+        { generatedId: 'ui-dialog-2', supportsDialog: true, supportsInvokerCommands: true },
       ),
     ).toEqual({ status: 'invalid', missing: ['trigger', 'dialog'] })
     expect(host.getAttribute('data-ui-invalid')).toBeNull()
@@ -77,7 +141,7 @@ describe('enhanceDialogParts', () => {
     expect(
       enhanceDialogParts(
         { host, trigger, dialog },
-        { generatedId: 'ui-dialog-3', supportsDialog: false },
+        { generatedId: 'ui-dialog-3', supportsDialog: false, supportsInvokerCommands: true },
       ),
     ).toEqual({ status: 'unsupported', feature: 'dialog' })
     expect(host.getAttribute('data-ui-unsupported')).toBeNull()

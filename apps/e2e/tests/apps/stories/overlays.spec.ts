@@ -98,11 +98,112 @@ test.describe('stories progressive overlays', () => {
     await expect(page.getByRole('dialog', { name: 'Release checklist' })).toBeVisible()
     await expect(dialog).toHaveAttribute('role', 'dialog')
     await expect(dialog).toHaveAttribute('aria-labelledby', 'release-dialog-title')
+    // A dialog invoker gets no implicit expanded state from the platform, so this proves the
+    // authored-command path still mirrors it.
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
     await expectCenteredInViewport(page, dialog)
 
     await page.keyboard.press('Escape')
     await expect(dialog).toBeHidden()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
     await expect(trigger).toBeFocused()
+  })
+
+  test('closes the dialog from an authored close control and reports its value', async ({
+    page,
+  }) => {
+    await page.goto('/stories/library-overlays-dialog--default/')
+    await expectRouteDocumentReady(page)
+
+    const trigger = page.getByRole('button', { name: 'Review release' })
+    const dialog = page.locator('#release-dialog')
+
+    await trigger.click()
+    await expect(dialog).toBeVisible()
+    await dialog.getByRole('button', { name: 'Confirm' }).click()
+
+    await expect(dialog).toBeHidden()
+    // `command="close"` propagates the button's value natively, matching what the click fallback
+    // does by reading `value` and passing it to `close()`.
+    await expect(dialog).toHaveJSProperty('returnValue', 'confirm')
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    await expect(trigger).toBeFocused()
+  })
+
+  test('opens the dialog from the click listener when the markup authors no command', async ({
+    page,
+  }) => {
+    await page.goto('/stories/library-overlays-dialog--default/')
+    await expectRouteDocumentReady(page)
+
+    const trigger = page.getByRole('button', { name: 'Review release' })
+    const dialog = page.locator('#release-dialog')
+
+    // What a consumer who does not write the invoker attributes gets, and what every browser
+    // without Invoker Commands gets: the component's own click path, unchanged.
+    await trigger.evaluate((element) => {
+      element.removeAttribute('command')
+      element.removeAttribute('commandfor')
+    })
+
+    await trigger.click()
+    await expect(dialog).toBeVisible()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+
+    await dialog.getByRole('button', { name: 'Confirm' }).click()
+    await expect(dialog).toBeHidden()
+    await expect(dialog).toHaveJSProperty('returnValue', 'confirm')
+    await expect(trigger).toBeFocused()
+  })
+
+  test('refuses an authored command from an aria-disabled trigger', async ({ page }) => {
+    await page.goto('/stories/library-overlays-dialog--default/')
+    await expectRouteDocumentReady(page)
+
+    const trigger = page.getByRole('button', { name: 'Review release' })
+    const dialog = page.locator('#release-dialog')
+
+    // The platform stops at `disabled` on its own but not at `aria-disabled`, which the click path
+    // has always treated as inert.
+    await trigger.evaluate((element) => element.setAttribute('aria-disabled', 'true'))
+    // `force` because Playwright refuses to act on an aria-disabled control, while the browser
+    // itself does not — which is exactly the gap being closed here.
+    await trigger.click({ force: true })
+
+    await expect(dialog).toBeHidden()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  test('emits unchanged sheet events when the panel is opened by command', async ({ page }) => {
+    await page.goto('/stories/library-overlays-sheet--default/')
+    await expectRouteDocumentReady(page)
+
+    const host = page.locator('ui-sheet').first()
+    const trigger = page.getByRole('button', { name: 'Open release sheet' })
+    const sheet = page.locator('#release-sheet')
+
+    await host.evaluate((element) => {
+      const record = (event: Event) => {
+        const detail = (event as CustomEvent<{ source: string }>).detail
+        ;((globalThis as Record<string, unknown>).sheetEvents as string[]).push(
+          `${event.type}:${detail.source}`,
+        )
+      }
+      ;(globalThis as Record<string, unknown>).sheetEvents = []
+      for (const type of ['ui-open', 'ui-dismiss', 'ui-close']) {
+        element.addEventListener(type, record)
+      }
+    })
+
+    await trigger.click()
+    await expect(sheet).toBeVisible()
+    await sheet.getByRole('button', { name: 'Done' }).click()
+    await expect(sheet).toBeHidden()
+
+    await expect
+      .poll(() => page.evaluate(() => (globalThis as Record<string, unknown>).sheetEvents))
+      .toEqual(['ui-open:trigger', 'ui-dismiss:close', 'ui-close:close'])
+    await expect(sheet).toHaveJSProperty('returnValue', 'done')
   })
 
   test('opens and closes modal sheet with focus return', async ({ page }) => {

@@ -201,13 +201,20 @@ export function createCollapsible(props: CollapsibleProps): string {
 </div>`
 }
 
+/**
+ * `command` and `commandfor` are the author's, not Timeless's. They make the trigger and the close
+ * buttons work before the bundle runs, and the platform copies the confirm button's `value` into
+ * `dialog.returnValue`. Where the browser lacks them the component's click listener does the same
+ * work instead, so this markup is correct either way.
+ */
 export function createDialog(props: DialogProps): string {
   const kind = optionalAttribute('kind', props.kind, 'dialog')
   const titleId = `${props.id}-title`
   const descriptionId = `${props.id}-description`
+  const invokes = `commandfor="${escapeAttribute(props.id)}"`
 
   return `<ui-dialog${kind}>
-  <button class="ui-button" data-ui-part="trigger" type="button">${escapeHtml(
+  <button class="ui-button" data-ui-part="trigger" type="button" command="show-modal" ${invokes}>${escapeHtml(
     props.triggerLabel ?? 'Open dialog',
   )}</button>
   <dialog id="${escapeAttribute(props.id)}" aria-labelledby="${escapeAttribute(titleId)}" aria-describedby="${escapeAttribute(descriptionId)}">
@@ -219,28 +226,36 @@ export function createDialog(props: DialogProps): string {
       <p>${escapeHtml(props.body)}</p>
     </section>
     <footer>
-      <button class="ui-button" data-ui-variant="secondary" data-ui-part="close" type="button">Cancel</button>
-      <button class="ui-button" data-ui-part="close" type="button">Confirm</button>
+      <button class="ui-button" data-ui-variant="secondary" data-ui-part="close" type="button" command="close" ${invokes} value="cancel">Cancel</button>
+      <button class="ui-button" data-ui-part="close" type="button" command="close" ${invokes} value="confirm">Confirm</button>
     </footer>
   </dialog>
 </ui-dialog>`
 }
 
+/**
+ * The close buttons invoke the panel on every sheet, but only a `modal` sheet gets `show-modal` on
+ * its trigger. `show-modal` calls `showModal()` on the target whatever `ui-sheet` intended, so
+ * emitting it unconditionally would open a non-modal sheet modally. There is no built-in command
+ * for `dialog.show()`, which is why a non-modal trigger stays on the click listener.
+ */
 export function createSheet(props: SheetProps): string {
   const position = optionalAttribute('position', props.position, 'right')
   const modal = props.modal ? ' modal' : ''
   const open = props.open ? ' open' : ''
   const titleId = `${props.id}-title`
   const descriptionId = `${props.id}-description`
+  const invokes = `commandfor="${escapeAttribute(props.id)}"`
+  const opens = props.modal ? ` command="show-modal" ${invokes}` : ''
 
   return `<ui-sheet${position}${modal}${open}>
-  <button class="ui-button" data-ui-part="trigger" type="button">${escapeHtml(
+  <button class="ui-button" data-ui-part="trigger" type="button"${opens}>${escapeHtml(
     props.triggerLabel ?? 'Open sheet',
   )}</button>
   <dialog id="${escapeAttribute(props.id)}" aria-labelledby="${escapeAttribute(titleId)}" aria-describedby="${escapeAttribute(descriptionId)}">
     <header>
       <h2 id="${escapeAttribute(titleId)}">${escapeHtml(props.title)}</h2>
-      <button class="ui-button" data-ui-variant="ghost" data-ui-size="sm" data-ui-part="close" type="button" aria-label="Close sheet">
+      <button class="ui-button" data-ui-variant="ghost" data-ui-size="sm" data-ui-part="close" type="button" aria-label="Close sheet" command="close" ${invokes}>
         ${closeGlyph}
       </button>
       <p id="${escapeAttribute(descriptionId)}">${escapeHtml(props.description)}</p>
@@ -249,8 +264,8 @@ export function createSheet(props: SheetProps): string {
       <p>${escapeHtml(props.body)}</p>
     </section>
     <footer>
-      <button class="ui-button" data-ui-variant="secondary" data-ui-part="close" type="button">Cancel</button>
-      <button class="ui-button" data-ui-part="close" type="button">Done</button>
+      <button class="ui-button" data-ui-variant="secondary" data-ui-part="close" type="button" command="close" ${invokes} value="cancel">Cancel</button>
+      <button class="ui-button" data-ui-part="close" type="button" command="close" ${invokes} value="done">Done</button>
     </footer>
   </dialog>
 </ui-sheet>`

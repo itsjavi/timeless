@@ -90,6 +90,11 @@ export type ExampleDefinition<TArgs extends object = Record<string, never>> = {
   readonly group?: ExampleGroup
   /** When a sibling component covers an overlapping need, say which to reach for and why. */
   readonly guidance?: string
+  /**
+   * Markup the consumer has to author for the component to reach its best path, when the component
+   * cannot write it for them. Kept apart from `guidance`, which compares sibling components.
+   */
+  readonly authoring?: string
   readonly title: string
   readonly description: string
   readonly defaultArgs: TArgs
@@ -694,6 +699,8 @@ export const examples = [
   example({
     id: 'dialog',
     domain: 'overlays',
+    authoring:
+      'The trigger and the close buttons carry `command` and `commandfor`, so the dialog opens, closes, and reports a `returnValue` before any script runs. Those attributes are yours to write: Timeless reads them and leaves the invocation to the platform, because a generated `commandfor` would only work once the bundle had loaded. Give the `<dialog>` an explicit `id` for them to name — an invoker cannot reference a generated one. Where [Invoker Commands](/docs/reference/browser-support/) are missing, the component falls back to a click listener that does the same work, so the same markup is correct in every browser.',
     group: 'Overlays',
     contracts: ['dialog'],
     component: 'Dialog',
@@ -752,6 +759,8 @@ export const examples = [
   example({
     id: 'sheet',
     domain: 'overlays',
+    authoring:
+      'A `modal` sheet opens from markup: put `command="show-modal"` and `commandfor` on the trigger, naming the explicit `id` you gave the `<dialog>`. A non-modal sheet cannot, because the platform has no built-in command for `dialog.show()`, so leave `command` off that trigger and the click listener opens it. Close buttons take `command="close"` on either kind, and the platform copies the button `value` into `returnValue`. Timeless reads these attributes and never writes them, so a modal sheet still opens with JavaScript disabled.',
     group: 'Overlays',
     contracts: ['sheet'],
     component: 'Sheet',

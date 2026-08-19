@@ -10,6 +10,16 @@ import {
   watch,
   type FocusTarget,
 } from '@timelessui/core'
+import {
+  closeCommand,
+  commandFromEvent,
+  commandSource,
+  hasAuthoredCommand,
+  isOpenedByToggle,
+  requestCloseCommand,
+  showModalCommand,
+  supportsInvokerCommands,
+} from './invoker'
 import { queryOwnedPart } from './parts'
 import { dialogKinds } from './values/dialog'
 import type { DialogKind } from './values/dialog'
@@ -41,14 +51,23 @@ export type DialogEnhancementParts = {
 export type DialogEnhancementOptions = {
   readonly generatedId: string
   readonly supportsDialog: boolean
+  readonly supportsInvokerCommands: boolean
   readonly kind?: DialogKind
 }
+
+/**
+ * Which of the two interchangeable open paths this instance uses. `authored` means the trigger
+ * carries `command="show-modal"` and the browser honours it, so the dialog opens before any script
+ * runs and Timeless leaves the opening to the platform. `listener` is the click fallback.
+ */
+export type DialogTriggerWiring = 'authored' | 'listener'
 
 export type DialogEnhancementResult =
   | {
       readonly status: 'enhanced'
       readonly dialogId: string
       readonly role: 'dialog' | 'alertdialog'
+      readonly triggerWiring: DialogTriggerWiring
     }
   | { readonly status: 'invalid'; readonly missing: readonly string[] }
   | { readonly status: 'unsupported'; readonly feature: 'dialog' }
@@ -78,19 +97,23 @@ export function createDialogElementClass(targetWindow?: Window): UIDialogElement
       return queryOwnedPart(this, DIALOG_SELECTOR)
     }
 
+    #openedByCommand = false
     #returnFocusTarget: FocusTarget | null = null
+    #supportsInvokerCommands = false
 
     protected override connected(): void {
       this.observeParts((signal) => this.enhance(signal))
     }
 
     protected override disconnected(): void {
+      this.#openedByCommand = false
       this.#returnFocusTarget = null
     }
 
     private enhance(signal: AbortSignal): void {
       const trigger = this.trigger
       const dialog = this.dialog
+      this.#supportsInvokerCommands = supportsInvokerCommands(this.ownerDocument.defaultView)
       const result = enhanceDialogParts(
         {
           host: this,
@@ -100,6 +123,7 @@ export function createDialogElementClass(targetWindow?: Window): UIDialogElement
         {
           generatedId: nextAvailableDialogInstanceId(this.ownerDocument),
           supportsDialog: supportsNativeDialog(this.ownerDocument.defaultView),
+          supportsInvokerCommands: this.#supportsInvokerCommands,
           kind: resolveDialogKind(this.kind || dialog?.getAttribute('role') || null),
         },
       )
@@ -110,6 +134,8 @@ export function createDialogElementClass(targetWindow?: Window): UIDialogElement
 
       this.on(dialog, 'close', this.handleDialogClose, { signal })
       this.on(dialog, 'cancel', this.handleDialogCancel, { signal })
+      this.on(dialog, 'command', this.handleDialogCommand, { signal })
+      this.on(dialog, 'toggle', this.handleDialogToggle, { signal })
     }
 
     @watch('kind', { immediate: true })
@@ -134,11 +160,16 @@ export function createDialogElementClass(targetWindow?: Window): UIDialogElement
         return
       }
 
+      if (this.usesAuthoredCommand(this.trigger, showModalCommand)) {
+        return
+      }
+
       this.#returnFocusTarget = returnTargetForTrigger(this.ownerDocument, this.trigger)
       this.openDialog()
     }
 
     private handleDialogClose = (): void => {
+      this.#openedByCommand = false
       syncDialogExpanded(this.trigger, false)
       returnFocus(this.#returnFocusTarget ?? this.trigger)
       this.#returnFocusTarget = null
@@ -148,11 +179,49 @@ export function createDialogElementClass(targetWindow?: Window): UIDialogElement
       syncDialogExpanded(this.trigger, false)
     }
 
+    private handleDialogCommand = (event: Event): void => {
+      const dialog = this.dialog
+      if (!dialog || event.target !== dialog) return
+      if (commandFromEvent(event) !== showModalCommand) return
+
+      const source = commandSource(event, this.ownerDocument.defaultView)
+      // The platform refuses a `disabled` invoker but not an `aria-disabled` one, which the click
+      // path treats as inert. Cancelling keeps the two paths indistinguishable.
+      if (source && isDisabledControl(source)) {
+        event.preventDefault()
+        return
+      }
+
+      // `command` fires before the platform opens the dialog, so only the focus-return target can
+      // be read here — it depends on where focus was at invocation. The rest waits for `toggle`.
+      const invoker = source ?? this.trigger
+      this.#returnFocusTarget = invoker ? returnTargetForTrigger(this.ownerDocument, invoker) : null
+      this.#openedByCommand = true
+    }
+
+    private handleDialogToggle = (event: Event): void => {
+      if (!this.#openedByCommand || !isOpenedByToggle(event)) return
+
+      // The click path already did this inside `openDialog`, synchronously and without depending on
+      // toggle events. This is the authored path, where no Timeless code ran to open the dialog.
+      this.#openedByCommand = false
+      const dialog = this.dialog
+      if (!dialog) return
+      syncDialogExpanded(this.trigger, true)
+      focusInitialDialogTarget(dialog)
+    }
+
     private handleDialogClick(event: Event): void {
       if (!this.dialog) return
 
       const closeControl = closestOwnedElement(this.dialog, event.target, CLOSE_SELECTOR)
       if (!closeControl || !this.dialog.open) {
+        return
+      }
+
+      // The platform closes an authored close control itself, including the button's `value` as
+      // the dialog's `returnValue`.
+      if (this.usesAuthoredCommand(closeControl, closeCommand, requestCloseCommand)) {
         return
       }
 
@@ -166,9 +235,17 @@ export function createDialogElementClass(targetWindow?: Window): UIDialogElement
       this.dialog.close(value)
     }
 
+    private usesAuthoredCommand(control: HTMLElement, ...commands: readonly string[]): boolean {
+      return (
+        this.#supportsInvokerCommands &&
+        hasAuthoredCommand(control, this.dialog?.id ?? '', ...commands)
+      )
+    }
+
     private openDialog(): void {
       if (!this.dialog || !this.trigger) return
 
+      this.#openedByCommand = false
       if (!this.dialog.open) {
         this.dialog.showModal()
       }
@@ -207,6 +284,8 @@ export function enhanceDialogParts(
   const role = resolveDialogRole(options.kind ?? resolveDialogKind(dialog.getAttribute('role')))
   dialog.setAttribute('role', role)
   dialog.setAttribute('aria-modal', 'true')
+  // A dialog invoker gets no implicit `aria-expanded` from the platform the way a popover trigger
+  // does, so these stay written on both paths.
   trigger.setAttribute('aria-controls', dialog.id)
   trigger.setAttribute('aria-haspopup', 'dialog')
   syncDialogExpanded(trigger, dialog.open)
@@ -215,6 +294,10 @@ export function enhanceDialogParts(
     status: 'enhanced',
     dialogId: dialog.id,
     role,
+    triggerWiring:
+      options.supportsInvokerCommands && hasAuthoredCommand(trigger, dialog.id, showModalCommand)
+        ? 'authored'
+        : 'listener',
   }
 }
 

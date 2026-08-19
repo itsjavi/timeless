@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { showModalCommand } from './invoker'
 import {
   enhanceSheetParts,
   resolveSheetPosition,
@@ -62,6 +63,7 @@ describe('enhanceSheetParts', () => {
         modal: true,
         position: 'left',
         supportsDialog: true,
+        supportsInvokerCommands: true,
       },
     )
 
@@ -70,6 +72,7 @@ describe('enhanceSheetParts', () => {
       modal: true,
       panelId: 'ui-sheet-1',
       position: 'left',
+      triggerWiring: 'listener',
     })
     expect(panel.id).toBe('ui-sheet-1')
     expect(panel.getAttribute('role')).toBe('dialog')
@@ -92,6 +95,7 @@ describe('enhanceSheetParts', () => {
         modal: false,
         position: 'right',
         supportsDialog: true,
+        supportsInvokerCommands: true,
       },
     )
 
@@ -100,9 +104,54 @@ describe('enhanceSheetParts', () => {
       modal: false,
       panelId: 'ui-sheet-2',
       position: 'right',
+      triggerWiring: 'listener',
     })
     expect(panel.getAttribute('aria-modal')).toBeNull()
     expect(trigger.getAttribute('aria-expanded')).toBe('true')
+  })
+
+  it('reports the authored trigger path when the markup invokes a modal panel', () => {
+    const host = new FakeSheetElement()
+    const trigger = new FakeSheetElement()
+    const panel = new FakeSheetElement()
+    panel.id = 'release-sheet'
+    trigger.setAttribute('command', showModalCommand)
+    trigger.setAttribute('commandfor', 'release-sheet')
+
+    expect(
+      enhanceSheetParts(
+        { host, trigger, panel },
+        {
+          generatedId: 'ui-sheet-5',
+          modal: true,
+          position: 'right',
+          supportsDialog: true,
+          supportsInvokerCommands: true,
+        },
+      ),
+    ).toMatchObject({ status: 'enhanced', panelId: 'release-sheet', triggerWiring: 'authored' })
+  })
+
+  it('falls back to the click path when the browser lacks invoker commands', () => {
+    const host = new FakeSheetElement()
+    const trigger = new FakeSheetElement()
+    const panel = new FakeSheetElement()
+    panel.id = 'release-sheet'
+    trigger.setAttribute('command', showModalCommand)
+    trigger.setAttribute('commandfor', 'release-sheet')
+
+    expect(
+      enhanceSheetParts(
+        { host, trigger, panel },
+        {
+          generatedId: 'ui-sheet-6',
+          modal: true,
+          position: 'right',
+          supportsDialog: true,
+          supportsInvokerCommands: false,
+        },
+      ),
+    ).toMatchObject({ status: 'enhanced', triggerWiring: 'listener' })
   })
 
   it('reports missing or unsupported platform requirements', () => {
@@ -111,7 +160,7 @@ describe('enhanceSheetParts', () => {
     expect(
       enhanceSheetParts(
         { host, trigger: null, panel: null },
-        { generatedId: 'ui-sheet-3', supportsDialog: true },
+        { generatedId: 'ui-sheet-3', supportsDialog: true, supportsInvokerCommands: true },
       ),
     ).toEqual({ status: 'invalid', missing: ['trigger', 'panel'] })
     expect(host.getAttribute('data-ui-invalid')).toBeNull()
@@ -121,7 +170,7 @@ describe('enhanceSheetParts', () => {
     expect(
       enhanceSheetParts(
         { host, trigger, panel },
-        { generatedId: 'ui-sheet-4', supportsDialog: false },
+        { generatedId: 'ui-sheet-4', supportsDialog: false, supportsInvokerCommands: true },
       ),
     ).toEqual({ status: 'unsupported', feature: 'dialog' })
     expect(host.getAttribute('data-ui-unsupported')).toBeNull()

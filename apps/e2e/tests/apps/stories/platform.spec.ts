@@ -17,6 +17,32 @@ test.describe('platform-dependent custom element behavior', () => {
     await expect(trigger).toBeFocused()
   })
 
+  /**
+   * The authored `command` / `commandfor` markup has to behave the same on every engine, whether
+   * the browser runs the invocation itself or the component's click fallback does. This is the only
+   * spec Firefox and WebKit run, so it is where that gets proven.
+   */
+  test('authored dialog invoker opens, closes, and reports a value', async ({ page }) => {
+    await page.goto('/stories/library-overlays-dialog--default/')
+    await expectRouteDocumentReady(page)
+    const trigger = page.getByRole('button', { name: 'Review release' })
+    const dialog = page.locator('#release-dialog')
+
+    await expect(trigger).toHaveAttribute('command', 'show-modal')
+    await expect(trigger).toHaveAttribute('commandfor', 'release-dialog')
+
+    await trigger.click()
+    await expect(dialog).toBeVisible()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+
+    await dialog.getByRole('button', { name: 'Cancel' }).click()
+    await settleAnimations(page)
+    await expect(dialog).toBeHidden()
+    await expect(dialog).toHaveJSProperty('returnValue', 'cancel')
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    await expect(trigger).toBeFocused()
+  })
+
   test('native popover synchronizes open state', async ({ page }) => {
     await page.goto('/stories/library-overlays-popover--default/')
     await expectRouteDocumentReady(page)

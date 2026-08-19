@@ -11,6 +11,16 @@ import {
   watch,
   type FocusTarget,
 } from '@timelessui/core'
+import {
+  closeCommand,
+  commandFromEvent,
+  commandSource,
+  hasAuthoredCommand,
+  isOpenedByToggle,
+  requestCloseCommand,
+  showModalCommand,
+  supportsInvokerCommands,
+} from './invoker'
 import { queryOwnedPart } from './parts'
 import { sheetPositions } from './values/sheet'
 import type { SheetPosition } from './values/sheet'
@@ -51,7 +61,20 @@ export type SheetEnhancementOptions = {
   readonly modal?: boolean
   readonly position?: SheetPosition
   readonly supportsDialog: boolean
+  readonly supportsInvokerCommands: boolean
 }
+
+/**
+ * Which of the two interchangeable open paths this instance uses. `authored` means the trigger
+ * carries `command="show-modal"` and the browser honours it, so the panel opens before any script
+ * runs. `listener` is the click fallback.
+ *
+ * Only a `modal` sheet should author the command, because the platform has no built-in command for
+ * the `dialog.show()` a non-modal sheet opens with. A non-modal sheet that authors `show-modal`
+ * anyway still reports `authored`, and still opens — modally, which is not what its host asked for.
+ * Timeless cannot correct that without leaving two open calls fighting over one trigger.
+ */
+export type SheetTriggerWiring = 'authored' | 'listener'
 
 export type SheetEnhancementResult =
   | {
@@ -59,6 +82,7 @@ export type SheetEnhancementResult =
       readonly modal: boolean
       readonly panelId: string
       readonly position: SheetPosition
+      readonly triggerWiring: SheetTriggerWiring
     }
   | { readonly status: 'invalid'; readonly missing: readonly string[] }
   | { readonly status: 'unsupported'; readonly feature: 'dialog' }
@@ -93,7 +117,10 @@ export function createSheetElementClass(targetWindow?: Window): UISheetElementCo
     }
 
     #closeSource: SheetEventSource = 'api'
+    #commandDismiss = false
+    #openedByCommand = false
     #returnFocusTarget: FocusTarget | null = null
+    #supportsInvokerCommands = false
     #syncingOpen = false
 
     protected override connected(): void {
@@ -101,10 +128,12 @@ export function createSheetElementClass(targetWindow?: Window): UISheetElementCo
     }
 
     protected override disconnected(): void {
+      this.#openedByCommand = false
       this.#returnFocusTarget = null
     }
 
     private enhance(signal: AbortSignal): void {
+      this.#supportsInvokerCommands = supportsInvokerCommands(this.ownerDocument.defaultView)
       const result = enhanceSheetParts(
         {
           host: this,
@@ -116,6 +145,7 @@ export function createSheetElementClass(targetWindow?: Window): UISheetElementCo
           modal: this.modal,
           position: resolveSheetPosition(this.position),
           supportsDialog: supportsNativeDialog(this.ownerDocument.defaultView),
+          supportsInvokerCommands: this.#supportsInvokerCommands,
         },
       )
 
@@ -125,6 +155,8 @@ export function createSheetElementClass(targetWindow?: Window): UISheetElementCo
 
       this.on(this.panel, 'cancel', this.handleCancel, { signal })
       this.on(this.panel, 'close', this.handleClose, { signal })
+      this.on(this.panel, 'command', this.handlePanelCommand, { signal })
+      this.on(this.panel, 'toggle', this.handlePanelToggle, { signal })
       this.syncOpenState(this.panel.open || this.open)
       if (this.open && !this.panel.open) {
         this.openSheet('api')
@@ -172,6 +204,13 @@ export function createSheetElementClass(targetWindow?: Window): UISheetElementCo
         return
       }
 
+      // `show-modal` opens the panel whatever Timeless does, and on a non-modal sheet calling
+      // `show()` first would make the platform's `showModal()` throw, so an authored open command
+      // always wins the trigger.
+      if (this.usesAuthoredCommand(this.trigger, showModalCommand)) {
+        return
+      }
+
       this.#returnFocusTarget = returnTargetForTrigger(this.ownerDocument, this.trigger)
       this.openSheet('trigger')
     }
@@ -192,16 +231,76 @@ export function createSheetElementClass(targetWindow?: Window): UISheetElementCo
         return
       }
 
+      // The platform closes an authored close control itself, including the button's `value` as
+      // the panel's `returnValue`. `handlePanelCommand` keeps the emitted events identical.
+      if (this.usesAuthoredCommand(closeControl, closeCommand, requestCloseCommand)) {
+        return
+      }
+
       this.dismissAndClose('close', closeValue(closeControl, this.ownerDocument.defaultView))
     }
 
+    private handlePanelCommand = (event: Event): void => {
+      const panel = this.panel
+      if (!panel || event.target !== panel) return
+
+      const command = commandFromEvent(event)
+      if (command === showModalCommand) {
+        const source = commandSource(event, this.ownerDocument.defaultView)
+        // The platform refuses a `disabled` invoker but not an `aria-disabled` one, which the click
+        // path treats as inert. Cancelling keeps the two paths indistinguishable.
+        if (source && isDisabledControl(source)) {
+          event.preventDefault()
+          return
+        }
+
+        // `command` fires before the platform opens the panel, so only the focus-return target can
+        // be read here — it depends on where focus was at invocation. The rest waits for `toggle`.
+        const invoker = source ?? this.trigger
+        this.#returnFocusTarget = invoker
+          ? returnTargetForTrigger(this.ownerDocument, invoker)
+          : null
+        this.#openedByCommand = true
+        return
+      }
+
+      if (command !== closeCommand && command !== requestCloseCommand) return
+
+      // Emitted before the platform closes, which is the order `dismissAndClose` produces on the
+      // click path. `request-close` runs the cancel algorithm, so without this flag `handleCancel`
+      // would report a button-initiated close as an Escape dismissal.
+      this.#commandDismiss = true
+      this.#closeSource = 'close'
+      this.emitDismiss('close')
+    }
+
+    private handlePanelToggle = (event: Event): void => {
+      if (!this.#openedByCommand || !isOpenedByToggle(event)) return
+
+      // The click path already did this inside `openSheet`, synchronously and without depending on
+      // toggle events. This is the authored path, where no Timeless code ran to open the panel.
+      this.#openedByCommand = false
+      const panel = this.panel
+      if (!panel) return
+      this.syncOpenState(true)
+      focusInitialSheetTarget(panel)
+      this.emit<SheetEventDetail>('ui-open', { source: 'trigger' })
+    }
+
     private handleCancel = (): void => {
+      if (this.#commandDismiss) {
+        this.#commandDismiss = false
+        return
+      }
+
       this.#closeSource = 'escape'
       this.emitDismiss('escape')
     }
 
     private handleClose = (): void => {
       const source = this.#closeSource
+      this.#commandDismiss = false
+      this.#openedByCommand = false
       this.syncOpenState(false)
       returnFocus(this.#returnFocusTarget ?? this.trigger)
       this.#returnFocusTarget = null
@@ -216,6 +315,7 @@ export function createSheetElementClass(targetWindow?: Window): UISheetElementCo
         return
       }
 
+      this.#openedByCommand = false
       if (!panel.open) {
         if (this.modal) {
           panel.showModal?.()
@@ -252,6 +352,13 @@ export function createSheetElementClass(targetWindow?: Window): UISheetElementCo
 
     private emitDismiss(source: SheetDismissSource): void {
       this.emit<SheetEventDetail>('ui-dismiss', { source })
+    }
+
+    private usesAuthoredCommand(control: HTMLElement, ...commands: readonly string[]): boolean {
+      return (
+        this.#supportsInvokerCommands &&
+        hasAuthoredCommand(control, this.panel?.id ?? '', ...commands)
+      )
     }
 
     private syncOpenState(open: boolean): void {
@@ -295,6 +402,8 @@ export function enhanceSheetParts(
   const position = options.position ?? 'right'
   panel.setAttribute('role', 'dialog')
   syncSheetModal(panel, modal)
+  // A dialog invoker gets no implicit `aria-expanded` from the platform the way a popover trigger
+  // does, so these stay written on both paths.
   trigger.setAttribute('aria-controls', panel.id)
   trigger.setAttribute('aria-haspopup', 'dialog')
   syncSheetExpanded(trigger, panel.open)
@@ -304,6 +413,10 @@ export function enhanceSheetParts(
     modal,
     panelId: panel.id,
     position,
+    triggerWiring:
+      options.supportsInvokerCommands && hasAuthoredCommand(trigger, panel.id, showModalCommand)
+        ? 'authored'
+        : 'listener',
   }
 }
 

@@ -158,19 +158,19 @@
               "name": "trigger",
               "selector": "[data-ui-part~='trigger']",
               "required": true,
-              "description": "Native button that opens the dialog."
+              "description": "Native button that opens the dialog. Add `command=\"show-modal\"` and `commandfor` naming the panel id to open it from markup, before any script runs. Timeless reads those attributes and stands down; it never writes them, because a generated attribute would only work once the bundle had loaded."
             },
             {
               "name": "panel",
               "selector": "dialog",
               "required": true,
-              "description": "The native `<dialog>` element. Author it, do not generate it."
+              "description": "The native `<dialog>` element. Author it, do not generate it. Give it an explicit `id` when a trigger or close button invokes it, since an invoker can only name an id the author wrote."
             },
             {
               "name": "close",
               "selector": "[data-ui-part~='close']",
               "required": false,
-              "description": "Optional explicit close button inside the panel."
+              "description": "Optional explicit close button inside the panel. Add `command=\"close\"` and `commandfor` to close it from markup; the platform then also copies the button `value` into `returnValue`."
             }
           ]
         }
@@ -276,19 +276,19 @@
               "name": "trigger",
               "selector": "[data-ui-part~='trigger']",
               "required": true,
-              "description": "Native button that opens the sheet."
+              "description": "Native button that opens the sheet. On a `modal` sheet, add `command=\"show-modal\"` and `commandfor` naming the panel id to open it from markup, before any script runs. A non-modal sheet has no declarative equivalent: the platform has no built-in command for `dialog.show()`, so its trigger stays on the click listener."
             },
             {
               "name": "panel",
               "selector": "dialog",
               "required": true,
-              "description": "The native `<dialog>` element."
+              "description": "The native `<dialog>` element. Give it an explicit `id` when a trigger or close button invokes it, since an invoker can only name an id the author wrote."
             },
             {
               "name": "close",
               "selector": "[data-ui-part~='close']",
               "required": false,
-              "description": "Optional explicit close button."
+              "description": "Optional explicit close button. Add `command=\"close\"` and `commandfor` to close it from markup, on modal and non-modal sheets alike; the platform then also copies the button `value` into `returnValue`."
             }
           ]
         }

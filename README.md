@@ -28,12 +28,12 @@ The library targets Baseline 2025 browsers and builds on these platform features
 - `light-dark()` and `color-scheme`, so tokens follow the platform without a runtime
 - `color-mix()` in OKLab, plus OKLCH, LCH, HWB, Display-P3, and Rec. 2020 color parsing
 - `ElementInternals` custom states, exposed to CSS through `:state()`
+- Invoker Commands (`command` and `commandfor`), so an authored dialog or modal sheet trigger opens
+  and closes before any script runs
 - Light-DOM web components, so consumer CSS and markup stay inspectable
 
-Invoker Commands are next: milestone 020 will move overlay triggers onto `command` and `commandfor`,
-keeping the current `popovertarget` wiring as the fallback. Container queries, container style
-queries, and Declarative Shadow DOM are compatible with this approach but are not used by any
-current component. They are candidates, not claims.
+Container queries, container style queries, and Declarative Shadow DOM are compatible with this
+approach but are not used by any current component. They are candidates, not claims.
 
 There is no CSS framework and no component framework runtime. Consumers use the same primitives from
 plain HTML, React, Preact, Vue, Svelte, Solid, Astro, or any other environment that can render

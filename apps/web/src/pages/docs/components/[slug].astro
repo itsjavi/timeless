@@ -103,6 +103,14 @@ const valueList = (values: readonly string[] | undefined, fallbackType: string) 
     ) : null
   }
 
+  {
+    example.authoring ? (
+      <Aside type="note" title="Markup you author">
+        <p set:html={inlineMarkdown(example.authoring)} />
+      </Aside>
+    ) : null
+  }
+
   <ComponentPreview id={example.id} />
 
   <h2 id="install">Install</h2>

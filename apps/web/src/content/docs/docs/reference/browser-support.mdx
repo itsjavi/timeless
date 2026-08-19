@@ -34,19 +34,29 @@ missing any of these cannot render Timeless correctly.
 All three are Baseline as well, but they landed much later than the floor, so a browser that is
 current-but-not-latest may still be missing them. Each degrades to something usable.
 
-| Feature                                | Chrome / Edge | Safari | Firefox | Without it                                                                                                                                             |
-| -------------------------------------- | ------------- | ------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `@starting-style` and `allow-discrete` | 117           | 17.5   | 129     | Overlays appear and disappear without the enter and exit transition.                                                                                   |
-| CSS anchor positioning                 | 125           | 26     | 147     | Overlay surfaces stay in normal flow next to their trigger instead of being anchored to it. They still open, close, dismiss, and trap focus correctly. |
-| Invoker Commands                       | 135           | 26.2   | 144     | Triggers fall back to `popovertarget` for popovers and to a click listener for dialogs, which is how every trigger works today.                        |
+| Feature                                | Chrome / Edge | Safari | Firefox | Without it                                                                                                                                                                     |
+| -------------------------------------- | ------------- | ------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `@starting-style` and `allow-discrete` | 117           | 17.5   | 129     | Overlays appear and disappear without the enter and exit transition.                                                                                                           |
+| CSS anchor positioning                 | 125           | 26     | 147     | Overlay surfaces stay in normal flow next to their trigger instead of being anchored to it. They still open, close, dismiss, and trap focus correctly.                         |
+| Invoker Commands                       | 135           | 26.2   | 144     | A dialog or modal sheet trigger needs JavaScript to open its panel, because the component falls back to its click listener. Popovers are unaffected: they use `popovertarget`. |
 
 Anchor positioning is the widest gap in practice: Firefox only shipped it in 147, well above the
 Firefox 126 floor. It is a layout refinement rather than a functional requirement, so a popover in
 an older Firefox is fully usable, just not tethered to its trigger.
 
-**Invoker Commands are not wired up yet.** Triggers use `popovertarget` and click listeners in every
-browser today. Milestone 020 moves them onto `command` and `commandfor` with the current wiring as
-the fallback, so nothing about the markup you author changes for browsers that lack them.
+Invoker Commands are the one place where the markup you author decides which path runs. Put
+`command="show-modal"` and `commandfor` on a Dialog or modal Sheet trigger and the browser opens the
+panel itself, before the bundle loads; add `command="close"` to a close button and the platform
+closes it and copies the button's `value` into `returnValue`. Timeless reads those attributes and
+stands down — it never writes them, since an attribute added during enhancement would be back to
+needing JavaScript. Where the API is missing, the component's click listener does the same work, so
+one set of markup is correct everywhere.
+
+Two limits come from the platform rather than from Timeless. An invoker can only name an `id` that
+exists in the markup, so an invoked `<dialog>` needs an explicit one rather than a generated one.
+And there is no built-in command for `dialog.show()`, so a **non-modal** Sheet cannot be opened
+declaratively; leave `command` off that trigger and the click listener opens it. Its close buttons
+still work declaratively.
 
 ### Wide-gamut color
 
