@@ -387,29 +387,6 @@ export const examples = [
       ]),
   }),
   example({
-    id: 'choice-group',
-    domain: 'forms',
-    guidance:
-      'Choice Group is CSS only: it styles a native `<fieldset>` of checkboxes or radios and needs no JavaScript. Reach for [Checkbox Group](/docs/components/checkbox-group/) or [Radio Group](/docs/components/radio-group/) when you also need coordinated keyboard navigation and change events.',
-    group: 'Forms',
-    contracts: ['choiceGroup', 'choice', 'checkbox', 'radio'],
-    component: 'Choice Group',
-    title: 'Choice Group',
-    description: 'Style native checkbox and radio fieldsets.',
-    definitions: [],
-    styles: ['tokens.css', 'forms.css', 'choice-group.css'],
-    render: () =>
-      createChoiceGroup({
-        legend: 'Notifications',
-        name: 'notifications',
-        type: 'checkbox',
-        options: [
-          { value: 'product', label: 'Product updates', checked: true },
-          { value: 'security', label: 'Security notices', checked: true },
-        ],
-      }),
-  }),
-  example({
     id: 'field',
     domain: 'forms',
     group: 'Forms',
@@ -530,22 +507,33 @@ export const examples = [
     id: 'checkbox-group',
     domain: 'navigation',
     guidance:
-      'Checkbox Group adds keyboard coordination and change events to native checkboxes. If you only need the styling, [Choice Group](/docs/components/choice-group/) does that with no JavaScript.',
+      'One component, two levels of behavior. `<ui-checkbox-group>` adds roving focus and a single change event over the group; the plain `<fieldset class="ui-choice-group">` below it is the same markup with no custom element, and it submits, resets, and takes keyboard input on its own. The element is an addition to native checkboxes, not a replacement for them, so it is never a choice between a CSS version and a JavaScript version.',
     group: 'Forms',
-    contracts: ['checkboxGroup'],
+    contracts: ['checkboxGroup', 'choiceGroup', 'choice', 'checkbox'],
     component: 'Checkbox Group',
     title: 'Checkbox Group',
     description: 'Coordinate a group of native checkboxes.',
     definitions: ['ui-checkbox-group'],
-    styles: ['tokens.css', 'choice-group.css'],
+    styles: ['tokens.css', 'forms.css', 'choice-group.css'],
     render: () =>
-      createCheckboxGroup({
-        id: 'features',
-        name: 'features',
-        label: 'Features',
-        values: ['documentation'],
-        options: [{ label: 'Documentation' }, { label: 'Playground' }],
-      }),
+      [
+        createCheckboxGroup({
+          id: 'features',
+          name: 'features',
+          label: 'Features',
+          values: ['documentation'],
+          options: [{ label: 'Documentation' }, { label: 'Playground' }],
+        }),
+        createChoiceGroup({
+          legend: 'Notifications',
+          name: 'notifications',
+          type: 'checkbox',
+          options: [
+            { value: 'product', label: 'Product updates', checked: true },
+            { value: 'security', label: 'Security notices', checked: true },
+          ],
+        }),
+      ].join('\n'),
   }),
   example({
     id: 'combobox',
@@ -608,22 +596,33 @@ export const examples = [
     id: 'radio-group',
     domain: 'navigation',
     guidance:
-      'Radio Group adds roving focus and change events to native radios. If you only need the styling, [Choice Group](/docs/components/choice-group/) does that with no JavaScript.',
+      'One component, two levels of behavior. `<ui-radio-group>` adds roving focus and a single change event over the group; the plain `<fieldset class="ui-choice-group">` below it is the same markup with no custom element, and native radios already give it arrow-key selection and one-of-many semantics. The element is an addition, not a replacement, so it is never a choice between a CSS version and a JavaScript version.',
     group: 'Forms',
-    contracts: ['radioGroup'],
+    contracts: ['radioGroup', 'choiceGroup', 'choice', 'radio'],
     component: 'Radio Group',
     title: 'Radio Group',
     description: 'Coordinate a roving native radio group.',
     definitions: ['ui-radio-group'],
-    styles: ['tokens.css', 'choice-group.css'],
+    styles: ['tokens.css', 'forms.css', 'choice-group.css'],
     render: () =>
-      createRadioGroup({
-        id: 'theme',
-        name: 'theme',
-        label: 'Theme',
-        value: 'system',
-        options: [{ label: 'System' }, { label: 'Light' }, { label: 'Dark' }],
-      }),
+      [
+        createRadioGroup({
+          id: 'theme',
+          name: 'theme',
+          label: 'Theme',
+          value: 'system',
+          options: [{ label: 'System' }, { label: 'Light' }, { label: 'Dark' }],
+        }),
+        createChoiceGroup({
+          legend: 'Deploy target',
+          name: 'deploy-target',
+          type: 'radio',
+          options: [
+            { value: 'preview', label: 'Preview', checked: true },
+            { value: 'production', label: 'Production' },
+          ],
+        }),
+      ].join('\n'),
   }),
   example({
     id: 'select',
