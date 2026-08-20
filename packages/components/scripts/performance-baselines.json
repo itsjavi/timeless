@@ -66,8 +66,8 @@
       ]
     },
     "copy-button": {
-      "cssGzipBytes": 1304,
-      "cssRawBytes": 2617,
+      "cssGzipBytes": 1483,
+      "cssRawBytes": 3102,
       "gzipBytes": 3748,
       "modules": ["copy-button.js"],
       "rawBytes": 12211,

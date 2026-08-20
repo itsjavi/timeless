@@ -150,6 +150,37 @@ test('a modal sheet still opens and closes without JavaScript or a gesture', asy
 })
 
 /**
+ * The reveal is the reason the trigger is authored `hidden` rather than hidden by script. With
+ * scripting off nothing runs, so the attribute the author wrote is the whole behavior: no button, and
+ * therefore no button that does nothing.
+ */
+test('a copy trigger authored hidden stays hidden without JavaScript', async ({ page }) => {
+  await page.goto('/stories/library-actions-copy-button--hidden-until-supported/')
+  const host = page.locator('ui-copy-button')
+
+  await expect(host).toBeAttached()
+  await expect(host.locator("[data-ui-part~='trigger']")).toBeHidden()
+  // Nothing was enhanced, so the markup is exactly as authored.
+  await expect(host.locator("[data-ui-part~='trigger']")).toHaveAttribute('hidden', '')
+})
+
+/**
+ * A worded trigger the author did not hide is left alone, which is the other half of the opt-in rule:
+ * script never removes a visible control an author wrote. It renders, and it does nothing.
+ */
+test('a copy trigger the author left visible still renders without JavaScript', async ({
+  page,
+}) => {
+  await page.goto('/stories/library-actions-copy-button--default/')
+  const trigger = page.getByRole('button', { name: 'Copy the install command' })
+
+  await expect(trigger).toBeVisible()
+  await expect(page.locator('#install-command')).toHaveText('pnpm add @timelessui/components')
+  // The confirmation label is out of flow before enhancement too, because that is CSS, not script.
+  await expect(page.locator("ui-copy-button [data-ui-part~='copied']")).toBeHidden()
+})
+
+/**
  * The context menu is the documented exception: the platform cannot open a surface at pointer
  * coordinates declaratively, so with scripting off the authored menu stays hidden and the browser
  * shows its own. This asserts that it degrades to hidden rather than to a broken open state.

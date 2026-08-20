@@ -40,6 +40,16 @@
     display: revert-layer;
   }
 
+  /*
+   * `hidden` on the trigger has to beat whatever gives that trigger its own display — `.ui-button` sets
+   * `inline-flex`, and the UA's `[hidden]` rule loses to any author rule at all. Without this the
+   * opt-in reveal has nothing to reveal, because the button was on screen the whole time. The same rule
+   * already sits in `core/options.css` for every part the library hides by `hidden`.
+   */
+  ui-copy-button [data-ui-part~='trigger'][hidden] {
+    display: none;
+  }
+
   ui-copy-button [data-ui-part~='status'] {
     position: absolute;
     overflow: hidden;

@@ -68,6 +68,98 @@ test('selection events are cancelable before commit and direct properties stay s
   expect(await recordedEvents(page)).toHaveLength(1)
 })
 
+/**
+ * The whole point of `ui-copy`: a copy that fails is distinguishable from one that never ran. The
+ * clipboard itself is only reachable with granted permissions, which Playwright supports in Chromium
+ * only — and this file runs under `stories-chromium` alone, so that is not a restriction here.
+ */
+test.describe('copy button', () => {
+  test.use({ permissions: ['clipboard-read', 'clipboard-write'] })
+
+  test('copies from the page, announces once, and keeps the trigger named', async ({ page }) => {
+    await page.goto('/stories/library-actions-copy-button--default/')
+    await expectRouteDocumentReady(page)
+
+    const host = page.locator('ui-copy-button')
+    const trigger = host.getByRole('button', { name: 'Copy the install command' })
+    const status = host.locator("[data-ui-part~='status']")
+    await recordCopyEvents(host)
+
+    await trigger.click()
+
+    // Read back from the real clipboard: the value came off the page, not out of an attribute.
+    await expect
+      .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+      .toBe('pnpm add @timelessui/components')
+    expect(await copyEvents(page)).toEqual([
+      { reason: null, status: 'copied', value: 'pnpm add @timelessui/components' },
+    ])
+
+    // The confirmation reaches the authored region, and the button is not renamed to deliver it.
+    await expect(status).toHaveText('Install command copied')
+    await expect(trigger).toHaveAccessibleName('Copy the install command')
+    expect(await host.evaluate((element) => element.matches(':state(--copied)'))).toBe(true)
+    await expect(host.locator("[data-ui-part~='copied']")).toBeVisible()
+    await expect(host.locator("[data-ui-part~='idle']")).toBeHidden()
+
+    // Both clear together, so copying the same value twice is announced twice.
+    await expect(status).toHaveText('', { timeout: 4_000 })
+    await expect(host.locator("[data-ui-part~='idle']")).toBeVisible()
+  })
+
+  test('reports an empty source rather than copying nothing quietly', async ({ page }) => {
+    await page.goto('/stories/library-actions-copy-button--default/')
+    await expectRouteDocumentReady(page)
+
+    const host = page.locator('ui-copy-button')
+    await recordCopyEvents(host)
+    // `from` is read at activation, so emptying the snippet is enough.
+    await page.locator('#install-command').evaluate((element) => {
+      element.textContent = ''
+    })
+
+    await host.getByRole('button', { name: 'Copy the install command' }).click()
+
+    expect(await copyEvents(page)).toEqual([{ reason: 'empty', status: 'failed', value: '' }])
+    expect(await host.evaluate((element) => element.matches(':state(--copied)'))).toBe(false)
+  })
+})
+
+/**
+ * With no Clipboard API there is nothing to enhance, so the authored `hidden` stays put. This is the
+ * case the reveal exists for and the one a secure origin can never produce on its own.
+ */
+test('a hidden trigger is revealed only when the Clipboard API is there', async ({ page }) => {
+  await page.goto('/stories/library-actions-copy-button--hidden-until-supported/')
+  await expectRouteDocumentReady(page)
+  await expect(page.locator("ui-copy-button [data-ui-part~='trigger']")).toBeVisible()
+
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: undefined })
+  })
+  await page.goto('/stories/library-actions-copy-button--hidden-until-supported/')
+  await expectRouteDocumentReady(page)
+
+  const trigger = page.locator("ui-copy-button [data-ui-part~='trigger']")
+  await expect(page.locator('ui-copy-button')).toBeAttached()
+  await expect(trigger).toBeHidden()
+})
+
+async function recordCopyEvents(host: import('@playwright/test').Locator): Promise<void> {
+  await host.evaluate((element) => {
+    Object.assign(window, { __copyEvents: [] })
+    element.addEventListener('ui-copy', (event) => {
+      ;(window as typeof window & { __copyEvents: unknown[] }).__copyEvents.push(
+        (event as CustomEvent).detail,
+      )
+    })
+  })
+}
+
+async function copyEvents(page: import('@playwright/test').Page): Promise<unknown[]> {
+  return page.evaluate(() => (window as typeof window & { __copyEvents: unknown[] }).__copyEvents)
+}
+
 async function recordedEvents(page: import('@playwright/test').Page): Promise<unknown[]> {
   return page.evaluate(
     () => (window as typeof window & { __timelessEvents: unknown[] }).__timelessEvents,
