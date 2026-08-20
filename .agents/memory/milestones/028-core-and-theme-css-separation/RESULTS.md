@@ -504,11 +504,11 @@ and is therefore far more behavior-adjacent than an option row. Core-only, optio
 I-beam, which is consistent with core carrying no affordances at all: there is no hover highlight
 either.
 
-Two adjacent things noted and deliberately not done. `button.css` pairs `cursor: default` with
-`user-select: none`, and the option row has no `user-select`, so dragging across a list still
-selects its text — arguably the same defect, but a change beyond what was reported. And `toast.css`
-gives its close button `cursor: pointer`, the one control in the package that contradicts the
-convention above.
+Two adjacent things were noted at the same time and fixed straight after. `button.css` pairs
+`cursor: default` with `user-select: none`, and the option row and menu item had neither, so a drag
+across a list selected the labels — the same defect wearing a different property. And `toast.css`
+gave its close button `cursor: pointer`, the one control in the package contradicting the convention
+above; it is `default` now, so the rule holds without exception.
 
 ## Decisions and constraints
 

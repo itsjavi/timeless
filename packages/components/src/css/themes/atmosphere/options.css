@@ -32,6 +32,9 @@
     color: var(--ui-fg);
     line-height: 1.25;
     cursor: default;
+    /* The other half of "this is a control, not prose": `.ui-button` pairs the two, and without it a
+       drag across the list selects the option labels instead of doing nothing. */
+    user-select: none;
   }
 
   /*

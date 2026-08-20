@@ -57,7 +57,7 @@
     color: var(--ui-fg-muted);
     font: inherit;
     line-height: 1;
-    cursor: pointer;
+    cursor: default;
   }
 
   ui-toast :where([data-ui-part~='close']):where(:hover, :focus-visible) {
