@@ -3,9 +3,25 @@
   "version": "0.0.1",
   "description": "CSS-first Timeless UI components.",
   "keywords": [
-    "ai-agent-skill"
+    "ai-agent-skill",
+    "css",
+    "custom-elements",
+    "design-system",
+    "framework-agnostic",
+    "ui-components",
+    "web-components"
   ],
+  "homepage": "https://timeless.build",
+  "bugs": {
+    "url": "https://github.com/itsjavi/timeless/issues"
+  },
   "license": "MIT",
+  "author": "Javi Aguilar (https://github.com/itsjavi)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/itsjavi/timeless.git",
+    "directory": "packages/components"
+  },
   "files": [
     "dist",
     "skills",
