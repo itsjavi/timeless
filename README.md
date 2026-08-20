@@ -8,6 +8,7 @@ yet, while the primitives settle.
 | Website and reference documentation                            | `apps/web`            |
 | Component catalog and development workbench                    | `apps/stories`        |
 | The library itself: CSS, custom elements, contracts, utilities | `packages/components` |
+| CSS colour parsing, conversion, gamut, and contrast            | `packages/color`      |
 | Internal custom-element authoring layer                        | `packages/core`       |
 | Canonical consumer examples shared by the documentation apps   | `packages/examples`   |
 

@@ -122,11 +122,14 @@
 
 ## 7. Close out
 
-- [ ] Run `pnpm qa` and record what it said
-- [ ] Run `audit-docs-drift` and confirm no prose still implies the tokens belong to Atmosphere, and
-      none still places the generic colour functions in `components`
-- [ ] Confirm `apps/web/scripts/validate-claims.mjs` needs no change, or update it
-- [ ] Record decisions, trade-offs, and results in RESULTS.md
+- [x] Run `pnpm qa` and record what it said — exit 0; 337 unit tests, 403 e2e
+- [x] Run `audit-docs-drift` and confirm no prose still implies the tokens belong to Atmosphere, and
+      none still places the generic colour functions in `components` — both clean; the audit found
+      two unrelated gaps, the package README's stale 028 CSS paths and the missing `packages/color`
+      row in the surface table, and both are fixed
+- [x] Confirm `apps/web/scripts/validate-claims.mjs` needs no change, or update it — updated: it
+      collects the library source from a directory list the colour package was missing from
+- [x] Record decisions, trade-offs, and results in RESULTS.md
 
 ---
 

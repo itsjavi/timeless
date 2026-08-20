@@ -2,27 +2,28 @@
 
 CSS-first Timeless UI components.
 
+The CSS ships in three tiers. `tokens.css` carries the cascade-layer order and `color-scheme`,
+`core/` carries behavior and is required, and `themes/atmosphere/` carries the look and is the tier
+you replace. One import gets all three:
+
+```ts
+import '@timelessui/components/css/themes/atmosphere.css'
+```
+
+Import granularly when a route renders a handful of components — tokens first, then core and the
+theme per component:
+
 ```ts
 import '@timelessui/components/css/tokens.css'
-import '@timelessui/components/css/button.css'
-import '@timelessui/components/css/toggle.css'
-import '@timelessui/components/css/alert.css'
-import '@timelessui/components/css/avatar.css'
-import '@timelessui/components/css/badge.css'
-import '@timelessui/components/css/forms.css'
-import '@timelessui/components/css/range.css'
-import '@timelessui/components/css/meter.css'
-import '@timelessui/components/css/empty.css'
-import '@timelessui/components/css/color-swatch.css'
-import '@timelessui/components/css/number-stepper.css'
-import '@timelessui/components/css/color-picker.css'
-import '@timelessui/components/css/spinner.css'
-import '@timelessui/components/css/tabs.css'
-import '@timelessui/components/css/collapsible.css'
-import '@timelessui/components/css/dialog.css'
-import '@timelessui/components/css/popover.css'
-import '@timelessui/components/css/toast.css'
+import '@timelessui/components/css/core/button.css'
+import '@timelessui/components/css/core/dialog.css'
+import '@timelessui/components/css/themes/atmosphere/tokens.css'
+import '@timelessui/components/css/themes/atmosphere/button.css'
+import '@timelessui/components/css/themes/atmosphere/dialog.css'
 ```
+
+For a design system of your own, or for Tailwind, import `tokens.css` and `core.css` and no theme at
+all.
 
 ```html
 <ui-tabs value="overview">
@@ -147,7 +148,8 @@ smaller dependency boundary matters:
 ```ts
 import { UIComboboxElement } from '@timelessui/components/combobox'
 import { defineComboboxElement } from '@timelessui/components/define/ui-combobox'
-import '@timelessui/components/css/combobox.css'
+import '@timelessui/components/css/core/combobox.css'
+import '@timelessui/components/css/themes/atmosphere/combobox.css'
 
 defineComboboxElement()
 ```

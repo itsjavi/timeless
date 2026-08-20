@@ -38,9 +38,15 @@ const proofs = new Map([
  */
 const planned = new Map()
 
+/*
+ * Every published package, because "the library source" is what a claim is proven against and it is
+ * no longer one directory: milestone 029 moved the colour model out to `@timelessui/color`, so a
+ * future colour tin would have had no proof to find.
+ */
 const sources = await collectSources([
   resolve(root, 'packages/components/src'),
   resolve(root, 'packages/core/src'),
+  resolve(root, 'packages/color/src'),
 ])
 
 const landing = await readFile(resolve(root, 'apps/web/src/pages/index.astro'), 'utf8')

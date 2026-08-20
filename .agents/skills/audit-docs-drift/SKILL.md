@@ -73,9 +73,10 @@ For each hit, check whether the implementation has landed. Cross-check the `plan
 grep -rniE "baseline|supports|uses|built on|no javascript|framework-agnostic|zero runtime" README.md apps/web/src/content/docs
 ```
 
-Each claim needs proof in `packages/components/src` or `packages/core/src`. README.md's own standard
-is the right one: features the library uses are claims; features it merely could use are
-"candidates, not claims". Flag any candidate that has been promoted without an implementation.
+Each claim needs proof in `packages/components/src`, `packages/core/src`, or `packages/color/src`.
+README.md's own standard is the right one: features the library uses are claims; features it merely
+could use are "candidates, not claims". Flag any candidate that has been promoted without an
+implementation.
 
 ### 4. Counts, catalogs, and groupings
 
