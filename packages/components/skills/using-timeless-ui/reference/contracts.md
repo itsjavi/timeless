@@ -84,7 +84,8 @@ Register each element you use from `@timelessui/components/define/<tag>`.
 
 ## Stylesheets
 
-Import from `@timelessui/components/css/<file>`. `tokens.css` is required by every component.
+Import from `@timelessui/components/css/<file>`. `tokens.css` and the `core/` file are required; the
+`themes/atmosphere/` file is the optional look.
 
 | Root                               | Stylesheets                                                                                                                     |
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |

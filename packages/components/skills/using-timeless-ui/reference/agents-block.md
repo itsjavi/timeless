@@ -21,8 +21,9 @@
 - Accessible names are always yours to supply.
 - The markup you author is the markup that ships. Components are usable before JavaScript runs.
 - Import stylesheets from `@timelessui/components/css/<file>` and register custom elements from
-  `@timelessui/components/define/<tag>`. `tokens.css` is required once by every component, and
-  registration is per-element and explicit.
+  `@timelessui/components/define/<tag>`. `tokens.css` and `core/<component>.css` are required — core
+  is behavior, not appearance — while `themes/atmosphere/<component>.css` is the optional look.
+  Registration is per-element and explicit.
 - Before guessing an attribute or a value, fetch the component contract rather than inferring it. It
   is at `https://timeless.build/docs/components/<component>.md`, indexed at
   `https://timeless.build/llms.txt`.

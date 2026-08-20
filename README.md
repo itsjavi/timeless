@@ -41,6 +41,24 @@ There is no CSS framework and no component framework runtime. Consumers use the 
 plain HTML, React, Preact, Vue, Svelte, Solid, Astro, or any other environment that can render
 custom elements.
 
+### The CSS ships in three tiers
+
+`tokens.css` carries the cascade-layer order and `color-scheme`. `core/` carries behavior —
+anchoring, box participation, scrolling, native control resets — and is required, because it is the
+implementation of "the surface opens beside its trigger" rather than a look. `themes/atmosphere/`
+carries the look, and is the tier you replace: import the first two and nothing else, and every
+component is positioned, structurally intact, and operable while looking like nothing in particular,
+which is what a Tailwind or design-system-of-your-own consumer wants.
+
+The boundary is proven rather than reviewed. `check-core-boundary.mjs` fails the build when a core
+stylesheet declares a colour, radius, shadow, type property, or size, and when a theme stylesheet
+keeps a property core owns. So a consumer's own colour never loses to ours — there is nowhere for
+one of ours to be. The theme-free rendering itself is asserted in `apps/e2e`, across every component
+page.
+
+Atmosphere is a theme, not the default one: a second theme is a sibling of the same shape. Which
+theme you get is whichever path you imported. `/docs/styling/css/` has the detail.
+
 ## Component catalog
 
 Components are grouped as Foundations, Actions, Forms, Navigation, Content, Feedback, Overlays, and

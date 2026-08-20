@@ -55,7 +55,7 @@
       `tokens.css` loaded — Select, Menu Button, and Sheet checked
 - [x] Fix the `min-inline-size` cascade inversion the split introduced, and gate the class of bug
       that caused it
-- [ ] Verify collision flipping and light dismiss core-only (deferred to the phase 5 sweep)
+- [x] Verify collision flipping and light dismiss core-only — asserted in the phase 5 spec
 
 ## 3. Extract core for the remainder
 
@@ -151,12 +151,16 @@
 
 ## 7. Re-baseline and close out
 
-- [ ] Re-baseline `performance-baselines.json` with `performance:check -- --measure`, recording the
+- [x] Re-baseline `performance-baselines.json` with `performance:check -- --measure`, recording the
       CSS figures before and after
-- [ ] Confirm the core-only CSS payload is materially smaller than the current per-component figures
-- [ ] Run `pnpm qa` and record what it said
-- [ ] Run `audit-docs-drift` and confirm no prose still describes CSS as fully optional
-- [ ] Record decisions, trade-offs, and results in RESULTS.md
+- [x] Confirm the core-only CSS payload is materially smaller than the full per-component figures —
+      39% to 45% of the gzipped bytes
+- [x] Run `pnpm qa` and record what it said
+- [x] Run the docs-drift sweep and fix what it found: `DESIGN.md` pointed at `tokens.css` for token
+      values, and the generated authoring grammar named only `tokens.css` as required
+- [x] Update the README to describe the three tiers and the gates that prove the boundary
+- [x] Set `PLAN.md` status to `Implemented`
+- [x] Record decisions, trade-offs, and results in RESULTS.md
 
 ---
 

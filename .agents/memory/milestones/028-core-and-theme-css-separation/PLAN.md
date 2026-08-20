@@ -1,5 +1,5 @@
 ---
-status: Accepted
+status: Implemented
 ---
 
 # Milestone 028 Plan: Core and Theme CSS Separation

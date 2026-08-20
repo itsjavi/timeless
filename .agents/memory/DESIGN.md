@@ -271,9 +271,10 @@ When generating UI for Timeless:
 - Use Atmosphere as the visual direction: flat first, tactile only for controls and overlays.
 - Do not make every component look like the current Button. Buttons demonstrate one tactile
   treatment; cards, badges, tables, and docs layouts should stay flatter.
-- Use existing tokens from `packages/components/src/css/tokens.css` before adding new ones. A token
-  added to the stylesheet must also be listed in `src/tokens.ts`, and vice versa; the build checks
-  it.
+- Use existing tokens from `packages/components/src/css/themes/atmosphere/tokens.css` before adding
+  new ones. A token added to the stylesheet must also be listed in `src/tokens.ts`, and vice versa;
+  the build checks it. The root `tokens.css` holds no token values — it carries the cascade-layer
+  order and `color-scheme`, which are not Atmosphere's and are not optional.
 - Declare public API in `packages/components/scripts/component-registry.mjs`, never in the docs app.
   Every attribute, part, state, variable, and event needs a real description — placeholders fail.
 - Keep component CSS in cascade layers: `ui.tokens`, `ui.components`, and `ui.utilities`.

@@ -15,8 +15,8 @@
       "stylesheets": ["core/floating.css", "core/popover.css", "themes/atmosphere/popover.css"]
     },
     "listbox": {
-      "cssGzipBytes": 5790,
-      "cssRawBytes": 17945,
+      "cssGzipBytes": 6192,
+      "cssRawBytes": 18935,
       "gzipBytes": 15380,
       "modules": [
         "collection.js",
@@ -35,8 +35,8 @@
       ]
     },
     "select": {
-      "cssGzipBytes": 6637,
-      "cssRawBytes": 19571,
+      "cssGzipBytes": 7039,
+      "cssRawBytes": 20561,
       "gzipBytes": 30023,
       "modules": [
         "capabilities-DnKhwAK2.js",
@@ -59,8 +59,8 @@
       ]
     },
     "combobox": {
-      "cssGzipBytes": 6639,
-      "cssRawBytes": 19701,
+      "cssGzipBytes": 7041,
+      "cssRawBytes": 20691,
       "gzipBytes": 28522,
       "modules": [
         "capabilities-DnKhwAK2.js",

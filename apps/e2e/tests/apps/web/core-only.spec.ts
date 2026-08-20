@@ -108,6 +108,37 @@ test('anchored surfaces still position against their trigger', async ({ page }) 
   }
 })
 
+test('anchored surfaces still flip on collision and still light-dismiss', async ({ page }) => {
+  await loadPreview(page, 'select', CORE_ONLY)
+
+  const flipped = await page.evaluate(async () => {
+    const trigger = document.querySelector<HTMLElement>('[data-ui-part~="trigger"]')
+    if (!trigger) return null
+    // Push the trigger to the bottom of the viewport so the surface cannot open below it.
+    const host = trigger.closest('ui-select') as HTMLElement | null
+    if (host) {
+      host.style.position = 'fixed'
+      host.style.insetBlockEnd = '4px'
+      host.style.insetInlineStart = '40px'
+    }
+    trigger.click()
+    await new Promise((resolve) => setTimeout(resolve, 400))
+    const surface = document.querySelector<HTMLElement>('[popover]:popover-open')
+    if (!surface) return null
+    const anchorBox = trigger.getBoundingClientRect()
+    const box = surface.getBoundingClientRect()
+    return { above: box.bottom <= anchorBox.top + 1, onScreen: box.top >= -1 }
+  })
+
+  expect(flipped, 'the select surface never opened').not.toBeNull()
+  expect(flipped?.above, 'the surface did not flip above its trigger').toBe(true)
+  expect(flipped?.onScreen, 'the surface flipped off screen').toBe(true)
+
+  // Light dismiss is the Popover API's, but it has to survive the theme being gone.
+  await page.mouse.click(5, 5)
+  await expect(page.locator('[popover]:popover-open')).toHaveCount(0)
+})
+
 test('scroll containers still scroll and still contain their overscroll', async ({ page }) => {
   for (const id of ['listbox', 'select', 'menu-button']) {
     await loadPreview(page, id, CORE_ONLY)
