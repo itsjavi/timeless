@@ -1777,7 +1777,12 @@ export const components = [
       ...FORM_ATTRIBUTES(),
     ],
     [
-      part('trigger', true, undefined, 'Native button that opens the listbox.'),
+      part(
+        'trigger',
+        true,
+        undefined,
+        'Native button that opens the listbox. Timeless gives it `role="combobox"`, which the Select-Only Combobox pattern asks for; that role takes no name from its content, so give the trigger `aria-labelledby` or `aria-label` yourself.',
+      ),
       part(
         'value',
         false,
@@ -1821,7 +1826,11 @@ export const components = [
           'Enter / Space',
           'Open the listbox, or commit the active option when it is already open.',
         ),
-        key('Arrow keys', 'Move the active option while the listbox is open.'),
+        key(
+          'Arrow keys',
+          'Open the listbox from the closed trigger, or move the active option when it is already open.',
+        ),
+        key('Home / End', 'Move to the first or last option while the listbox is open.'),
         key('Escape', 'Close the listbox without changing the value.'),
         key(
           'Printable characters',
@@ -1829,7 +1838,7 @@ export const components = [
         ),
         key('Backspace', 'In an empty `search` field under `multiple`, removes the last chip.'),
       ],
-      'Focus stays on the trigger and the active option is announced through `aria-activedescendant`; under `searchable` focus moves into the `search` field instead and the same mechanism carries the highlight. The trigger carries `popovertarget`, so it opens the surface before any script runs. Light dismiss and Escape come from the Popover API. `header`, `footer`, and the pager sit outside arrow navigation and are reached with `Tab`.',
+      'Timeless gives the trigger `role="combobox"`, which is what the Select-Only Combobox pattern asks for and what makes `aria-activedescendant` legal on it. That role does not take its name from its content, so the trigger needs your `aria-labelledby` or `aria-label`; `checkMarkup` reports it when missing. Focus stays on the trigger and the active option is announced through `aria-activedescendant`; under `searchable` focus moves into the `search` field instead and the same mechanism carries the highlight. The trigger carries `popovertarget`, so it opens the surface before any script runs. Light dismiss and Escape come from the Popover API. `header`, `footer`, and the pager sit outside arrow navigation and are reached with `Tab`.',
     ),
   ),
   customElement(

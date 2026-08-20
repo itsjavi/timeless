@@ -965,6 +965,22 @@ export function enhanceSelectParts(
   )
   trigger.setAttribute('aria-controls', listbox.id)
   trigger.setAttribute('aria-haspopup', 'listbox')
+  /*
+   * The trigger is the combobox, which is what the APG Select-Only Combobox pattern this component
+   * declares actually says. Without the role it was a `button` carrying `aria-activedescendant`, and
+   * no button role permits that attribute — axe called it critical, and a screen reader had no
+   * relationship to follow to the active option.
+   *
+   * The cost is that `role="combobox"` does not take its name from its content, measured rather than
+   * assumed: the same button computes "Ready" as a button and "" as a combobox. So the trigger needs
+   * an author-supplied `aria-labelledby` or `aria-label`, which `checkMarkup` reports when it is
+   * missing. Timeless wires relationships, never content, so it cannot invent the name here.
+   *
+   * An author-set `role` wins: a consumer who has deliberately chosen different semantics keeps them.
+   */
+  if (!trigger.hasAttribute('role')) {
+    trigger.setAttribute('role', 'combobox')
+  }
   if (!trigger.hasAttribute('aria-expanded')) {
     trigger.setAttribute('aria-expanded', 'false')
   }

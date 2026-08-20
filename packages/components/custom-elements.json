@@ -1543,7 +1543,7 @@
               "name": "trigger",
               "selector": "[data-ui-part~='trigger']",
               "required": true,
-              "description": "Native button that opens the listbox."
+              "description": "Native button that opens the listbox. Timeless gives it `role=\"combobox\"`, which the Select-Only Combobox pattern asks for; that role takes no name from its content, so give the trigger `aria-labelledby` or `aria-label` yourself."
             },
             {
               "name": "value",

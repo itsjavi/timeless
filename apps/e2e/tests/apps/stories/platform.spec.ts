@@ -159,7 +159,7 @@ test.describe('platform-dependent custom element behavior', () => {
     const host = page.locator('ui-select').first()
 
     await expect(host).toHaveJSProperty('value', 'designer')
-    await page.getByRole('button', { name: /Assignee/ }).click()
+    await page.getByRole('combobox', { name: /Assignee/ }).click()
     await page.getByRole('option', { name: 'Manager' }).click()
     await expect(host).toHaveJSProperty('value', 'manager')
 

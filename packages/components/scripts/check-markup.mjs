@@ -31,9 +31,11 @@ import { components } from './component-registry.mjs'
  * - `unpermitted-value` — a value the stylesheets do not implement.
  * - `boolean-with-value` — a presence-based attribute written with a value.
  * - `internal-attribute` — a private runtime hook written by hand.
+ * - `missing-accessible-name` — a root whose exposed role cannot take its name from its content.
  *
  * @typedef {'unknown-element' | 'configuration-on-host' | 'missing-data-ui-prefix'
  *   | 'undeclared-attribute' | 'unpermitted-value' | 'boolean-with-value' | 'internal-attribute'
+ *   | 'missing-accessible-name'
  * } MarkupFindingKind
  *
  * @typedef {{ kind: MarkupFindingKind, tag: string, attribute?: string, message: string }} MarkupFinding
@@ -209,6 +211,27 @@ export function checkMarkup(markup) {
         }
       }
     }
+  }
+
+  /*
+   * A Select trigger is the combobox, per the APG Select-Only Combobox pattern the component declares,
+   * and Timeless writes `role="combobox"` onto it. That role does not take its accessible name from
+   * its content — measured in Chromium, the same button computes "Ready" as a button and "" as a
+   * combobox — so a trigger carrying only text is a nameless control. Timeless wires relationships and
+   * never content, so it cannot supply the name; the author has to.
+   */
+  const TRIGGER_TAG = /<[a-z][a-z0-9-]*\b[^>]*\bdata-ui-part\s*=\s*"[^"]*\btrigger\b[^"]*"[^>]*>/i
+  for (const hostMatch of markup.matchAll(/<ui-select\b[\s\S]*?(?:<\/ui-select>|$)/gi)) {
+    const triggerTag = hostMatch[0].match(TRIGGER_TAG)?.[0]
+    if (!triggerTag) continue
+    if (/\saria-labelledby\s*=/i.test(triggerTag)) continue
+    if (/\saria-label\s*=/i.test(triggerTag)) continue
+    findings.push({
+      kind: 'missing-accessible-name',
+      tag: 'ui-select',
+      message:
+        'The Select trigger needs aria-labelledby or aria-label. Timeless gives it role="combobox" for the Select-Only Combobox pattern, and that role does not take its name from its content.',
+    })
   }
 
   return findings

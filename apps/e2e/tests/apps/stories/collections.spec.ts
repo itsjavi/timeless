@@ -194,7 +194,7 @@ test.describe('stories collection navigation', () => {
     await expectRouteDocumentReady(page)
 
     const host = page.locator('ui-select')
-    const trigger = page.getByRole('button', { name: /Role/ })
+    const trigger = page.getByRole('combobox', { name: /Role/ })
     const value = trigger.locator("[data-ui-part~='value']")
 
     await expect(value).toHaveText('Engineer')
@@ -224,7 +224,7 @@ test.describe('stories collection navigation', () => {
     await expectRouteDocumentReady(page)
 
     const startHost = page.locator('ui-select').first()
-    const startTrigger = startHost.getByRole('button')
+    const startTrigger = startHost.getByRole('combobox')
     await startTrigger.click()
     const startSurface = startHost.locator("[role='listbox']")
     await expect(startSurface).toBeVisible()
@@ -236,7 +236,7 @@ test.describe('stories collection navigation', () => {
     await page.keyboard.press('Escape')
 
     const endHost = page.locator('ui-select').nth(1)
-    const endTrigger = endHost.getByRole('button')
+    const endTrigger = endHost.getByRole('combobox')
     await endTrigger.click()
     const endSurface = endHost.locator("[role='listbox']")
     await expect(endSurface).toBeVisible()
@@ -263,7 +263,7 @@ test.describe('stories collection navigation', () => {
     test.skip(!supported, 'this browser has no anchor positioning')
 
     const surface = page.locator("ui-select [role='listbox']")
-    await page.getByRole('button', { name: /Role/ }).click()
+    await page.getByRole('combobox', { name: /Role/ }).click()
     await expect(surface).toBeVisible()
 
     await expect(surface).not.toHaveAttribute('data-ui-internal-floating', /.*/)
@@ -282,7 +282,7 @@ test.describe('stories collection navigation', () => {
     await page.goto('/stories/library-navigation-select--grouped-and-searchable/')
     await expectRouteDocumentReady(page)
 
-    const trigger = page.getByRole('button', { name: /Team/ })
+    const trigger = page.getByRole('combobox', { name: /Team/ })
     const search = page.locator("[data-ui-part~='search']")
     await trigger.click()
     await expect(search).toBeFocused()
@@ -320,7 +320,7 @@ test.describe('stories collection navigation', () => {
     const clear = page.getByRole('button', { name: 'Clear' })
 
     await expect(clear).toBeDisabled()
-    await page.getByRole('button', { name: /Reviewers/ }).click()
+    await page.getByRole('combobox', { name: /Reviewers/ }).click()
     await page.getByRole('option', { name: 'Designer' }).click()
     await page.getByRole('option', { name: 'Manager' }).click()
 
@@ -345,7 +345,7 @@ test.describe('stories collection navigation', () => {
     await page.goto('/stories/library-navigation-select--paged-long-list/')
     await expectRouteDocumentReady(page)
 
-    await page.getByRole('button', { name: /City/ }).click()
+    await page.getByRole('combobox', { name: /City/ }).click()
     const pageStatus = page.locator("[data-ui-part~='page-status']")
     const previous = page.getByRole('button', { name: 'Previous' })
     const next = page.getByRole('button', { name: 'Next' })
@@ -378,7 +378,7 @@ test.describe('stories collection navigation', () => {
       )
       .toBe(false)
 
-    await page.getByRole('button', { name: /Reviewer/ }).click()
+    await page.getByRole('combobox', { name: /Reviewer/ }).click()
     await page.getByRole('option', { name: 'Manager' }).click()
 
     await expect
