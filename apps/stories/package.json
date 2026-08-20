@@ -18,9 +18,9 @@
     "@timelessui/examples": "workspace:*"
   },
   "devDependencies": {
-    "satteri": "^0.9.5",
+    "satteri": "^0.10.2",
     "typescript": "catalog:",
-    "vite-plugin-satteri": "^0.2.15",
-    "vitest": "^4.1.10"
+    "vite-plugin-satteri": "^0.3.2",
+    "vitest": "^4.1.11"
   }
 }

@@ -41,9 +41,9 @@
     "update-deps": "pnpm -r update --latest && sleep 1 && pnpm install"
   },
   "devDependencies": {
-    "oxfmt": "^0.63.0",
+    "oxfmt": "^0.64.0",
     "typescript": "catalog:",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "engines": {
     "node": ">=24"

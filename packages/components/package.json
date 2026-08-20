@@ -191,7 +191,7 @@
     "publint": "^0.3.23",
     "tsdown": "^0.22.14",
     "typescript": "catalog:",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "aiAgentSkill": "./skills/using-timeless-ui",
   "customElements": "./custom-elements.json",

@@ -15,7 +15,7 @@
     "@playwright/test": "^1.62.1",
     "@timelessui/examples": "workspace:*",
     "@types/node": "^26.2.0",
-    "@vitest/browser-playwright": "^4.1.10",
+    "@vitest/browser-playwright": "^4.1.11",
     "typescript": "catalog:"
   }
 }
