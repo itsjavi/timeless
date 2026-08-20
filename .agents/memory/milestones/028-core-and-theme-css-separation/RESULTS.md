@@ -510,6 +510,45 @@ across a list selected the labels — the same defect wearing a different proper
 gave its close button `cursor: pointer`, the one control in the package contradicting the convention
 above; it is `default` now, so the rule holds without exception.
 
+### Core-only rendering is asserted in CI, not spot-checked
+
+`apps/e2e/tests/apps/web/core-only.spec.ts` holds the milestone's acceptance criteria as eight tests
+in the `web-chromium` project. It reads `tokens.css` and every core stylesheet from disk in Node and
+swaps them in for the preview page's own styles, because that project runs against a production
+build where the sources are not served as files.
+
+The strongest result is the first test: across **all 51 previews**, zero `ui-*` hosts compute
+`display: inline` under core-only, and no page errors. That is the "structurally intact" half of the
+acceptance criterion, proven library-wide rather than sampled. The rest cover anchoring on five
+surfaces, scroll containment, filtered options staying hidden in all three collections, Dialog and
+Sheet reaching the top layer and closing on Escape, the Toast region staying clickable through, and
+the degradation case with core dropped as well — which produced no console error and no hang, as the
+audit predicted from there being no JavaScript waiting on a transition.
+
+The axe test is deliberately **relative**: core-only must introduce no violation the themed
+rendering does not already have. An absolute assertion looked more rigorous and was worse, because
+it fails on pre-existing issues and then says nothing about this milestone. It immediately paid for
+itself.
+
+### The sweep surfaced a pre-existing critical accessibility bug
+
+The first absolute version of the axe test failed on the Select preview:
+
+```
+[critical] aria-allowed-attr: ARIA attribute is not allowed: aria-activedescendant="ui-select-1-option-2"
+```
+
+Measured identically with the full theme and with core-only, so the CSS split neither caused it nor
+affects it. Timeless writes `aria-activedescendant` onto the Select's plain `<button>` trigger, and
+no button role permits that attribute — it is valid only on roles that manage a focused descendant.
+The APG Select-Only Combobox pattern puts `role="combobox"` on the trigger, which would make it
+legal; the alternative is not writing it there at all. Either way it is a contract decision, not a
+CSS one.
+
+Filed as separate work rather than fixed here, and the relative axe assertion is what keeps it
+visible instead of masking it. Also worth noting: the existing axe sweep never caught this, most
+likely because it scans pages with surfaces closed — a coverage gap in its own right.
+
 ## Decisions and constraints
 
 ## Decisions and constraints

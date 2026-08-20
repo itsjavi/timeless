@@ -1,0 +1,285 @@
+/**
+ * The acceptance criteria of milestone 028, as a test.
+ *
+ * The milestone's claim is that `tokens.css` plus `core.css` and no theme CSS at all leaves every
+ * component positioned, structurally intact, and operable — plain-looking and correct. That is not a
+ * property any unit test can see and not one a human will re-check by hand, so it is asserted here
+ * against the real preview pages.
+ *
+ * The stylesheets are read from disk in Node rather than fetched, because the `web-chromium` project
+ * runs against a production build where the sources are not served as files.
+ */
+import { readFileSync, readdirSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import type { Page } from '@playwright/test'
+import { examples } from '@timelessui/examples'
+import { expect, test } from '../../shared/fixtures'
+import { makeAxeBuilder } from '../../shared/a11y'
+import { settleAnimations } from '../../shared/animations'
+
+const cssRoot = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  '../../../../../packages/components/src/css',
+)
+
+/** `tokens.css` plus every core stylesheet: the two required tiers, and nothing else. */
+const CORE_ONLY = [
+  readFileSync(resolve(cssRoot, 'tokens.css'), 'utf8'),
+  ...readdirSync(resolve(cssRoot, 'core'))
+    .filter((name) => name.endsWith('.css'))
+    .sort()
+    .map((name) => readFileSync(resolve(cssRoot, 'core', name), 'utf8')),
+].join('\n')
+
+/** `tokens.css` alone: the "dropped core as well" case, which must degrade rather than break. */
+const TOKENS_ONLY = readFileSync(resolve(cssRoot, 'tokens.css'), 'utf8')
+
+async function loadPreview(page: Page, id: string, css: string): Promise<void> {
+  await page.goto(`/docs/_preview/${id}/`)
+  const definitions = examples.find((example) => example.id === id)?.definitions ?? []
+  if (definitions.length > 0) {
+    await page
+      .waitForFunction(
+        (tags) => tags.every((tag) => Boolean(customElements.get(tag))),
+        [...definitions],
+      )
+      .catch(() => {})
+  }
+  // Registration is unaffected by stylesheets, so the swap happens after the elements are defined.
+  await page.evaluate((sheet) => {
+    for (const element of document.querySelectorAll('style, link[rel="stylesheet"]')) {
+      element.remove()
+    }
+    const style = document.createElement('style')
+    style.textContent = sheet
+    document.head.append(style)
+  }, css)
+}
+
+test('no custom-element host collapses to display: inline in any preview', async ({ page }) => {
+  const collapsed: string[] = []
+
+  for (const example of examples) {
+    await loadPreview(page, example.id, CORE_ONLY)
+    const inline = await page.evaluate(() =>
+      [...document.querySelectorAll('*')]
+        .filter((element) => element.tagName.toLowerCase().startsWith('ui-'))
+        .filter((element) => getComputedStyle(element).display === 'inline')
+        .map((element) => element.tagName.toLowerCase()),
+    )
+    for (const tag of inline) collapsed.push(`${example.id}: ${tag}`)
+  }
+
+  expect(collapsed, 'hosts left at the initial inline display').toEqual([])
+})
+
+test('anchored surfaces still position against their trigger', async ({ page }) => {
+  // One per anchoring shape: centred on the anchor, edge-aligned to it, and a menu surface.
+  for (const id of ['popover', 'hover-card', 'select', 'combobox', 'menu-button']) {
+    await loadPreview(page, id, CORE_ONLY)
+    const placement = await page.evaluate(async () => {
+      const trigger = document.querySelector<HTMLElement>('[data-ui-part~="trigger"]')
+      const input = document.querySelector<HTMLInputElement>('input[role="combobox"]')
+      // A combobox surface opens on input, not on a click.
+      if (trigger) trigger.click()
+      else if (input) {
+        input.focus()
+        input.value = 'a'
+        input.dispatchEvent(new InputEvent('input', { bubbles: true }))
+      }
+      await new Promise((resolve) => setTimeout(resolve, 350))
+      const surface = document.querySelector<HTMLElement>('[popover]:popover-open')
+      const opener = trigger ?? input
+      if (!opener || !surface) return null
+      const anchor = opener.getBoundingClientRect()
+      const box = surface.getBoundingClientRect()
+      return {
+        // Anchored means adjacent to the trigger, not parked at a viewport default.
+        overlapsHorizontally: box.right > anchor.left && box.left < anchor.right,
+        near: Math.min(Math.abs(box.top - anchor.bottom), Math.abs(box.bottom - anchor.top)) < 40,
+        usedJsFallback: surface.getAttribute('data-ui-internal-floating'),
+      }
+    })
+
+    expect(placement, `${id} surface never opened`).not.toBeNull()
+    expect(placement?.overlapsHorizontally, `${id} is not beside its trigger`).toBe(true)
+    expect(placement?.near, `${id} is not adjacent to its trigger`).toBe(true)
+  }
+})
+
+test('scroll containers still scroll and still contain their overscroll', async ({ page }) => {
+  for (const id of ['listbox', 'select', 'menu-button']) {
+    await loadPreview(page, id, CORE_ONLY)
+    const scrollers = await page.evaluate(async () => {
+      document.querySelector<HTMLElement>('[data-ui-part~="trigger"]')?.click()
+      await new Promise((resolve) => setTimeout(resolve, 300))
+      return [...document.querySelectorAll('ui-listbox, [role="listbox"], ui-menu[popover]')]
+        .map((element) => getComputedStyle(element))
+        .filter((style) => style.overflow === 'auto')
+        .map((style) => style.overscrollBehavior)
+    })
+
+    expect(scrollers.length, `${id} has no scroll container`).toBeGreaterThan(0)
+    expect(
+      scrollers.every((value) => value === 'contain'),
+      `${id} overscroll leaks`,
+    ).toBe(true)
+  }
+})
+
+test('filtered options stay hidden in every collection', async ({ page }) => {
+  for (const id of ['listbox', 'select', 'combobox']) {
+    await loadPreview(page, id, CORE_ONLY)
+    const hidden = await page.evaluate(async () => {
+      const trigger = document.querySelector<HTMLElement>('[data-ui-part~="trigger"]')
+      const input = document.querySelector<HTMLInputElement>('input[role="combobox"]')
+      // A combobox surface opens on input, not on a click.
+      if (trigger) trigger.click()
+      else if (input) {
+        input.focus()
+        input.value = 'a'
+        input.dispatchEvent(new InputEvent('input', { bubbles: true }))
+      }
+      await new Promise((resolve) => setTimeout(resolve, 300))
+      const options = [...document.querySelectorAll<HTMLElement>('[role="option"]')]
+      if (options.length < 2) return null
+      options[1]!.hidden = true
+      const display = getComputedStyle(options[1]!).display
+      options[1]!.hidden = false
+      return display
+    })
+
+    expect(hidden, `${id} exposed no options`).not.toBeNull()
+    expect(hidden, `a filtered option is visible in ${id}`).toBe('none')
+  }
+})
+
+test('dialog and sheet still reach the top layer, hold focus, and close on Escape', async ({
+  page,
+}) => {
+  for (const id of ['dialog', 'sheet']) {
+    await loadPreview(page, id, CORE_ONLY)
+    const opened = await page.evaluate(async () => {
+      document.querySelector<HTMLElement>('[data-ui-part~="trigger"]')?.click()
+      await new Promise((resolve) => setTimeout(resolve, 400))
+      const panel = document.querySelector('dialog[open]')
+      return panel
+        ? {
+            inTopLayer: panel.matches(':modal'),
+            focusInside: panel.contains(document.activeElement),
+          }
+        : null
+    })
+
+    expect(opened, `${id} never opened`).not.toBeNull()
+    expect(opened?.inTopLayer, `${id} is not in the top layer`).toBe(true)
+    expect(opened?.focusInside, `${id} did not take focus`).toBe(true)
+
+    await page.keyboard.press('Escape')
+    await settleAnimations(page)
+    await expect(page.locator('dialog[open]')).toHaveCount(0)
+  }
+})
+
+test('the toaster still places itself and stays clickable through', async ({ page }) => {
+  await loadPreview(page, 'toast', CORE_ONLY)
+  const stack = await page.evaluate(async () => {
+    document.querySelector<HTMLElement>('[data-ui-part~="trigger"]')?.click()
+    document.querySelector<HTMLElement>('[data-ui-part~="trigger"]')?.click()
+    await new Promise((resolve) => setTimeout(resolve, 400))
+    const toaster = document.querySelector('ui-toaster')
+    if (!toaster) return null
+    const style = getComputedStyle(toaster)
+    const toasts = [...document.querySelectorAll('ui-toast')]
+    return {
+      position: style.position,
+      // `pointer-events: none` on the region with `auto` back on each toast is what keeps a 24rem
+      // column down the side of the viewport from swallowing every click on the page behind it.
+      regionIgnoresPointer: style.pointerEvents === 'none',
+      toastsTakePointer: toasts.every((toast) => getComputedStyle(toast).pointerEvents === 'auto'),
+      pinnedToAnEdge: style.insetBlockEnd !== 'auto' || style.insetBlockStart !== 'auto',
+      count: toasts.length,
+    }
+  })
+
+  expect(stack, 'no toaster rendered').not.toBeNull()
+  expect(stack?.position).toBe('fixed')
+  expect(stack?.regionIgnoresPointer, 'the toast region blocks the page').toBe(true)
+  expect(stack?.toastsTakePointer, 'a toast cannot be clicked').toBe(true)
+  expect(stack?.pinnedToAnEdge, 'the toaster is not pinned to a viewport edge').toBe(true)
+})
+
+test('dropping core as well degrades without erroring or hanging', async ({ page }) => {
+  const failures: string[] = []
+  page.on('pageerror', (error) => failures.push(String(error)))
+  page.on('console', (message) => {
+    if (message.type() === 'error') failures.push(message.text())
+  })
+
+  for (const id of ['select', 'menu-button', 'dialog']) {
+    await loadPreview(page, id, TOKENS_ONLY)
+    // Operability has to survive the loss of core; only placement is allowed to.
+    const operable = await page.evaluate(async () => {
+      const trigger = document.querySelector<HTMLElement>('[data-ui-part~="trigger"]')
+      const input = document.querySelector<HTMLInputElement>('input[role="combobox"]')
+      // A combobox surface opens on input, not on a click.
+      if (trigger) trigger.click()
+      else if (input) {
+        input.focus()
+        input.value = 'a'
+        input.dispatchEvent(new InputEvent('input', { bubbles: true }))
+      }
+      await new Promise((resolve) => setTimeout(resolve, 350))
+      return {
+        opened: Boolean(
+          document.querySelector('[popover]:popover-open') ??
+          document.querySelector('dialog[open]'),
+        ),
+        expanded: trigger?.getAttribute('aria-expanded'),
+      }
+    })
+
+    expect(operable.opened, `${id} could not be opened without core`).toBe(true)
+  }
+
+  expect(failures, 'console errors with no core stylesheet').toEqual([])
+})
+
+/**
+ * The claim is that dropping the theme costs nothing in accessibility, so the assertion is relative:
+ * core-only must introduce no violation the themed rendering does not already have. An absolute
+ * assertion would fail on pre-existing issues and say nothing about this milestone — and it did: the
+ * Select trigger carries `aria-activedescendant`, which no button role permits, with or without the
+ * theme. That is filed separately rather than masked here.
+ */
+test('core-only introduces no accessibility violation the theme does not have', async ({
+  page,
+}) => {
+  const violationsFor = async (id: string, css: string | null) => {
+    await page.goto(`/docs/_preview/${id}/`)
+    if (css !== null) {
+      await page.evaluate((sheet) => {
+        for (const element of document.querySelectorAll('style, link[rel="stylesheet"]')) {
+          element.remove()
+        }
+        const style = document.createElement('style')
+        style.textContent = sheet
+        document.head.append(style)
+      }, css)
+    }
+    await page.evaluate(async () => {
+      document.querySelector<HTMLElement>('[data-ui-part~="trigger"]')?.click()
+      await new Promise((resolve) => setTimeout(resolve, 300))
+    })
+    const results = await makeAxeBuilder(page).analyze()
+    return new Set(results.violations.map((violation) => violation.id))
+  }
+
+  for (const id of ['select', 'listbox', 'menu-button', 'dialog']) {
+    const themed = await violationsFor(id, null)
+    const core = await violationsFor(id, CORE_ONLY)
+    const introduced = [...core].filter((violation) => !themed.has(violation))
+    expect(introduced, `core-only adds accessibility violations on ${id}`).toEqual([])
+  }
+})

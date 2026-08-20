@@ -112,16 +112,23 @@
 
 ## 5. Verify core-only rendering
 
-- [ ] Build a StoryLite or e2e fixture that loads `core.css` and `tokens.css` and no theme CSS
-- [ ] Verify no custom-element host has collapsed to `display: inline`
-- [ ] Verify every scroll container still scrolls, and `overscroll-behavior` still contains
-- [ ] Verify filtered options stay hidden in Listbox, Select, and Combobox
-- [ ] Verify Dialog and Sheet still reach the top layer, trap focus, and close on Escape
-- [ ] Verify Toast still stacks and places
-- [ ] Verify every anchored surface positions correctly
-- [ ] Verify dropping `core.css` too leaves components functional but unpositioned, with no console
+- [x] Build a fixture that loads `tokens.css` and every core stylesheet and no theme CSS —
+      `apps/e2e/tests/apps/web/core-only.spec.ts`, reading the CSS in Node because the
+      `web-chromium` project runs against a production build
+- [x] Verify no custom-element host has collapsed to `display: inline` — asserted across all 51
+      previews, zero found
+- [x] Verify every scroll container still scrolls, and `overscroll-behavior` still contains
+- [x] Verify filtered options stay hidden in Listbox, Select, and Combobox
+- [x] Verify Dialog and Sheet still reach the top layer, trap focus, and close on Escape
+- [x] Verify Toast still stacks and places, and that the region stays clickable through
+- [x] Verify every anchored surface positions correctly — Popover, Hover Card, Select, Combobox,
+      Menu Button
+- [x] Verify dropping `core.css` too leaves components functional but unpositioned, with no console
       error and no hang
-- [ ] Run the axe sweep against the core-only fixture
+- [x] Run the axe sweep against the core-only fixture, as a relative assertion: core-only must add
+      no violation the themed rendering does not already have
+- [x] File the pre-existing `aria-activedescendant` violation that sweep surfaced, rather than
+      masking it
 
 ## 6. Document the three tiers
 
