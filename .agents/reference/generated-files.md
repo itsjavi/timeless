@@ -45,9 +45,9 @@ pnpm -F @timelessui/components run generate
 
 - `src/css/*.css` — the stylesheets. `validate-contracts.mjs` proves them against the registry in
   both directions.
-- `src/tokens.ts` — `atmosphereTokenGroups` is authored TypeScript. `generate-elements.mjs` reads it
-  as _text_ to build the CSS editor data, so keep the `atmosphereTokenGroups = { ... } as const`
-  shape parseable.
+- `src/tokens.ts` — `uiTokenGroups` is authored TypeScript. `generate-elements.mjs` reads it as
+  _text_ to build the CSS editor data, so keep the `uiTokenGroups = { ... } as const` shape
+  parseable.
 - `src/<module>.ts` — the component behavior modules, and their colocated `*.test.ts`.
 - `scripts/authoring-grammar.mjs` — the single declaration of the authoring grammar. Edit this to
   change what every agent-facing artifact says about how Timeless markup is authored. It states no

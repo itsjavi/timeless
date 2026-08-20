@@ -226,7 +226,7 @@ function validateContractShape() {
 }
 
 /**
- * `atmosphereTokenGroups` is documented as the public token contract, so it must name exactly the
+ * `uiTokenGroups` is documented as the public token contract, so it must name exactly the
  * custom properties `themes/atmosphere/tokens.css` declares on `:root`. A token in the stylesheet
  * the list is undocumented; a token in the list but not the stylesheet does not exist.
  *
@@ -259,7 +259,7 @@ async function validatePublicTokens() {
   const missing = [...listed].filter((token) => !declared.has(token))
   if (missing.length > 0) {
     throw new Error(
-      `atmosphereTokenGroups lists tokens themes/atmosphere/tokens.css never declares: ${missing.join(', ')}`,
+      `uiTokenGroups lists tokens themes/atmosphere/tokens.css never declares: ${missing.join(', ')}`,
     )
   }
 

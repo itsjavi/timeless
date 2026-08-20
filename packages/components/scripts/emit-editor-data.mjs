@@ -87,7 +87,7 @@ export function createCssCustomData(components, tokenGroups) {
     for (const token of tokens) {
       properties.push({
         name: token,
-        description: `Timeless Atmosphere token (${group}). Override it on \`:root\` or on any subtree.`,
+        description: `Timeless design token (${group}). Override it on \`:root\` or on any subtree.`,
         references: [{ name: 'Theming', url: 'https://timeless.build/docs/styling/theming/' }],
       })
     }

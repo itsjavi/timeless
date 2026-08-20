@@ -1,9 +1,9 @@
 ---
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { atmosphereTokenGroups } from '@timelessui/components'
+import { uiTokenGroups } from '@timelessui/components'
 
-type Props = { group: keyof typeof atmosphereTokenGroups }
+type Props = { group: keyof typeof uiTokenGroups }
 const { group } = Astro.props
 
 const stylesheet = await readFile(
@@ -22,7 +22,7 @@ const declarations = new Map(
   ]),
 )
 
-const tokens: readonly string[] = atmosphereTokenGroups[group]
+const tokens: readonly string[] = uiTokenGroups[group]
 const truncate = (value: string) => (value.length > 72 ? `${value.slice(0, 69)}…` : value)
 ---
 

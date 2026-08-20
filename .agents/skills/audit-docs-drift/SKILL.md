@@ -119,8 +119,7 @@ explicitly grandfathered.
 
 Token names, color values, and rules quoted in `.agents/memory/DESIGN.md` against
 `packages/components/src/tokens.ts` and `src/css/tokens.css`. `validate-contracts.mjs` proves
-`atmosphereTokenGroups` against `tokens.css`, so check DESIGN.md's prose values, not the token list
-itself.
+`uiTokenGroups` against `tokens.css`, so check DESIGN.md's prose values, not the token list itself.
 
 ## Reporting
 

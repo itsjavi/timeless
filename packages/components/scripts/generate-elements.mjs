@@ -138,18 +138,18 @@ if (check && stale) {
 }
 
 /**
- * `atmosphereTokenGroups` is authored TypeScript, so it is read as text rather than imported. The
+ * `uiTokenGroups` is authored TypeScript, so it is read as text rather than imported. The
  * same list is already proven against `tokens.css` by `validate-contracts.mjs` in both directions.
  */
 async function readTokenGroups() {
   const source = await readFile(resolve(packageRoot, 'src/tokens.ts'), 'utf8')
-  const body = /atmosphereTokenGroups = \{([\s\S]*?)\n\} as const/.exec(source)?.[1]
-  if (!body) throw new Error('Could not read atmosphereTokenGroups from src/tokens.ts')
+  const body = /uiTokenGroups = \{([\s\S]*?)\n\} as const/.exec(source)?.[1]
+  if (!body) throw new Error('Could not read uiTokenGroups from src/tokens.ts')
   const groups = {}
   for (const match of body.matchAll(/(\w+): \[([^\]]*)\]/g)) {
     groups[match[1]] = [...match[2].matchAll(/'(--ui-[a-z0-9-]+)'/g)].map((token) => token[1])
   }
-  if (Object.keys(groups).length === 0) throw new Error('atmosphereTokenGroups parsed as empty')
+  if (Object.keys(groups).length === 0) throw new Error('uiTokenGroups parsed as empty')
   return groups
 }
 

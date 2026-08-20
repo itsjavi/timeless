@@ -9,7 +9,7 @@
  * `light-dark()` value below resolves to.
  *
  * The split exists because the two were one file, so the one non-optional line in the package shipped
- * inside a file of theme values. `atmosphereTokenGroups` in `src/tokens.ts` names exactly the tokens
+ * inside a file of theme values. `uiTokenGroups` in `src/tokens.ts` names exactly the tokens
  * declared here, and `validate-contracts.mjs` proves both directions.
  */
 
