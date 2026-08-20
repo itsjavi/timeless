@@ -91,10 +91,10 @@
     line-height: 1.4;
     white-space: normal;
   }
-}
 
-@media (forced-colors: active) {
-  .ui-color-swatch [data-ui-part~='chip'] {
-    border-color: CanvasText;
+  @media (forced-colors: active) {
+    .ui-color-swatch [data-ui-part~='chip'] {
+      border-color: CanvasText;
+    }
   }
 }

@@ -66,12 +66,12 @@
     margin-block-start: -1px;
     margin-inline-start: 0;
   }
-}
 
-@media (forced-colors: active) {
-  .ui-toggle[aria-pressed='true'] {
-    border-color: Highlight;
-    background: Highlight;
-    color: HighlightText;
+  @media (forced-colors: active) {
+    .ui-toggle[aria-pressed='true'] {
+      border-color: Highlight;
+      background: Highlight;
+      color: HighlightText;
+    }
   }
 }

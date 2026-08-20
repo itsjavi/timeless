@@ -302,17 +302,49 @@ behavior-critical "because in this library it positions anchored surfaces rather
 them, which is true of those surfaces and not necessarily of everything else". Of the 19 `translate`
 declarations, 14 place a surface and 5 animate one.
 
-### A baseline figure was wrong
+### A baseline figure was wrong, and fixing it was a real bug fix
 
-The baseline records "Stylesheets with rules outside a `@layer` block: 0". That is not right. Four
-theme stylesheets — `color-picker.css`, `color-swatch.css`, `meter.css`, and `toggle.css` — carry an
-`@media (forced-colors: active)` block at top level, outside any layer, which means it also outranks
-a consumer's own `@layer ui.utilities` rules and contradicts what `theming.mdx` promises about
-`ui.utilities`.
+The baseline records "Stylesheets with rules outside a `@layer` block: 0". That was not right. Four
+theme stylesheets — `color-picker.css`, `color-swatch.css`, `meter.css`, and `toggle.css` — carried
+an `@media (forced-colors: active)` block at top level, after their `@layer ui.components` block
+closed. The core halves extracted from three of them reproduced the same shape.
 
-It is pre-existing and unrelated to this split, so it was deliberately not changed here; the core
-files extracted from those three components reproduce the same structure and say so in a comment. It
-is filed as separate work rather than folded in.
+It was first left alone as pre-existing and unrelated, then picked up as follow-up work in the same
+branch. The question was whether unlayered placement was intentional — forced-colors overrides are
+an accessibility concern, and "a consumer should not be able to break them" is a defensible
+position.
+
+It was not intentional. The blocks date to the initial commit with no recorded reasoning, and the
+forced-colors review that would have examined them is still an open task in milestone 016 and a
+stated evidence limit in 012 — nobody had looked at these in that mode. More decisively, the
+placement was doing real harm and buying nothing.
+
+Measured under Chromium's `forcedColors: 'active'` emulation, with a consumer asking for a different
+system colour on a pressed Toggle:
+
+| Placement          | Library renders | Consumer via `ui.utilities`  | Consumer via a plain class   |
+| ------------------ | --------------- | ---------------------------- | ---------------------------- |
+| Unlayered (before) | `Highlight`     | `Highlight` — override lost  | `Highlight` — override lost  |
+| Layered (after)    | `Highlight`     | `ButtonText` — override wins | `ButtonText` — override wins |
+
+So the library's own forced-colors rendering is identical either way — confirmed again against the
+real stylesheets for `toggle.css`, `meter.css`, and `color-swatch.css`, and for the core halves'
+`forced-color-adjust: none`, all identical before and after. What unlayered placement changed was
+only that consumers lost. Both documented routes failed, not just the `ui.utilities` one: the plain
+single-class route lost too, because `.ui-toggle[aria-pressed='true']` is 0,2,0 against a consumer's
+0,1,0 — which contradicts `theming.mdx`'s "a single class overrides a Timeless rule with three
+selectors, and you never need `!important`".
+
+Nothing about the blocks needs to be unlayered. Layer position decides which rule wins a conflict,
+not whether a rule applies, and the UA still forces its own palette over whatever wins. Making four
+blocks unoverridable is also inconsistent with a library that ships zero `!important` and whose
+entire pitch is that consumer CSS wins — and if that exception were intended it would have to be
+documented, and it was not.
+
+All seven blocks moved inside `@layer ui.components`. `validate-contracts.mjs` now proves every
+declaration in all 81 stylesheets sits inside a layer, so the corrected baseline claim is enforced
+rather than merely true today. The check was confirmed to fire both on a block escaping the layer
+and on a bare stray declaration.
 
 ## Decisions and constraints
 

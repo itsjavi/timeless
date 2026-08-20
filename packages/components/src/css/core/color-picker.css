@@ -6,9 +6,6 @@
  * button render on top of the authored anatomy. `forced-color-adjust: none` keeps the colour preview
  * and the channel tracks showing real colour in forced-colors mode, where the whole point of the
  * component is the colour it is showing.
- *
- * The unlayered `@media (forced-colors: active)` block matches the theme file's own structure. It is
- * pre-existing and deliberately unchanged by milestone 028.
  */
 
 @layer ui.components {
@@ -96,14 +93,14 @@
   ui-color-picker [data-ui-part~='channel-input']::-webkit-outer-spin-button {
     appearance: none;
   }
-}
 
-@media (forced-colors: active) {
-  ui-color-picker [data-ui-part~='preview'] {
-    forced-color-adjust: none;
-  }
+  @media (forced-colors: active) {
+    ui-color-picker [data-ui-part~='preview'] {
+      forced-color-adjust: none;
+    }
 
-  ui-color-picker [data-ui-part~='channel-range'] {
-    forced-color-adjust: none;
+    ui-color-picker [data-ui-part~='channel-range'] {
+      forced-color-adjust: none;
+    }
   }
 }

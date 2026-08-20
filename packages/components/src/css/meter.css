@@ -54,10 +54,10 @@
     font-size: 0.8125rem;
     font-weight: 400;
   }
-}
 
-@media (forced-colors: active) {
-  .ui-meter-field > meter {
-    color: Highlight;
+  @media (forced-colors: active) {
+    .ui-meter-field > meter {
+      color: Highlight;
+    }
   }
 }

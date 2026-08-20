@@ -315,10 +315,10 @@
   ui-color-picker [data-ui-part~='channel']:has(:disabled) {
     opacity: var(--ui-disabled-opacity);
   }
-}
 
-@media (forced-colors: active) {
-  ui-color-picker [data-ui-part~='preview'] {
-    border-block-end: 1px solid CanvasText;
+  @media (forced-colors: active) {
+    ui-color-picker [data-ui-part~='preview'] {
+      border-block-end: 1px solid CanvasText;
+    }
   }
 }

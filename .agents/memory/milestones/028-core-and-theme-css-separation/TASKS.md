@@ -72,6 +72,11 @@
       in the theme, all fifteen enumerated in RESULTS.md
 - [x] Give the gate the two exemptions the extraction actually needs, and print the explicit count
       so it cannot grow quietly
+- [x] Decide whether the four unlayered `@media (forced-colors: active)` blocks are intentional —
+      they are not — move all seven inside `@layer ui.components`, and confirm the forced-colors
+      rendering is unchanged under real emulation
+- [x] Gate it: prove every declaration in every stylesheet sits inside a cascade layer, correcting
+      the baseline's "0 rules outside a `@layer` block" from wrong to enforced
 
 ## 4. Prove the boundary mechanically
 

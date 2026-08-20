@@ -1,5 +1,5 @@
-import { readFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { readFile, readdir } from 'node:fs/promises'
+import { resolve, sep } from 'node:path'
 import { components, elements } from './component-registry.mjs'
 
 const packageRoot = resolve(import.meta.dirname, '..')
@@ -86,10 +86,80 @@ for (const stylesheet of stylesheets) {
 validateContractShape()
 await validateAttributeValues()
 const tokenCount = await validatePublicTokens()
+const layeredCount = await validateEverythingIsLayered()
 
 console.log(
-  `Validated ${components.length} component contracts, ${elements.length} elements, ${countDocumentedValues()} documented attribute values, and ${tokenCount} public tokens.`,
+  `Validated ${components.length} component contracts, ${elements.length} elements, ${countDocumentedValues()} documented attribute values, ${tokenCount} public tokens, and ${layeredCount} fully layered stylesheets.`,
 )
+
+/**
+ * Every declaration the package ships must sit inside a cascade layer. Unlayered CSS beats *all*
+ * layered CSS at any specificity, so a single unlayered rule silently opts itself out of the override
+ * story the whole library is built on: consumer CSS stops winning, and `@layer ui.utilities` — which
+ * `theming.mdx` tells consumers to use — stops working against it.
+ *
+ * This was not hypothetical. Four stylesheets carried an `@media (forced-colors: active)` block after
+ * their `@layer ui.components` block closed, so in forced-colors mode a consumer could not restyle a
+ * pressed Toggle by either documented route. Measured under Chromium's forced-colors emulation: asking
+ * for `ButtonText` from `ui.utilities` or from a plain class both computed `Highlight` anyway. Moving
+ * the blocks inside the layer changed the library's own rendering not at all and made both overrides
+ * work. Milestone 028's baseline had recorded zero unlayered rules, which was wrong; this makes the
+ * claim true and keeps it true.
+ *
+ * The two aggregates are excluded because they hold nothing but `@import` statements.
+ */
+async function validateEverythingIsLayered() {
+  const aggregates = new Set(['components.css', 'core.css'])
+  const cssRoot = resolve(packageRoot, 'src/css')
+  const stylesheetNames = (await readdir(cssRoot, { recursive: true }))
+    .map((name) => name.split(sep).join('/'))
+    .filter((name) => name.endsWith('.css') && !aggregates.has(name))
+
+  for (const name of stylesheetNames) {
+    const source = (await readFile(resolve(cssRoot, name), 'utf8')).replace(
+      /\/\*[\s\S]*?\*\//g,
+      (comment) => comment.replace(/[^\n]/g, ' '),
+    )
+    const unlayered = declarationsOutsideAnyLayer(source)
+    if (unlayered.length > 0) {
+      throw new Error(
+        `${name} declares ${[...new Set(unlayered)].join(', ')} outside any @layer block; ` +
+          'unlayered CSS beats every layered rule, so consumer overrides stop working',
+      )
+    }
+  }
+  return stylesheetNames.length
+}
+
+/**
+ * Only the block form `@layer name { ... }` opens a layer; the bare `@layer a, b, c;` statement in
+ * `tokens.css` declares an order and contains nothing.
+ */
+function declarationsOutsideAnyLayer(source) {
+  const found = []
+  let depth = -1
+  let outside = ''
+  for (let index = 0; index < source.length; index += 1) {
+    if (depth < 0 && /^@layer[^;{]*\{/.test(source.slice(index))) depth = 0
+    const character = source[index]
+    if (character === '{') {
+      if (depth >= 0) depth += 1
+    } else if (character === '}') {
+      if (depth >= 0) {
+        depth -= 1
+        if (depth === 0) {
+          depth = -1
+          continue
+        }
+      }
+    }
+    if (depth < 0) outside += character
+  }
+  for (const match of outside.matchAll(/(?:^|[{;])\s*((?:--)?[a-z][a-z0-9-]*)\s*:/gi)) {
+    found.push(match[1].toLowerCase())
+  }
+  return found
+}
 
 /**
  * The registry factories take positional arguments, so a new trailing field is easy to pass into the
