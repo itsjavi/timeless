@@ -99,6 +99,44 @@ Three tasks require it and are written as verification rather than assertion:
 - That the anchoring fallback branch can or cannot win by layer order instead of `:popover-open`
   specificity.
 
+## Scope corrections found during implementation
+
+### The false claim has three sites, not two, and the third sat outside the claim gate
+
+The plan's context and acceptance criteria name `docs/styling/css.mdx:49` and
+`docs/styling/theming.mdx:157`. A grep across every `.md`, `.mdx`, `.astro`, `.ts`, and `.mjs` file
+outside `node_modules`, `dist`, and `.local` found a third: `apps/web/src/pages/index.astro:134`
+advertised **"Optional CSS, layered and override-friendly"** in the landing page's House rules list.
+It has been replaced with "Replaceable theme, layered and override-friendly", which is true today —
+the phase-1 split is what made the theme a file you can swap — and stays true once core lands.
+
+Two adjacent statements are in tension rather than false, and are left for phase 6: `AGENTS.md:57`
+("Components must remain usable without Timeless CSS") and
+`.agents/skills/audit-component-contracts/SKILL.md:139`, which derives from it. Both are authoring
+rules about public anatomy staying in the consumer's markup, which the milestone does not
+contradict, but both say "Timeless CSS" where they mean the theme. `DESIGN.md:253` already says "the
+theme CSS" and needs no change — the difference between those wordings is the whole milestone.
+
+The interesting part is _why_ the third site was missed. `apps/web/scripts/validate-claims.mjs`
+exists precisely to stop the landing page advertising what the library does not do, and it did not
+catch this: it slices the page from `class="tin-shelf"` to the last `tin__label`, so it reads the
+"Modern ingredients" feature tins and nothing else. The House rules list is 23 lines further down,
+outside the slice. The claim was not un-gated by oversight in the prose; it was in the one region of
+the page the gate does not look at, and it is also the only one of the three sites outside `docs/`,
+so a documentation sweep would not have found it either.
+
+So the remedy is two-part. The wording is fixed, and `validate-claims.mjs` now also reads the
+house-rules list and fails when a principle pairs "optional" with a CSS noun. That check is
+deliberately narrower than the shelf's: the shelf demands proof for an open-ended set of claims,
+while this forbids the single claim the library cannot honour. It was confirmed to fire on the
+original wording and on "CSS is optional." and "The stylesheets are optional.", and confirmed not to
+fire on "Replaceable theme, layered and override-friendly.", "Optional runtime; components render
+before JavaScript.", or "Layered CSS you override without `!important`." — so it catches the claim
+without forbidding the honest neighbours.
+
+Credit where due: the third site was pointed out in review, not found by this implementation's own
+sweep, which had taken the plan's two named sites as the count.
+
 ## Decisions and constraints
 
 Four decisions were taken before the milestone opened rather than left to implementation.

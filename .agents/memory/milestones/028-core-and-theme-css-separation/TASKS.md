@@ -87,7 +87,19 @@
 ## 6. Document the three tiers
 
 - [ ] Rewrite `docs/styling/css.mdx:47-51` to state required core, required tokens, optional theme
-- [ ] Rewrite `docs/styling/theming.mdx:155-157` to the same three tiers
+- [ ] Rewrite `docs/styling/theming.mdx:155-165` to the same three tiers, including the "skip the
+      stylesheets" sentence at `:165` that the plan's line range stops short of
+- [x] Replace the home page's "Optional CSS, layered and override-friendly" house rule at
+      `apps/web/src/pages/index.astro:134` — a third claim site, outside the two the acceptance
+      criteria name
+- [x] Gate the house-rules list in `validate-claims.mjs`, which sliced only the tin shelf and so
+      never covered the list the claim was in
+- [x] Confirm that gate fires on the original wording and on two other phrasings, and does not fire
+      on the honest neighbouring claims
+- [ ] Reconcile `AGENTS.md:57` and `audit-component-contracts/SKILL.md:139`, which both require
+      components stay usable with the stylesheet absent — true of the theme, not of core
+- [ ] Once the MDX prose lands, decide whether the claim gate should cover the docs too, so the
+      wording cannot regress there either
 - [ ] Remove every claim that CSS is fully optional
 - [ ] Confirm every component page's **Styling** section lists its core stylesheet
 - [ ] State plainly that the component stylesheets and `theme-atmosphere.css` are Atmosphere's
