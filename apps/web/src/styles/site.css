@@ -254,10 +254,9 @@ input {
   display: none;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--chrome-border);
+  border: 0;
   border-radius: var(--chrome-radius);
-  background: var(--chrome-surface);
-  box-shadow: 3px 3px 0 var(--chrome-border);
+  background: none;
   padding: 8px;
   color: var(--chrome-ink);
 }
@@ -419,7 +418,7 @@ input {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  margin: 30px 0 0 var(--hero-copy-optical-indent);
+  margin: 30px 0 0 var(--hero-copy-optical-indent, 0px);
 }
 
 .button {
@@ -453,7 +452,7 @@ input {
   color: var(--chrome-ink);
 }
 
-main > section:not(.hero) {
+main > section:not(.hero, .not-found-hero) {
   position: relative;
   padding: clamp(56px, 8vw, 96px) var(--site-gutter);
 }
