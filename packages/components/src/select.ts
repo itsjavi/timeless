@@ -32,7 +32,12 @@ import {
   watch,
 } from '@timelessui/core'
 import { supportsAnchorPositioning, supportsNativePopover } from './capabilities'
-import { collectionNavigationTarget, isCollectionItemDisabled } from './collection'
+import {
+  collectionNavigationTarget,
+  createCollectionTypeahead,
+  isCollectionItemDisabled,
+  isCollectionTypeaheadEvent,
+} from './collection'
 import {
   applyFloatingPosition,
   clearFloatingPosition,
@@ -61,7 +66,6 @@ import {
   findOptionByPrefix,
   findOptionGroups,
   OPTION_SELECTOR,
-  OPTION_TYPEAHEAD_RESET_MS,
   visibleOptions,
   type OptionFilterMode,
   type OptionWindow,
@@ -183,8 +187,6 @@ const INPUT_SELECTOR = 'input[type="hidden"]'
 const LISTBOX_SELECTOR = '[role="listbox"]'
 const SURFACE_SELECTOR = "[data-ui-part~='surface']"
 
-let selectTypeaheadTimerFallback = 0
-
 export type UISelectElementConstructor = CustomElementConstructor & {
   elementName?: string
   formAssociated?: boolean
@@ -264,8 +266,7 @@ export function createSelectElementClass(targetWindow?: Window): UISelectElement
     #syncingOpen = false
     #syncingDefaultValue = false
     #triggerWiring: SelectTriggerWiring = 'authored'
-    #typeahead = ''
-    #typeaheadTimer = 0
+    #typeahead = createCollectionTypeahead(() => this.ownerDocument.defaultView)
     #valueDirty = false
 
     /** Every selected value, in DOM order. Assign it to replace the whole selection. */
@@ -339,7 +340,7 @@ export function createSelectElementClass(targetWindow?: Window): UISelectElement
     }
 
     protected override disconnected(): void {
-      this.clearTypeahead()
+      this.#typeahead.clear()
     }
 
     formDisabledCallback(disabled: boolean): void {
@@ -561,7 +562,7 @@ export function createSelectElementClass(targetWindow?: Window): UISelectElement
         return
       }
 
-      if (!typingInSearch && isTypeaheadEvent(event)) {
+      if (!typingInSearch && isCollectionTypeaheadEvent(event)) {
         event.preventDefault()
         this.handleTypeahead(event)
       }
@@ -572,13 +573,11 @@ export function createSelectElementClass(targetWindow?: Window): UISelectElement
      * is what the native control does; with the surface open it only moves the highlight.
      */
     private handleTypeahead(event: KeyboardEvent): void {
-      this.#typeahead += event.key
-      this.scheduleTypeaheadReset()
-
+      const search = this.#typeahead.push(event.key)
       const navigable = this.navigableOptions
       const from =
         this.#activeIndex === null ? -1 : navigable.indexOf(this.options[this.#activeIndex]!)
-      const index = findOptionByPrefix(navigable, this.#typeahead, from)
+      const index = findOptionByPrefix(navigable, search, from)
       const match = index === null ? null : navigable[index]
       if (!match) return
 
@@ -850,25 +849,6 @@ export function createSelectElementClass(targetWindow?: Window): UISelectElement
       return null
     }
 
-    private scheduleTypeaheadReset(): void {
-      this.clearTypeaheadTimer()
-      const ownerWindow = this.ownerDocument.defaultView
-      this.#typeaheadTimer = ownerWindow
-        ? ownerWindow.setTimeout(() => this.clearTypeahead(), OPTION_TYPEAHEAD_RESET_MS)
-        : ++selectTypeaheadTimerFallback
-    }
-
-    private clearTypeahead(): void {
-      this.clearTypeaheadTimer()
-      this.#typeahead = ''
-    }
-
-    private clearTypeaheadTimer(): void {
-      if (!this.#typeaheadTimer) return
-      this.ownerDocument.defaultView?.clearTimeout(this.#typeaheadTimer)
-      this.#typeaheadTimer = 0
-    }
-
     /** Whichever field holds DOM focus is the one that names the active option. */
     private get activeDescendantController(): HTMLElement | null {
       return (this.searchable && this.search) || this.trigger
@@ -1049,12 +1029,6 @@ export function selectOptionValue(option: SelectOptionLike): string {
 
 function sameValues(left: readonly string[], right: readonly string[]): boolean {
   return left.length === right.length && left.every((value, index) => value === right[index])
-}
-
-function isTypeaheadEvent(event: KeyboardEvent): boolean {
-  return (
-    event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
-  )
 }
 
 function invalidSelectParts(parts: SelectEnhancementParts): readonly string[] {

@@ -130,6 +130,97 @@ export function collectionItemText(item: CollectionItemLike): string {
   return normalizeCollectionText(item.getAttribute('aria-label') ?? item.textContent ?? '')
 }
 
+/**
+ * The idle window after which a typeahead buffer empties.
+ *
+ * Listbox, Select, and Menu had each settled on 700ms independently. A debounce window is exactly
+ * the value that drifts unnoticed once there is more than one of it, so there is one.
+ */
+export const COLLECTION_TYPEAHEAD_RESET_MS = 700
+
+export type CollectionTypeaheadEventLike = {
+  readonly key: string
+  readonly altKey: boolean
+  readonly ctrlKey: boolean
+  readonly metaKey: boolean
+}
+
+/**
+ * Whether a key event is the printable character the APG's typeahead behavior consumes.
+ *
+ * Shift is deliberately not a disqualifier: `Shift+A` produces a printable `A`, and an option named
+ * "Apple" is what the user is reaching for. Every other modifier means the key belongs to a
+ * shortcut, not to a search.
+ */
+export function isCollectionTypeaheadEvent(event: CollectionTypeaheadEventLike): boolean {
+  return event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey
+}
+
+/** The `setTimeout`/`clearTimeout` pair a window provides, as a structural type. */
+export type CollectionTypeaheadTimers = {
+  setTimeout(handler: () => void, timeout: number): number
+  clearTimeout(handle: number): void
+}
+
+export type CollectionTypeahead = {
+  /** Appends the typed character, restarts the idle window, and returns the buffer. */
+  push(key: string): string
+  /** Empties the buffer and cancels the idle window. */
+  clear(): void
+  readonly value: string
+}
+
+/**
+ * A distinct non-zero handle for a collection with no window to schedule against, so `clear()`
+ * still behaves as it would with a real timer.
+ */
+let typeaheadTimerFallback = 0
+
+/**
+ * The typeahead buffer and its clock, shared by every surface that types to navigate.
+ *
+ * What a surface does with the buffer is policy and stays at the call site: Listbox moves the roving
+ * focus, a closed Select selects the match without opening, Menu resolves against menu-item text.
+ * What had been copied three times is this — the string that accumulates and the timer that empties
+ * it — and three copies is how the predicate came to disagree about Shift.
+ *
+ * `resolveTimers` is called per operation rather than captured, because an element can be adopted
+ * into another document between one keystroke and the next.
+ */
+export function createCollectionTypeahead(
+  resolveTimers: () => CollectionTypeaheadTimers | null | undefined,
+): CollectionTypeahead {
+  let buffer = ''
+  let timer = 0
+
+  const cancel = (): void => {
+    if (!timer) return
+    resolveTimers()?.clearTimeout(timer)
+    timer = 0
+  }
+
+  const clear = (): void => {
+    cancel()
+    buffer = ''
+  }
+
+  return {
+    push(key) {
+      buffer += key
+      cancel()
+      const timers = resolveTimers()
+      timer = timers
+        ? timers.setTimeout(clear, COLLECTION_TYPEAHEAD_RESET_MS)
+        : ++typeaheadTimerFallback
+      return buffer
+    },
+    clear,
+    get value() {
+      return buffer
+    },
+  }
+}
+
 export function collectionTextMatches(
   candidate: string,
   search: string,

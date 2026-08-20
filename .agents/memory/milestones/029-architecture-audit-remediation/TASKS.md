@@ -70,17 +70,19 @@
 
 ## 4. One typeahead state machine
 
-- [ ] Lift `isTypeaheadEvent` into `collection.ts` or `options.ts` as a single definition
-- [ ] Lift the `#typeahead` buffer, the `#typeaheadTimer`, and the module-level timer fallback into
+- [x] Lift `isTypeaheadEvent` into `collection.ts` or `options.ts` as a single definition — it went
+      to `collection.ts` as `isCollectionTypeaheadEvent`, since Menu is not an option surface
+- [x] Lift the `#typeahead` buffer, the `#typeaheadTimer`, and the module-level timer fallback into
       that module as one state machine with policy hooks
-- [ ] Confirm `listbox.ts` and `select.ts` define neither the predicate nor the buffer
-- [ ] Confirm `menu.ts` consumes the shared predicate while keeping its own key-handling policy
-- [ ] Confirm Select still selects without opening on a printable character when closed
-- [ ] Confirm Listbox typeahead behavior is unchanged
-- [ ] Confirm the debounce window is declared once
-- [ ] Run `pnpm -F @timelessui/components run test`
-- [ ] Run `pnpm test:e2e` and confirm the collection and menu specs pass
-- [ ] Run the axe sweep in `apps/e2e/tests/apps/stories/a11y.spec.ts`
+- [x] Confirm `listbox.ts` and `select.ts` define neither the predicate nor the buffer
+- [x] Confirm `menu.ts` consumes the shared predicate while keeping its own key-handling policy
+- [x] Confirm Select still selects without opening on a printable character when closed
+- [x] Confirm Listbox typeahead behavior is unchanged
+- [x] Confirm the debounce window is declared once
+- [x] Run `pnpm -F @timelessui/components run test`
+- [x] Run `pnpm test:e2e` and confirm the collection and menu specs pass — 29 passed, including a
+      new Select typeahead-policy test
+- [x] Run the axe sweep in `apps/e2e/tests/apps/stories/a11y.spec.ts`
 
 ## 5. Account for the bundle weight
 

@@ -29,7 +29,9 @@ import {
 } from '@timelessui/core'
 import {
   collectionNavigationTarget,
+  createCollectionTypeahead,
   isCollectionItemDisabled,
+  isCollectionTypeaheadEvent,
   syncRovingTabIndex,
 } from './collection'
 import {
@@ -41,7 +43,6 @@ import {
   optionLabel,
   optionPageWindow,
   OPTION_SELECTOR,
-  OPTION_TYPEAHEAD_RESET_MS,
   visibleOptions,
   type OptionFilterMode,
   type OptionWindow,
@@ -147,8 +148,6 @@ const PAGE_STATUS_SELECTOR = "[data-ui-part~='page-status']"
 /** A listbox nested inside one of these already has an owner for its form value. */
 const OWNING_COLLECTION_SELECTOR = 'ui-select, ui-combobox'
 
-let typeaheadTimerFallback = 0
-
 export type UIListboxElementConstructor = CustomElementConstructor & {
   elementName?: string
   formAssociated?: boolean
@@ -190,8 +189,7 @@ export function createListboxElementClass(targetWindow?: Window): UIListboxEleme
     #fieldsetDisabled = false
     #page = 0
     #syncingDefaultValue = false
-    #typeahead = ''
-    #typeaheadTimer = 0
+    #typeahead = createCollectionTypeahead(() => this.ownerDocument.defaultView)
     #valueDirty = false
 
     /** Every selected value, in DOM order. Assign it to replace the whole selection. */
@@ -261,7 +259,7 @@ export function createListboxElementClass(targetWindow?: Window): UIListboxEleme
     }
 
     protected override disconnected(): void {
-      this.clearTypeahead()
+      this.#typeahead.clear()
     }
 
     /** Called by the browser when an ancestor `<fieldset>` is disabled, which has no attribute here. */
@@ -389,14 +387,12 @@ export function createListboxElementClass(targetWindow?: Window): UIListboxEleme
         return
       }
 
-      if (isTypeaheadEvent(event)) {
-        this.#typeahead += event.key
+      if (isCollectionTypeaheadEvent(event)) {
         const typeaheadIndex = findOptionByPrefix(
           navigable,
-          this.#typeahead,
+          this.#typeahead.push(event.key),
           navigable.indexOf(option),
         )
-        this.scheduleTypeaheadReset()
         if (typeaheadIndex !== null) {
           event.preventDefault()
           this.moveTo(navigable[typeaheadIndex])
@@ -510,25 +506,6 @@ export function createListboxElementClass(targetWindow?: Window): UIListboxEleme
       if (this.closestTarget<HTMLElement>(event, PAGE_PREVIOUS_SELECTOR)) return -1
       if (this.closestTarget<HTMLElement>(event, PAGE_NEXT_SELECTOR)) return 1
       return null
-    }
-
-    private scheduleTypeaheadReset(): void {
-      this.clearTypeaheadTimer()
-      const ownerWindow = this.ownerDocument.defaultView
-      this.#typeaheadTimer = ownerWindow
-        ? ownerWindow.setTimeout(() => this.clearTypeahead(), OPTION_TYPEAHEAD_RESET_MS)
-        : ++typeaheadTimerFallback
-    }
-
-    private clearTypeahead(): void {
-      this.clearTypeaheadTimer()
-      this.#typeahead = ''
-    }
-
-    private clearTypeaheadTimer(): void {
-      if (!this.#typeaheadTimer) return
-      this.ownerDocument.defaultView?.clearTimeout(this.#typeaheadTimer)
-      this.#typeaheadTimer = 0
     }
 
     /**
@@ -957,12 +934,6 @@ function isValidActiveListboxIndex(
     activeIndex < options.length &&
     !options[activeIndex]!.hidden &&
     !isCollectionItemDisabled(options[activeIndex]!)
-  )
-}
-
-function isTypeaheadEvent(event: KeyboardEvent): boolean {
-  return (
-    event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
   )
 }
 

@@ -1,5 +1,9 @@
 import { attr, createId, createUIElementClass, element, listen, watch } from '@timelessui/core'
-import { collectionItemText } from './collection'
+import {
+  collectionItemText,
+  createCollectionTypeahead,
+  isCollectionTypeaheadEvent,
+} from './collection'
 import { syncFloatingAnchor } from './floating'
 import { queryOwnedParts } from './parts'
 import { menuOrientations } from './values/menu'
@@ -70,9 +74,7 @@ const MENU_GROUP_SELECTOR = "[data-ui-part~='group']"
 const MENU_GROUP_LABEL_SELECTOR = "[data-ui-part~='group-label']"
 /** An item's radio scope: its authored group, or the menu itself when it has none. */
 const MENU_GROUP_SCOPE_SELECTOR = "[data-ui-part~='group'], [role='group']"
-const TYPEAHEAD_RESET_MS = 700
 
-let typeaheadTimerFallback = 0
 let nextMenuSubmenuAnchorId = 0
 
 export type UIMenuElementConstructor = CustomElementConstructor & {
@@ -89,8 +91,7 @@ export function createMenuElementClass(targetWindow?: Window): UIMenuElementCons
   class UIMenuElement extends UIElementBase {
     @attr accessor orientation = ''
 
-    #typeahead = ''
-    #typeaheadTimer = 0
+    #typeahead = createCollectionTypeahead(() => this.ownerDocument.defaultView)
     #instanceId = ''
 
     protected override connected(): void {
@@ -98,7 +99,7 @@ export function createMenuElementClass(targetWindow?: Window): UIMenuElementCons
     }
 
     protected override disconnected(): void {
-      this.clearTypeahead()
+      this.#typeahead.clear()
     }
 
     private enhance(): void {
@@ -216,10 +217,12 @@ export function createMenuElementClass(targetWindow?: Window): UIMenuElementCons
         return
       }
 
-      if (isTypeaheadEvent(event)) {
-        this.#typeahead += event.key
-        const typeaheadIndex = menuTypeaheadTarget(items, currentIndex, this.#typeahead)
-        this.scheduleTypeaheadReset()
+      if (isCollectionTypeaheadEvent(event)) {
+        const typeaheadIndex = menuTypeaheadTarget(
+          items,
+          currentIndex,
+          this.#typeahead.push(event.key),
+        )
         if (typeaheadIndex !== null) {
           event.preventDefault()
           this.moveTo(typeaheadIndex)
@@ -369,25 +372,6 @@ export function createMenuElementClass(targetWindow?: Window): UIMenuElementCons
     private eventItem(event: Event): HTMLElement | null {
       const item = this.closestTarget<HTMLElement>(event, MENU_ITEM_SELECTOR)
       return item && this.items.includes(item) ? item : null
-    }
-
-    private scheduleTypeaheadReset(): void {
-      this.clearTypeaheadTimer()
-      const ownerWindow = this.ownerDocument.defaultView
-      this.#typeaheadTimer = ownerWindow
-        ? ownerWindow.setTimeout(() => this.clearTypeahead(), TYPEAHEAD_RESET_MS)
-        : ++typeaheadTimerFallback
-    }
-
-    private clearTypeahead(): void {
-      this.clearTypeaheadTimer()
-      this.#typeahead = ''
-    }
-
-    private clearTypeaheadTimer(): void {
-      if (!this.#typeaheadTimer) return
-      this.ownerDocument.defaultView?.clearTimeout(this.#typeaheadTimer)
-      this.#typeaheadTimer = 0
     }
 
     private get instanceId(): string {
@@ -646,10 +630,6 @@ function adjacentMenuItemIndex(
 ): number | null {
   if (items.length === 0) return null
   return (currentIndex + direction + items.length) % items.length
-}
-
-function isTypeaheadEvent(event: KeyboardEvent): boolean {
-  return event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey
 }
 
 function isRightToLeft(element: HTMLElement): boolean {

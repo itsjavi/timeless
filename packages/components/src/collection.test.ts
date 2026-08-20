@@ -1,14 +1,18 @@
 import { describe, expect, it } from 'vitest'
 import {
+  COLLECTION_TYPEAHEAD_RESET_MS,
   collectionItemText,
   collectionNavigationTarget,
   collectionTextMatches,
+  createCollectionTypeahead,
   findCollectionItemByTextPrefix,
   gridCollectionNavigationTarget,
   isCollectionItemDisabled,
+  isCollectionTypeaheadEvent,
   resolveCollectionOrientation,
   syncRovingTabIndex,
   type CollectionItemLike,
+  type CollectionTypeaheadTimers,
 } from './collection'
 
 class FakeCollectionItem implements CollectionItemLike {
@@ -144,5 +148,95 @@ describe('resolveCollectionOrientation', () => {
     expect(resolveCollectionOrientation('both')).toBe('both')
     expect(resolveCollectionOrientation('inline')).toBe('vertical')
     expect(resolveCollectionOrientation(null, 'horizontal')).toBe('horizontal')
+  })
+})
+
+describe('isCollectionTypeaheadEvent', () => {
+  const event = (key: string, modifiers: Record<string, boolean> = {}) => ({
+    key,
+    altKey: false,
+    ctrlKey: false,
+    metaKey: false,
+    ...modifiers,
+  })
+
+  it('accepts a printable character, shifted or not', () => {
+    expect(isCollectionTypeaheadEvent(event('a'))).toBe(true)
+    expect(isCollectionTypeaheadEvent(event('A'))).toBe(true)
+    expect(isCollectionTypeaheadEvent(event('?'))).toBe(true)
+  })
+
+  it('rejects named keys and shortcut modifiers', () => {
+    expect(isCollectionTypeaheadEvent(event('ArrowDown'))).toBe(false)
+    expect(isCollectionTypeaheadEvent(event('a', { metaKey: true }))).toBe(false)
+    expect(isCollectionTypeaheadEvent(event('a', { ctrlKey: true }))).toBe(false)
+    expect(isCollectionTypeaheadEvent(event('a', { altKey: true }))).toBe(false)
+  })
+})
+
+describe('createCollectionTypeahead', () => {
+  function fakeTimers() {
+    const pending = new Map<number, () => void>()
+    let nextHandle = 0
+    const timers: CollectionTypeaheadTimers = {
+      setTimeout(handler) {
+        nextHandle += 1
+        pending.set(nextHandle, handler)
+        return nextHandle
+      },
+      clearTimeout(handle) {
+        pending.delete(handle)
+      },
+    }
+    return { timers, pending, run: () => pending.forEach((handler) => handler()) }
+  }
+
+  it('accumulates typed characters', () => {
+    const { timers } = fakeTimers()
+    const typeahead = createCollectionTypeahead(() => timers)
+
+    expect(typeahead.push('a')).toBe('a')
+    expect(typeahead.push('p')).toBe('ap')
+    expect(typeahead.value).toBe('ap')
+  })
+
+  it('empties the buffer when the idle window elapses', () => {
+    const { timers, run } = fakeTimers()
+    const typeahead = createCollectionTypeahead(() => timers)
+
+    typeahead.push('a')
+    run()
+    expect(typeahead.value).toBe('')
+  })
+
+  it('restarts the idle window on every keystroke, so only the last timer survives', () => {
+    const { timers, pending } = fakeTimers()
+    const typeahead = createCollectionTypeahead(() => timers)
+
+    typeahead.push('a')
+    typeahead.push('p')
+    expect(pending.size).toBe(1)
+  })
+
+  it('clears the pending timer along with the buffer', () => {
+    const { timers, pending } = fakeTimers()
+    const typeahead = createCollectionTypeahead(() => timers)
+
+    typeahead.push('a')
+    typeahead.clear()
+    expect(typeahead.value).toBe('')
+    expect(pending.size).toBe(0)
+  })
+
+  it('still accumulates and clears with no window to schedule against', () => {
+    const typeahead = createCollectionTypeahead(() => null)
+
+    expect(typeahead.push('a')).toBe('a')
+    typeahead.clear()
+    expect(typeahead.value).toBe('')
+  })
+
+  it('declares one idle window', () => {
+    expect(COLLECTION_TYPEAHEAD_RESET_MS).toBe(700)
   })
 })
