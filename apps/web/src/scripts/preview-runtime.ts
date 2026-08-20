@@ -13,6 +13,8 @@ const loaders: Record<string, () => Promise<ElementDefiner>> = {
   'ui-menu': async () => (await import('@timelessui/components/define/ui-menu')).defineMenuElement,
   'ui-menu-button': async () =>
     (await import('@timelessui/components/define/ui-menu-button')).defineMenuButtonElement,
+  'ui-context-menu': async () =>
+    (await import('@timelessui/components/define/ui-context-menu')).defineContextMenuElement,
   'ui-toolbar': async () =>
     (await import('@timelessui/components/define/ui-toolbar')).defineToolbarElement,
   'ui-radio-group': async () =>

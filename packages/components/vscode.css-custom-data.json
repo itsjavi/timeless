@@ -842,6 +842,16 @@
       ]
     },
     {
+      "name": "--ui-sheet-drag-offset",
+      "description": "How far the panel has been dragged along its own axis, written as a length while a swipe is in progress and cleared on release. The stylesheet turns it into a `translate`; setting it yourself only moves the panel. Set on `ui-sheet`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
       "name": "--ui-floating-offset",
       "description": "Gap between the trigger and the surface. Set on `ui-popover`.",
       "references": [
@@ -894,6 +904,36 @@
     {
       "name": "--ui-floating-offset",
       "description": "Gap between the trigger and the menu surface. Set on `ui-menu-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-context-menu-x",
+      "description": "Horizontal position the surface opens at, written at runtime from the pointer or from the focused element. The stylesheet turns it into a clamped `left`. Set on `ui-context-menu`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-context-menu-y",
+      "description": "Vertical position, the same way. Together these are the whole positioning input: there is no anchor element, because a pointer is not an element. Set on `ui-context-menu`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-context-menu-inset",
+      "description": "Minimum gap kept between the surface and the viewport edge when the coordinates would push it off screen. Set on `ui-context-menu`.",
       "references": [
         {
           "name": "Component reference",

@@ -13,20 +13,43 @@ export type MenuItem = {
   readonly disabled?: boolean
   readonly checked?: boolean
   readonly children?: readonly MenuItem[]
+  /**
+   * A checkable command. `checkbox` stands alone; `radio` clears the other radios in its group, and
+   * `aria-checked` on all of them is Timeless's to write from here on.
+   */
+  readonly checkable?: 'checkbox' | 'radio'
+  /** Renders a divider before this item. */
+  readonly separatorBefore?: boolean
+}
+
+/** A `role="group"` of related items, named by its `group-label`. */
+export type MenuGroup = {
+  readonly label: string
+  readonly items: readonly MenuItem[]
 }
 
 export type MenuButtonProps = {
   readonly id: string
   readonly label: string
-  readonly items: readonly MenuItem[]
+  readonly items?: readonly MenuItem[]
+  readonly groups?: readonly MenuGroup[]
   readonly placement?: FloatingPlacement
 }
 
 export type MenuProps = {
   readonly label: string
-  readonly items: readonly MenuItem[]
+  readonly items?: readonly MenuItem[]
+  readonly groups?: readonly MenuGroup[]
   readonly orientation?: MenuOrientation
   readonly role?: 'menu' | 'menubar'
+}
+
+export type ContextMenuProps = {
+  readonly id: string
+  readonly label: string
+  readonly targetLabel: string
+  readonly items?: readonly MenuItem[]
+  readonly groups?: readonly MenuGroup[]
 }
 
 export type ToolbarProps = {
@@ -130,7 +153,7 @@ export function createMenuButton(props: MenuButtonProps): string {
   <ui-menu id="${escapeAttribute(props.id)}" role="menu" popover="auto" aria-label="${escapeAttribute(
     props.label,
   )}">
-    ${props.items.map(createMenuItem).join('\n    ')}
+    ${createMenuContents(props, '    ')}
   </ui-menu>
 </ui-menu-button>`
 }
@@ -140,8 +163,47 @@ export function createMenu(props: MenuProps): string {
   const role = props.role ?? 'menu'
 
   return `<ui-menu${orientation} role="${role}" aria-label="${escapeAttribute(props.label)}">
-  ${props.items.map(createMenuItem).join('\n  ')}
+  ${createMenuContents(props, '  ')}
 </ui-menu>`
+}
+
+/**
+ * A context menu is a Menu surface plus a region to right-click. It is the one component with no
+ * markup-only fallback: without JavaScript the browser shows its own menu and this one stays hidden,
+ * so nothing in here may be the only way to reach a command.
+ */
+export function createContextMenu(props: ContextMenuProps): string {
+  const id = escapeAttribute(props.id)
+
+  // The target is a named, focusable region so the keyboard route exists. In real markup it is
+  // usually something that already has a role and a name — a table row, a gridcell, a treeitem.
+  return `<ui-context-menu>
+  <div data-ui-part="target" role="group" aria-label="${escapeAttribute(props.targetLabel)}">
+    ${escapeHtml(props.targetLabel)}
+  </div>
+  <ui-menu id="${id}" role="menu" popover="auto" aria-label="${escapeAttribute(props.label)}">
+    ${createMenuContents(props, '    ')}
+  </ui-menu>
+</ui-context-menu>`
+}
+
+function createMenuContents(
+  props: { readonly items?: readonly MenuItem[]; readonly groups?: readonly MenuGroup[] },
+  indent: string,
+): string {
+  const blocks = (props.items ?? []).map((item) => createMenuItem(item, indent))
+  for (const group of props.groups ?? []) {
+    if (blocks.length > 0) blocks.push('<hr data-ui-part="separator" role="separator">')
+    blocks.push(createMenuGroup(group, indent))
+  }
+  return blocks.join(`\n${indent}`)
+}
+
+function createMenuGroup(group: MenuGroup, indent: string): string {
+  return `<div data-ui-part="group">
+${indent}  <p data-ui-part="group-label">${escapeHtml(group.label)}</p>
+${indent}  ${group.items.map((item) => createMenuItem(item, `${indent}  `)).join(`\n${indent}  `)}
+${indent}</div>`
 }
 
 export function createToolbar(props: ToolbarProps): string {
@@ -371,24 +433,36 @@ export function createListbox(props: ListboxProps): string {
 </ui-listbox>`
 }
 
-function createMenuItem(item: MenuItem): string {
+function createMenuItem(item: MenuItem, indent = ''): string {
   const disabled = item.disabled ? ' disabled' : ''
-  const role = item.checked ? ' role="menuitemcheckbox" aria-checked="true"' : ' role="menuitem"'
+  const role = ` role="${menuItemRole(item)}"`
+  const checked = item.checkable || item.checked ? ` aria-checked="${item.checked === true}"` : ''
+  const separator = item.separatorBefore
+    ? `<hr data-ui-part="separator" role="separator">\n${indent}`
+    : ''
 
   if (item.children?.length) {
     const submenuId = `submenu-${item.label.toLocaleLowerCase().replace(/\s+/g, '-')}`
 
-    return `<button${role} type="button"${disabled} aria-controls="${escapeAttribute(
+    // `aria-haspopup`, `aria-controls`, and `aria-expanded` are Timeless's to write; the trigger
+    // only has to name its submenu, or sit immediately before it.
+    return `${separator}<button${role} type="button"${disabled} aria-controls="${escapeAttribute(
       submenuId,
-    )}" aria-haspopup="menu" aria-expanded="false">${escapeHtml(item.label)}</button>
-<ui-menu id="${escapeAttribute(submenuId)}" popover="auto" aria-label="${escapeAttribute(
+    )}">${escapeHtml(item.label)}</button>
+${indent}<ui-menu id="${escapeAttribute(submenuId)}" popover="auto" aria-label="${escapeAttribute(
       item.label,
     )}">
-  ${item.children.map(createMenuItem).join('\n  ')}
-</ui-menu>`
+${indent}  ${item.children.map((child) => createMenuItem(child, `${indent}  `)).join(`\n${indent}  `)}
+${indent}</ui-menu>`
   }
 
-  return `<button${role} type="button"${disabled}>${escapeHtml(item.label)}</button>`
+  return `${separator}<button${role} type="button"${disabled}${checked}>${escapeHtml(item.label)}</button>`
+}
+
+function menuItemRole(item: MenuItem): string {
+  if (item.checkable === 'radio') return 'menuitemradio'
+  if (item.checkable === 'checkbox' || item.checked) return 'menuitemcheckbox'
+  return 'menuitem'
 }
 
 function createRadioChoice(name: string, item: MenuItem, value: string | undefined): string {

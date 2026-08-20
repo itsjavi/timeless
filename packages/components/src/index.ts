@@ -109,16 +109,26 @@ export {
 } from './dialog'
 
 export {
+  canScrollInAxis,
   enhanceSheetParts,
   focusInitialSheetTarget,
   isSheetPosition,
   resolveSheetPosition,
+  SHEET_DRAG_MINIMUM,
+  SHEET_DRAG_RATIO,
+  sheetDismissDirection,
+  sheetDragAxis,
+  sheetDragProgress,
   sheetPositions,
+  shouldDismissSheetDrag,
   syncSheetExpanded,
   syncSheetModal,
   UISheetElement,
   type NativeSheetDialogLike,
   type SheetDismissSource,
+  type SheetDragAxis,
+  type SheetDragRect,
+  type SheetDragViewport,
   type SheetElementLike,
   type SheetEnhancementOptions,
   type SheetEnhancementParts,
@@ -126,9 +136,19 @@ export {
   type SheetEventDetail,
   type SheetEventSource,
   type SheetPosition,
+  type SheetScrollableLike,
   type SheetTriggerLike,
   type SheetTriggerWiring,
 } from './sheet'
+
+export {
+  nameSurfaceFromParts,
+  SURFACE_DESCRIPTION_SELECTOR,
+  SURFACE_TITLE_SELECTOR,
+  type NamedSurfaceLike,
+  type SurfaceLabelLike,
+  type SurfaceNamingParts,
+} from './overlay-naming'
 
 export {
   enhanceHoverCardParts,
@@ -159,24 +179,49 @@ export {
 } from './popover'
 
 export {
+  applyMenuItemChecked,
   enhanceMenuParts,
+  findMenuGroups,
   findMenuItems,
+  firstEnabledMenuItemIndex,
   isMenuItemDisabled,
+  lastEnabledMenuItemIndex,
+  menuCheckableRole,
+  menuInlineDirection,
   menuNavigationTarget,
   menuOrientations,
   menuTypeaheadTarget,
+  mirrorInlineKey,
   resolveMenuOrientation,
   resolveMenuRole,
   syncMenuRovingTabIndex,
   UIMenuElement,
+  type MenuCheckableRole,
+  type MenuCheckedDetail,
   type MenuEnhancementOptions,
   type MenuEnhancementParts,
   type MenuEnhancementResult,
+  type MenuGroupLike,
   type MenuHostLike,
   type MenuItemLike,
   type MenuOrientation,
   type MenuRole,
 } from './menu'
+
+export {
+  contextMenuPointFromEvent,
+  contextMenuPointFromRect,
+  enhanceContextMenuParts,
+  isContextMenuKey,
+  UIContextMenuElement,
+  type ContextMenuElementLike,
+  type ContextMenuEnhancementOptions,
+  type ContextMenuEnhancementParts,
+  type ContextMenuEnhancementResult,
+  type ContextMenuOpenSource,
+  type ContextMenuPoint,
+  type ContextMenuToggleDetail,
+} from './context-menu'
 
 export {
   enhanceMenuButtonParts,

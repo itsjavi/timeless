@@ -1,6 +1,6 @@
-import type { Locator } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { expect, test } from '../../shared/fixtures'
-import { expectRouteDocumentReady } from '../../shared/test-utils'
+import { expectNoPageOverflow, expectRouteDocumentReady } from '../../shared/test-utils'
 
 test.describe('stories collection navigation', () => {
   test('opens menu button and supports menu keyboard navigation', async ({ page }) => {
@@ -452,3 +452,274 @@ async function expectMenuAlignedToTrigger(trigger: Locator, menu: Locator): Prom
   expect(menuBox).not.toBeNull()
   expect(Math.abs((menuBox?.x ?? 0) - (triggerBox?.x ?? 0))).toBeLessThan(2)
 }
+
+/**
+ * Milestone 024: menu anatomy that used to be invisible to the JavaScript.
+ *
+ * Discovery walked direct children only, so wrapping items in a `group` lost every one of them, and
+ * the stylesheet drew `aria-checked` while nothing wrote it. Both are contract-level, so both are
+ * asserted through the public anatomy rather than through internals.
+ */
+test.describe('stories menu groups, checkable items, and submenus', () => {
+  test('navigates and types through grouped items and skips separators', async ({ page }) => {
+    await page.goto('/stories/library-navigation-menu--grouped-and-checkable/')
+    await expectRouteDocumentReady(page)
+
+    const menu = page.locator('ui-menu')
+    await expect(menu.getByRole('group', { name: 'View' })).toBeVisible()
+    await expect(menu.getByRole('group', { name: 'Density' })).toBeVisible()
+
+    // Three loose items, then four grouped ones. Discovery reaching the grouped four is the fix.
+    const items = menu.locator("[role^='menuitem']")
+    await expect(items).toHaveCount(7)
+
+    await page.getByRole('menuitem', { name: 'Duplicate' }).focus()
+    await page.keyboard.press('End')
+    await expect(page.getByRole('menuitemradio', { name: 'Compact' })).toBeFocused()
+
+    // Typeahead reaches a grouped item too, which it could not while discovery stopped at the
+    // wrapper. The separators between the groups are skipped by both routes, because a separator
+    // carries no menu-item role and so is not an item at all.
+    await page.keyboard.press('Home')
+    await page.keyboard.press('s')
+    await expect(page.getByRole('menuitemcheckbox', { name: 'Show grid' })).toBeFocused()
+  })
+
+  test('toggles a checkbox item and switches radios only inside their own group', async ({
+    page,
+  }) => {
+    await page.goto('/stories/library-navigation-menu--grouped-and-checkable/')
+    await expectRouteDocumentReady(page)
+
+    const grid = page.getByRole('menuitemcheckbox', { name: 'Show grid' })
+    const rulers = page.getByRole('menuitemcheckbox', { name: 'Show rulers' })
+    const comfortable = page.getByRole('menuitemradio', { name: 'Comfortable' })
+    const compact = page.getByRole('menuitemradio', { name: 'Compact' })
+
+    await rulers.click()
+    await expect(rulers).toHaveAttribute('aria-checked', 'true')
+    await expect(grid).toHaveAttribute('aria-checked', 'true')
+
+    // Enter goes through the same activation path as a click, so it must toggle the same way.
+    await rulers.press('Enter')
+    await expect(rulers).toHaveAttribute('aria-checked', 'false')
+
+    await compact.click()
+    await expect(compact).toHaveAttribute('aria-checked', 'true')
+    await expect(comfortable).toHaveAttribute('aria-checked', 'false')
+    // The checkboxes are a different group, and radios must not reach across.
+    await expect(grid).toHaveAttribute('aria-checked', 'true')
+  })
+
+  test('lets a consumer keep owning aria-checked by cancelling the proposal', async ({ page }) => {
+    await page.goto('/stories/library-navigation-menu--grouped-and-checkable/')
+    await expectRouteDocumentReady(page)
+
+    await page
+      .locator('ui-menu')
+      .evaluate((menu) =>
+        menu.addEventListener('ui-before-change', (event) => event.preventDefault()),
+      )
+
+    const rulers = page.getByRole('menuitemcheckbox', { name: 'Show rulers' })
+    await rulers.click()
+    await expect(rulers).toHaveAttribute('aria-checked', 'false')
+  })
+
+  test('opens and closes a submenu two levels deep with the inline arrows', async ({ page }) => {
+    await page.goto('/stories/library-navigation-menu--menubar/')
+    await expectRouteDocumentReady(page)
+
+    const fileSubmenu = page.locator('#submenu-file')
+    const exportSubmenu = page.locator('#submenu-export-as')
+    const exportItem = page.getByRole('menuitem', { name: 'Export as' })
+
+    await page.getByRole('menuitem', { exact: true, name: 'File' }).click()
+    await expect(fileSubmenu).toBeVisible()
+    await expect(exportItem).toHaveAttribute('aria-haspopup', 'menu')
+    await expect(exportItem).toHaveAttribute('aria-expanded', 'false')
+
+    await exportItem.focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(exportSubmenu).toBeVisible()
+    await expect(exportItem).toHaveAttribute('aria-expanded', 'true')
+    await expect(page.getByRole('menuitem', { name: 'PNG' })).toBeFocused()
+
+    // Inward from depth two returns to the trigger rather than moving along the bar.
+    await page.keyboard.press('ArrowLeft')
+    await expect(exportSubmenu).toBeHidden()
+    await expect(exportItem).toBeFocused()
+    await expect(exportItem).toHaveAttribute('aria-expanded', 'false')
+    await expect(fileSubmenu).toBeVisible()
+  })
+
+  /**
+   * A submenu opens toward the inline end, so under `dir="rtl"` the two keys trade places. Asserted
+   * at depth two, where the only thing the inline arrows can do is open and close: at depth one they
+   * also travel along the menubar, which is a different — and equally direction-aware — behavior.
+   */
+  test('swaps the submenu arrows under a right-to-left writing direction', async ({ page }) => {
+    await page.goto('/stories/library-navigation-menu--menubar/')
+    await expectRouteDocumentReady(page)
+    await page.locator('html').evaluate((html) => html.setAttribute('dir', 'rtl'))
+
+    const exportSubmenu = page.locator('#submenu-export-as')
+    const exportItem = page.getByRole('menuitem', { name: 'Export as' })
+
+    await page.getByRole('menuitem', { exact: true, name: 'File' }).click()
+    await exportItem.focus()
+
+    // Arrow Left is now the outward key.
+    await page.keyboard.press('ArrowLeft')
+    await expect(exportSubmenu).toBeVisible()
+    await expect(page.getByRole('menuitem', { name: 'PNG' })).toBeFocused()
+
+    await page.keyboard.press('ArrowRight')
+    await expect(exportSubmenu).toBeHidden()
+    await expect(exportItem).toBeFocused()
+  })
+
+  test('opens a menu-button menu on its first enabled item', async ({ page }) => {
+    await page.goto('/stories/library-navigation-menu-button--default/')
+    await expectRouteDocumentReady(page)
+
+    const menu = page.locator('ui-menu-button ui-menu')
+    await menu.evaluate((element) => {
+      element.querySelector("[role^='menuitem']")?.setAttribute('aria-disabled', 'true')
+    })
+
+    await page.getByRole('button', { name: 'Actions' }).click()
+    const items = menu.locator("[role^='menuitem']")
+    await expect(items.first()).toHaveAttribute('aria-disabled', 'true')
+    await expect(items.nth(1)).toBeFocused()
+  })
+})
+
+/**
+ * Milestone 024: the context menu, which is the only overlay with no markup-only path.
+ *
+ * The pointer cases dispatch a real `MouseEvent` rather than using `page.mouse`, because headless
+ * Chromium does not raise `contextmenu` for a synthesised right button — the coordinates are the
+ * whole subject of these assertions, so they have to be the ones the component sees.
+ */
+test.describe('stories context menu', () => {
+  const openAt = async (page: Page, x: number, y: number) => {
+    await page
+      .locator("[data-ui-part~='target']")
+      .first()
+      .evaluate(
+        (target, point) => {
+          target.dispatchEvent(
+            new MouseEvent('contextmenu', {
+              bubbles: true,
+              cancelable: true,
+              clientX: point.x,
+              clientY: point.y,
+            }),
+          )
+        },
+        { x, y },
+      )
+  }
+
+  test('opens at the pointer, wires the target, and returns focus on Escape', async ({ page }) => {
+    await page.goto('/stories/library-navigation-context-menu--default/')
+    await expectRouteDocumentReady(page)
+
+    const target = page.locator("[data-ui-part~='target']").first()
+    const menu = page.locator('#asset-context-menu')
+
+    await expect(target).toHaveAttribute('tabindex', '0')
+    await expect(target).toHaveAttribute('aria-haspopup', 'menu')
+    await expect(target).toHaveAttribute('aria-controls', 'asset-context-menu')
+    await expect(menu).toBeHidden()
+
+    await openAt(page, 420, 260)
+    await expect(menu).toBeVisible()
+    await expect(target).toHaveAttribute('aria-expanded', 'true')
+    await expect(page.getByRole('menuitem', { name: 'Open' })).toBeFocused()
+
+    const box = await menu.boundingBox()
+    expect(Math.round(box?.x ?? 0)).toBe(420)
+    expect(Math.round(box?.y ?? 0)).toBe(260)
+
+    await page.keyboard.press('Escape')
+    await expect(menu).toBeHidden()
+    await expect(target).toBeFocused()
+    await expect(target).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  test('opens from the keyboard against the focused target', async ({ page }) => {
+    await page.goto('/stories/library-navigation-context-menu--default/')
+    await expectRouteDocumentReady(page)
+
+    const target = page.locator("[data-ui-part~='target']").first()
+    const menu = page.locator('#asset-context-menu')
+
+    await target.focus()
+    await page.keyboard.press('Shift+F10')
+    await expect(menu).toBeVisible()
+    await expect(page.getByRole('menuitem', { name: 'Open' })).toBeFocused()
+    const targetBox = await target.boundingBox()
+    const menuBox = await menu.boundingBox()
+    expect(Math.round(menuBox?.y ?? 0)).toBeGreaterThanOrEqual(
+      Math.round((targetBox?.y ?? 0) + (targetBox?.height ?? 0)),
+    )
+
+    await page.keyboard.press('Escape')
+    await expect(menu).toBeHidden()
+
+    // The dedicated key is the other half of the same route.
+    await target.focus()
+    await page.keyboard.press('ContextMenu')
+    await expect(menu).toBeVisible()
+  })
+
+  test('stays inside the viewport at every corner', async ({ page }) => {
+    await page.goto('/stories/library-navigation-context-menu--default/')
+    await expectRouteDocumentReady(page)
+
+    const menu = page.locator('#asset-context-menu')
+    const viewport = page.viewportSize() ?? { width: 1280, height: 720 }
+    const corners = [
+      { x: 2, y: 2 },
+      { x: viewport.width - 2, y: 2 },
+      { x: 2, y: viewport.height - 2 },
+      { x: viewport.width - 2, y: viewport.height - 2 },
+    ]
+
+    for (const corner of corners) {
+      await openAt(page, corner.x, corner.y)
+      await expect(menu).toBeVisible()
+      const box = await menu.boundingBox()
+      expect(box, `no box at ${corner.x},${corner.y}`).not.toBeNull()
+      expect(box!.x, `left at ${corner.x},${corner.y}`).toBeGreaterThanOrEqual(0)
+      expect(box!.y, `top at ${corner.x},${corner.y}`).toBeGreaterThanOrEqual(0)
+      expect(box!.x + box!.width, `right at ${corner.x},${corner.y}`).toBeLessThanOrEqual(
+        viewport.width + 1,
+      )
+      expect(box!.y + box!.height, `bottom at ${corner.x},${corner.y}`).toBeLessThanOrEqual(
+        viewport.height + 1,
+      )
+      await page.keyboard.press('Escape')
+      await expect(menu).toBeHidden()
+    }
+    await expectNoPageOverflow(page)
+  })
+
+  test('gives each region its own commands', async ({ page }) => {
+    await page.goto('/stories/library-navigation-context-menu--per-region/')
+    await expectRouteDocumentReady(page)
+
+    const rowTarget = page.locator("[data-ui-part~='target']").nth(1)
+    await rowTarget.focus()
+    await page.keyboard.press('Shift+F10')
+
+    await expect(page.locator('#row-context-menu')).toBeVisible()
+    await expect(page.locator('#asset-context-menu')).toBeHidden()
+    await expect(page.getByRole('menuitemcheckbox', { name: 'Pinned' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    )
+  })
+})

@@ -138,14 +138,23 @@ export function createHoverCardElementClass(targetWindow?: Window): UIHoverCardE
 
       this.on(trigger, 'pointerenter', this.scheduleOpen, { signal })
       this.on(trigger, 'focusin', this.scheduleOpen, { signal })
-      this.on(trigger, 'click', this.handleTriggerClick, { signal })
       this.on(trigger, 'pointerleave', this.scheduleClose, { signal })
       this.on(trigger, 'focusout', this.scheduleClose, { signal })
-      this.on(content, 'pointerenter', this.cancelClose, { signal })
-      this.on(content, 'pointerleave', this.scheduleClose, { signal })
       this.on(content, 'toggle', this.handleToggle, { signal })
       this.on(this.ownerWindow, 'resize', this.handleFloatingEnvironmentChange, { signal })
       this.on(this.ownerWindow, 'scroll', this.handleFloatingEnvironmentChange, { signal })
+      // WCAG 2.2 SC 1.4.13 "Hoverable": content triggered by pointer hover must survive the pointer
+      // being moved onto it. That applies to a tooltip as much as to a hover card — reading a label
+      // is not interacting with it — so both variants keep the surface pointer-safe.
+      this.on(content, 'pointerenter', this.cancelClose, { signal })
+      this.on(content, 'pointerleave', this.scheduleClose, { signal })
+
+      // The click toggle is the part a tooltip must not have. A tooltip describes its trigger, and a
+      // trigger that is also a button has its own job on click; toggling a label instead makes it a
+      // disclosure with `role="tooltip"` on the surface, which is the APG pattern this claims to be.
+      if (result.role === 'tooltip') return
+
+      this.on(trigger, 'click', this.handleTriggerClick, { signal })
     }
 
     @watch('variant', { immediate: true })

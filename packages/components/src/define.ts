@@ -5,6 +5,7 @@ import { definePopoverElement } from './define/ui-popover'
 import { defineHoverCardElement } from './define/ui-hover-card'
 import { defineMenuElement } from './define/ui-menu'
 import { defineMenuButtonElement } from './define/ui-menu-button'
+import { defineContextMenuElement } from './define/ui-context-menu'
 import { defineToolbarElement } from './define/ui-toolbar'
 import { defineRadioGroupElement } from './define/ui-radio-group'
 import { defineCheckboxGroupElement } from './define/ui-checkbox-group'
@@ -28,6 +29,7 @@ export {
   defineHoverCardElement,
   defineMenuElement,
   defineMenuButtonElement,
+  defineContextMenuElement,
   defineToolbarElement,
   defineRadioGroupElement,
   defineCheckboxGroupElement,
@@ -52,6 +54,7 @@ export function defineTimelessElements(targetWindow: Window = window): void {
   defineHoverCardElement(targetWindow)
   defineMenuElement(targetWindow)
   defineMenuButtonElement(targetWindow)
+  defineContextMenuElement(targetWindow)
   defineToolbarElement(targetWindow)
   defineRadioGroupElement(targetWindow)
   defineCheckboxGroupElement(targetWindow)

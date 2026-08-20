@@ -3,6 +3,7 @@ import {
   createCheckboxGroup,
   createCombobox,
   createCommandPalette,
+  createContextMenu,
   createCustomSelect,
   createListbox,
   createMenu,
@@ -692,6 +693,8 @@ export const examples = [
     id: 'menu',
     domain: 'navigation',
     group: 'Navigation',
+    authoring:
+      'Wrap related items in a `group` with a `group-label` and Timeless writes the `role="group"` and the `aria-labelledby` between them. Checkable items need only the role and a starting `aria-checked`: activating a `menuitemcheckbox` toggles it, and activating a `menuitemradio` clears the other radios in its group. Both dispatch a cancelable `ui-before-change` first, so a consumer already writing `aria-checked` from its own state can keep doing exactly that.',
     contracts: ['menu'],
     component: 'Menu',
     title: 'Menu',
@@ -702,6 +705,50 @@ export const examples = [
       createMenu({
         label: 'Editor commands',
         items: [{ label: 'Duplicate' }, { label: 'Archive' }, { label: 'Delete', disabled: true }],
+        groups: [
+          {
+            label: 'View',
+            items: [
+              { label: 'Show grid', checkable: 'checkbox', checked: true },
+              { label: 'Show rulers', checkable: 'checkbox' },
+            ],
+          },
+          {
+            label: 'Density',
+            items: [
+              { label: 'Comfortable', checkable: 'radio', checked: true },
+              { label: 'Compact', checkable: 'radio' },
+            ],
+          },
+        ],
+      }),
+  }),
+  example({
+    id: 'context-menu',
+    domain: 'navigation',
+    group: 'Navigation',
+    guidance:
+      'A context menu is the same surface as [Menu](/docs/components/menu/), opened by a secondary click over a region instead of by a control. Reach for [Menu Button](/docs/components/menu-button/) when the commands should have a visible trigger — a context menu is discoverable only by trying it, so it belongs to shortcuts for things reachable another way.',
+    authoring:
+      'This is the one Timeless component with no markup-only path: the platform cannot open a surface at pointer coordinates without script, so with JavaScript off the browser shows its own context menu and the authored `ui-menu` stays hidden. Never put a command here that is not also reachable elsewhere. Give the `target` a role that supports `aria-haspopup` and an accessible name — in real markup it is usually something that already has both, like a table row or a treeitem — and Timeless adds the tab stop, the relationships, and the `Shift+F10` and Context Menu key routes in.',
+    contracts: ['contextMenu', 'menu'],
+    component: 'Context Menu',
+    title: 'Context Menu',
+    description: 'Open a menu at the pointer, or from the keyboard.',
+    definitions: ['ui-context-menu', 'ui-menu'],
+    styles: ['tokens.css', 'button.css', 'menu.css', 'context-menu.css', 'floating.css'],
+    render: () =>
+      createContextMenu({
+        id: 'asset-context-menu',
+        label: 'Asset commands',
+        targetLabel: 'hero-banner.avif',
+        items: [{ label: 'Open' }, { label: 'Rename' }],
+        groups: [
+          {
+            label: 'Share',
+            items: [{ label: 'Copy link' }, { label: 'Invite reviewer' }],
+          },
+        ],
       }),
   }),
   example({

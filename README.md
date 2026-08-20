@@ -17,7 +17,9 @@ Most Timeless components are plain CSS over native HTML and need no JavaScript a
 custom elements, used only where keyboard coordination, focus management, or state synchronisation
 cannot be expressed accessibly in CSS. Either way the markup you author is the markup that ships:
 the initial shell is useful before JavaScript runs, so pages avoid layout shifts, unstyled flashes,
-and framework-specific boot requirements.
+and framework-specific boot requirements. Context Menu is the one component with no such shell — the
+platform has no declarative way to open a surface at pointer coordinates — and its page says so
+rather than leaving it to be discovered.
 
 The library targets Baseline 2025 browsers and builds on these platform features today:
 

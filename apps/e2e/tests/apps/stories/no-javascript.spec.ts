@@ -114,3 +114,52 @@ test('the one-time code cells stay usable without JavaScript', async ({ page }) 
     await cells.nth(0).evaluate((cell: HTMLInputElement) => cell.getAttribute('autocomplete')),
   ).toBe('one-time-code')
 })
+
+/**
+ * Swipe-to-dismiss is an addition, so a sheet with scripting off must still be exactly the sheet it
+ * was: the authored `command="show-modal"` opens it and `command="close"` closes it, with no gesture
+ * involved anywhere.
+ */
+test('a modal sheet still opens and closes without JavaScript or a gesture', async ({ page }) => {
+  await page.goto('/stories/library-overlays-sheet--default/')
+  const trigger = page.getByRole('button', { name: 'Open release sheet' })
+  const panel = page.locator('#release-sheet')
+
+  await expect(panel).toBeHidden()
+  await trigger.click()
+  await expect(panel).toBeVisible()
+
+  // Nothing wrote a drag offset, because nothing ran.
+  expect(
+    await panel.evaluate((element: HTMLElement) =>
+      element.style.getPropertyValue('--ui-sheet-drag-offset'),
+    ),
+  ).toBe('')
+
+  // Escape rather than the footer button, and not for want of trying: with script execution
+  // disabled the panel's entry animation never settles for Playwright's stability probe, so no click
+  // inside this sheet can be dispatched. Escape is the platform closing a modal `<dialog>`, which is
+  // the same claim about the same markup.
+  await page.keyboard.press('Escape')
+  await expect(panel).toBeHidden()
+})
+
+/**
+ * The context menu is the documented exception: the platform cannot open a surface at pointer
+ * coordinates declaratively, so with scripting off the authored menu stays hidden and the browser
+ * shows its own. This asserts that it degrades to hidden rather than to a broken open state.
+ */
+test('the context menu surface stays hidden without JavaScript', async ({ page }) => {
+  await page.goto('/stories/library-navigation-context-menu--default/')
+  const target = page.locator("[data-ui-part~='target']").first()
+  const menu = page.locator('#asset-context-menu')
+
+  await expect(target).toBeVisible()
+  await expect(menu).toBeHidden()
+  // Nothing was enhanced, so no relationship was written either — the markup is exactly as authored.
+  await expect(target).not.toHaveAttribute('aria-haspopup', 'menu')
+  await expect(target).not.toHaveAttribute('tabindex', '0')
+
+  await target.click({ button: 'right' })
+  await expect(menu).toBeHidden()
+})

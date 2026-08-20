@@ -79,6 +79,10 @@
       "types": "./dist/menu.d.ts",
       "import": "./dist/menu.js"
     },
+    "./context-menu": {
+      "types": "./dist/context-menu.d.ts",
+      "import": "./dist/context-menu.js"
+    },
     "./menu-button": {
       "types": "./dist/menu-button.d.ts",
       "import": "./dist/menu-button.js"

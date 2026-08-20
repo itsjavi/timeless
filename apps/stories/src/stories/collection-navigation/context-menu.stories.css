@@ -1,0 +1,14 @@
+/* Demo only: gives the right-clickable regions a visible edge so the target is obvious. */
+[data-ui-part~='target'] {
+  border: 1px dashed var(--ui-line);
+  border-radius: var(--ui-radius-lg);
+  padding: var(--ui-space-6) var(--ui-space-5);
+  background: var(--ui-bg-surface);
+  color: var(--ui-fg);
+  text-align: center;
+}
+
+[data-ui-part~='target']:focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 2px;
+}

@@ -59,6 +59,29 @@ test.describe('StoryLite WCAG 2.2 A and AA automation', () => {
           await makeAxeBuilder(page).include('#ss-canvas').analyze(),
         )
       }
+      if (route.endsWith('library-navigation-context-menu--default/')) {
+        await page.locator("[data-ui-part~='target']").first().focus()
+        await page.keyboard.press('Shift+F10')
+        await expect(page.locator('#asset-context-menu')).toBeVisible()
+        recordViolations(
+          violations,
+          route,
+          'open',
+          await makeAxeBuilder(page).include('#ss-canvas').analyze(),
+        )
+        await page.keyboard.press('Escape')
+      }
+      if (route.endsWith('library-overlays-sheet--default/')) {
+        await page.getByRole('button', { name: 'Open release sheet' }).click()
+        await expect(page.locator('#release-sheet')).toBeVisible()
+        recordViolations(
+          violations,
+          route,
+          'open',
+          await makeAxeBuilder(page).include('#ss-canvas').analyze(),
+        )
+        await page.keyboard.press('Escape')
+      }
       if (route.endsWith('recipes-performance-large-dataset--default/')) {
         const input = page.getByRole('combobox', { name: 'Search records' })
         await input.focus()

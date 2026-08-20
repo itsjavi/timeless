@@ -2,6 +2,7 @@ import type { StoryLiteMeta } from '@storylite/storylite'
 import buttonCss from '@timelessui/components/css/button.css?raw'
 import choiceGroupCss from '@timelessui/components/css/choice-groups.css?raw'
 import comboboxCss from '@timelessui/components/css/combobox.css?raw'
+import contextMenuCss from '@timelessui/components/css/context-menu.css?raw'
 import floatingCss from '@timelessui/components/css/floating.css?raw'
 import formsCss from '@timelessui/components/css/forms.css?raw'
 import listboxCss from '@timelessui/components/css/listbox.css?raw'
@@ -23,6 +24,7 @@ const collectionNavigationParameters = {
     floatingCss,
     popoverCss,
     menuCss,
+    contextMenuCss,
     toolbarCss,
     formsCss,
     choiceGroupCss,
@@ -36,9 +38,18 @@ const collectionNavigationParameters = {
   defineCustomElements: defineTimelessElements,
 } satisfies StoryLiteMeta['parameters']
 
-export function createCollectionNavigationMeta(component: string): StoryLiteMeta {
+export function createCollectionNavigationMeta(
+  component: string,
+  extraCss: readonly string[] = [],
+): StoryLiteMeta {
   return {
     title: `Library/Navigation/${component}`,
-    parameters: collectionNavigationParameters,
+    parameters:
+      extraCss.length === 0
+        ? collectionNavigationParameters
+        : {
+            ...collectionNavigationParameters,
+            css: [...collectionNavigationParameters.css, ...extraCss],
+          },
   }
 }

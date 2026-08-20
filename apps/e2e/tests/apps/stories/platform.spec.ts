@@ -89,6 +89,66 @@ test.describe('platform-dependent custom element behavior', () => {
   })
 
   /**
+   * Submenu keys across engines. The surface is a nested popover, so opening one exercises both the
+   * Popover API's top-layer stacking and whether a second `showPopover()` closes the first — which
+   * is exactly the behavior that differed between engines while this was being written.
+   */
+  test('a submenu opens and closes two levels deep', async ({ page }) => {
+    await page.goto('/stories/library-navigation-menu--menubar/')
+    await expectRouteDocumentReady(page)
+
+    const fileSubmenu = page.locator('#submenu-file')
+    const exportSubmenu = page.locator('#submenu-export-as')
+    const exportItem = page.getByRole('menuitem', { name: 'Export as' })
+
+    await page.getByRole('menuitem', { exact: true, name: 'File' }).click()
+    await expect(fileSubmenu).toBeVisible()
+
+    await exportItem.focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(exportSubmenu).toBeVisible()
+    await expect(fileSubmenu).toBeVisible()
+
+    await page.keyboard.press('ArrowLeft')
+    await expect(exportSubmenu).toBeHidden()
+    await expect(exportItem).toBeFocused()
+  })
+
+  /**
+   * Pointer capture and `pointercancel` differ enough between engines that the sheet gesture cannot
+   * be trusted from a Chromium run alone. The drag handle is the only mouse-startable origin, which
+   * is also the only origin Playwright can drive.
+   */
+  test('a swipe on the drag handle dismisses the sheet and returns focus', async ({ page }) => {
+    await page.goto('/stories/library-overlays-sheet--default/')
+    await expectRouteDocumentReady(page)
+
+    const trigger = page.getByRole('button', { name: 'Open release sheet' })
+    const panel = page.locator('#release-sheet')
+    await trigger.click()
+    await expect(panel).toBeVisible()
+    // The entry animation moves the panel, and with it the handle the gesture has to start on.
+    await settleAnimations(page)
+
+    const handle = panel.locator("[data-ui-part~='drag-handle']")
+    const box = await handle.boundingBox()
+    const startX = (box?.x ?? 0) + (box?.width ?? 0) / 2
+    const startY = (box?.y ?? 0) + (box?.height ?? 0) / 2
+    await page.mouse.move(startX, startY)
+    await page.mouse.down()
+    await page.mouse.move(startX + 160, startY, { steps: 4 })
+    await page.mouse.move(startX + 320, startY, { steps: 4 })
+    const offset = await panel.evaluate((element: HTMLElement) =>
+      element.style.getPropertyValue('--ui-sheet-drag-offset'),
+    )
+    await page.mouse.up()
+
+    expect(offset).toBe('320px')
+    await expect(panel).toBeHidden()
+    await expect(trigger).toBeFocused()
+  })
+
+  /**
    * `value` is the authored default, not the live value: it seeds the selection, stops applying once
    * the user commits a change, and comes back on reset — which is how a native input behaves and what
    * keeps a re-rendering framework from clobbering user input.
