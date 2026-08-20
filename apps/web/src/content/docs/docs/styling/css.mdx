@@ -14,7 +14,7 @@ For prototypes, documents, and anything where request granularity does not matte
 everything:
 
 ```js
-import '@timelessui/components/css/components.css'
+import '@timelessui/components/css/themes/atmosphere.css'
 ```
 
 For applications, import the shared tokens plus the exact component styles a route renders:
@@ -38,8 +38,8 @@ component needs under **Styling**.
 ```
 
 If a component stylesheet loads first, it establishes the order instead and `ui.tokens` ends up with
-the highest precedence — which is the opposite of what you want. `components.css` already imports
-tokens in the right order; when importing granularly, put `tokens.css` first.
+the highest precedence — which is the opposite of what you want. `themes/atmosphere.css` already
+imports tokens in the right order; when importing granularly, put `tokens.css` first.
 
 See [Theming](/docs/styling/theming/) for what those layers mean in practice and which tokens and
 component variables you can override.

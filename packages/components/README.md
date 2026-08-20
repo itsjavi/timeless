@@ -123,7 +123,8 @@ import '@timelessui/components/css/toast.css'
 </article>
 ```
 
-Use `@timelessui/components/css/components.css` to import the full token and component CSS bundle.
+Use `@timelessui/components/css/themes/atmosphere.css` to import the Atmosphere theme complete with
+the required layer order and behavior. There is no implicit default theme: the path names the theme.
 
 The public authoring grammar uses `.ui-*` for native component roots, contract-declared `data-ui-*`
 attributes for native visual configuration, registered `<ui-*>` elements for behavior, plain host

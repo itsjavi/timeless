@@ -12,9 +12,10 @@
  * transition, animation, opacity, filter, and `border-radius`. A core rule that appears to need one
  * of those is misclassified.
  *
- * This file is the convenience aggregate, mirroring how `components.css` imports the theme. A route
- * that renders one component should import `core/<component>.css` instead, the same way it imports
- * one component stylesheet rather than `components.css`.
+ * This file is the convenience aggregate for `core/`, mirroring how `themes/atmosphere.css`
+ * aggregates its own directory. A route that renders one component should import
+ * `core/<component>.css` instead. Import this plus `tokens.css` and nothing else to get every
+ * component's behavior with none of Atmosphere's look.
  *
  * `tokens.css` is still required alongside this, and separately: it carries the cascade-layer order
  * and `color-scheme`, neither of which is a look and neither of which core can supply.

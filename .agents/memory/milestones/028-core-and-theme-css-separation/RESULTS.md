@@ -373,11 +373,26 @@ honestly — Atmosphere is one theme, so a second is a sibling directory and a s
 "replace the theme wholesale" becomes a directory swap rather than a 40-file instruction. All 40
 moves were pure renames, zero content change, confirmed by `git diff -M --numstat`.
 
-`components.css` deliberately stayed at the root rather than becoming `themes/atmosphere/full.css`,
-which was considered. 41 of its 43 imports were Atmosphere's, but the other two are `tokens.css` and
-`core.css` — the required tiers. An aggregate living inside the optional tier that reaches back out
-to pull in the required ones inverts the dependency, and every replacement theme would then have to
-know to re-import core and tokens. It is now three lines, one per tier, in tier order.
+### There is no default theme, and no theme-agnostic entry point
+
+`components.css` is gone. `themes/atmosphere.css` is the full entry: it imports `../tokens.css`,
+`../core.css`, and its own 40 files, so one import gives a prototype everything and the path names
+the theme it gives you. A second theme is a sibling of identical shape — `themes/<name>.css` beside
+`themes/<name>/`, with the same two required imports at the top — and copying the Atmosphere file is
+the template.
+
+This replaced two weaker shapes in succession. `components.css` hardcoded `themes/atmosphere.css`
+while being named after components, so a second theme had nowhere to go and the theme a consumer got
+was invisible in the import they typed. Documenting Atmosphere as "the default" was the obvious
+repair and was rejected: it makes the answer to "which theme is this" something you have to read
+prose to learn, and removing the concept of a default is stronger than documenting one.
+
+An earlier round had rejected putting the full entry inside the theme at all, on the grounds that an
+aggregate in the optional tier reaching out to the required tiers "inverts the dependency". That
+reasoning was wrong and is recorded as wrong: a theme depending on core is the correct direction,
+and the reverse would be the inversion. `core.css` imports nothing from `themes/`, so behavior stays
+independent and a consumer who wants it without a look imports `tokens.css` and `core.css` and
+stops.
 
 ### The size metric stays as it is, and the discrepancy is recorded instead
 

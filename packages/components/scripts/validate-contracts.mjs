@@ -96,7 +96,7 @@ console.log(
 /**
  * Every `@import` in the package must name a file that exists. A dangling one fails only when a
  * browser loads the stylesheet, which no test does for an aggregate — so milestone 028 deleted
- * `form.css`, left `components.css` importing it, and shipped that in a green build. The whole point of
+ * `form.css`, left the old `components.css` importing it, and shipped that in a green build. The point of
  * the aggregates is that a consumer can import one file instead of forty; an aggregate with a hole in
  * it is worse than no aggregate.
  */
@@ -141,7 +141,7 @@ async function validateImportsResolve() {
  * The two aggregates are excluded because they hold nothing but `@import` statements.
  */
 async function validateEverythingIsLayered() {
-  const aggregates = new Set(['components.css', 'core.css'])
+  const aggregates = new Set(['core.css', 'themes/atmosphere.css'])
   const cssRoot = resolve(packageRoot, 'src/css')
   const stylesheetNames = (await readdir(cssRoot, { recursive: true }))
     .map((name) => name.split(sep).join('/'))

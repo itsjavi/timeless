@@ -101,8 +101,9 @@
 - [x] Move the 39 component cosmetic stylesheets and `theme-atmosphere.css` under
       `themes/atmosphere/`, as pure renames with no content change
 - [x] Add `themes/atmosphere.css`, mirroring how `core.css` aggregates `core/`
-- [x] Recompose `components.css` as three imports, one per tier, and record why it does not belong
-      under `themes/atmosphere/`
+- [x] Make `themes/atmosphere.css` the full entry — the required tiers plus its own 40 files — and
+      delete `components.css`, so no import silently picks a theme and a second theme is a sibling
+      of the same shape
 - [x] Repoint the registry, examples, story bundles, doc snippets, `TokenTable`, `stylingFor`, and
       the two boundary validators
 - [x] Fix the dangling `@import './form.css'` that phase 3 shipped, and gate every `@import` in the

@@ -1,14 +1,22 @@
 /*
- * The whole Atmosphere theme: its token values, then one stylesheet per component. Optional — this is
- * the tier a consumer replaces. Importing it gives you the look; importing nothing from here leaves
- * every component plain and still correct, because behavior lives in `core.css`.
+ * Atmosphere, complete: the required tiers plus every Atmosphere stylesheet. This is the one import a
+ * prototype needs, and the only place the theme is named — there is no implicit default theme
+ * anywhere in the package, so "which theme am I getting" is answered by the path you typed.
  *
- * The convenience aggregate for the directory beside it, mirroring how `core.css` aggregates `core/`.
- * A route that renders one component should import `themes/atmosphere/<component>.css` instead.
+ * A second theme is a sibling of the same shape: `themes/<name>.css` beside `themes/<name>/`, with
+ * these same two required imports at the top. Copying this file is the template.
  *
- * A second theme is a sibling: `themes/<name>.css` plus `themes/<name>/`. Nothing here is imported by
- * `core.css` or `tokens.css`, so replacing this file replaces the look and nothing else.
+ * The two `../` imports are the required tiers, and the direction is deliberate: a theme depends on
+ * core, never the reverse. `core.css` imports nothing from here, so a consumer who wants behavior
+ * without a look imports `tokens.css` and `core.css` and stops. `tokens.css` comes first because it
+ * establishes the cascade-layer order every other file depends on.
+ *
+ * A route that renders one component should import `tokens.css`, `core/<component>.css`, and
+ * `themes/atmosphere/<component>.css` instead of this.
  */
+
+@import '../tokens.css';
+@import '../core.css';
 
 @import './atmosphere/tokens.css';
 @import './atmosphere/button.css';

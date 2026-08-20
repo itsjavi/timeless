@@ -243,7 +243,7 @@ export function createProgress(props: ProgressProps): string {
 export function createTextPrimitives(): string {
   return `<div class="ui-primitive-copy">
   <p>Use <a class="ui-link" href="#link">links</a>, <code class="ui-code">inline code</code>, and <kbd class="ui-kbd">Cmd</kbd><kbd class="ui-kbd">K</kbd> in dense interface text.</p>
-  <pre class="ui-code" tabindex="0" aria-label="Component CSS import"><code>import '@timelessui/components/css/components.css'</code></pre>
+  <pre class="ui-code" tabindex="0" aria-label="Component CSS import"><code>import '@timelessui/components/css/themes/atmosphere.css'</code></pre>
 </div>`
 }
 
