@@ -101,21 +101,23 @@
 
 ## 6. Utility CSS and Tailwind
 
-- [ ] Write `docs/styling/utility-css.mdx`
-- [ ] Author the centrepiece example: a Popover with a button trigger, importing the core layer and
+- [x] Write `docs/styling/utility-css.mdx`
+- [x] Author the centrepiece example: a Popover with a button trigger, importing the core layer and
       no theme CSS, styled entirely in Tailwind utilities
-- [ ] Include the full import block in the order that makes utilities win
-- [ ] Include the host display, the trigger, the anchored surface, and a `:state()` or `aria-*`
+- [x] Include the full import block in the order that makes utilities win
+- [x] Include the host display, the trigger, the anchored surface, and a `:state()` or `aria-*`
       variant doing real work
-- [ ] Paste the snippet into a running app and confirm it renders, anchors, opens, and
+- [x] Paste the snippet into a running app and confirm it renders, anchors, opens, and
       light-dismisses before publishing it
-- [ ] Verify in a browser that the inverted import order makes Timeless outrank every utility,
+- [x] Verify in a browser that the inverted import order makes Timeless outrank every utility,
       before documenting it as the failure mode
-- [ ] Verify that a `display` utility on an option row reintroduces filtered options, and publish
-      the one-line fix
-- [ ] Document that `:state()` has no Tailwind variant, and show the arbitrary-variant form
-- [ ] Point at the core layer for host display rather than telling consumers to hand-write it
-- [ ] Confirm the page appears in the Styling sidebar group, and cross-link from `css.mdx` and
+- [x] Verify that a `display` utility on an option row reintroduces filtered options, and publish
+      the one-line fix — it does not under Tailwind's Preflight, which carries
+      `[hidden] { display: none !important }`; it does without Preflight, and the fix is
+      `not-[[hidden]]:flex`
+- [x] Document that `:state()` has no Tailwind variant, and show the arbitrary-variant form
+- [x] Point at the core layer for host display rather than telling consumers to hand-write it
+- [x] Confirm the page appears in the Styling sidebar group, and cross-link from `css.mdx` and
       `theming.mdx`
 
 ## 7. Close out

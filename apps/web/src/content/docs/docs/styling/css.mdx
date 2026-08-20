@@ -97,7 +97,8 @@ are conflicts you would be picking deliberately.
   your Tailwind stylesheet before Timeless puts every Tailwind layer *below* `ui.components` — and
   layer order beats specificity, so a `flex` or `grid` utility silently loses to core with no error
   to explain it. Import Timeless first. Tailwind v3 emits unlayered rules and always wins, either
-  way.
+  way. [Utility CSS and Tailwind](/docs/styling/utility-css/) has the worked example and the rest of
+  the interactions.
 </Aside>
 
 Two things to expect on this path. Sizing stays in the theme, so a few components sit at their
