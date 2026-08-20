@@ -9,6 +9,7 @@ function resolveStoryId(path: string, suggestedId: string): string {
     badge: 'feedback',
     button: 'actions',
     card: 'content',
+    'copy-button': 'actions',
     empty: 'feedback',
     group: 'content',
     list: 'content',

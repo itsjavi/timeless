@@ -74,6 +74,11 @@ import {
   Placements as ToastPlacements,
 } from './stories/progressive-overlays/toast.stories'
 import { Default as Tooltip } from './stories/progressive-overlays/tooltip.stories'
+import {
+  Default as CopyButton,
+  HiddenUntilSupported as CopyButtonHiddenUntilSupported,
+  Shapes as CopyButtonShapes,
+} from './stories/copy-button.stories'
 
 describe('catalog stories', () => {
   it('renders shared recipes', () => {
@@ -191,6 +196,36 @@ describe('catalog stories', () => {
     expect(NumberStepper.render()).toContain('<ui-number-stepper')
     expect(ColorPicker.render()).toContain('<ui-color-picker')
     expect(ColorPicker.render()).toContain('data-ui-part="channel"')
+  })
+
+  it('renders milestone 026 copy anatomy with a stable accessible name', () => {
+    const defaultHtml = CopyButton.render()
+    const shapesHtml = CopyButtonShapes.render()
+
+    expect(defaultHtml).toContain('<ui-copy-button from="install-command"')
+    expect(defaultHtml).toContain('data-ui-part="status" role="status"')
+    // The name is on the button and the two labels are hidden, so the copy never renames the control.
+    expect(defaultHtml).toContain('aria-label="Copy the install command"')
+    expect(defaultHtml).toContain('<span data-ui-part="idle" aria-hidden="true">Copy</span>')
+    expect(defaultHtml).toContain('<span data-ui-part="copied" aria-hidden="true">Copied</span>')
+
+    // The icon-only shape is the one that needs `copied-message`: no text to announce.
+    expect(shapesHtml).toContain('copied-message="API token copied"')
+    expect(shapesHtml).toContain('<svg data-ui-part="copied"')
+    expect(CopyButtonHiddenUntilSupported.render()).toContain(
+      'type="button" aria-label="Copy the API token" hidden',
+    )
+  })
+
+  it('keeps milestone 026 copyable source free of demo wrappers and private hooks', () => {
+    for (const source of [
+      CopyButton.source(),
+      CopyButtonShapes.source(),
+      CopyButtonHiddenUntilSupported.source(),
+    ]) {
+      expect(source).not.toContain('ui-demo-page')
+      expect(source).not.toContain('data-ui-internal-')
+    }
   })
 
   it('renders milestone 024 menu anatomy through declared parts and roles', () => {
