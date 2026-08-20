@@ -144,7 +144,12 @@ export const examples = [
     title: 'Separator',
     description: 'Separate related regions with native semantics.',
     definitions: [],
-    styles: ['tokens.css', 'core/separator.css', 'theme-atmosphere.css', 'separator.css'],
+    styles: [
+      'tokens.css',
+      'core/separator.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/separator.css',
+    ],
     render: () => createSeparator(),
   }),
   example({
@@ -160,10 +165,10 @@ export const examples = [
       'tokens.css',
       'core/code.css',
       'core/kbd.css',
-      'theme-atmosphere.css',
-      'link.css',
-      'kbd.css',
-      'code.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/link.css',
+      'themes/atmosphere/kbd.css',
+      'themes/atmosphere/code.css',
     ],
     render: () => createTextPrimitives(),
   }),
@@ -176,7 +181,12 @@ export const examples = [
     title: 'Button',
     description: 'Tactile native actions with clear variants.',
     definitions: [],
-    styles: ['tokens.css', 'core/button.css', 'theme-atmosphere.css', 'button.css'],
+    styles: [
+      'tokens.css',
+      'core/button.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+    ],
     render: () => '<button class="ui-button" type="button">Publish component</button>',
   }),
   example({
@@ -190,7 +200,13 @@ export const examples = [
     title: 'Toggle',
     description: 'A pressed-state button using native button behavior.',
     definitions: [],
-    styles: ['tokens.css', 'core/toggle.css', 'theme-atmosphere.css', 'button.css', 'toggle.css'],
+    styles: [
+      'tokens.css',
+      'core/toggle.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/toggle.css',
+    ],
     render: () => createToggle({ label: 'Bold', pressed: true }),
   }),
   example({
@@ -202,7 +218,13 @@ export const examples = [
     title: 'Toggle Group',
     description: 'Coordinate single or multiple pressed controls.',
     definitions: ['ui-toggle-group'],
-    styles: ['tokens.css', 'core/toggle.css', 'theme-atmosphere.css', 'button.css', 'toggle.css'],
+    styles: [
+      'tokens.css',
+      'core/toggle.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/toggle.css',
+    ],
     render: () =>
       createToggleGroup({
         label: 'Text alignment',
@@ -223,7 +245,12 @@ export const examples = [
     title: 'Avatar',
     description: 'Identity fallback and presence indicators.',
     definitions: [],
-    styles: ['tokens.css', 'core/avatar.css', 'theme-atmosphere.css', 'avatar.css'],
+    styles: [
+      'tokens.css',
+      'core/avatar.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/avatar.css',
+    ],
     render: () => createAvatar({ label: 'Avery Stone', initials: 'AS', status: 'online' }),
   }),
   example({
@@ -238,11 +265,11 @@ export const examples = [
     styles: [
       'tokens.css',
       'core/card.css',
-      'theme-atmosphere.css',
-      'button.css',
-      'badge.css',
-      'card.css',
-      'link.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/badge.css',
+      'themes/atmosphere/card.css',
+      'themes/atmosphere/link.css',
     ],
     render: () =>
       createCard({
@@ -260,7 +287,13 @@ export const examples = [
     title: 'Group',
     description: 'Arrange related controls with density and attachment options.',
     definitions: [],
-    styles: ['tokens.css', 'core/group.css', 'theme-atmosphere.css', 'button.css', 'group.css'],
+    styles: [
+      'tokens.css',
+      'core/group.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/group.css',
+    ],
     render: () => createGroup({ attached: true }),
   }),
   example({
@@ -272,7 +305,12 @@ export const examples = [
     title: 'List',
     description: 'Structured lists with titles and descriptions.',
     definitions: [],
-    styles: ['tokens.css', 'core/list.css', 'theme-atmosphere.css', 'list.css'],
+    styles: [
+      'tokens.css',
+      'core/list.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/list.css',
+    ],
     render: () => createList(),
   }),
   example({
@@ -284,7 +322,13 @@ export const examples = [
     title: 'Table',
     description: 'Responsive native tables with readable density.',
     definitions: [],
-    styles: ['tokens.css', 'core/table.css', 'theme-atmosphere.css', 'badge.css', 'table.css'],
+    styles: [
+      'tokens.css',
+      'core/table.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/badge.css',
+      'themes/atmosphere/table.css',
+    ],
     render: () => createTable(),
   }),
   example({
@@ -296,7 +340,13 @@ export const examples = [
     title: 'Alert',
     description: 'Communicate status without replacing native live-region semantics.',
     definitions: [],
-    styles: ['tokens.css', 'core/alert.css', 'theme-atmosphere.css', 'alert.css', 'link.css'],
+    styles: [
+      'tokens.css',
+      'core/alert.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/alert.css',
+      'themes/atmosphere/link.css',
+    ],
     render: () =>
       createAlert({
         title: 'Package published',
@@ -314,7 +364,12 @@ export const examples = [
     title: 'Badge',
     description: 'Compact status and metadata labels.',
     definitions: [],
-    styles: ['tokens.css', 'core/badge.css', 'theme-atmosphere.css', 'badge.css'],
+    styles: [
+      'tokens.css',
+      'core/badge.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/badge.css',
+    ],
     render: () => createBadge({ label: 'Stable', variant: 'success', dot: true }),
   }),
   example({
@@ -326,7 +381,13 @@ export const examples = [
     title: 'Empty',
     description: 'Explain an empty state and offer one clear next action.',
     definitions: [],
-    styles: ['tokens.css', 'core/empty.css', 'theme-atmosphere.css', 'button.css', 'empty.css'],
+    styles: [
+      'tokens.css',
+      'core/empty.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/empty.css',
+    ],
     render: () =>
       createEmpty({
         id: 'empty-projects',
@@ -343,7 +404,12 @@ export const examples = [
     title: 'Meter',
     description: 'Display a scalar measurement within a known range.',
     definitions: [],
-    styles: ['tokens.css', 'core/meter.css', 'theme-atmosphere.css', 'meter.css'],
+    styles: [
+      'tokens.css',
+      'core/meter.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/meter.css',
+    ],
     render: () =>
       createMeter({
         id: 'quality',
@@ -364,7 +430,12 @@ export const examples = [
     title: 'Progress',
     description: 'Expose determinate or indeterminate task progress.',
     definitions: [],
-    styles: ['tokens.css', 'core/progress.css', 'theme-atmosphere.css', 'progress.css'],
+    styles: [
+      'tokens.css',
+      'core/progress.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/progress.css',
+    ],
     render: () =>
       createProgress({
         label: 'Documentation build',
@@ -381,7 +452,12 @@ export const examples = [
     title: 'Skeleton',
     description: 'Reserve stable space while content loads.',
     definitions: [],
-    styles: ['tokens.css', 'core/skeleton.css', 'theme-atmosphere.css', 'skeleton.css'],
+    styles: [
+      'tokens.css',
+      'core/skeleton.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/skeleton.css',
+    ],
     render: () => createSkeleton({ width: 'medium' }),
   }),
   example({
@@ -393,7 +469,12 @@ export const examples = [
     title: 'Spinner',
     description: 'Indicate a short operation without changing layout.',
     definitions: [],
-    styles: ['tokens.css', 'core/spinner.css', 'theme-atmosphere.css', 'spinner.css'],
+    styles: [
+      'tokens.css',
+      'core/spinner.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/spinner.css',
+    ],
     render: () => createSpinner({ label: 'Loading preview' }),
   }),
   example({
@@ -405,7 +486,12 @@ export const examples = [
     title: 'Toast',
     description: 'Announce transient status from an explicit toaster.',
     definitions: ['ui-toaster', 'ui-toast'],
-    styles: ['tokens.css', 'core/toast.css', 'theme-atmosphere.css', 'toast.css'],
+    styles: [
+      'tokens.css',
+      'core/toast.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/toast.css',
+    ],
     render: () =>
       createToaster([
         { title: 'Preview ready', description: 'The static example finished building.' },
@@ -420,7 +506,12 @@ export const examples = [
     title: 'Field',
     description: 'Connect labels, descriptions, errors, and native controls.',
     definitions: [],
-    styles: ['tokens.css', 'core/forms.css', 'theme-atmosphere.css', 'forms.css'],
+    styles: [
+      'tokens.css',
+      'core/forms.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/forms.css',
+    ],
     render: () =>
       createTextField({
         id: 'email',
@@ -444,7 +535,12 @@ export const examples = [
     title: 'Fieldset',
     description: 'Group unrelated controls under one native legend.',
     definitions: [],
-    styles: ['tokens.css', 'core/forms.css', 'theme-atmosphere.css', 'forms.css'],
+    styles: [
+      'tokens.css',
+      'core/forms.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/forms.css',
+    ],
     render: () =>
       createFieldset({
         id: 'billing',
@@ -478,9 +574,9 @@ export const examples = [
       'tokens.css',
       'core/form.css',
       'core/forms.css',
-      'theme-atmosphere.css',
-      'forms.css',
-      'button.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/forms.css',
+      'themes/atmosphere/button.css',
     ],
     render: () => createServerErrorForm(),
     script: serverErrorFormScript,
@@ -502,9 +598,9 @@ export const examples = [
       'tokens.css',
       'core/forms.css',
       'core/otp-field.css',
-      'theme-atmosphere.css',
-      'forms.css',
-      'otp-field.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/forms.css',
+      'themes/atmosphere/otp-field.css',
     ],
     render: () =>
       createOtpField({
@@ -533,9 +629,9 @@ export const examples = [
       'tokens.css',
       'core/forms.css',
       'core/range-field.css',
-      'theme-atmosphere.css',
-      'forms.css',
-      'range-field.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/forms.css',
+      'themes/atmosphere/range-field.css',
     ],
     render: () =>
       createRangeFieldPair({
@@ -559,7 +655,12 @@ export const examples = [
     title: 'File Input',
     description: 'A native file input with consistent field anatomy.',
     definitions: [],
-    styles: ['tokens.css', 'core/forms.css', 'theme-atmosphere.css', 'forms.css'],
+    styles: [
+      'tokens.css',
+      'core/forms.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/forms.css',
+    ],
     render: () =>
       createFileField({
         id: 'manifest',
@@ -580,7 +681,12 @@ export const examples = [
     title: 'Native Select',
     description: 'Style a native select while preserving platform behavior.',
     definitions: [],
-    styles: ['tokens.css', 'core/forms.css', 'theme-atmosphere.css', 'forms.css'],
+    styles: [
+      'tokens.css',
+      'core/forms.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/forms.css',
+    ],
     render: () =>
       createSelectField({
         id: 'channel',
@@ -602,7 +708,12 @@ export const examples = [
     title: 'Number Stepper',
     description: 'Enhance a native number input with increment controls.',
     definitions: ['ui-number-stepper'],
-    styles: ['tokens.css', 'core/number-stepper.css', 'theme-atmosphere.css', 'number-stepper.css'],
+    styles: [
+      'tokens.css',
+      'core/number-stepper.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/number-stepper.css',
+    ],
     render: () =>
       createNumberStepper({ id: 'quantity', label: 'Quantity', value: 2, min: 1, max: 10 }),
   }),
@@ -615,7 +726,12 @@ export const examples = [
     title: 'Range',
     description: 'A readable native range control with an output.',
     definitions: [],
-    styles: ['tokens.css', 'core/range.css', 'theme-atmosphere.css', 'range.css'],
+    styles: [
+      'tokens.css',
+      'core/range.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/range.css',
+    ],
     render: () =>
       createRangeField({
         id: 'density',
@@ -637,7 +753,12 @@ export const examples = [
     title: 'Switch',
     description: 'A native checkbox exposed as an immediate on or off setting.',
     definitions: [],
-    styles: ['tokens.css', 'core/forms.css', 'theme-atmosphere.css', 'forms.css'],
+    styles: [
+      'tokens.css',
+      'core/forms.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/forms.css',
+    ],
     render: () =>
       createSwitchField({
         id: 'dark-mode',
@@ -662,9 +783,9 @@ export const examples = [
       'tokens.css',
       'core/choice-groups.css',
       'core/forms.css',
-      'theme-atmosphere.css',
-      'forms.css',
-      'choice-groups.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/forms.css',
+      'themes/atmosphere/choice-groups.css',
     ],
     render: () =>
       [
@@ -704,10 +825,10 @@ export const examples = [
       'core/combobox.css',
       'core/floating.css',
       'core/options.css',
-      'theme-atmosphere.css',
-      'button.css',
-      'combobox.css',
-      'options.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/combobox.css',
+      'themes/atmosphere/options.css',
     ],
     render: () =>
       createCombobox({
@@ -736,9 +857,9 @@ export const examples = [
       'tokens.css',
       'core/listbox.css',
       'core/options.css',
-      'theme-atmosphere.css',
-      'listbox.css',
-      'options.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/listbox.css',
+      'themes/atmosphere/options.css',
     ],
     render: () =>
       createListbox({
@@ -764,9 +885,9 @@ export const examples = [
       'tokens.css',
       'core/floating.css',
       'core/menu.css',
-      'theme-atmosphere.css',
-      'button.css',
-      'menu.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/menu.css',
     ],
     render: () =>
       createMenu({
@@ -808,10 +929,10 @@ export const examples = [
       'core/context-menu.css',
       'core/floating.css',
       'core/menu.css',
-      'theme-atmosphere.css',
-      'button.css',
-      'menu.css',
-      'context-menu.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/menu.css',
+      'themes/atmosphere/context-menu.css',
     ],
     render: () =>
       createContextMenu({
@@ -840,10 +961,10 @@ export const examples = [
       'tokens.css',
       'core/floating.css',
       'core/menu.css',
-      'theme-atmosphere.css',
-      'button.css',
-      'menu.css',
-      'popover.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/menu.css',
+      'themes/atmosphere/popover.css',
     ],
     render: () =>
       createMenuButton({
@@ -867,9 +988,9 @@ export const examples = [
       'tokens.css',
       'core/choice-groups.css',
       'core/forms.css',
-      'theme-atmosphere.css',
-      'forms.css',
-      'choice-groups.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/forms.css',
+      'themes/atmosphere/choice-groups.css',
     ],
     render: () =>
       [
@@ -909,10 +1030,10 @@ export const examples = [
       'core/floating.css',
       'core/options.css',
       'core/select.css',
-      'theme-atmosphere.css',
-      'button.css',
-      'select.css',
-      'options.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/select.css',
+      'themes/atmosphere/options.css',
     ],
     render: () =>
       createCustomSelect({
@@ -932,7 +1053,13 @@ export const examples = [
     title: 'Toolbar',
     description: 'Arrow-key navigation across a group of commands.',
     definitions: ['ui-toolbar'],
-    styles: ['tokens.css', 'core/toolbar.css', 'theme-atmosphere.css', 'button.css', 'toolbar.css'],
+    styles: [
+      'tokens.css',
+      'core/toolbar.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/toolbar.css',
+    ],
     render: () => createToolbar({ label: 'Formatting' }),
   }),
   example({
@@ -946,7 +1073,12 @@ export const examples = [
     title: 'Collapsible',
     description: 'Style native disclosure groups without replacing details.',
     definitions: [],
-    styles: ['tokens.css', 'core/collapsible.css', 'theme-atmosphere.css', 'collapsible.css'],
+    styles: [
+      'tokens.css',
+      'core/collapsible.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/collapsible.css',
+    ],
     render: () =>
       createCollapsible({
         name: 'catalog-collapsible',
@@ -975,7 +1107,13 @@ export const examples = [
     title: 'Dialog',
     description: 'Enhance an authored native dialog with focus management.',
     definitions: ['ui-dialog'],
-    styles: ['tokens.css', 'core/dialog.css', 'theme-atmosphere.css', 'button.css', 'dialog.css'],
+    styles: [
+      'tokens.css',
+      'core/dialog.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/dialog.css',
+    ],
     render: () =>
       createDialog({
         id: 'release-dialog',
@@ -999,9 +1137,9 @@ export const examples = [
       'tokens.css',
       'core/floating.css',
       'core/popover.css',
-      'theme-atmosphere.css',
-      'button.css',
-      'popover.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/popover.css',
     ],
     render: () =>
       createHoverCard({
@@ -1026,9 +1164,9 @@ export const examples = [
       'tokens.css',
       'core/floating.css',
       'core/popover.css',
-      'theme-atmosphere.css',
-      'button.css',
-      'popover.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/popover.css',
     ],
     render: () =>
       createPopover({
@@ -1052,10 +1190,10 @@ export const examples = [
     styles: [
       'tokens.css',
       'core/sheet.css',
-      'theme-atmosphere.css',
-      'button.css',
-      'sheet.css',
-      'dialog.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/sheet.css',
+      'themes/atmosphere/dialog.css',
     ],
     render: () =>
       createSheet({
@@ -1075,7 +1213,12 @@ export const examples = [
     title: 'Tabs',
     description: 'Associate tabs and panels with native keyboard behavior.',
     definitions: ['ui-tabs'],
-    styles: ['tokens.css', 'core/tabs.css', 'theme-atmosphere.css', 'tabs.css'],
+    styles: [
+      'tokens.css',
+      'core/tabs.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/tabs.css',
+    ],
     render: () =>
       createTabs({
         id: 'package-tabs',
@@ -1101,9 +1244,9 @@ export const examples = [
       'tokens.css',
       'core/floating.css',
       'core/popover.css',
-      'theme-atmosphere.css',
-      'button.css',
-      'popover.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/popover.css',
     ],
     render: () =>
       createTooltip({
@@ -1121,7 +1264,12 @@ export const examples = [
     title: 'Color Picker',
     description: 'Edit modern color formats through authored controls.',
     definitions: ['ui-color-picker'],
-    styles: ['tokens.css', 'core/color-picker.css', 'theme-atmosphere.css', 'color-picker.css'],
+    styles: [
+      'tokens.css',
+      'core/color-picker.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/color-picker.css',
+    ],
     related: ['popover-color-picker'],
     render: () =>
       createColorPicker({ id: 'brand-color', label: 'Brand color', value: 'oklch(62% 0.18 32)' }),
@@ -1135,7 +1283,12 @@ export const examples = [
     title: 'Color Swatch',
     description: 'Display and select a named color value.',
     definitions: [],
-    styles: ['tokens.css', 'core/color-swatch.css', 'theme-atmosphere.css', 'color-swatch.css'],
+    styles: [
+      'tokens.css',
+      'core/color-swatch.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/color-swatch.css',
+    ],
     related: ['color-palette'],
     render: () => createColorSwatch({ label: 'Brand red', value: 'oklch(62% 0.18 32)' }),
   }),
@@ -1147,7 +1300,12 @@ export const examples = [
     title: 'Color Palette',
     description: 'Lay several swatches out as a selectable grid across CSS color formats.',
     definitions: [],
-    styles: ['tokens.css', 'core/color-swatch.css', 'theme-atmosphere.css', 'color-swatch.css'],
+    styles: [
+      'tokens.css',
+      'core/color-swatch.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/color-swatch.css',
+    ],
     render: () => createColorPalette({ colors: PALETTE, selected: '#3366cc' }),
   }),
   example({
@@ -1164,11 +1322,11 @@ export const examples = [
       'core/floating.css',
       'core/options.css',
       'core/select.css',
-      'theme-atmosphere.css',
-      'button.css',
-      'dialog.css',
-      'select.css',
-      'options.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/dialog.css',
+      'themes/atmosphere/select.css',
+      'themes/atmosphere/options.css',
     ],
     render: () =>
       createCommandPalette({
@@ -1196,10 +1354,10 @@ export const examples = [
       'core/avatar.css',
       'core/badge.css',
       'core/list.css',
-      'theme-atmosphere.css',
-      'avatar.css',
-      'badge.css',
-      'list.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/avatar.css',
+      'themes/atmosphere/badge.css',
+      'themes/atmosphere/list.css',
     ],
     render: () =>
       `<ul class="ui-list" aria-label="Team presence"><li data-ui-part="item">${createAvatar({ label: 'Avery Stone', initials: 'AS', status: 'online' })}<span data-ui-part="title">Avery Stone</span>${createBadge({ label: 'Online', variant: 'success', dot: true })}</li><li data-ui-part="item">${createAvatar({ label: 'Morgan Lee', initials: 'ML', status: 'busy' })}<span data-ui-part="title">Morgan Lee</span>${createBadge({ label: 'Busy', variant: 'warning', dot: true })}</li></ul>`,
@@ -1216,9 +1374,9 @@ export const examples = [
       'tokens.css',
       'core/button.css',
       'core/forms.css',
-      'theme-atmosphere.css',
-      'button.css',
-      'forms.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/forms.css',
     ],
     render: () => createAccountForm(),
   }),
@@ -1235,10 +1393,10 @@ export const examples = [
       'core/color-picker.css',
       'core/floating.css',
       'core/popover.css',
-      'theme-atmosphere.css',
-      'popover.css',
-      'color-picker.css',
-      'color-swatch.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/popover.css',
+      'themes/atmosphere/color-picker.css',
+      'themes/atmosphere/color-swatch.css',
     ],
     script: colorPickerPopoverScript,
     render: () =>

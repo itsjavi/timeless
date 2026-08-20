@@ -346,6 +346,73 @@ declaration in all 81 stylesheets sits inside a layer, so the corrected baseline
 rather than merely true today. The check was confirmed to fire both on a block escaping the layer
 and on a bare stray declaration.
 
+## Decisions taken during implementation
+
+Four decisions were agreed with Javi after the milestone opened, and are recorded here rather than
+in `PLAN.md`, which is the static plan.
+
+### The stylesheets are laid out by tier, not flat
+
+`src/css/` root holds only what is not a theme: `tokens.css`, and the two aggregates. Behavior lives
+in `core/`, and Atmosphere lives in `themes/atmosphere/` beside a `themes/atmosphere.css` aggregate.
+
+```
+src/css/
+  tokens.css                     layer order + color-scheme     required
+  core.css                       aggregate for core/            required
+  core/<component>.css           40 files                       required
+  themes/atmosphere.css          aggregate for atmosphere/      optional
+  themes/atmosphere/tokens.css   the 58 token values            optional
+  themes/atmosphere/<c>.css      39 files                       optional
+  components.css                 all three tiers, three lines
+```
+
+The flat root was the alternative, and the objection to it was clutter: 39 component stylesheets
+beside the three files that are not themes at all. Nesting under `themes/<name>/` also names things
+honestly — Atmosphere is one theme, so a second is a sibling directory and a sibling aggregate, and
+"replace the theme wholesale" becomes a directory swap rather than a 40-file instruction. All 40
+moves were pure renames, zero content change, confirmed by `git diff -M --numstat`.
+
+`components.css` deliberately stayed at the root rather than becoming `themes/atmosphere/full.css`,
+which was considered. 41 of its 43 imports were Atmosphere's, but the other two are `tokens.css` and
+`core.css` — the required tiers. An aggregate living inside the optional tier that reaches back out
+to pull in the required ones inverts the dependency, and every replacement theme would then have to
+know to re-import core and tokens. It is now three lines, one per tier, in tier order.
+
+### The size metric stays as it is, and the discrepancy is recorded instead
+
+`check-performance.mjs` gzips each stylesheet separately and sums, so splitting a file raises the
+figure without changing what a consumer downloads. Redefining it to concatenate-then-gzip would
+report the truth more directly, and was rejected: a gate redefined in the middle of the change it is
+meant to police is a weaker gate, and the current definition is at least consistent with itself. The
+honest numbers are recorded above — 21 to 58 bytes gzipped per entry, 2% to 4% — and phase 7
+re-baselines against the existing definition.
+
+### Core-only Sheet height gets documented rather than fixed
+
+Core-only, the Sheet panel is content-height rather than full-height: `block-size: 100dvh` and the
+`max-block-size` reset are sizing, which stays in the theme, and the UA gives `dialog`
+`height: fit-content`. It is still edge-pinned, scrollable, focus-trapped, and operable, so it meets
+the acceptance criterion. Phase 6 says so on the page rather than leaving a consumer to discover it,
+because it is the clearest place the narrow-tier decision is visible.
+
+## Constraints discovered during implementation
+
+### A dangling `@import` shipped in a green build
+
+Phase 3 deleted `form.css`, which held nothing but `display: contents`, and left `components.css`
+importing it. That shipped in `69ed4f1` and was reported as passing `pnpm qa`, because nothing in
+the repository resolved an `@import`: a dangling one fails when a browser loads the stylesheet, and
+no test loads an aggregate. It surfaced by accident three commits later, while counting imports for
+the theme restructure.
+
+`validate-contracts.mjs` now resolves all 83 `@import` targets in the package, and was confirmed to
+fire both on a fabricated dangling import and on the real one. The recomposed `components.css` also
+removes the failure mode: at three lines, one per aggregate, adding or deleting a component no
+longer touches it at all.
+
+## Decisions and constraints
+
 ## Decisions and constraints
 
 Four decisions were taken before the milestone opened rather than left to implementation.

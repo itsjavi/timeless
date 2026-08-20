@@ -64,10 +64,10 @@ export function documentedContracts(names: readonly ComponentName[]): Documented
 
 /**
  * The two tiers every component imports and none of them is described by: `tokens.css` is the layer
- * order and `color-scheme`, and `theme-atmosphere.css` is the token values. Reading either as
+ * order and `color-scheme`, and `themes/atmosphere/tokens.css` is the token values. Reading either as
  * "properties this component uses" would list the whole theme on every page.
  */
-const GLOBAL_STYLESHEETS = new Set(['tokens.css', 'theme-atmosphere.css'])
+const GLOBAL_STYLESHEETS = new Set(['tokens.css', 'themes/atmosphere/tokens.css'])
 
 export type ComponentStyling = {
   /** Custom properties a consumer may set, declared per component. */

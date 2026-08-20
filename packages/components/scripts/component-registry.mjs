@@ -608,7 +608,7 @@ export const components = [
   css(
     'button',
     'ui-button',
-    ['core/button.css', 'button.css'],
+    ['core/button.css', 'themes/atmosphere/button.css'],
     [
       attribute('data-ui-variant', 'string', {
         set: 'buttonVariants',
@@ -639,7 +639,7 @@ export const components = [
   css(
     'toggle',
     'ui-toggle',
-    ['core/toggle.css', 'toggle.css'],
+    ['core/toggle.css', 'themes/atmosphere/toggle.css'],
     [
       attribute('data-ui-variant', 'string', {
         set: 'buttonVariants',
@@ -658,7 +658,7 @@ export const components = [
   css(
     'alert',
     'ui-alert',
-    ['core/alert.css', 'alert.css'],
+    ['core/alert.css', 'themes/atmosphere/alert.css'],
     [
       attribute('data-ui-variant', 'string', {
         set: 'alertVariants',
@@ -679,7 +679,7 @@ export const components = [
   css(
     'avatar',
     'ui-avatar',
-    ['core/avatar.css', 'avatar.css'],
+    ['core/avatar.css', 'themes/atmosphere/avatar.css'],
     [
       size('primitiveSizes', 'Avatar diameter.'),
       attribute('data-ui-shape', 'string', {
@@ -702,7 +702,7 @@ export const components = [
   css(
     'badge',
     'ui-badge',
-    ['core/badge.css', 'badge.css'],
+    ['core/badge.css', 'themes/atmosphere/badge.css'],
     [
       attribute('data-ui-variant', 'string', {
         set: 'badgeVariants',
@@ -716,7 +716,7 @@ export const components = [
   css(
     'separator',
     'ui-separator',
-    ['core/separator.css', 'separator.css'],
+    ['core/separator.css', 'themes/atmosphere/separator.css'],
     [
       attribute('data-ui-orientation', 'string', {
         set: 'separatorOrientations',
@@ -736,7 +736,7 @@ export const components = [
   css(
     'card',
     'ui-card',
-    ['core/card.css', 'card.css'],
+    ['core/card.css', 'themes/atmosphere/card.css'],
     [
       attribute('data-ui-variant', 'string', {
         set: 'cardVariants',
@@ -758,7 +758,7 @@ export const components = [
   css(
     'skeleton',
     'ui-skeleton',
-    ['core/skeleton.css', 'skeleton.css'],
+    ['core/skeleton.css', 'themes/atmosphere/skeleton.css'],
     [
       size('primitiveSizes', 'Line height for the `text` shape, diameter for `circle`.'),
       attribute('data-ui-shape', 'string', {
@@ -776,7 +776,7 @@ export const components = [
   css(
     'progress',
     'ui-progress',
-    ['core/progress.css', 'progress.css'],
+    ['core/progress.css', 'themes/atmosphere/progress.css'],
     [size('primitiveSizes', 'Track thickness and label size.'), density('compactDensities')],
     [
       part('header', false, undefined, 'Row holding the label and output.'),
@@ -784,19 +784,19 @@ export const components = [
       part('hint', false, undefined, 'Supporting text under the track.'),
     ],
   ),
-  css('link', 'ui-link', 'link.css', [
+  css('link', 'ui-link', 'themes/atmosphere/link.css', [
     attribute('data-ui-variant', 'string', {
       set: 'linkVariants',
       default: 'default',
       description: 'Link color intent.',
     }),
   ]),
-  css('kbd', 'ui-kbd', ['core/kbd.css', 'kbd.css']),
-  css('code', 'ui-code', ['core/code.css', 'code.css']),
+  css('kbd', 'ui-kbd', ['core/kbd.css', 'themes/atmosphere/kbd.css']),
+  css('code', 'ui-code', ['core/code.css', 'themes/atmosphere/code.css']),
   css(
     'group',
     'ui-group',
-    ['core/group.css', 'group.css'],
+    ['core/group.css', 'themes/atmosphere/group.css'],
     [
       attribute('data-ui-orientation', 'string', {
         set: 'groupOrientations',
@@ -816,7 +816,7 @@ export const components = [
   css(
     'list',
     'ui-list',
-    ['core/list.css', 'list.css'],
+    ['core/list.css', 'themes/atmosphere/list.css'],
     [
       attribute('data-ui-variant', 'string', {
         set: 'listVariants',
@@ -841,7 +841,7 @@ export const components = [
   css(
     'table',
     'ui-table',
-    ['core/table.css', 'table.css'],
+    ['core/table.css', 'themes/atmosphere/table.css'],
     [
       density('compactDensities', 'Cell padding.'),
       attribute('data-ui-align', 'string', {
@@ -860,7 +860,7 @@ export const components = [
   css(
     'collapsible',
     'ui-collapsible',
-    ['core/collapsible.css', 'collapsible.css'],
+    ['core/collapsible.css', 'themes/atmosphere/collapsible.css'],
     [density('compactDensities', 'Summary and content padding.')],
     [],
     [],
@@ -883,7 +883,7 @@ export const components = [
   css(
     'spinner',
     'ui-spinner',
-    ['core/spinner.css', 'spinner.css'],
+    ['core/spinner.css', 'themes/atmosphere/spinner.css'],
     [
       size('primitiveSizes', 'Spinner diameter.'),
       attribute('data-ui-variant', 'string', {
@@ -897,7 +897,7 @@ export const components = [
   css(
     'empty',
     'ui-empty',
-    ['core/empty.css', 'empty.css'],
+    ['core/empty.css', 'themes/atmosphere/empty.css'],
     [density('primitiveDensities', 'Vertical rhythm of the empty state.')],
     [
       part('art', false, undefined, 'Decorative illustration or icon.'),
@@ -907,14 +907,14 @@ export const components = [
   css(
     'meter',
     'ui-meter-field',
-    ['core/meter.css', 'meter.css'],
+    ['core/meter.css', 'themes/atmosphere/meter.css'],
     [],
     [part('hint', false, undefined, 'Supporting text under the meter.')],
   ),
   css(
     'colorSwatch',
     'ui-color-swatch',
-    ['core/color-swatch.css', 'color-swatch.css'],
+    ['core/color-swatch.css', 'themes/atmosphere/color-swatch.css'],
     [],
     [
       part('chip', false, undefined, 'The color area. Set the color through `--ui-swatch-color`.'),
@@ -926,7 +926,7 @@ export const components = [
   css(
     'field',
     'ui-field',
-    ['core/forms.css', 'forms.css'],
+    ['core/forms.css', 'themes/atmosphere/forms.css'],
     [
       attribute('data-ui-layout', 'string', {
         set: 'fieldLayouts',
@@ -948,7 +948,7 @@ export const components = [
   css(
     'fieldset',
     'ui-fieldset',
-    ['core/forms.css', 'forms.css'],
+    ['core/forms.css', 'themes/atmosphere/forms.css'],
     [density('formDensities', 'Gap between grouped controls, and the padding around them.')],
     [
       part(
@@ -975,13 +975,13 @@ export const components = [
       ),
     ],
   ),
-  css('label', 'ui-label', ['core/forms.css', 'forms.css']),
-  css('description', 'ui-description', ['core/forms.css', 'forms.css']),
-  css('error', 'ui-error', ['core/forms.css', 'forms.css']),
+  css('label', 'ui-label', ['core/forms.css', 'themes/atmosphere/forms.css']),
+  css('description', 'ui-description', ['core/forms.css', 'themes/atmosphere/forms.css']),
+  css('error', 'ui-error', ['core/forms.css', 'themes/atmosphere/forms.css']),
   css(
     'input',
     'ui-input',
-    ['core/forms.css', 'forms.css'],
+    ['core/forms.css', 'themes/atmosphere/forms.css'],
     [size('formControlSizes')],
     [],
     [
@@ -992,7 +992,7 @@ export const components = [
   css(
     'textarea',
     'ui-textarea',
-    ['core/forms.css', 'forms.css'],
+    ['core/forms.css', 'themes/atmosphere/forms.css'],
     [size('formControlSizes')],
     [],
     [
@@ -1003,7 +1003,7 @@ export const components = [
   css(
     'nativeSelect',
     'ui-select',
-    ['core/forms.css', 'forms.css'],
+    ['core/forms.css', 'themes/atmosphere/forms.css'],
     [
       size(
         'formControlSizes',
@@ -1025,7 +1025,7 @@ export const components = [
   css(
     'checkbox',
     'ui-checkbox',
-    ['core/forms.css', 'forms.css'],
+    ['core/forms.css', 'themes/atmosphere/forms.css'],
     [],
     [],
     [
@@ -1036,7 +1036,7 @@ export const components = [
   css(
     'radio',
     'ui-radio',
-    ['core/forms.css', 'forms.css'],
+    ['core/forms.css', 'themes/atmosphere/forms.css'],
     [],
     [],
     [
@@ -1047,7 +1047,7 @@ export const components = [
   css(
     'choice',
     'ui-choice',
-    ['core/forms.css', 'forms.css'],
+    ['core/forms.css', 'themes/atmosphere/forms.css'],
     [density('formDensities', 'Gap between the control and its label.')],
     [
       part('body', false, undefined, 'Wrapper for the title and description beside the control.'),
@@ -1058,7 +1058,7 @@ export const components = [
   css(
     'choiceGroup',
     'ui-choice-group',
-    ['core/forms.css', 'forms.css'],
+    ['core/forms.css', 'themes/atmosphere/forms.css'],
     [
       attribute('data-ui-orientation', 'string', {
         set: 'choiceGroupOrientations',
@@ -1083,7 +1083,7 @@ export const components = [
   css(
     'switch',
     'ui-switch',
-    ['core/forms.css', 'forms.css'],
+    ['core/forms.css', 'themes/atmosphere/forms.css'],
     [],
     [],
     [
@@ -1094,7 +1094,7 @@ export const components = [
   css(
     'range',
     'ui-range',
-    ['core/range.css', 'range.css'],
+    ['core/range.css', 'themes/atmosphere/range.css'],
     [size('formControlSizes', 'Track thickness, thumb diameter, and label size.')],
     [part('hint', false, undefined, 'Supporting text or the live `<output>` value.')],
     [
@@ -1109,7 +1109,7 @@ export const components = [
   css(
     'file',
     'ui-file',
-    ['core/forms.css', 'forms.css'],
+    ['core/forms.css', 'themes/atmosphere/forms.css'],
     [],
     [],
     [
@@ -1124,7 +1124,7 @@ export const components = [
     'UITabsElement',
     'createTabsElementClass',
     'defineTabsElement',
-    ['core/tabs.css', 'tabs.css'],
+    ['core/tabs.css', 'themes/atmosphere/tabs.css'],
     [
       attribute('activation', 'string', {
         set: 'tabsActivations',
@@ -1183,7 +1183,7 @@ export const components = [
     'UIDialogElement',
     'createDialogElementClass',
     'defineDialogElement',
-    ['core/dialog.css', 'dialog.css'],
+    ['core/dialog.css', 'themes/atmosphere/dialog.css'],
     [
       attribute('kind', 'string', {
         set: 'dialogKinds',
@@ -1235,7 +1235,7 @@ export const components = [
     'UISheetElement',
     'createSheetElementClass',
     'defineSheetElement',
-    ['core/sheet.css', 'sheet.css'],
+    ['core/sheet.css', 'themes/atmosphere/sheet.css'],
     [
       attribute('modal', 'boolean', {
         description:
@@ -1313,7 +1313,7 @@ export const components = [
     'UIPopoverElement',
     'createPopoverElementClass',
     'definePopoverElement',
-    ['core/floating.css', 'core/popover.css', 'popover.css'],
+    ['core/floating.css', 'core/popover.css', 'themes/atmosphere/popover.css'],
     [
       attribute('placement', 'string', {
         set: 'floatingPlacements',
@@ -1355,7 +1355,7 @@ export const components = [
     'UIHoverCardElement',
     'createHoverCardElementClass',
     'defineHoverCardElement',
-    ['core/floating.css', 'core/popover.css', 'popover.css'],
+    ['core/floating.css', 'core/popover.css', 'themes/atmosphere/popover.css'],
     [
       attribute('anchor', 'string', {
         description:
@@ -1401,7 +1401,7 @@ export const components = [
   selector(
     'tooltip',
     "ui-hover-card[variant='tooltip']",
-    ['core/floating.css', 'core/popover.css', 'popover.css'],
+    ['core/floating.css', 'core/popover.css', 'themes/atmosphere/popover.css'],
     [],
     [
       part(
@@ -1436,7 +1436,7 @@ export const components = [
     'UIMenuElement',
     'createMenuElementClass',
     'defineMenuElement',
-    ['core/floating.css', 'core/menu.css', 'menu.css'],
+    ['core/floating.css', 'core/menu.css', 'themes/atmosphere/menu.css'],
     [
       attribute('orientation', 'string', {
         set: 'menuOrientations',
@@ -1523,7 +1523,7 @@ export const components = [
     'UIMenuButtonElement',
     'createMenuButtonElementClass',
     'defineMenuButtonElement',
-    ['core/floating.css', 'core/menu.css', 'menu.css'],
+    ['core/floating.css', 'core/menu.css', 'themes/atmosphere/menu.css'],
     [
       attribute('open', 'boolean', {
         description: 'Present to render the menu open on load.',
@@ -1558,7 +1558,12 @@ export const components = [
     'UIContextMenuElement',
     'createContextMenuElementClass',
     'defineContextMenuElement',
-    ['core/context-menu.css', 'core/menu.css', 'context-menu.css', 'menu.css'],
+    [
+      'core/context-menu.css',
+      'core/menu.css',
+      'themes/atmosphere/context-menu.css',
+      'themes/atmosphere/menu.css',
+    ],
     [],
     [
       part(
@@ -1614,7 +1619,7 @@ export const components = [
     'UIToolbarElement',
     'createToolbarElementClass',
     'defineToolbarElement',
-    ['core/toolbar.css', 'toolbar.css'],
+    ['core/toolbar.css', 'themes/atmosphere/toolbar.css'],
     [
       attribute('orientation', 'string', {
         set: 'toolbarOrientations',
@@ -1647,7 +1652,12 @@ export const components = [
     'UIRadioGroupElement',
     'createRadioGroupElementClass',
     'defineRadioGroupElement',
-    ['core/choice-groups.css', 'core/forms.css', 'choice-groups.css', 'forms.css'],
+    [
+      'core/choice-groups.css',
+      'core/forms.css',
+      'themes/atmosphere/choice-groups.css',
+      'themes/atmosphere/forms.css',
+    ],
     [
       attribute('orientation', 'string', {
         set: 'choiceGroupOrientations',
@@ -1685,7 +1695,12 @@ export const components = [
     'UICheckboxGroupElement',
     'createCheckboxGroupElementClass',
     'defineCheckboxGroupElement',
-    ['core/choice-groups.css', 'core/forms.css', 'choice-groups.css', 'forms.css'],
+    [
+      'core/choice-groups.css',
+      'core/forms.css',
+      'themes/atmosphere/choice-groups.css',
+      'themes/atmosphere/forms.css',
+    ],
     [
       attribute('orientation', 'string', {
         set: 'choiceGroupOrientations',
@@ -1718,7 +1733,12 @@ export const components = [
     'UIListboxElement',
     'createListboxElementClass',
     'defineListboxElement',
-    ['core/listbox.css', 'core/options.css', 'listbox.css', 'options.css'],
+    [
+      'core/listbox.css',
+      'core/options.css',
+      'themes/atmosphere/listbox.css',
+      'themes/atmosphere/options.css',
+    ],
     [
       attribute('multiple', 'boolean', {
         description:
@@ -1764,7 +1784,13 @@ export const components = [
     'UISelectElement',
     'createSelectElementClass',
     'defineSelectElement',
-    ['core/floating.css', 'core/options.css', 'core/select.css', 'options.css', 'select.css'],
+    [
+      'core/floating.css',
+      'core/options.css',
+      'core/select.css',
+      'themes/atmosphere/options.css',
+      'themes/atmosphere/select.css',
+    ],
     [
       attribute('open', 'boolean', {
         description: 'Present to render the listbox open on load.',
@@ -1849,7 +1875,13 @@ export const components = [
     'UIComboboxElement',
     'createComboboxElementClass',
     'defineComboboxElement',
-    ['core/combobox.css', 'core/floating.css', 'core/options.css', 'combobox.css', 'options.css'],
+    [
+      'core/combobox.css',
+      'core/floating.css',
+      'core/options.css',
+      'themes/atmosphere/combobox.css',
+      'themes/atmosphere/options.css',
+    ],
     [
       attribute('value', 'string', {
         property: valueProperty,
@@ -1910,7 +1942,7 @@ export const components = [
     'UIToasterElement',
     'createToasterElementClass',
     'defineToasterElement',
-    ['core/toast.css', 'toast.css'],
+    ['core/toast.css', 'themes/atmosphere/toast.css'],
     [
       attribute('placement', 'string', {
         set: 'toasterPlacements',
@@ -1938,7 +1970,7 @@ export const components = [
     'UIToastElement',
     'createToastElementClass',
     'defineToastElement',
-    ['core/toast.css', 'toast.css'],
+    ['core/toast.css', 'themes/atmosphere/toast.css'],
     [
       attribute('duration', 'number', {
         property: { name: 'duration', type: 'string' },
@@ -1980,7 +2012,7 @@ export const components = [
     'UIToggleGroupElement',
     'createToggleGroupElementClass',
     'defineToggleGroupElement',
-    ['core/toggle.css', 'toggle.css'],
+    ['core/toggle.css', 'themes/atmosphere/toggle.css'],
     [
       attribute('attached', 'boolean', {
         property: false,
@@ -2024,7 +2056,7 @@ export const components = [
     'UINumberStepperElement',
     'createNumberStepperElementClass',
     'defineNumberStepperElement',
-    ['core/number-stepper.css', 'number-stepper.css'],
+    ['core/number-stepper.css', 'themes/atmosphere/number-stepper.css'],
     [],
     [
       part(
@@ -2054,7 +2086,7 @@ export const components = [
     'UIColorPickerElement',
     'createColorPickerElementClass',
     'defineColorPickerElement',
-    ['core/color-picker.css', 'color-picker.css'],
+    ['core/color-picker.css', 'themes/atmosphere/color-picker.css'],
     [
       attribute('format', 'string', {
         set: 'colorPickerFormats',
@@ -2176,7 +2208,7 @@ export const components = [
     'UIRangeFieldElement',
     'createRangeFieldElementClass',
     'defineRangeFieldElement',
-    ['core/range-field.css', 'range-field.css'],
+    ['core/range-field.css', 'themes/atmosphere/range-field.css'],
     [],
     [
       part(
@@ -2236,7 +2268,12 @@ export const components = [
     'UIOtpFieldElement',
     'createOtpFieldElementClass',
     'defineOtpFieldElement',
-    ['core/forms.css', 'core/otp-field.css', 'forms.css', 'otp-field.css'],
+    [
+      'core/forms.css',
+      'core/otp-field.css',
+      'themes/atmosphere/forms.css',
+      'themes/atmosphere/otp-field.css',
+    ],
     [
       attribute('name', 'string', {
         description:

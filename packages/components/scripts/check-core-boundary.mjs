@@ -48,6 +48,8 @@ import { resolve } from 'node:path'
 const packageRoot = resolve(import.meta.dirname, '..')
 const cssRoot = resolve(packageRoot, 'src/css')
 const coreRoot = resolve(cssRoot, 'core')
+/** Atmosphere is the theme every core file is split against; a second theme would be a sibling. */
+const themeRoot = resolve(cssRoot, 'themes/atmosphere')
 
 /** Cosmetic properties, spelled out. The plan's "explicitly excluded" list, plus its type clause. */
 const COSMETIC_EXACTLY = new Set([
@@ -192,13 +194,13 @@ for (const file of files) {
    * The inverse boundary. A core file with no theme counterpart is legitimate: Context Menu's
    * placement is entirely behavior, so nothing is left for a theme file to hold.
    */
-  const themeSource = await readFile(resolve(cssRoot, file), 'utf8').catch(() => null)
+  const themeSource = await readFile(resolve(themeRoot, file), 'utf8').catch(() => null)
   if (themeSource === null) continue
   themeChecked += 1
   for (const [property, line] of themeDeclarations(stripKeyframes(themeSource))) {
     if (!CORE_OWNED.has(property)) continue
     failures.push(
-      `${file}:${line} declares \`${property}\`, which core/${file} owns — extraction must move a declaration, not leave one behind`,
+      `themes/atmosphere/${file}:${line} declares \`${property}\`, which core/${file} owns — extraction must move a declaration, not leave one behind`,
     )
   }
 }

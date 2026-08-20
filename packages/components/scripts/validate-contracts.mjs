@@ -87,10 +87,42 @@ validateContractShape()
 await validateAttributeValues()
 const tokenCount = await validatePublicTokens()
 const layeredCount = await validateEverythingIsLayered()
+const importCount = await validateImportsResolve()
 
 console.log(
-  `Validated ${components.length} component contracts, ${elements.length} elements, ${countDocumentedValues()} documented attribute values, ${tokenCount} public tokens, and ${layeredCount} fully layered stylesheets.`,
+  `Validated ${components.length} component contracts, ${elements.length} elements, ${countDocumentedValues()} documented attribute values, ${tokenCount} public tokens, ${layeredCount} fully layered stylesheets, and ${importCount} resolvable @import targets.`,
 )
+
+/**
+ * Every `@import` in the package must name a file that exists. A dangling one fails only when a
+ * browser loads the stylesheet, which no test does for an aggregate — so milestone 028 deleted
+ * `form.css`, left `components.css` importing it, and shipped that in a green build. The whole point of
+ * the aggregates is that a consumer can import one file instead of forty; an aggregate with a hole in
+ * it is worse than no aggregate.
+ */
+async function validateImportsResolve() {
+  const cssRoot = resolve(packageRoot, 'src/css')
+  const stylesheets = (await readdir(cssRoot, { recursive: true }))
+    .map((name) => name.split(sep).join('/'))
+    .filter((name) => name.endsWith('.css'))
+
+  let total = 0
+  for (const name of stylesheets) {
+    // Comments are stripped first: a file may legitimately quote an `@import` while explaining one.
+    const source = (await readFile(resolve(cssRoot, name), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '')
+    const directory = resolve(cssRoot, name, '..')
+    for (const match of source.matchAll(/@import\s+['"]([^'"]+)['"]/g)) {
+      total += 1
+      const target = resolve(directory, match[1])
+      try {
+        await readFile(target, 'utf8')
+      } catch {
+        throw new Error(`${name} imports ${match[1]}, which does not exist`)
+      }
+    }
+  }
+  return total
+}
 
 /**
  * Every declaration the package ships must sit inside a cascade layer. Unlayered CSS beats *all*
@@ -195,7 +227,7 @@ function validateContractShape() {
 
 /**
  * `atmosphereTokenGroups` is documented as the public token contract, so it must name exactly the
- * custom properties `theme-atmosphere.css` declares on `:root`. A token in the stylesheet but not
+ * custom properties `themes/atmosphere/tokens.css` declares on `:root`. A token in the stylesheet
  * the list is undocumented; a token in the list but not the stylesheet does not exist.
  *
  * The same function proves the other half of the split: `tokens.css` carries the layer statement and
@@ -203,7 +235,10 @@ function validateContractShape() {
  * file a consumer cannot opt out of, and the theme stops being optional again.
  */
 async function validatePublicTokens() {
-  const stylesheet = await readFile(resolve(packageRoot, 'src/css/theme-atmosphere.css'), 'utf8')
+  const stylesheet = await readFile(
+    resolve(packageRoot, 'src/css/themes/atmosphere/tokens.css'),
+    'utf8',
+  )
   const listed = new Set(
     [
       ...(await readFile(resolve(packageRoot, 'src/tokens.ts'), 'utf8')).matchAll(
@@ -218,13 +253,13 @@ async function validatePublicTokens() {
   const undocumented = [...declared].filter((token) => !listed.has(token))
   if (undocumented.length > 0) {
     throw new Error(
-      `theme-atmosphere.css declares undocumented public tokens: ${undocumented.join(', ')}`,
+      `themes/atmosphere/tokens.css declares undocumented public tokens: ${undocumented.join(', ')}`,
     )
   }
   const missing = [...listed].filter((token) => !declared.has(token))
   if (missing.length > 0) {
     throw new Error(
-      `atmosphereTokenGroups lists tokens theme-atmosphere.css never declares: ${missing.join(', ')}`,
+      `atmosphereTokenGroups lists tokens themes/atmosphere/tokens.css never declares: ${missing.join(', ')}`,
     )
   }
 

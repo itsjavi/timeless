@@ -23,13 +23,13 @@ if (missingTags.length > 0)
   throw new Error(`Undocumented custom elements: ${missingTags.join(', ')}`)
 
 /**
- * Recursive, and relative to `src/css`, so `core/<component>.css` is required to appear in some
- * example's `styles` exactly as a top-level stylesheet is. A non-recursive listing would have gone
- * quiet on the whole `core/` directory — the completeness gate skipping precisely the files
- * milestone 028 added. `components.css` and `core.css` are the two aggregates; no example lists an
- * aggregate.
+ * Recursive, and relative to `src/css`, so `core/<component>.css` and
+ * `themes/atmosphere/<component>.css` are each required to appear in some example's `styles`. A
+ * non-recursive listing would have gone quiet on both directories at once — the completeness gate
+ * skipping precisely the files milestone 028 moved there. `components.css` and `core.css` are the two
+ * aggregates; no example lists an aggregate.
  */
-const AGGREGATE_CSS = new Set(['components.css', 'core.css'])
+const AGGREGATE_CSS = new Set(['components.css', 'core.css', 'themes/atmosphere.css'])
 const cssRoot = resolve(root, 'packages/components/src/css')
 const availableCss = (await readdir(cssRoot, { recursive: true }))
   .map((name) => name.split(sep).join('/'))

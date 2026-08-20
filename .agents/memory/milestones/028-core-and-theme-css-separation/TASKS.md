@@ -96,6 +96,19 @@
       example documents rather than by hand
 - [x] Add each core stylesheet to the StoryLite CSS bundles that render its component
 
+## 4b. Restructure the stylesheets by tier
+
+- [x] Move the 39 component cosmetic stylesheets and `theme-atmosphere.css` under
+      `themes/atmosphere/`, as pure renames with no content change
+- [x] Add `themes/atmosphere.css`, mirroring how `core.css` aggregates `core/`
+- [x] Recompose `components.css` as three imports, one per tier, and record why it does not belong
+      under `themes/atmosphere/`
+- [x] Repoint the registry, examples, story bundles, doc snippets, `TokenTable`, `stylingFor`, and
+      the two boundary validators
+- [x] Fix the dangling `@import './form.css'` that phase 3 shipped, and gate every `@import` in the
+      package so it cannot recur
+- [x] Re-baseline the size gate for the moved paths
+
 ## 5. Verify core-only rendering
 
 - [ ] Build a StoryLite or e2e fixture that loads `core.css` and `tokens.css` and no theme CSS

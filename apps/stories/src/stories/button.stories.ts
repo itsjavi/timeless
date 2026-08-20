@@ -10,8 +10,8 @@ import {
   type ButtonVariant,
 } from '@timelessui/components'
 import coreButtonCss from '@timelessui/components/css/core/button.css?raw'
-import buttonCss from '@timelessui/components/css/button.css?raw'
-import themeCss from '@timelessui/components/css/theme-atmosphere.css?raw'
+import buttonCss from '@timelessui/components/css/themes/atmosphere/button.css?raw'
+import themeCss from '@timelessui/components/css/themes/atmosphere/tokens.css?raw'
 import tokensCss from '@timelessui/components/css/tokens.css?raw'
 import { escapeAttribute, escapeHtml } from '../lib/utils'
 import buttonDocsHtml from './button.stories.md'

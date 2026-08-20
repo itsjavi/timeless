@@ -18,26 +18,26 @@ pnpm add @timelessui/components
 
 ## Entrypoints
 
-| Import                                       | Contains                                                                                         | Side effects                  |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------- |
-| `@timelessui/components`                     | Contracts, design-token names, permitted attribute values, event types, and every element class. | None                          |
-| `@timelessui/components/{element}`           | One enhanced element's class and helpers, for example `@timelessui/components/dialog`.           | None                          |
-| `@timelessui/components/define/ui-{element}` | Registers one custom element.                                                                    | Calls `customElements.define` |
-| `@timelessui/components/define`              | Registers every public custom element.                                                           | Calls `customElements.define` |
-| `@timelessui/components/css/{component}.css` | One component's styles.                                                                          | Stylesheet                    |
-| `@timelessui/components/css/components.css`  | Every component's styles, tokens included.                                                       | Stylesheet                    |
-| `@timelessui/components/css/tokens.css`      | Design tokens and the cascade-layer order.                                                       | Stylesheet                    |
-| `@timelessui/components/color`               | Color parsing, conversion, and gamut utilities.                                                  | None                          |
-| `@timelessui/components/collection`          | Locale-aware matching and disabled-aware keyboard navigation.                                    | None                          |
-| `@timelessui/components/events`              | Transition event and detail types.                                                               | None                          |
-| `@timelessui/components/value-state`         | Authored-default and live-value helpers.                                                         | None                          |
-| `@timelessui/components/attributes`          | Typed attribute builder for CSS-only components.                                                 | None                          |
-| `@timelessui/components/validate`            | Development-time check that authored markup matches the contracts.                               | None                          |
-| `@timelessui/components/react`               | React 19 intrinsic-element declarations. Types only.                                             | None                          |
-| `@timelessui/components/preact`              | Preact intrinsic-element declarations. Types only.                                               | None                          |
-| `@timelessui/components/solid`               | Solid intrinsic-element declarations. Types only.                                                | None                          |
-| `@timelessui/components/vue`                 | Vue `GlobalComponents` declarations. Types only.                                                 | None                          |
-| `@timelessui/components/svelte`              | Svelte `svelteHTML.IntrinsicElements` declarations. Types only.                                  | None                          |
+| Import                                                         | Contains                                                                                         | Side effects                  |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------- |
+| `@timelessui/components`                                       | Contracts, design-token names, permitted attribute values, event types, and every element class. | None                          |
+| `@timelessui/components/{element}`                             | One enhanced element's class and helpers, for example `@timelessui/components/dialog`.           | None                          |
+| `@timelessui/components/define/ui-{element}`                   | Registers one custom element.                                                                    | Calls `customElements.define` |
+| `@timelessui/components/define`                                | Registers every public custom element.                                                           | Calls `customElements.define` |
+| `@timelessui/components/css/themes/atmosphere/{component}.css` | One component's styles.                                                                          | Stylesheet                    |
+| `@timelessui/components/css/components.css`                    | Every component's styles, tokens included.                                                       | Stylesheet                    |
+| `@timelessui/components/css/tokens.css`                        | Design tokens and the cascade-layer order.                                                       | Stylesheet                    |
+| `@timelessui/components/color`                                 | Color parsing, conversion, and gamut utilities.                                                  | None                          |
+| `@timelessui/components/collection`                            | Locale-aware matching and disabled-aware keyboard navigation.                                    | None                          |
+| `@timelessui/components/events`                                | Transition event and detail types.                                                               | None                          |
+| `@timelessui/components/value-state`                           | Authored-default and live-value helpers.                                                         | None                          |
+| `@timelessui/components/attributes`                            | Typed attribute builder for CSS-only components.                                                 | None                          |
+| `@timelessui/components/validate`                              | Development-time check that authored markup matches the contracts.                               | None                          |
+| `@timelessui/components/react`                                 | React 19 intrinsic-element declarations. Types only.                                             | None                          |
+| `@timelessui/components/preact`                                | Preact intrinsic-element declarations. Types only.                                               | None                          |
+| `@timelessui/components/solid`                                 | Solid intrinsic-element declarations. Types only.                                                | None                          |
+| `@timelessui/components/vue`                                   | Vue `GlobalComponents` declarations. Types only.                                                 | None                          |
+| `@timelessui/components/svelte`                                | Svelte `svelteHTML.IntrinsicElements` declarations. Types only.                                  | None                          |
 
 Only enhanced elements have a class entrypoint. CSS-only primitives such as Button, Alert, and Card
 are classes and attributes rather than JavaScript, so they have no per-component module at all —

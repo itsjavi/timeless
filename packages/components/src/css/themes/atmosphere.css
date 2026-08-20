@@ -1,0 +1,52 @@
+/*
+ * The whole Atmosphere theme: its token values, then one stylesheet per component. Optional — this is
+ * the tier a consumer replaces. Importing it gives you the look; importing nothing from here leaves
+ * every component plain and still correct, because behavior lives in `core.css`.
+ *
+ * The convenience aggregate for the directory beside it, mirroring how `core.css` aggregates `core/`.
+ * A route that renders one component should import `themes/atmosphere/<component>.css` instead.
+ *
+ * A second theme is a sibling: `themes/<name>.css` plus `themes/<name>/`. Nothing here is imported by
+ * `core.css` or `tokens.css`, so replacing this file replaces the look and nothing else.
+ */
+
+@import './atmosphere/tokens.css';
+@import './atmosphere/button.css';
+@import './atmosphere/toggle.css';
+@import './atmosphere/alert.css';
+@import './atmosphere/avatar.css';
+@import './atmosphere/badge.css';
+@import './atmosphere/separator.css';
+@import './atmosphere/card.css';
+@import './atmosphere/skeleton.css';
+@import './atmosphere/progress.css';
+@import './atmosphere/meter.css';
+@import './atmosphere/empty.css';
+@import './atmosphere/color-swatch.css';
+@import './atmosphere/link.css';
+@import './atmosphere/kbd.css';
+@import './atmosphere/code.css';
+@import './atmosphere/group.css';
+@import './atmosphere/list.css';
+@import './atmosphere/table.css';
+@import './atmosphere/spinner.css';
+@import './atmosphere/forms.css';
+@import './atmosphere/range.css';
+@import './atmosphere/range-field.css';
+@import './atmosphere/otp-field.css';
+@import './atmosphere/number-stepper.css';
+@import './atmosphere/color-picker.css';
+@import './atmosphere/tabs.css';
+@import './atmosphere/collapsible.css';
+@import './atmosphere/dialog.css';
+@import './atmosphere/sheet.css';
+@import './atmosphere/popover.css';
+@import './atmosphere/toast.css';
+@import './atmosphere/menu.css';
+@import './atmosphere/context-menu.css';
+@import './atmosphere/toolbar.css';
+@import './atmosphere/choice-groups.css';
+@import './atmosphere/options.css';
+@import './atmosphere/listbox.css';
+@import './atmosphere/select.css';
+@import './atmosphere/combobox.css';
