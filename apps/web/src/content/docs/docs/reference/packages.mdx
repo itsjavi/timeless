@@ -7,10 +7,11 @@ sidebar:
 
 ## Packages
 
-| Package                  | Role                                                                                                                                                                      |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@timelessui/components` | Everything a consumer needs: CSS, custom elements, contracts, and utilities. This is the only package you install.                                                        |
-| `@timelessui/core`       | The internal custom-element authoring layer the components are built on. It arrives as a dependency; you do not import it directly, and it is not part of the public API. |
+| Package                  | Role                                                                                                                                                                            |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@timelessui/components` | Everything a consumer needs to build an interface: CSS, custom elements, contracts, and utilities. This is the only package you install for components.                         |
+| `@timelessui/color`      | CSS color parsing, conversion, gamut, and contrast utilities. A standalone library with no dependency on the components; install it only if you want the color math on its own. |
+| `@timelessui/core`       | The internal custom-element authoring layer the components are built on. It arrives as a dependency; you do not import it directly, and it is not part of the public API.       |
 
 ```bash
 pnpm add @timelessui/components
@@ -27,8 +28,8 @@ pnpm add @timelessui/components
 | `@timelessui/components/css/themes/atmosphere/{component}.css` | One component's styles.                                                                          | Stylesheet                    |
 | `@timelessui/components/css/themes/atmosphere.css`             | The Atmosphere theme complete: layer order, behavior, and every component's look.                | Stylesheet                    |
 | `@timelessui/components/css/tokens.css`                        | Design tokens and the cascade-layer order.                                                       | Stylesheet                    |
-| `@timelessui/components/color`                                 | Color parsing, conversion, and gamut utilities.                                                  | None                          |
 | `@timelessui/components/collection`                            | Locale-aware matching and disabled-aware keyboard navigation.                                    | None                          |
+| `@timelessui/color`                                            | Color parsing, serialization, conversion, gamut, and WCAG contrast. Its own package.             | None                          |
 | `@timelessui/components/events`                                | Transition event and detail types.                                                               | None                          |
 | `@timelessui/components/value-state`                           | Authored-default and live-value helpers.                                                         | None                          |
 | `@timelessui/components/attributes`                            | Typed attribute builder for CSS-only components.                                                 | None                          |

@@ -206,11 +206,12 @@ native buttons:
 </ui-toggle-group>
 ```
 
-Color parsing, serialization, conversion, gamut, and contrast utilities are available from the
-dedicated subpath:
+Color parsing, serialization, conversion, gamut, and contrast utilities are a library rather than a
+component, so they ship as their own package. `ui-color-picker` depends on it, and you can install
+it alone:
 
 ```ts
-import { inGamut, parseCssColor, serializeCssColor } from '@timelessui/components/color'
+import { inGamut, parseCssColor, serializeCssColor } from '@timelessui/color'
 ```
 
 For application-triggered toasts, import the thin helper and point it at an authored toaster:

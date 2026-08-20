@@ -35,6 +35,13 @@ the library is usable.
 | **Data Table** | Sorting, filtering, column resizing, pagination, and virtualisation belong to a table library. The CSS [Table](/docs/components/table/) stays: it styles the markup one produces. |
 | **Tree View**  | The hardest pattern in the ARIA Authoring Practices Guide — typeahead, expand/collapse, multi-select across levels — with the least reuse across products.                        |
 
+The same test cuts both ways. OKLCH and OKLab parsing, gamut mapping, and contrast computation are a
+color library, so they ship as `@timelessui/color` rather than from the components package.
+[Color Picker](/docs/components/color-picker/) and [Color Swatch](/docs/components/color-swatch/)
+stay components: they are primitives that depend on that library, the same way every component
+depends on a platform capability. What decides the boundary is the domain machinery, not the subject
+matter.
+
 ## It is composition, not a component
 
 | Not shipping               | Because                                                                                                                                                                                                    |

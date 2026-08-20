@@ -72,7 +72,9 @@ configuration attribute and its permitted values, authored part, public state, C
 and event. `pnpm build` proves those values against the stylesheets in both directions, so a
 documented value is a value the CSS implements.
 
-Colour utilities are published separately from `@timelessui/components/color`.
+Colour parsing, conversion, gamut, and contrast are a library rather than a primitive, so they ship
+as `@timelessui/color`, which depends on nothing. Colour Picker and Colour Swatch stay components
+and depend on it.
 
 What Timeless deliberately does not ship — and why, per component — is written down at
 `/docs/reference/scope/`. Aspect Ratio, Scroll Area, and Carousel are declarations the platform

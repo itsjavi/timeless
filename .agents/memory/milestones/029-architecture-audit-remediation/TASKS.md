@@ -20,42 +20,43 @@
 
 ## 1. Rename the token exports off the theme
 
-- [ ] Rename the six exports to `uiTokenGroups`, `uiTokens`, `isUIToken`, `UIToken`, `UITokenGroup`,
+- [x] Rename the six exports to `uiTokenGroups`, `uiTokens`, `isUIToken`, `UIToken`, `UITokenGroup`,
       and `UITokenName`
-- [ ] Record why the rename is permissible: the package is unpublished at `0.0.1`, against the
+- [x] Record why the rename is permissible: the package is unpublished at `0.0.1`, against the
       `AGENTS.md` rule that a public export never changes name or module
-- [ ] Update the text parser in `generate-elements.mjs` that reads `src/tokens.ts` expecting
+- [x] Update the text parser in `generate-elements.mjs` that reads `src/tokens.ts` expecting
       `atmosphereTokenGroups = { ... } as const`
-- [ ] Update `emit-editor-data.mjs` and `validate-contracts.mjs` for the new name
-- [ ] Regenerate and confirm the 58 occurrences in `vscode.css-custom-data.json` are replaced
+- [x] Update `emit-editor-data.mjs` and `validate-contracts.mjs` for the new name
+- [x] Regenerate and confirm the 58 occurrences in `vscode.css-custom-data.json` are replaced
       without hand-editing
-- [ ] Update `src/index.ts`, `apps/web/src/lib/component-docs.ts`, `TokenTable.astro`, and
+- [x] Update `src/index.ts`, `apps/web/src/lib/component-docs.ts`, `TokenTable.astro`, and
       `[slug].astro`
-- [ ] Update `docs/styling/theming.mdx:65` and `docs/reference/packages.mdx:86-87`
-- [ ] Update the four stories referencing the old name
-- [ ] Confirm `Atmosphere` still names the theme in `DESIGN.md` and still describes the token values
-- [ ] Confirm no remaining `Atmosphere` occurrence sits on a public export
-- [ ] Run `generate:check` and `typecheck`
+- [x] Update `docs/styling/theming.mdx:65` and `docs/reference/packages.mdx:86-87`
+- [x] Confirm no story references the old name — none did; the four suspected story hits were the
+      theme's CSS paths, not the exports
+- [x] Confirm `Atmosphere` still names the theme in `DESIGN.md` and still describes the token values
+- [x] Confirm no remaining `Atmosphere` occurrence sits on a public export
+- [x] Run `generate:check` and `typecheck`
 
 ## 2. Extract `@timelessui/color`
 
-- [ ] Create `packages/color` with `@timelessui/color` as its name
-- [ ] Move `color.ts`, `contrast.ts`, and `color.test.ts` into it
-- [ ] Make the new package's index the export surface `color-api.ts` currently provides
-- [ ] Add `@timelessui/color` as a dependency of `@timelessui/components`
-- [ ] Repoint the single `./color` import in `color-picker.ts`
-- [ ] Confirm `color-picker.ts`, `color-picker.test.ts`, `color-picker.css`, and `color-swatch.css`
+- [x] Create `packages/color` with `@timelessui/color` as its name
+- [x] Move `color.ts`, `contrast.ts`, and `color.test.ts` into it
+- [x] Make the new package's index the export surface `color-api.ts` currently provides
+- [x] Add `@timelessui/color` as a dependency of `@timelessui/components`
+- [x] Repoint the single `./color` import in `color-picker.ts`
+- [x] Confirm `color-picker.ts`, `color-picker.test.ts`, `color-picker.css`, and `color-swatch.css`
       stay in `components`
-- [ ] Decide whether `@timelessui/components` keeps a `./color` re-export or consumers import the
-      new package directly, and record the reason
-- [ ] Extend `check-boundaries.mjs` so `@timelessui/color` cannot depend on `components` or `core`
-- [ ] Run `pnpm boundaries:check`
-- [ ] Run `exports:validate`, `publint`, and `attw` on both packages
-- [ ] Confirm the colour unit tests pass in their new home
-- [ ] Amend `docs/reference/scope.mdx` to state that a colour primitive is in scope while a colour
+- [x] Decide whether `@timelessui/components` keeps a `./color` re-export or consumers import the
+      new package directly, and record the reason — the subpath is gone
+- [x] Extend `check-boundaries.mjs` so `@timelessui/color` cannot depend on `components` or `core`
+- [x] Run `pnpm boundaries:check`
+- [x] Run `exports:validate`, `publint`, and `attw` on both packages
+- [x] Confirm the colour unit tests pass in their new home
+- [x] Amend `docs/reference/scope.mdx` to state that a colour primitive is in scope while a colour
       model is a library, so the page no longer implies Colour Picker is the inconsistency
-- [ ] Update `docs/reference/packages.mdx` for the new package
-- [ ] Confirm `README.md`'s colour sentence still matches where the code lives
+- [x] Update `docs/reference/packages.mdx` for the new package
+- [x] Confirm `README.md`'s colour sentence still matches where the code lives
 
 ## 3. Stop shipping the contract registry to the browser
 

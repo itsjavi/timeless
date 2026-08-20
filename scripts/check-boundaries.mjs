@@ -25,10 +25,21 @@ async function scan(path) {
       violations.push(`${relative}: source cannot import from the ignored .local directory`)
     }
     if (
-      (relative.startsWith('packages/core/') || relative.startsWith('packages/components/')) &&
+      (relative.startsWith('packages/core/') ||
+        relative.startsWith('packages/color/') ||
+        relative.startsWith('packages/components/')) &&
       /["']@timelessui\/examples(?:["'/])/.test(source)
     ) {
       violations.push(`${relative}: published packages cannot depend on @timelessui/examples`)
+    }
+    // @timelessui/color is a leaf: the colour model is a library in its own right, so a consumer who
+    // wants only the maths never installs a component library. An import either way round would put
+    // it back inside the package it was extracted from.
+    if (
+      relative.startsWith('packages/color/') &&
+      /["']@timelessui\/(?:components|core)(?:["'/])/.test(source)
+    ) {
+      violations.push(`${relative}: @timelessui/color cannot depend on components or core`)
     }
   }
 }
