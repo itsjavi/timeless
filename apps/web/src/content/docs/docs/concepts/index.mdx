@@ -1,66 +1,88 @@
 ---
 title: Core concepts
-description: The contracts behind Timeless components.
+description:
+  How an authored default differs from live state, and what happens to properties assigned before an
+  element upgrades.
 ---
 
-## Progressive enhancement
+Two contracts are easy to get wrong because neither has a visible symptom until it matters: which
+value survives a form reset, and what happens to a property you assign before the element definition
+loads. Everything else about a component is on its own page — this covers the two rules that span
+all of them.
 
-Timeless begins with native HTML. CSS-only primitives add no behavior. Enhanced elements coordinate
-authored Light DOM and preserve native controls where those controls already provide submission,
-labels, reset, disabled state, and restoration.
+## Authored defaults and live state
 
-## Public Light DOM anatomy
+The `value` **attribute** you author is the default. The `value` **property** is live state. They
+are separate storage, exactly as they are on a native `<input>`:
 
-Consumers author style-relevant anatomy. Components observe replacement and insertion of supported
-parts, then reconnect listeners without generating visual wrappers. Native CSS roots use `.ui-*`,
-contract-declared `data-ui-*` attributes configure their visuals, and `data-ui-part` identifies
-authored anatomy when semantics are insufficient. Plain attributes configure registered `ui-*`
-hosts. Native and ARIA state remain authoritative.
+```html
+<ui-select value="draft" name="status">…</ui-select>
+```
 
-## Default and live state
+```ts
+const select = document.querySelector('ui-select')
 
-The authored `value` attribute supplies initial and form-reset state. The `value` property
-represents live state. Direct property assignment is silent and does not rewrite the authored
-default.
+select.value // 'draft'  — live state, currently equal to the default
+select.value = 'published' // live state moves
+select.defaultValue // 'draft'  — the authored attribute is untouched
+select.getAttribute('value') // 'draft'
+```
 
-## Dynamic authored anatomy
+Two consequences follow.
 
-Enhanced collections observe supported authored children. Applications can replace or append
-options, tabs, menu items, and other public parts without asking Timeless to generate visual
-wrappers.
+**A form reset returns to the authored attribute, not to whatever was assigned last.**
+Form-associated elements — Select, Combobox, Listbox, and OTP Field — implement `formResetCallback`
+by restoring `defaultValue`, so `<button type="reset">` puts `status` back to `draft`.
 
-## Transitions
+**Assigning the property dispatches nothing.** `ui-before-change` and `ui-change` describe _user_
+transitions and carry the originating event in `detail.originalEvent`. A programmatic assignment has
+no originating event, so it updates the DOM silently. Code that assigns a value already knows it
+did; if you need your own listeners to run, dispatch your own event.
 
-User transitions dispatch cancelable `ui-before-change`, then non-cancelable `ui-change` after
-commit. Details include `value`, `previousValue`, `source`, `reason`, and `originalEvent`. Events
-bubble and are composed.
+To move the default itself — so a later reset returns somewhere new — set the attribute:
 
-## SSR and registration
+```ts
+select.setAttribute('value', 'published')
+```
 
-Class-only imports are side-effect free. Explicit definition entrypoints register elements in a
-browser realm and report conflicting constructors. Properties assigned before upgrade are replayed
-when the element connects.
+The helpers the elements use to keep the two apart are exported from
+[`@timelessui/components/value-state`](/docs/reference/packages/#entrypoints), if you are building
+something on the same contract.
 
-## Accessibility
+## Properties assigned before upgrade
 
-Native semantics come first. Enhanced components follow the relevant ARIA Authoring Practices
-keyboard model where native behavior is not sufficient. Automated route checks cover axe WCAG 2.2 A
-and AA rules, reflow, and text spacing, but manual assistive-technology review remains required.
+A framework often has a reference to an element before `customElements.define` has run for it. An
+assignment at that moment lands as an own property on the instance, shadowing the accessor the
+definition will later install on the prototype. In most custom-element libraries the value is then
+lost.
 
-## Granular performance
+Timeless replays it. On connection, each declared attribute and property that exists as an own
+property is deleted and re-assigned, which runs the real setter — and this happens _before_ the
+component's own connection logic, so the element never observes a stale value:
 
-Import the CSS and definition entrypoints an interface uses. Normal enhancement retains authored
-visual DOM. Checked package baselines guard representative entry closures, mutations, layout reads,
-and layout shifts.
+```ts
+const select = document.createElement('ui-select')
+select.value = 'published' // no definition yet — a plain own property
 
-## CSS-only and enhanced components
+await import('@timelessui/components/define/ui-select')
+document.body.append(select) // upgrade, then replay, then connect
 
-CSS-only primitives style native semantics and need no registration. Enhanced elements are reserved
-for keyboard coordination, focus, state synchronization, or authoring behavior that CSS cannot
-provide accessibly.
+select.value // 'published'
+```
 
-## Styling and themes
+This is why `define/*` imports are safe to load late, and why a server-rendered page can hydrate and
+assign state without ordering the definition import first. See
+[Packages and entrypoints](/docs/reference/packages/#server-rendering) for the import-safety rules
+and your framework's guide under [Frameworks](/docs/frameworks/vanilla/) for where the assignment
+usually lives.
 
-Consumer-facing visual decisions remain in CSS. Tokens, component variables, public classes, plain
-host attributes, and documented Light DOM hooks provide the styling contract. JavaScript exposes
-behavior state without writing visual declarations.
+## Where the rest lives
+
+- **Anatomy, attributes, parts, states, events** — each component's own page, generated from the
+  contract the stylesheets are proven against.
+- **The two kinds of component, and how each is configured** —
+  [AI agents](/docs/getting-started/agents/).
+- **Layers, tokens, and overriding styles** — [Theming](/docs/styling/theming/).
+- **Import safety and server rendering** — [Packages and entrypoints](/docs/reference/packages/).
+- **What the platform handles and what degrades** —
+  [Browser support](/docs/reference/browser-support/).

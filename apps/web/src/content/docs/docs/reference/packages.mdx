@@ -134,19 +134,12 @@ might be wrong.
 
 `ui-*` tags are tags, so every typing above and the editor data complete them precisely. CSS-only
 components are a root class plus `data-ui-*` on a native tag, which no editor can complete per
-element. `@timelessui/components/attributes` is the typed answer:
+element. `@timelessui/components/attributes` is the typed answer: `uiAttributes` returns the
+attribute object and `uiAttributeString` the serialized form, both keyed to each component's
+permitted values. Neither is reachable from the default import.
 
-```ts
-import { uiAttributes } from '@timelessui/components/attributes'
-
-uiAttributes('button', { variant: 'primary', size: 'lg' })
-// { class: 'ui-button', 'data-ui-variant': 'primary', 'data-ui-size': 'lg' }
-```
-
-`uiAttributeString` returns the same attributes serialized for a template literal. Both are opt-in
-and neither is reachable from the default import. See
-[Editor setup](/docs/getting-started/editor-setup/) for the full explanation and for the
-development-time validator.
+See [Editor setup](/docs/getting-started/editor-setup/#the-one-gap-css-only-components) for why the
+gap exists, worked examples, and the development-time validator.
 
 ## Server rendering
 
