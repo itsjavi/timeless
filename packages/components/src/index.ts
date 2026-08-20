@@ -270,6 +270,21 @@ export {
 } from './toggle-group'
 
 export {
+  copySourceText,
+  createCopyButtonElementClass,
+  performCopy,
+  readCopyFeedbackDuration,
+  resolveCopyValue,
+  UICopyButtonElement,
+  type CopyButtonHostLike,
+  type CopyClipboardLike,
+  type CopyDetail,
+  type CopyFailureReason,
+  type CopySourceLike,
+  type UICopyButtonElementConstructor,
+} from './copy-button'
+
+export {
   createNumberStepperElementClass,
   findNumberStepperParts,
   stepNumberInput,

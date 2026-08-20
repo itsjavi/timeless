@@ -1,0 +1,22 @@
+@layer ui.components {
+  /*
+   * The trigger carries its own look, usually `.ui-button`. What is left for the host is the gap to
+   * whatever the author sets beside the trigger — a filename, a truncated token, a readout — since the
+   * status region is out of flow and contributes nothing to it.
+   */
+  ui-copy-button {
+    gap: var(--ui-space-2);
+    align-items: center;
+  }
+
+  /*
+   * Core already takes the announcement region out of flow and clips it away. This shrinks the box as
+   * well, so a long confirmation cannot widen a scroll container the button happens to sit in, and
+   * cannot wrap into a tall one.
+   */
+  ui-copy-button [data-ui-part~='status'] {
+    inline-size: 1px;
+    block-size: 1px;
+    white-space: nowrap;
+  }
+}

@@ -523,6 +523,34 @@
           "description": "Present to disable the field. A field inside a disabled `<fieldset>` is disabled too, and submits nothing either way. Presence-based: author the attribute with no value."
         }
       ]
+    },
+    {
+      "name": "ui-copy-button",
+      "description": "Timeless `ui-copy-button`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Button pattern. Dispatches `ui-copy`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": [
+        {
+          "name": "value",
+          "description": "The literal text to copy. Wins over `from` when both are present, the way an authored `aria-label` wins over a computed name."
+        },
+        {
+          "name": "from",
+          "description": "Id of the element to read instead of `value`. An `input`, `textarea`, or `select` gives its current `value`; anything else gives its text."
+        },
+        {
+          "name": "feedback-duration",
+          "description": "Milliseconds the `--copied` state persists after a successful copy. `0` clears it immediately. Defaults to `1800`."
+        },
+        {
+          "name": "copied-message",
+          "description": "What the `status` region announces after a successful copy. Falls back to the `copied` part’s text, so a button whose confirmation is a word needs no message at all and an icon-only one does. With neither, nothing is announced."
+        }
+      ]
     }
   ],
   "globalAttributes": [

@@ -23,6 +23,7 @@
 
 @import './core/button.css';
 @import './core/toggle.css';
+@import './core/copy-button.css';
 @import './core/alert.css';
 @import './core/avatar.css';
 @import './core/badge.css';

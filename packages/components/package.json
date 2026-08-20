@@ -135,6 +135,10 @@
       "types": "./dist/toggle-group.d.ts",
       "import": "./dist/toggle-group.js"
     },
+    "./copy-button": {
+      "types": "./dist/copy-button.d.ts",
+      "import": "./dist/copy-button.js"
+    },
     "./number-stepper": {
       "types": "./dist/number-stepper.d.ts",
       "import": "./dist/number-stepper.js"

@@ -13,6 +13,7 @@
     "./overlays": "./src/overlays.html.ts",
     "./color-picker": "./src/color-picker.html.ts",
     "./color-swatch": "./src/color-swatch.html.ts",
+    "./copy-button": "./src/copy-button.html.ts",
     "./empty": "./src/empty.html.ts",
     "./meter": "./src/meter.html.ts",
     "./number-stepper": "./src/number-stepper.html.ts",

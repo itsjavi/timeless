@@ -20,6 +20,7 @@ import { defineColorPickerElement } from './define/ui-color-picker'
 import { defineFormElement } from './define/ui-form'
 import { defineRangeFieldElement } from './define/ui-range-field'
 import { defineOtpFieldElement } from './define/ui-otp-field'
+import { defineCopyButtonElement } from './define/ui-copy-button'
 
 export {
   defineTabsElement,
@@ -44,6 +45,7 @@ export {
   defineFormElement,
   defineRangeFieldElement,
   defineOtpFieldElement,
+  defineCopyButtonElement,
 }
 
 export function defineTimelessElements(targetWindow: Window = window): void {
@@ -69,4 +71,5 @@ export function defineTimelessElements(targetWindow: Window = window): void {
   defineFormElement(targetWindow)
   defineRangeFieldElement(targetWindow)
   defineOtpFieldElement(targetWindow)
+  defineCopyButtonElement(targetWindow)
 }

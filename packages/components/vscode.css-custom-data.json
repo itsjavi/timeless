@@ -1051,5 +1051,17 @@
         }
       ]
     }
+  ],
+  "pseudoClasses": [
+    {
+      "name": ":state(--copied)",
+      "description": "Set for `feedback-duration` after a successful copy. Public: style `ui-copy-button:state(--copied)` yourself. Exposed by `ui-copy-button`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    }
   ]
 }

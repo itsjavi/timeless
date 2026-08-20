@@ -13,6 +13,7 @@ import {
 } from './collections.html.ts'
 import { colorPickerPopoverScript, createColorPicker } from './color-picker.html.ts'
 import { createColorPalette, createColorSwatch } from './color-swatch.html.ts'
+import { createCopySnippet } from './copy-button.html.ts'
 import { createEmpty } from './empty.html.ts'
 import {
   createFieldset,
@@ -208,6 +209,36 @@ export const examples = [
       'themes/atmosphere/toggle.css',
     ],
     render: () => createToggle({ label: 'Bold', pressed: true }),
+  }),
+  example({
+    id: 'copy-button',
+    domain: 'actions',
+    group: 'Actions',
+    guidance:
+      'Use Copy Button whenever a value on the page is meant to be taken somewhere else \u2014 an install command, a token, an id. The alternative is a plain button and a click handler, which is the same three lines every time and usually skips the announcement.',
+    authoring:
+      'Give the trigger an `aria-label` and mark the `idle` and `copied` labels `aria-hidden="true"`. A button whose accessible name changes while it holds focus is announced inconsistently across screen readers, so the visible confirmation and the name are deliberately separate. Author the `status` region too: it is where the confirmation is announced, and without it the copy is silent.',
+    contracts: ['copyButton'],
+    component: 'Copy Button',
+    title: 'Copy Button',
+    description: 'Copy a value to the clipboard, and say so.',
+    definitions: ['ui-copy-button'],
+    styles: [
+      'tokens.css',
+      'core/code.css',
+      'core/copy-button.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/code.css',
+      'themes/atmosphere/copy-button.css',
+    ],
+    render: () =>
+      createCopySnippet({
+        id: 'install-command',
+        label: 'Copy the install command',
+        snippet: 'pnpm add @timelessui/components',
+        copiedMessage: 'Install command copied',
+      }),
   }),
   example({
     id: 'toggle-group',

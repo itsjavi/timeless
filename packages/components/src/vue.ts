@@ -42,6 +42,7 @@ import type { ToggleGroupChangeDetail } from './toggle-group'
 import type { FormInvalidDetail } from './form'
 import type { RangeFieldChangeDetail } from './range-field'
 import type { OtpFieldChangeDetail, OtpFieldCompleteDetail } from './otp-field'
+import type { CopyDetail } from './copy-button'
 
 type OpenAttributes = {
   [name: `data-${string}`]: unknown
@@ -363,6 +364,23 @@ export interface UIOtpFieldElementProps extends TimelessGlobalProps {
   onUiComplete?: (event: CustomEvent<OtpFieldCompleteDetail>) => void
 }
 
+export interface UICopyButtonElementProps extends TimelessGlobalProps {
+  /** The literal text to copy. Wins over `from` when both are present, the way an authored `aria-label` wins over a computed name. */
+  value?: string
+  /** Id of the element to read instead of `value`. An `input`, `textarea`, or `select` gives its current `value`; anything else gives its text. */
+  from?: string
+  /** Milliseconds the `--copied` state persists after a successful copy. `0` clears it immediately. */
+  'feedback-duration'?: number
+  /** What the `status` region announces after a successful copy. Falls back to the `copied` part’s text, so a button whose confirmation is a word needs no message at all and an icon-only one does. With neither, nothing is announced. */
+  'copied-message'?: string
+  /** DOM property reflecting the `feedback-duration` attribute. */
+  feedbackDuration?: string
+  /** DOM property reflecting the `copied-message` attribute. */
+  copiedMessage?: string
+  /** Dispatched once per activation, on success and on every failure. The detail carries `status`, the resolved `value`, and a `reason` naming why a failure failed. */
+  onUiCopy?: (event: CustomEvent<CopyDetail>) => void
+}
+
 // @ts-ignore Vue is an optional consumer dependency.
 declare module '@vue/runtime-dom' {
   interface GlobalComponents {
@@ -388,6 +406,7 @@ declare module '@vue/runtime-dom' {
     'ui-form': new () => { $props: UIFormElementProps }
     'ui-range-field': new () => { $props: UIRangeFieldElementProps }
     'ui-otp-field': new () => { $props: UIOtpFieldElementProps }
+    'ui-copy-button': new () => { $props: UICopyButtonElementProps }
   }
 }
 
