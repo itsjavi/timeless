@@ -2,11 +2,29 @@
 name: Deploy to GitHub Pages
 
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on pushes targeting the default branch, unless the push touched nothing the deployed site
+  # can contain. The filter is a deny-list on purpose: a new source directory should deploy by
+  # default, and only paths proven absent from `dist-site` are listed. Markdown is never ignored
+  # wholesale — apps/web/src/lib/grammar.ts reads `packages/components/skills/**/reference/*.md` at
+  # build time, and apps/stories imports `*.stories.md`.
   push:
     branches: ['main']
+    paths-ignore:
+      - '.agents/**'
+      - '.claude/**'
+      - '.codex/**'
+      - '.vscode/**'
+      - 'apps/e2e/**'
+      - '.github/CODE_OF_CONDUCT.md'
+      - '.github/PULL_REQUEST_TEMPLATE.md'
+      - '.github/workflows/pr-quality.yml'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - 'LICENSE'
+      - 'README.md'
 
-  # Allows you to run this workflow manually from the Actions tab
+  # Allows you to run this workflow manually from the Actions tab, including to publish a change the
+  # filter above skipped.
   workflow_dispatch:
 
 # Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
