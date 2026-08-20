@@ -86,15 +86,18 @@
 
 ## 5. Account for the bundle weight
 
-- [ ] Produce a per-module gzip attribution for the Select graph, naming which of the nine modules
-      carries the weight
-- [ ] Do the same for Combobox, and record whether the two share the same hot spot
-- [ ] Decide whether to reduce or to document the figure, based on that attribution
-- [ ] Extend `performance-baselines.json` to at least one entry per component family, or narrow the
-      `performance:check` row in `.agents/reference/validators.md` to the collection family
-- [ ] Re-baseline with `performance:check -- --measure` only after milestone 028 has landed, so the
+- [x] Produce a per-module gzip attribution for the Select graph, naming which of the nine modules
+      carries the weight — the Listbox chunk at 37% and `select.js` at 32%
+- [x] Do the same for Combobox, and record whether the two share the same hot spot — they share it,
+      and they share the chunk itself
+- [x] Decide whether to reduce or to document the figure, based on that attribution — documented;
+      minified, Select is 13.5KB rather than 30KB
+- [x] Extend `performance-baselines.json` to at least one entry per component family, or narrow the
+      `performance:check` row in `.agents/reference/validators.md` to the collection family — every
+      element module is covered, 4 entries to 20
+- [x] Re-baseline with `performance:check -- --measure` only after milestone 028 has landed, so the
       CSS figures are stable
-- [ ] Record before and after
+- [x] Record before and after
 
 ## 6. Utility CSS and Tailwind
 

@@ -44,6 +44,22 @@ Only enhanced elements have a class entrypoint. CSS-only primitives such as Butt
 are classes and attributes rather than JavaScript, so they have no per-component module at all —
 their permitted values live on the root import instead.
 
+## What an entrypoint weighs
+
+Enhanced elements are composed, so an entrypoint pulls the modules it is built on. Select contains
+Listbox, the option layer, Popover, and the anchoring layer, which is why it is the heaviest single
+import in the package.
+
+Bundled and minified, `@timelessui/components/select` is about 13.5 kB gzipped. Adding
+`@timelessui/components/combobox` to the same page brings the pair to about 16 kB rather than to the
+sum of the two, because everything under both of them is shared. Six enhanced elements — Select,
+Combobox, Listbox, Popover, Menu, and Dialog — come to about 21 kB together. There is no framework
+runtime underneath any of it, and a CSS-only component such as Button or Card adds no JavaScript at
+all.
+
+Those are measurements rather than budgets, taken with esbuild at default settings; your bundler
+will land somewhere nearby. The package ships unminified so your own pipeline decides.
+
 ## Contracts and permitted values
 
 The root import is the machine-readable version of every component reference page:

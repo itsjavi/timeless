@@ -50,6 +50,15 @@ likely to reject a change: it imports the registry, renders every canonical exam
 seventeen distinct conditions. That forces the ordering for any new part or attribute — **registry
 first, `pnpm generate` second, examples third.** Reversing it fails the build rather than warning.
 
+`performance:check` covers every element module, derived from the registry rather than listed in the
+script, so a new element is measured the day it lands. Read the numbers for what they are: the
+library ships unminified and the check gzips each module separately, so the figures are always
+larger than what a consumer ships. Select's closure is around 30KB in the check's units and around
+13.5KB bundled and minified, and a page with both Select and Combobox pays around 16KB rather than
+the sum, because the two share the Listbox, options, popover, and anchoring modules. When a figure
+moves, read `rawBytes` first, and re-baseline with `--measure` rather than shrinking real code to
+satisfy an artifact.
+
 ## Scoped commands
 
 ```bash
