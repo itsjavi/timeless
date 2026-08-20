@@ -470,6 +470,46 @@ The instruments are kept in `.local/m028-playground/` — four scripts that read
 stylesheets rather than snapshots, so they do not rot. They print numbers for a human; they are not
 a test suite and nothing runs them in CI.
 
+### Collection rows and menu items take `cursor: default`
+
+Reported while reviewing the split: hovering an option in Select, Combobox, or Listbox showed the
+text I-beam. Measured across the previews, every affected element and only those:
+
+| Element                                    | Before                  | After                |
+| ------------------------------------------ | ----------------------- | -------------------- |
+| `[role='option']`, all three collections   | `auto`                  | `default`            |
+| `[data-ui-part~='group-label']`            | `auto`                  | `default`            |
+| `[data-ui-part~='empty']`, `status`        | `auto`                  | `default`            |
+| `[data-ui-part~='page-status']`            | `auto`                  | `default`            |
+| menu items                                 | `default` (from the UA) | `default` (declared) |
+| `[data-ui-part~='search']`, combobox input | `text`                  | `text` (unchanged)   |
+
+An option is a `<div role="option">`, so with no `cursor` it computes `auto`, which over text is an
+I-beam — suggesting the row is prose to select rather than a choice to make.
+
+`default` rather than `pointer`, and that follows the library rather than taste: of the ten existing
+`cursor` declarations, five are `default` on interactive controls — Button, Tabs, Collapsible, Color
+Swatch — and none is `pointer` on a control. A native `<select>` dropdown shows the arrow
+throughout, and reserving the hand for links is the platform convention. A row whose cursor
+disagreed with the trigger that opened it would read as the odd one out. Disabled options take
+`default` too, matching `.ui-button:disabled`, rather than `not-allowed`.
+
+Menu items were already `default`, but only incidentally: the examples author them as `<button>` and
+the UA supplies it. `menu.css` selects `[role='menuitem']`, which accepts any element, so the
+declaration is added for authoring robustness rather than to change today's rendering.
+
+In the theme, not core. `cursor` is not in the core-owned set, and all ten existing declarations are
+theme-side — including the Sheet's `grab`/`grabbing`, which signals a gesture that genuinely exists
+and is therefore far more behavior-adjacent than an option row. Core-only, options still show the
+I-beam, which is consistent with core carrying no affordances at all: there is no hover highlight
+either.
+
+Two adjacent things noted and deliberately not done. `button.css` pairs `cursor: default` with
+`user-select: none`, and the option row has no `user-select`, so dragging across a list still
+selects its text — arguably the same defect, but a change beyond what was reported. And `toast.css`
+gives its close button `cursor: pointer`, the one control in the package that contradicts the
+convention above.
+
 ## Decisions and constraints
 
 ## Decisions and constraints

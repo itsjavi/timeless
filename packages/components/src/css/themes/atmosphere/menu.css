@@ -23,6 +23,11 @@
     color: var(--ui-fg);
   }
 
+  /*
+   * `cursor: default`, as on the option row and for the same reason. Menu items happen to inherit it
+   * from the UA while they are authored as `<button>`, but these selectors accept any element with the
+   * role, and a `<div role="menuitem">` would otherwise show an I-beam.
+   */
   ui-menu :where([role='menuitem'], [role='menuitemcheckbox'], [role='menuitemradio']) {
     align-items: center;
     gap: var(--ui-space-2);
@@ -36,6 +41,7 @@
     line-height: 1.25;
     text-align: start;
     text-decoration: none;
+    cursor: default;
   }
 
   /*
@@ -74,6 +80,7 @@
     font-weight: 650;
     letter-spacing: 0.02em;
     text-transform: uppercase;
+    cursor: default;
   }
 
   ui-menu :where([role='separator'], hr) {
