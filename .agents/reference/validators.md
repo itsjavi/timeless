@@ -35,6 +35,7 @@ reached a pull request past a green local gate.
 | `Implementation-oriented StoryLite routes remain`              | A story title still uses an implementation group                                                                        | Retitle to `Library/<Group>/<Component>`                                                                          |
 | `The StoryLite catalog has no Library routes.`                 | Titles are wrong, or the build produced no stories                                                                      | Check `title` on the affected `meta`                                                                              |
 | `published packages cannot depend on @timelessui/examples`     | `packages/core` or `packages/components` imported the examples package                                                  | Invert the dependency                                                                                             |
+| `@timelessui/color cannot depend on components or core`        | `packages/color` imported a sibling package; the colour model is a leaf                                                 | Invert the dependency, or move the code into `components`                                                         |
 | `source cannot import from the ignored .local directory`       | An import reaches into `.local/`                                                                                        | Remove it                                                                                                         |
 | `<id> uses unknown part <token>`                               | An example authored a `data-ui-part` token no contract declares                                                         | Declare the part in the registry and regenerate, **before** the example emits it                                  |
 | `<id> uses unknown public attribute <name>`                    | Same, for a `data-ui-*` attribute                                                                                       | Declare the attribute, or use a plain attribute on the custom-element host                                        |
@@ -49,6 +50,15 @@ reached a pull request past a green local gate.
 likely to reject a change: it imports the registry, renders every canonical example, and throws on
 seventeen distinct conditions. That forces the ordering for any new part or attribute — **registry
 first, `pnpm generate` second, examples third.** Reversing it fails the build rather than warning.
+
+`performance:check` covers every element module, derived from the registry rather than listed in the
+script, so a new element is measured the day it lands. Read the numbers for what they are: the
+library ships unminified and the check gzips each module separately, so the figures are always
+larger than what a consumer ships. Select's closure is around 30KB in the check's units and around
+13.5KB bundled and minified, and a page with both Select and Combobox pays around 16KB rather than
+the sum, because the two share the Listbox, options, popover, and anchoring modules. When a figure
+moves, read `rawBytes` first, and re-baseline with `--measure` rather than shrinking real code to
+satisfy an artifact.
 
 ## Scoped commands
 

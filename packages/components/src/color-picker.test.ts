@@ -6,7 +6,7 @@ import {
   resolveColorPickerFormat,
   updateColorChannel,
 } from './color-picker'
-import { parseAnyColor, parseCssColor } from './color'
+import { parseAnyColor, parseCssColor } from '@timelessui/color'
 
 const parsed = parseCssColor('oklch(0.7 0.18 250 / 0.8)')
 if (parsed?.status !== 'parsed') throw new Error('Expected parsed fixture')

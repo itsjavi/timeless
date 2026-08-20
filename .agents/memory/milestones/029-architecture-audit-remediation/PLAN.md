@@ -1,5 +1,5 @@
 ---
-status: Accepted
+status: Implemented
 ---
 
 # Milestone 029 Plan: Architecture Audit Remediation

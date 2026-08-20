@@ -1,5 +1,178 @@
 {
   "entries": {
+    "choice-group": {
+      "cssGzipBytes": 3989,
+      "cssRawBytes": 14557,
+      "gzipBytes": 7048,
+      "modules": ["choice-group-BZM234aH.js", "choice-group.js", "collection.js", "events.js"],
+      "rawBytes": 28411,
+      "stylesheets": [
+        "core/choice-groups.css",
+        "core/forms.css",
+        "themes/atmosphere/choice-groups.css",
+        "themes/atmosphere/forms.css"
+      ]
+    },
+    "color-picker": {
+      "cssGzipBytes": 2535,
+      "cssRawBytes": 12058,
+      "gzipBytes": 6814,
+      "modules": ["color-picker-Dd8XhXrS.js", "color-picker.js"],
+      "rawBytes": 29866,
+      "stylesheets": ["core/color-picker.css", "themes/atmosphere/color-picker.css"]
+    },
+    "combobox": {
+      "cssGzipBytes": 7041,
+      "cssRawBytes": 20691,
+      "gzipBytes": 29345,
+      "modules": [
+        "capabilities-DnKhwAK2.js",
+        "collection.js",
+        "combobox.js",
+        "events.js",
+        "floating-BRtec-Xt.js",
+        "listbox-C0l1lDCK.js",
+        "parts-DTbd10X0.js",
+        "popover-BIzgR4vz.js",
+        "value-state.js"
+      ],
+      "rawBytes": 108248,
+      "stylesheets": [
+        "core/combobox.css",
+        "core/floating.css",
+        "core/options.css",
+        "themes/atmosphere/combobox.css",
+        "themes/atmosphere/options.css"
+      ]
+    },
+    "context-menu": {
+      "cssGzipBytes": 3212,
+      "cssRawBytes": 7943,
+      "gzipBytes": 15452,
+      "modules": [
+        "capabilities-DnKhwAK2.js",
+        "collection.js",
+        "context-menu.js",
+        "floating-BRtec-Xt.js",
+        "menu-CfPW0BSB.js",
+        "parts-DTbd10X0.js"
+      ],
+      "rawBytes": 50535,
+      "stylesheets": [
+        "core/context-menu.css",
+        "core/menu.css",
+        "themes/atmosphere/context-menu.css",
+        "themes/atmosphere/menu.css"
+      ]
+    },
+    "dialog": {
+      "cssGzipBytes": 664,
+      "cssRawBytes": 1638,
+      "gzipBytes": 6829,
+      "modules": [
+        "capabilities-DnKhwAK2.js",
+        "dialog-DtqiYHQ8.js",
+        "dialog.js",
+        "overlay-naming-DmYVPHzW.js",
+        "parts-DTbd10X0.js"
+      ],
+      "rawBytes": 20179,
+      "stylesheets": ["core/dialog.css", "themes/atmosphere/dialog.css"]
+    },
+    "form": {
+      "cssGzipBytes": 240,
+      "cssRawBytes": 330,
+      "gzipBytes": 2790,
+      "modules": ["form.js"],
+      "rawBytes": 7866,
+      "stylesheets": ["core/form.css"]
+    },
+    "hover-card": {
+      "cssGzipBytes": 3621,
+      "cssRawBytes": 9975,
+      "gzipBytes": 9479,
+      "modules": [
+        "capabilities-DnKhwAK2.js",
+        "floating-BRtec-Xt.js",
+        "hover-card-98k2aA4Z.js",
+        "hover-card.js",
+        "parts-DTbd10X0.js",
+        "popover-BIzgR4vz.js"
+      ],
+      "rawBytes": 34519,
+      "stylesheets": ["core/floating.css", "core/popover.css", "themes/atmosphere/popover.css"]
+    },
+    "listbox": {
+      "cssGzipBytes": 6192,
+      "cssRawBytes": 18935,
+      "gzipBytes": 16204,
+      "modules": [
+        "collection.js",
+        "events.js",
+        "listbox-C0l1lDCK.js",
+        "listbox.js",
+        "parts-DTbd10X0.js",
+        "value-state.js"
+      ],
+      "rawBytes": 56545,
+      "stylesheets": [
+        "core/listbox.css",
+        "core/options.css",
+        "themes/atmosphere/listbox.css",
+        "themes/atmosphere/options.css"
+      ]
+    },
+    "menu": {
+      "cssGzipBytes": 3173,
+      "cssRawBytes": 8225,
+      "gzipBytes": 11246,
+      "modules": [
+        "collection.js",
+        "floating-BRtec-Xt.js",
+        "menu-CfPW0BSB.js",
+        "menu.js",
+        "parts-DTbd10X0.js"
+      ],
+      "rawBytes": 38913,
+      "stylesheets": ["core/floating.css", "core/menu.css", "themes/atmosphere/menu.css"]
+    },
+    "menu-button": {
+      "cssGzipBytes": 3173,
+      "cssRawBytes": 8225,
+      "gzipBytes": 17774,
+      "modules": [
+        "capabilities-DnKhwAK2.js",
+        "collection.js",
+        "floating-BRtec-Xt.js",
+        "menu-CfPW0BSB.js",
+        "menu-button.js",
+        "parts-DTbd10X0.js",
+        "popover-BIzgR4vz.js"
+      ],
+      "rawBytes": 61977,
+      "stylesheets": ["core/floating.css", "core/menu.css", "themes/atmosphere/menu.css"]
+    },
+    "number-stepper": {
+      "cssGzipBytes": 810,
+      "cssRawBytes": 2149,
+      "gzipBytes": 2063,
+      "modules": ["number-stepper.js"],
+      "rawBytes": 6868,
+      "stylesheets": ["core/number-stepper.css", "themes/atmosphere/number-stepper.css"]
+    },
+    "otp-field": {
+      "cssGzipBytes": 3820,
+      "cssRawBytes": 14223,
+      "gzipBytes": 6660,
+      "modules": ["events.js", "otp-field.js", "value-state.js"],
+      "rawBytes": 24187,
+      "stylesheets": [
+        "core/forms.css",
+        "core/otp-field.css",
+        "themes/atmosphere/forms.css",
+        "themes/atmosphere/otp-field.css"
+      ]
+    },
     "popover": {
       "cssGzipBytes": 3621,
       "cssRawBytes": 9975,
@@ -14,42 +187,30 @@
       "rawBytes": 18340,
       "stylesheets": ["core/floating.css", "core/popover.css", "themes/atmosphere/popover.css"]
     },
-    "listbox": {
-      "cssGzipBytes": 6192,
-      "cssRawBytes": 18935,
-      "gzipBytes": 15380,
-      "modules": [
-        "collection.js",
-        "events.js",
-        "listbox-CS5PPuqo.js",
-        "listbox.js",
-        "parts-DTbd10X0.js",
-        "value-state.js"
-      ],
-      "rawBytes": 55052,
-      "stylesheets": [
-        "core/listbox.css",
-        "core/options.css",
-        "themes/atmosphere/listbox.css",
-        "themes/atmosphere/options.css"
-      ]
+    "range-field": {
+      "cssGzipBytes": 1433,
+      "cssRawBytes": 4101,
+      "gzipBytes": 3242,
+      "modules": ["events.js", "range-field.js"],
+      "rawBytes": 9064,
+      "stylesheets": ["core/range-field.css", "themes/atmosphere/range-field.css"]
     },
     "select": {
       "cssGzipBytes": 7039,
       "cssRawBytes": 20561,
-      "gzipBytes": 30023,
+      "gzipBytes": 30714,
       "modules": [
         "capabilities-DnKhwAK2.js",
         "collection.js",
         "events.js",
         "floating-BRtec-Xt.js",
-        "listbox-CS5PPuqo.js",
+        "listbox-C0l1lDCK.js",
         "parts-DTbd10X0.js",
         "popover-BIzgR4vz.js",
         "select.js",
         "value-state.js"
       ],
-      "rawBytes": 113729,
+      "rawBytes": 114686,
       "stylesheets": [
         "core/floating.css",
         "core/options.css",
@@ -58,29 +219,51 @@
         "themes/atmosphere/select.css"
       ]
     },
-    "combobox": {
-      "cssGzipBytes": 7041,
-      "cssRawBytes": 20691,
-      "gzipBytes": 28522,
+    "sheet": {
+      "cssGzipBytes": 2795,
+      "cssRawBytes": 8503,
+      "gzipBytes": 9982,
       "modules": [
         "capabilities-DnKhwAK2.js",
-        "collection.js",
-        "combobox.js",
-        "events.js",
-        "floating-BRtec-Xt.js",
-        "listbox-CS5PPuqo.js",
+        "overlay-naming-DmYVPHzW.js",
         "parts-DTbd10X0.js",
-        "popover-BIzgR4vz.js",
-        "value-state.js"
+        "sheet-CZE8A3IF.js",
+        "sheet.js"
       ],
-      "rawBytes": 106755,
-      "stylesheets": [
-        "core/combobox.css",
-        "core/floating.css",
-        "core/options.css",
-        "themes/atmosphere/combobox.css",
-        "themes/atmosphere/options.css"
-      ]
+      "rawBytes": 32243,
+      "stylesheets": ["core/sheet.css", "themes/atmosphere/sheet.css"]
+    },
+    "tabs": {
+      "cssGzipBytes": 1039,
+      "cssRawBytes": 3634,
+      "gzipBytes": 5278,
+      "modules": ["events.js", "tabs-DsO3i3CU.js", "tabs.js"],
+      "rawBytes": 21576,
+      "stylesheets": ["core/tabs.css", "themes/atmosphere/tabs.css"]
+    },
+    "toast": {
+      "cssGzipBytes": 1241,
+      "cssRawBytes": 3869,
+      "gzipBytes": 3634,
+      "modules": ["toast-CVp5Is8d.js", "toast.js"],
+      "rawBytes": 13634,
+      "stylesheets": ["core/toast.css", "themes/atmosphere/toast.css"]
+    },
+    "toggle-group": {
+      "cssGzipBytes": 678,
+      "cssRawBytes": 2419,
+      "gzipBytes": 6144,
+      "modules": ["collection.js", "events.js", "toggle-group-BiS66bpq.js", "toggle-group.js"],
+      "rawBytes": 21203,
+      "stylesheets": ["core/toggle.css", "themes/atmosphere/toggle.css"]
+    },
+    "toolbar": {
+      "cssGzipBytes": 493,
+      "cssRawBytes": 836,
+      "gzipBytes": 5105,
+      "modules": ["collection.js", "toolbar-Df47HCIs.js", "toolbar.js"],
+      "rawBytes": 16174,
+      "stylesheets": ["core/toolbar.css", "themes/atmosphere/toolbar.css"]
     }
   }
 }

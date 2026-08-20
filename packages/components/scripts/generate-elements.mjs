@@ -138,18 +138,18 @@ if (check && stale) {
 }
 
 /**
- * `atmosphereTokenGroups` is authored TypeScript, so it is read as text rather than imported. The
+ * `uiTokenGroups` is authored TypeScript, so it is read as text rather than imported. The
  * same list is already proven against `tokens.css` by `validate-contracts.mjs` in both directions.
  */
 async function readTokenGroups() {
   const source = await readFile(resolve(packageRoot, 'src/tokens.ts'), 'utf8')
-  const body = /atmosphereTokenGroups = \{([\s\S]*?)\n\} as const/.exec(source)?.[1]
-  if (!body) throw new Error('Could not read atmosphereTokenGroups from src/tokens.ts')
+  const body = /uiTokenGroups = \{([\s\S]*?)\n\} as const/.exec(source)?.[1]
+  if (!body) throw new Error('Could not read uiTokenGroups from src/tokens.ts')
   const groups = {}
   for (const match of body.matchAll(/(\w+): \[([^\]]*)\]/g)) {
     groups[match[1]] = [...match[2].matchAll(/'(--ui-[a-z0-9-]+)'/g)].map((token) => token[1])
   }
-  if (Object.keys(groups).length === 0) throw new Error('atmosphereTokenGroups parsed as empty')
+  if (Object.keys(groups).length === 0) throw new Error('uiTokenGroups parsed as empty')
   return groups
 }
 
@@ -298,10 +298,19 @@ function createAttributeHelper() {
     })
     .join('\n')
   const imports = used.size > 0 ? `${valueImports([...used].sort(), './values/')}\n\n` : ''
+  const roots = classComponents
+    .map((component) => {
+      const defaults = component.attributes
+        .filter((attribute) => attribute.default !== undefined)
+        .map((attribute) => `'${attribute.name}': '${attribute.default}'`)
+        .join(', ')
+      return `  ${component.name}: { class: '${component.root.name}', defaults: {${
+        defaults ? ` ${defaults} ` : ''
+      }} },`
+    })
+    .join('\n')
 
-  return `${imports}import { componentContracts } from './contracts'
-
-/** Configuration accepted by each CSS-only component root, keyed by contract name. */
+  return `${imports}/** Configuration accepted by each CSS-only component root, keyed by contract name. */
 export type UIAttributeConfig = {
 ${configs}
 }
@@ -310,6 +319,18 @@ export type UIAttributeComponent = keyof UIAttributeConfig
 
 /** Attributes ready to spread onto a native element, in any framework or template language. */
 export type UIAttributeResult = { class: string } & Record<\`data-ui-\${string}\`, string>
+
+/**
+ * The root class and the declared attribute defaults, inlined at generation time. Reading the two
+ * out of \`componentContracts\` pulled the whole contract registry into the browser for a helper that
+ * emits strings, which made the typed convenience API the most expensive import in the package.
+ * \`componentContracts\` stays where it belongs: \`validate.ts\` and genuine introspection.
+ */
+const roots: Readonly<
+  Record<UIAttributeComponent, { readonly class: string; readonly defaults: Readonly<Record<string, string>> }>
+> = {
+${roots}
+}
 
 /**
  * Builds the root class and \`data-ui-*\` attributes for a CSS-only component.
@@ -328,7 +349,7 @@ export function uiAttributes<TComponent extends UIAttributeComponent>(
 ): UIAttributeResult {
   const { class: extraClass, ...values } = config as Record<string, unknown>
   const result: UIAttributeResult = {
-    class: [componentContracts[component].root.name, extraClass].filter(Boolean).join(' '),
+    class: [roots[component].class, extraClass].filter(Boolean).join(' '),
   }
   for (const [key, value] of Object.entries(values)) {
     if (value === undefined || value === false) continue
@@ -362,14 +383,9 @@ export function uiAttributeString<TComponent extends UIAttributeComponent>(
   config: UIAttributeConfig[TComponent] & { class?: string } = {} as UIAttributeConfig[TComponent],
   options: UIAttributeStringOptions = {},
 ): string {
-  const defaults = new Map<string, string | undefined>(
-    componentContracts[component].attributes.map((attribute) => [
-      attribute.name,
-      'default' in attribute ? attribute.default : undefined,
-    ]),
-  )
+  const defaults = roots[component].defaults
   const entries = Object.entries(uiAttributes(component, config)).filter(
-    ([name, value]) => options.omitDefaults === false || defaults.get(name) !== value,
+    ([name, value]) => options.omitDefaults === false || defaults[name] !== value,
   )
   return entries.map(([name, value]) => \`\${name}="\${escapeAttribute(value)}"\`).join(' ')
 }

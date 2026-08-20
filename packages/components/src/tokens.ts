@@ -1,6 +1,12 @@
-export type AtmosphereTokenName = `--ui-${string}`
+/**
+ * The `--ui-*` vocabulary every Timeless stylesheet reads, grouped by purpose. These are names, not
+ * values: Atmosphere declares one set of values for them in `themes/atmosphere/tokens.css`, and a
+ * second theme declares the same names. `validate-contracts.mjs` proves the list against that
+ * stylesheet in both directions.
+ */
+export type UITokenName = `--ui-${string}`
 
-export const atmosphereTokenGroups = {
+export const uiTokenGroups = {
   color: [
     '--ui-bg-page',
     '--ui-bg-surface',
@@ -59,13 +65,13 @@ export const atmosphereTokenGroups = {
   typography: ['--ui-font-sans', '--ui-font-mono'],
   motion: ['--ui-duration-fast', '--ui-ease-standard'],
   effect: ['--ui-disabled-opacity', '--ui-checkerboard', '--ui-checkerboard-ink'],
-} as const satisfies Record<string, readonly AtmosphereTokenName[]>
+} as const satisfies Record<string, readonly UITokenName[]>
 
-export type AtmosphereTokenGroup = keyof typeof atmosphereTokenGroups
-export type AtmosphereToken = (typeof atmosphereTokenGroups)[AtmosphereTokenGroup][number]
+export type UITokenGroup = keyof typeof uiTokenGroups
+export type UIToken = (typeof uiTokenGroups)[UITokenGroup][number]
 
-export const atmosphereTokens = Object.values(atmosphereTokenGroups).flat() as AtmosphereToken[]
+export const uiTokens = Object.values(uiTokenGroups).flat() as UIToken[]
 
-export function isAtmosphereToken(value: string): value is AtmosphereToken {
-  return atmosphereTokens.includes(value as AtmosphereToken)
+export function isUIToken(value: string): value is UIToken {
+  return uiTokens.includes(value as UIToken)
 }

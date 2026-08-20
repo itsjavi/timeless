@@ -7,10 +7,11 @@ sidebar:
 
 ## Packages
 
-| Package                  | Role                                                                                                                                                                      |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@timelessui/components` | Everything a consumer needs: CSS, custom elements, contracts, and utilities. This is the only package you install.                                                        |
-| `@timelessui/core`       | The internal custom-element authoring layer the components are built on. It arrives as a dependency; you do not import it directly, and it is not part of the public API. |
+| Package                  | Role                                                                                                                                                                            |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@timelessui/components` | Everything a consumer needs to build an interface: CSS, custom elements, contracts, and utilities. This is the only package you install for components.                         |
+| `@timelessui/color`      | CSS color parsing, conversion, gamut, and contrast utilities. A standalone library with no dependency on the components; install it only if you want the color math on its own. |
+| `@timelessui/core`       | The internal custom-element authoring layer the components are built on. It arrives as a dependency; you do not import it directly, and it is not part of the public API.       |
 
 ```bash
 pnpm add @timelessui/components
@@ -27,8 +28,8 @@ pnpm add @timelessui/components
 | `@timelessui/components/css/themes/atmosphere/{component}.css` | One component's styles.                                                                          | Stylesheet                    |
 | `@timelessui/components/css/themes/atmosphere.css`             | The Atmosphere theme complete: layer order, behavior, and every component's look.                | Stylesheet                    |
 | `@timelessui/components/css/tokens.css`                        | Design tokens and the cascade-layer order.                                                       | Stylesheet                    |
-| `@timelessui/components/color`                                 | Color parsing, conversion, and gamut utilities.                                                  | None                          |
 | `@timelessui/components/collection`                            | Locale-aware matching and disabled-aware keyboard navigation.                                    | None                          |
+| `@timelessui/color`                                            | Color parsing, serialization, conversion, gamut, and WCAG contrast. Its own package.             | None                          |
 | `@timelessui/components/events`                                | Transition event and detail types.                                                               | None                          |
 | `@timelessui/components/value-state`                           | Authored-default and live-value helpers.                                                         | None                          |
 | `@timelessui/components/attributes`                            | Typed attribute builder for CSS-only components.                                                 | None                          |
@@ -42,6 +43,22 @@ pnpm add @timelessui/components
 Only enhanced elements have a class entrypoint. CSS-only primitives such as Button, Alert, and Card
 are classes and attributes rather than JavaScript, so they have no per-component module at all —
 their permitted values live on the root import instead.
+
+## What an entrypoint weighs
+
+Enhanced elements are composed, so an entrypoint pulls the modules it is built on. Select contains
+Listbox, the option layer, Popover, and the anchoring layer, which is why it is the heaviest single
+import in the package.
+
+Bundled and minified, `@timelessui/components/select` is about 13.5 kB gzipped. Adding
+`@timelessui/components/combobox` to the same page brings the pair to about 16 kB rather than to the
+sum of the two, because everything under both of them is shared. Six enhanced elements — Select,
+Combobox, Listbox, Popover, Menu, and Dialog — come to about 21 kB together. There is no framework
+runtime underneath any of it, and a CSS-only component such as Button or Card adds no JavaScript at
+all.
+
+Those are measurements rather than budgets, taken with esbuild at default settings; your bundler
+will land somewhere nearby. The package ships unminified so your own pipeline decides.
 
 ## Contracts and permitted values
 
@@ -83,9 +100,10 @@ set its own components implement.
 
 ## Design tokens
 
-`atmosphereTokenGroups` names every public custom property, grouped by purpose, and
-`isAtmosphereToken` narrows a string against the set. See [Theming](/docs/styling/theming/) for the
-values and how to override them.
+`uiTokenGroups` names every public custom property, grouped by purpose, and `isUIToken` narrows a
+string against the set. Both name the theme-neutral `--ui-*` vocabulary rather than Atmosphere,
+which is one set of values for it. See [Theming](/docs/styling/theming/) for the values and how to
+override them.
 
 ## Custom Elements Manifest
 

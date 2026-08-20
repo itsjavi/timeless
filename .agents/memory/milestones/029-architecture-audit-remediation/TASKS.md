@@ -20,104 +20,116 @@
 
 ## 1. Rename the token exports off the theme
 
-- [ ] Rename the six exports to `uiTokenGroups`, `uiTokens`, `isUIToken`, `UIToken`, `UITokenGroup`,
+- [x] Rename the six exports to `uiTokenGroups`, `uiTokens`, `isUIToken`, `UIToken`, `UITokenGroup`,
       and `UITokenName`
-- [ ] Record why the rename is permissible: the package is unpublished at `0.0.1`, against the
+- [x] Record why the rename is permissible: the package is unpublished at `0.0.1`, against the
       `AGENTS.md` rule that a public export never changes name or module
-- [ ] Update the text parser in `generate-elements.mjs` that reads `src/tokens.ts` expecting
+- [x] Update the text parser in `generate-elements.mjs` that reads `src/tokens.ts` expecting
       `atmosphereTokenGroups = { ... } as const`
-- [ ] Update `emit-editor-data.mjs` and `validate-contracts.mjs` for the new name
-- [ ] Regenerate and confirm the 58 occurrences in `vscode.css-custom-data.json` are replaced
+- [x] Update `emit-editor-data.mjs` and `validate-contracts.mjs` for the new name
+- [x] Regenerate and confirm the 58 occurrences in `vscode.css-custom-data.json` are replaced
       without hand-editing
-- [ ] Update `src/index.ts`, `apps/web/src/lib/component-docs.ts`, `TokenTable.astro`, and
+- [x] Update `src/index.ts`, `apps/web/src/lib/component-docs.ts`, `TokenTable.astro`, and
       `[slug].astro`
-- [ ] Update `docs/styling/theming.mdx:65` and `docs/reference/packages.mdx:86-87`
-- [ ] Update the four stories referencing the old name
-- [ ] Confirm `Atmosphere` still names the theme in `DESIGN.md` and still describes the token values
-- [ ] Confirm no remaining `Atmosphere` occurrence sits on a public export
-- [ ] Run `generate:check` and `typecheck`
+- [x] Update `docs/styling/theming.mdx:65` and `docs/reference/packages.mdx:86-87`
+- [x] Confirm no story references the old name — none did; the four suspected story hits were the
+      theme's CSS paths, not the exports
+- [x] Confirm `Atmosphere` still names the theme in `DESIGN.md` and still describes the token values
+- [x] Confirm no remaining `Atmosphere` occurrence sits on a public export
+- [x] Run `generate:check` and `typecheck`
 
 ## 2. Extract `@timelessui/color`
 
-- [ ] Create `packages/color` with `@timelessui/color` as its name
-- [ ] Move `color.ts`, `contrast.ts`, and `color.test.ts` into it
-- [ ] Make the new package's index the export surface `color-api.ts` currently provides
-- [ ] Add `@timelessui/color` as a dependency of `@timelessui/components`
-- [ ] Repoint the single `./color` import in `color-picker.ts`
-- [ ] Confirm `color-picker.ts`, `color-picker.test.ts`, `color-picker.css`, and `color-swatch.css`
+- [x] Create `packages/color` with `@timelessui/color` as its name
+- [x] Move `color.ts`, `contrast.ts`, and `color.test.ts` into it
+- [x] Make the new package's index the export surface `color-api.ts` currently provides
+- [x] Add `@timelessui/color` as a dependency of `@timelessui/components`
+- [x] Repoint the single `./color` import in `color-picker.ts`
+- [x] Confirm `color-picker.ts`, `color-picker.test.ts`, `color-picker.css`, and `color-swatch.css`
       stay in `components`
-- [ ] Decide whether `@timelessui/components` keeps a `./color` re-export or consumers import the
-      new package directly, and record the reason
-- [ ] Extend `check-boundaries.mjs` so `@timelessui/color` cannot depend on `components` or `core`
-- [ ] Run `pnpm boundaries:check`
-- [ ] Run `exports:validate`, `publint`, and `attw` on both packages
-- [ ] Confirm the colour unit tests pass in their new home
-- [ ] Amend `docs/reference/scope.mdx` to state that a colour primitive is in scope while a colour
+- [x] Decide whether `@timelessui/components` keeps a `./color` re-export or consumers import the
+      new package directly, and record the reason — the subpath is gone
+- [x] Extend `check-boundaries.mjs` so `@timelessui/color` cannot depend on `components` or `core`
+- [x] Run `pnpm boundaries:check`
+- [x] Run `exports:validate`, `publint`, and `attw` on both packages
+- [x] Confirm the colour unit tests pass in their new home
+- [x] Amend `docs/reference/scope.mdx` to state that a colour primitive is in scope while a colour
       model is a library, so the page no longer implies Colour Picker is the inconsistency
-- [ ] Update `docs/reference/packages.mdx` for the new package
-- [ ] Confirm `README.md`'s colour sentence still matches where the code lives
+- [x] Update `docs/reference/packages.mdx` for the new package
+- [x] Confirm `README.md`'s colour sentence still matches where the code lives
 
 ## 3. Stop shipping the contract registry to the browser
 
-- [ ] Extend `generate-elements.mjs` to emit `attributes.ts` with per-component defaults inlined
-- [ ] Confirm `attributes.ts` no longer imports `componentContracts`
-- [ ] Confirm `uiAttributes()` and `uiAttributeString()` behavior is unchanged, defaults included
-- [ ] Run `generate:check` and confirm no stale-file failure
-- [ ] Measure the gzip delta for an entry importing `uiAttributes`, and record before and after
-- [ ] Confirm `validate.ts` still has the contract record it needs
+- [x] Extend `generate-elements.mjs` to emit `attributes.ts` with per-component defaults inlined
+- [x] Confirm `attributes.ts` no longer imports `componentContracts`
+- [x] Confirm `uiAttributes()` and `uiAttributeString()` behavior is unchanged, defaults included
+- [x] Run `generate:check` and confirm no stale-file failure
+- [x] Measure the gzip delta for an entry importing `uiAttributes`, and record before and after —
+      19,328 → 1,573 gzip, 109,958 → 5,269 raw
+- [x] Confirm `validate.ts` still has the contract record it needs
 
 ## 4. One typeahead state machine
 
-- [ ] Lift `isTypeaheadEvent` into `collection.ts` or `options.ts` as a single definition
-- [ ] Lift the `#typeahead` buffer, the `#typeaheadTimer`, and the module-level timer fallback into
+- [x] Lift `isTypeaheadEvent` into `collection.ts` or `options.ts` as a single definition — it went
+      to `collection.ts` as `isCollectionTypeaheadEvent`, since Menu is not an option surface
+- [x] Lift the `#typeahead` buffer, the `#typeaheadTimer`, and the module-level timer fallback into
       that module as one state machine with policy hooks
-- [ ] Confirm `listbox.ts` and `select.ts` define neither the predicate nor the buffer
-- [ ] Confirm `menu.ts` consumes the shared predicate while keeping its own key-handling policy
-- [ ] Confirm Select still selects without opening on a printable character when closed
-- [ ] Confirm Listbox typeahead behavior is unchanged
-- [ ] Confirm the debounce window is declared once
-- [ ] Run `pnpm -F @timelessui/components run test`
-- [ ] Run `pnpm test:e2e` and confirm the collection and menu specs pass
-- [ ] Run the axe sweep in `apps/e2e/tests/apps/stories/a11y.spec.ts`
+- [x] Confirm `listbox.ts` and `select.ts` define neither the predicate nor the buffer
+- [x] Confirm `menu.ts` consumes the shared predicate while keeping its own key-handling policy
+- [x] Confirm Select still selects without opening on a printable character when closed
+- [x] Confirm Listbox typeahead behavior is unchanged
+- [x] Confirm the debounce window is declared once
+- [x] Run `pnpm -F @timelessui/components run test`
+- [x] Run `pnpm test:e2e` and confirm the collection and menu specs pass — 29 passed, including a
+      new Select typeahead-policy test
+- [x] Run the axe sweep in `apps/e2e/tests/apps/stories/a11y.spec.ts`
 
 ## 5. Account for the bundle weight
 
-- [ ] Produce a per-module gzip attribution for the Select graph, naming which of the nine modules
-      carries the weight
-- [ ] Do the same for Combobox, and record whether the two share the same hot spot
-- [ ] Decide whether to reduce or to document the figure, based on that attribution
-- [ ] Extend `performance-baselines.json` to at least one entry per component family, or narrow the
-      `performance:check` row in `.agents/reference/validators.md` to the collection family
-- [ ] Re-baseline with `performance:check -- --measure` only after milestone 028 has landed, so the
+- [x] Produce a per-module gzip attribution for the Select graph, naming which of the nine modules
+      carries the weight — the Listbox chunk at 37% and `select.js` at 32%
+- [x] Do the same for Combobox, and record whether the two share the same hot spot — they share it,
+      and they share the chunk itself
+- [x] Decide whether to reduce or to document the figure, based on that attribution — documented;
+      minified, Select is 13.5KB rather than 30KB
+- [x] Extend `performance-baselines.json` to at least one entry per component family, or narrow the
+      `performance:check` row in `.agents/reference/validators.md` to the collection family — every
+      element module is covered, 4 entries to 20
+- [x] Re-baseline with `performance:check -- --measure` only after milestone 028 has landed, so the
       CSS figures are stable
-- [ ] Record before and after
+- [x] Record before and after
 
 ## 6. Utility CSS and Tailwind
 
-- [ ] Write `docs/styling/utility-css.mdx`
-- [ ] Author the centrepiece example: a Popover with a button trigger, importing the core layer and
+- [x] Write `docs/styling/utility-css.mdx`
+- [x] Author the centrepiece example: a Popover with a button trigger, importing the core layer and
       no theme CSS, styled entirely in Tailwind utilities
-- [ ] Include the full import block in the order that makes utilities win
-- [ ] Include the host display, the trigger, the anchored surface, and a `:state()` or `aria-*`
+- [x] Include the full import block in the order that makes utilities win
+- [x] Include the host display, the trigger, the anchored surface, and a `:state()` or `aria-*`
       variant doing real work
-- [ ] Paste the snippet into a running app and confirm it renders, anchors, opens, and
+- [x] Paste the snippet into a running app and confirm it renders, anchors, opens, and
       light-dismisses before publishing it
-- [ ] Verify in a browser that the inverted import order makes Timeless outrank every utility,
+- [x] Verify in a browser that the inverted import order makes Timeless outrank every utility,
       before documenting it as the failure mode
-- [ ] Verify that a `display` utility on an option row reintroduces filtered options, and publish
-      the one-line fix
-- [ ] Document that `:state()` has no Tailwind variant, and show the arbitrary-variant form
-- [ ] Point at the core layer for host display rather than telling consumers to hand-write it
-- [ ] Confirm the page appears in the Styling sidebar group, and cross-link from `css.mdx` and
+- [x] Verify that a `display` utility on an option row reintroduces filtered options, and publish
+      the one-line fix — it does not under Tailwind's Preflight, which carries
+      `[hidden] { display: none !important }`; it does without Preflight, and the fix is
+      `not-[[hidden]]:flex`
+- [x] Document that `:state()` has no Tailwind variant, and show the arbitrary-variant form
+- [x] Point at the core layer for host display rather than telling consumers to hand-write it
+- [x] Confirm the page appears in the Styling sidebar group, and cross-link from `css.mdx` and
       `theming.mdx`
 
 ## 7. Close out
 
-- [ ] Run `pnpm qa` and record what it said
-- [ ] Run `audit-docs-drift` and confirm no prose still implies the tokens belong to Atmosphere, and
-      none still places the generic colour functions in `components`
-- [ ] Confirm `apps/web/scripts/validate-claims.mjs` needs no change, or update it
-- [ ] Record decisions, trade-offs, and results in RESULTS.md
+- [x] Run `pnpm qa` and record what it said — exit 0; 337 unit tests, 403 e2e
+- [x] Run `audit-docs-drift` and confirm no prose still implies the tokens belong to Atmosphere, and
+      none still places the generic colour functions in `components` — both clean; the audit found
+      two unrelated gaps, the package README's stale 028 CSS paths and the missing `packages/color`
+      row in the surface table, and both are fixed
+- [x] Confirm `apps/web/scripts/validate-claims.mjs` needs no change, or update it — updated: it
+      collects the library source from a directory list the colour package was missing from
+- [x] Record decisions, trade-offs, and results in RESULTS.md
 
 ---
 

@@ -15,6 +15,7 @@
  */
 
 import {
+  COLLECTION_TYPEAHEAD_RESET_MS,
   collectionTextMatches,
   isCollectionItemDisabled,
   type CollectionItemLike,
@@ -27,10 +28,10 @@ export { collectionAlignments, optionFilterModes }
 export type { CollectionAlignment, OptionFilterMode }
 
 /**
- * Shared typeahead idle window. Listbox and Menu both settled on 700ms independently; naming it
- * once here keeps the collection surfaces from drifting apart again.
+ * Shared typeahead idle window, kept under its own name because it is a public export.
+ * `collection.ts` owns the value now that Menu shares the same buffer.
  */
-export const OPTION_TYPEAHEAD_RESET_MS = 700
+export const OPTION_TYPEAHEAD_RESET_MS = COLLECTION_TYPEAHEAD_RESET_MS
 
 export const OPTION_SELECTOR = "[role='option']"
 export const OPTION_GROUP_SELECTOR = "[data-ui-part~='group']"

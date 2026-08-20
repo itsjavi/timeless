@@ -476,12 +476,12 @@ export {
 } from './toast'
 
 export {
-  atmosphereTokenGroups,
-  atmosphereTokens,
-  isAtmosphereToken,
-  type AtmosphereToken,
-  type AtmosphereTokenGroup,
-  type AtmosphereTokenName,
+  uiTokenGroups,
+  uiTokens,
+  isUIToken,
+  type UIToken,
+  type UITokenGroup,
+  type UITokenName,
 } from './tokens'
 
 export {

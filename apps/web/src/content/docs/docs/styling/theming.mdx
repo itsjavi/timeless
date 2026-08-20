@@ -66,8 +66,10 @@ Tokens are CSS custom properties on `:root`, all prefixed `--ui-`. Redefine any 
 }
 ```
 
-The names and groups are exported as `atmosphereTokenGroups` from `@timelessui/components`, so you
-can drive a theme editor or a token audit from the same list this page is generated from.
+The names and groups are exported as `uiTokenGroups` from `@timelessui/components`, so you can drive
+a theme editor or a token audit from the same list this page is generated from. The export names the
+vocabulary, not one theme's values: Atmosphere fills these names in, and a theme of your own fills
+in the same ones.
 
 ### Color
 
@@ -175,7 +177,8 @@ The public anatomy is the contract, and it is unchanged whether the theme is loa
 - `data-ui-part` identifies authored anatomy.
 - Native attributes, ARIA, and platform pseudo-classes carry state.
 
-So a utility-class or CSS-in-JS project targets the same anatomy:
+So a utility-class or CSS-in-JS project targets the same anatomy —
+[Utility CSS and Tailwind](/docs/styling/utility-css/) works one through end to end:
 
 ```css
 [data-ui-part~='trigger'] {

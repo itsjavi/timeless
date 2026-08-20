@@ -29,7 +29,9 @@ import {
 } from '@timelessui/core'
 import {
   collectionNavigationTarget,
+  createCollectionTypeahead,
   isCollectionItemDisabled,
+  isCollectionTypeaheadEvent,
   syncRovingTabIndex,
 } from './collection'
 import {
@@ -41,7 +43,6 @@ import {
   optionLabel,
   optionPageWindow,
   OPTION_SELECTOR,
-  OPTION_TYPEAHEAD_RESET_MS,
   visibleOptions,
   type OptionFilterMode,
   type OptionWindow,
@@ -147,8 +148,6 @@ const PAGE_STATUS_SELECTOR = "[data-ui-part~='page-status']"
 /** A listbox nested inside one of these already has an owner for its form value. */
 const OWNING_COLLECTION_SELECTOR = 'ui-select, ui-combobox'
 
-let typeaheadTimerFallback = 0
-
 export type UIListboxElementConstructor = CustomElementConstructor & {
   elementName?: string
   formAssociated?: boolean
@@ -190,8 +189,7 @@ export function createListboxElementClass(targetWindow?: Window): UIListboxEleme
     #fieldsetDisabled = false
     #page = 0
     #syncingDefaultValue = false
-    #typeahead = ''
-    #typeaheadTimer = 0
+    #typeahead = createCollectionTypeahead(() => this.ownerDocument.defaultView)
     #valueDirty = false
 
     /** Every selected value, in DOM order. Assign it to replace the whole selection. */
@@ -261,7 +259,7 @@ export function createListboxElementClass(targetWindow?: Window): UIListboxEleme
     }
 
     protected override disconnected(): void {
-      this.clearTypeahead()
+      this.#typeahead.clear()
     }
 
     /** Called by the browser when an ancestor `<fieldset>` is disabled, which has no attribute here. */
@@ -389,14 +387,12 @@ export function createListboxElementClass(targetWindow?: Window): UIListboxEleme
         return
       }
 
-      if (isTypeaheadEvent(event)) {
-        this.#typeahead += event.key
+      if (isCollectionTypeaheadEvent(event)) {
         const typeaheadIndex = findOptionByPrefix(
           navigable,
-          this.#typeahead,
+          this.#typeahead.push(event.key),
           navigable.indexOf(option),
         )
-        this.scheduleTypeaheadReset()
         if (typeaheadIndex !== null) {
           event.preventDefault()
           this.moveTo(navigable[typeaheadIndex])
@@ -510,25 +506,6 @@ export function createListboxElementClass(targetWindow?: Window): UIListboxEleme
       if (this.closestTarget<HTMLElement>(event, PAGE_PREVIOUS_SELECTOR)) return -1
       if (this.closestTarget<HTMLElement>(event, PAGE_NEXT_SELECTOR)) return 1
       return null
-    }
-
-    private scheduleTypeaheadReset(): void {
-      this.clearTypeaheadTimer()
-      const ownerWindow = this.ownerDocument.defaultView
-      this.#typeaheadTimer = ownerWindow
-        ? ownerWindow.setTimeout(() => this.clearTypeahead(), OPTION_TYPEAHEAD_RESET_MS)
-        : ++typeaheadTimerFallback
-    }
-
-    private clearTypeahead(): void {
-      this.clearTypeaheadTimer()
-      this.#typeahead = ''
-    }
-
-    private clearTypeaheadTimer(): void {
-      if (!this.#typeaheadTimer) return
-      this.ownerDocument.defaultView?.clearTimeout(this.#typeaheadTimer)
-      this.#typeaheadTimer = 0
     }
 
     /**
@@ -702,11 +679,45 @@ export function syncListboxActiveOption(
 }
 
 /**
- * Points a controlling field's `aria-activedescendant` at the active option.
+ * The roles ARIA 1.2 supports `aria-activedescendant` on, restricted to the ones a control that
+ * drives a listbox could plausibly carry. `combobox` is the one Select and Combobox set for
+ * themselves; the others are here so a consumer who chose one deliberately still gets a working
+ * relationship.
+ *
+ * An absent role is permitted: a native `<input>` takes the attribute legally and its role is
+ * implicit, and an attribute bag cannot tell us what the tag is. The rule is to refuse only where the
+ * role is stated and provably forbids it.
+ */
+const ACTIVE_DESCENDANT_ROLES = new Set([
+  'application',
+  'combobox',
+  'group',
+  'searchbox',
+  'textbox',
+])
+
+function permitsActiveDescendant(controller: ListboxControllerLike): boolean {
+  const role = controller.getAttribute('role')
+  if (role === null) return true
+  return role
+    .trim()
+    .split(/\s+/)
+    .some((token) => ACTIVE_DESCENDANT_ROLES.has(token))
+}
+
+/**
+ * Marks the active option, and points a controlling field's `aria-activedescendant` at it.
  *
  * This used to also write `aria-selected` from the active index, which meant arrowing through a
  * combobox announced every option it passed as selected and erased the real selection. It writes
  * the highlight and the relationship, and nothing about selection.
+ *
+ * The relationship is withheld from a controller whose stated role forbids the attribute. Select
+ * gives its trigger `role="combobox"` for exactly this reason, but an author-set role deliberately
+ * wins over that, so `role="button"` on a trigger used to receive an attribute no button role
+ * permits — axe rates it critical, and a screen reader gets nothing from it either way. Marking the
+ * option and naming it are separate jobs; only the second one is the controller's, so the highlight
+ * is unaffected.
  */
 export function syncListboxActiveDescendant(
   controller: ListboxControllerLike | null,
@@ -715,19 +726,28 @@ export function syncListboxActiveDescendant(
 ): number | null {
   if (!controller) return null
 
+  // The attribute is Timeless's to manage, so a role change that makes it illegal clears it rather
+  // than stranding the last value written under the previous role. Everything below still runs: the
+  // options are marked whether or not anything is allowed to name them.
+  let named: ListboxControllerLike | null = controller
+  if (!permitsActiveDescendant(controller)) {
+    controller.removeAttribute('aria-activedescendant')
+    named = null
+  }
+
   if (!isValidActiveListboxIndex(parts.options, activeIndex)) {
     clearListboxActiveOption(parts.options)
-    controller.removeAttribute('aria-activedescendant')
+    named?.removeAttribute('aria-activedescendant')
     return null
   }
 
   const resolvedIndex = syncListboxActiveOption(parts, activeIndex, false)
   if (resolvedIndex === null) {
-    controller.removeAttribute('aria-activedescendant')
+    named?.removeAttribute('aria-activedescendant')
     return null
   }
 
-  controller.setAttribute('aria-activedescendant', parts.options[resolvedIndex]!.id)
+  named?.setAttribute('aria-activedescendant', parts.options[resolvedIndex]!.id)
   return resolvedIndex
 }
 
@@ -957,12 +977,6 @@ function isValidActiveListboxIndex(
     activeIndex < options.length &&
     !options[activeIndex]!.hidden &&
     !isCollectionItemDisabled(options[activeIndex]!)
-  )
-}
-
-function isTypeaheadEvent(event: KeyboardEvent): boolean {
-  return (
-    event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
   )
 }
 

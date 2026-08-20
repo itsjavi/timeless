@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import {
-  atmosphereTokens,
+  uiTokens,
   componentContracts,
   type ComponentContract,
   type ComponentName,
@@ -102,7 +102,7 @@ export async function stylingFor(
     contract.variables.map((variable) => ({ ...variable, owner: label })),
   )
   const declared = new Set(variables.map((variable) => variable.name))
-  const globals = new Set<string>(atmosphereTokens)
+  const globals = new Set<string>(uiTokens)
 
   return {
     variables,

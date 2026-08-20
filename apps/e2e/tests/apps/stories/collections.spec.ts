@@ -216,6 +216,48 @@ test.describe('stories collection navigation', () => {
   })
 
   /**
+   * Select's typeahead policy, which differs from every other collection surface: on a closed
+   * trigger a printable character selects the match outright, the way the native control does, and
+   * only moves the highlight once the surface is open. Listbox, Select, and Menu now share one
+   * buffer and one idle window, so the policy that stays per-component is worth holding down.
+   */
+  test('select types to select while closed and to highlight while open', async ({ page }) => {
+    await page.goto('/stories/library-navigation-select--default/')
+    await expectRouteDocumentReady(page)
+
+    const host = page.locator('ui-select')
+    const trigger = page.getByRole('combobox', { name: /Role/ })
+    const surface = host.locator("[role='listbox']")
+    // The shared idle window is 700ms. Waiting past it between phases is the debounce under test,
+    // not a hack around a race: each phase has to start from an empty buffer, and a buffer that
+    // empties on its own is the whole reason there is one implementation of it.
+    const idle = () => page.waitForTimeout(900)
+
+    // A shifted character is a printable character, so it types. Closed, the match is selected
+    // outright rather than opening the surface, which is what the native control does.
+    await trigger.focus()
+    await page.keyboard.press('Shift+M')
+    await expect(surface).toBeHidden()
+    await expect(host).toHaveJSProperty('value', 'manager')
+
+    await idle()
+    await page.keyboard.press('d')
+    await expect(surface).toBeHidden()
+    await expect(host).toHaveJSProperty('value', 'designer')
+
+    // Open, the same keystroke only moves the highlight.
+    await idle()
+    await trigger.click()
+    await expect(surface).toBeVisible()
+    await page.keyboard.press('e')
+    await expect(page.getByRole('option', { name: 'Engineer' })).toHaveAttribute(
+      'aria-selected',
+      'false',
+    )
+    await expect(host).toHaveJSProperty('value', 'designer')
+  })
+
+  /**
    * The defect this milestone was opened for. `position-area: bottom center` centred the surface on
    * its trigger and `inline-size: max-content` let it be narrower; both assertions fail on `main`.
    */

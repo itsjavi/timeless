@@ -9,7 +9,6 @@ export default defineConfig({
   entry: [
     'src/index.ts',
     'src/define.ts',
-    'src/color-api.ts',
     'src/collection.ts',
     'src/events.ts',
     'src/value-state.ts',
@@ -33,6 +32,11 @@ export default defineConfig({
       transform(code, id) {
         const filePath = id.split('?')[0] ?? id
         if (!filePath.includes('/packages/components/src/') || !filePath.endsWith('.ts')) {
+          return null
+        }
+        // The dts pass feeds declaration files through the same pipeline, and `transpileModule`
+        // cannot emit for one. Only the authored sources carry decorators.
+        if (filePath.endsWith('.d.ts')) {
           return null
         }
         if (!code.includes('@')) {

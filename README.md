@@ -8,6 +8,7 @@ yet, while the primitives settle.
 | Website and reference documentation                            | `apps/web`            |
 | Component catalog and development workbench                    | `apps/stories`        |
 | The library itself: CSS, custom elements, contracts, utilities | `packages/components` |
+| CSS colour parsing, conversion, gamut, and contrast            | `packages/color`      |
 | Internal custom-element authoring layer                        | `packages/core`       |
 | Canonical consumer examples shared by the documentation apps   | `packages/examples`   |
 
@@ -72,7 +73,9 @@ configuration attribute and its permitted values, authored part, public state, C
 and event. `pnpm build` proves those values against the stylesheets in both directions, so a
 documented value is a value the CSS implements.
 
-Colour utilities are published separately from `@timelessui/components/color`.
+Colour parsing, conversion, gamut, and contrast are a library rather than a primitive, so they ship
+as `@timelessui/color`, which depends on nothing. Colour Picker and Colour Swatch stay components
+and depend on it.
 
 What Timeless deliberately does not ship — and why, per component — is written down at
 `/docs/reference/scope/`. Aspect Ratio, Scroll Area, and Carousel are declarations the platform

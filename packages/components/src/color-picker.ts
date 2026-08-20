@@ -26,7 +26,7 @@ import {
   type OklchColor,
   type ParsedColor,
   type RgbColor,
-} from './color'
+} from '@timelessui/color'
 import { colorPickerFormats } from './values/color-picker'
 import type { ColorPickerFormat } from './values/color-picker'
 
