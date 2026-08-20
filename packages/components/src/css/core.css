@@ -1,0 +1,32 @@
+/*
+ * Core: the declarations a Timeless component needs to behave correctly, with none of Atmosphere's
+ * look. Required. `theme-atmosphere.css` and the component stylesheets beside it are the optional
+ * tier — replace them wholesale and every component here is still positioned, still scrolls, still
+ * operable, just plain.
+ *
+ * What earns a place in `core/`: anchoring, box participation (`display`, `box-sizing` where a layout
+ * contract depends on it), positioning, scrolling, native control behavior (`appearance`,
+ * `field-sizing`, `resize`), input behavior (`pointer-events`, `touch-action`), and platform
+ * integration (`forced-color-adjust`). What is excluded, and proven excluded by
+ * `check-core-boundary.mjs`: colour, background, border-colour, shadow, type, `letter-spacing`,
+ * transition, animation, opacity, filter, and `border-radius`. A core rule that appears to need one
+ * of those is misclassified.
+ *
+ * This file is the convenience aggregate, mirroring how `components.css` imports the theme. A route
+ * that renders one component should import `core/<component>.css` instead, the same way it imports
+ * one component stylesheet rather than `components.css`.
+ *
+ * `tokens.css` is still required alongside this, and separately: it carries the cascade-layer order
+ * and `color-scheme`, neither of which is a look and neither of which core can supply.
+ */
+
+@import './core/floating.css';
+@import './core/popover.css';
+@import './core/menu.css';
+@import './core/context-menu.css';
+@import './core/listbox.css';
+@import './core/options.css';
+@import './core/select.css';
+@import './core/combobox.css';
+@import './core/sheet.css';
+@import './core/toast.css';

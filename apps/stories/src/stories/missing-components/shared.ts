@@ -5,7 +5,8 @@ import colorSwatchCss from '@timelessui/components/css/color-swatch.css?raw'
 import emptyCss from '@timelessui/components/css/empty.css?raw'
 import meterCss from '@timelessui/components/css/meter.css?raw'
 import numberStepperCss from '@timelessui/components/css/number-stepper.css?raw'
-import floatingCss from '@timelessui/components/css/floating.css?raw'
+import corePopoverCss from '@timelessui/components/css/core/popover.css?raw'
+import floatingCss from '@timelessui/components/css/core/floating.css?raw'
 import popoverCss from '@timelessui/components/css/popover.css?raw'
 import rangeCss from '@timelessui/components/css/range.css?raw'
 import themeCss from '@timelessui/components/css/theme-atmosphere.css?raw'
@@ -44,6 +45,7 @@ export function createMissingComponentMeta(group: string, component: string): St
         rangeCss,
         numberStepperCss,
         floatingCss,
+        corePopoverCss,
         popoverCss,
         colorPickerCss,
         demoCss,

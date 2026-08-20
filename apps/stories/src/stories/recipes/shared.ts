@@ -5,7 +5,10 @@ import buttonCss from '@timelessui/components/css/button.css?raw'
 import colorPickerCss from '@timelessui/components/css/color-picker.css?raw'
 import colorSwatchCss from '@timelessui/components/css/color-swatch.css?raw'
 import dialogCss from '@timelessui/components/css/dialog.css?raw'
-import floatingCss from '@timelessui/components/css/floating.css?raw'
+import corePopoverCss from '@timelessui/components/css/core/popover.css?raw'
+import coreOptionsCss from '@timelessui/components/css/core/options.css?raw'
+import coreSelectCss from '@timelessui/components/css/core/select.css?raw'
+import floatingCss from '@timelessui/components/css/core/floating.css?raw'
 import formsCss from '@timelessui/components/css/forms.css?raw'
 import listCss from '@timelessui/components/css/list.css?raw'
 import optionsCss from '@timelessui/components/css/options.css?raw'
@@ -34,9 +37,12 @@ export function createRecipeMeta(path: string): StoryLiteMeta {
         toggleCss,
         rangeCss,
         floatingCss,
+        corePopoverCss,
         popoverCss,
         dialogCss,
+        coreOptionsCss,
         optionsCss,
+        coreSelectCss,
         selectCss,
         colorPickerCss,
         colorSwatchCss,

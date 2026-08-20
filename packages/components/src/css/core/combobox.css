@@ -1,0 +1,12 @@
+/*
+ * Combobox: the input's box.
+ *
+ * The surface, the option row, and the anchored placement are shared with Select and live in
+ * `core/options.css`. Anchoring itself is in `core/floating.css`.
+ */
+
+@layer ui.components {
+  ui-combobox {
+    display: grid;
+  }
+}

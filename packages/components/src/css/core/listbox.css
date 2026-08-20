@@ -1,0 +1,29 @@
+/*
+ * Listbox: box participation and scrolling.
+ *
+ * Two shapes, and the difference between them is structural rather than decorative. In the simple
+ * shape the host carries `role="listbox"` and scrolls its own options. When the author adds an
+ * `empty` region, a `status` region, or a pager, those cannot live inside a listbox — it may own only
+ * options and groups — so an inner `listbox` part holds the options and the host becomes the frame.
+ * The framed shape is a column: as a row, the pager would sit beside the options rather than below.
+ */
+
+@layer ui.components {
+  ui-listbox[role='listbox'] {
+    display: grid;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  ui-listbox:not([role='listbox']) {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  ui-listbox [role='listbox'] {
+    display: grid;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+}

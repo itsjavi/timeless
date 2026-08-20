@@ -1,4 +1,5 @@
 @import './tokens.css';
+@import './core.css';
 @import './theme-atmosphere.css';
 @import './button.css';
 @import './toggle.css';
@@ -30,7 +31,6 @@
 @import './collapsible.css';
 @import './dialog.css';
 @import './sheet.css';
-@import './floating.css';
 @import './popover.css';
 @import './toast.css';
 @import './menu.css';

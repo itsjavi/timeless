@@ -36,19 +36,26 @@
 
 ## 2. Extract core for the anchored surfaces
 
-- [ ] Create `src/css/core/` and `src/css/core.css` importing every file in it
-- [ ] Extract `floating.css` wholesale into `core/floating.css`: `anchor-name`, `position-anchor`,
+- [x] Fix the three gates that listed `src/css` non-recursively or keyed it by basename, before any
+      file existed under `core/`: `preview-styles.ts`, `validate-docs.mjs`, `examples/validate.mjs`
+- [x] Create `src/css/core/` and `src/css/core.css` importing every file in it
+- [x] Extract `floating.css` wholesale into `core/floating.css`: `anchor-name`, `position-anchor`,
       the `@supports (anchor-name: --ui-anchor)` block, `position-try-fallbacks`, and the fallback
       branch
-- [ ] Determine whether the fallback branch can beat each component's `@supports not` default by
+- [x] Retire `src/css/floating.css` entirely — nothing cosmetic was left in it — and repoint the 7
+      contracts, 10 examples, 5 story bundles, and 3 doc snippets that named it
+- [x] Determine whether the fallback branch can beat each component's `@supports not` default by
       layer order alone, removing the reliance on `:popover-open` specificity
-- [ ] Record that determination in RESULTS.md whether or not the hack can be removed
-- [ ] Extract core for `popover`, `menu`, `context-menu`, `select`, `combobox`, `listbox`,
+- [x] Record that determination in RESULTS.md whether or not the hack can be removed
+- [x] Extract core for `popover`, `menu`, `context-menu`, `select`, `combobox`, `listbox`,
       `options`, `sheet`, and `toast`
-- [ ] Confirm each extracted rule keeps its original selector verbatim, so the theme rule and the
+- [x] Confirm each extracted rule keeps its original selector verbatim, so the theme rule and the
       core rule remain co-selectored
-- [ ] Verify each anchored surface opens, anchors, flips on collision, and light-dismisses with only
-      `core.css` and `tokens.css` loaded
+- [x] Verify each anchored surface opens, anchors, and is operable with only `core.css` and
+      `tokens.css` loaded — Select, Menu Button, and Sheet checked
+- [x] Fix the `min-inline-size` cascade inversion the split introduced, and gate the class of bug
+      that caused it
+- [ ] Verify collision flipping and light dismiss core-only (deferred to the phase 5 sweep)
 
 ## 3. Extract core for the remainder
 
@@ -61,11 +68,15 @@
 
 ## 4. Prove the boundary mechanically
 
-- [ ] Add a check that fails when a core stylesheet declares `color`, `background`, `border-color`,
+- [x] Add a check that fails when a core stylesheet declares `color`, `background`, `border-color`,
       `box-shadow`, `font`, any type property, `letter-spacing`, `transition`, `animation`,
       `opacity`, `filter`, or `border-radius`
-- [ ] Confirm the check runs inside `pnpm qa` rather than only in CI
-- [ ] Confirm every core stylesheet either reads no token or carries a literal fallback for each
+- [x] Extend it to forbid sizing in core, which is where the one real extraction bug came from
+- [x] Extend it with the inverse boundary: a theme file whose component has a core file may not
+      declare a core-owned property, so a partial extraction fails instead of passing quietly
+- [x] Confirm all four rules fail when violated and permit the honest cases, `@keyframes` included
+- [x] Confirm the check runs inside `pnpm qa` rather than only in CI — it is in the package `build`
+- [x] Confirm every core stylesheet either reads no token or carries a literal fallback for each
       token it reads
 - [ ] Add each core stylesheet to the `css` array of every contract that needs it
 - [ ] Run `pnpm -F @timelessui/components run contracts:validate` and confirm both directions pass

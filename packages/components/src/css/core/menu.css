@@ -1,0 +1,61 @@
+/*
+ * Menu and Menu Button: box participation, scrolling, and placement.
+ *
+ * `orientation` is a public attribute that decides an axis, so the `display` and `flex-direction`
+ * pair that expresses it is core. A menubar rendered as a column is not a differently-styled menubar.
+ */
+
+@layer ui.components {
+  ui-menu-button {
+    display: contents;
+  }
+
+  ui-menu {
+    display: grid;
+  }
+
+  ui-menu[orientation='horizontal'] {
+    display: flex;
+  }
+
+  /* The surface scrolls; the height clamp that gives it something to scroll is the theme's. */
+  ui-menu:where([popover]) {
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  ui-menu:where([popover]):not(:popover-open) {
+    display: none;
+  }
+
+  ui-menu :where([role='menuitem'], [role='menuitemcheckbox'], [role='menuitemradio']) {
+    display: flex;
+  }
+
+  ui-menu :where([data-ui-part~='group']) {
+    display: grid;
+  }
+
+  /* `inset`, `translate`, and `position-try-fallbacks` come from `core/floating.css`. */
+  @supports (anchor-name: --ui-anchor) {
+    ui-menu[role='menubar'] > ui-menu:where([popover]):popover-open {
+      position-area: block-end span-inline-end;
+    }
+
+    ui-menu-button > ui-menu[popover]:popover-open {
+      position-area: block-end span-inline-end;
+    }
+
+    ui-menu-button[placement='top'] > ui-menu[popover]:popover-open {
+      position-area: block-start span-inline-end;
+    }
+
+    ui-menu-button[placement='right'] > ui-menu[popover]:popover-open {
+      position-area: inline-end span-block-end;
+    }
+
+    ui-menu-button[placement='left'] > ui-menu[popover]:popover-open {
+      position-area: inline-start span-block-end;
+    }
+  }
+}

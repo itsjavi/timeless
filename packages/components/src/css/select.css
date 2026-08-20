@@ -3,12 +3,11 @@
  *
  * The popover surface, the option row, and everything else inside the surface are shared with
  * Listbox and Combobox and live in `options.css`. Anchoring, the fallback reset, and
- * `position-try-fallbacks` live in `floating.css`.
+ * `position-try-fallbacks` live in `core/floating.css`.
  */
 
 @layer ui.components {
   ui-select {
-    display: inline-grid;
     gap: var(--ui-space-2);
     min-inline-size: min(100%, 14rem);
   }
@@ -18,7 +17,6 @@
   }
 
   ui-select [data-ui-part~='value'] {
-    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }

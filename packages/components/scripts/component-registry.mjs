@@ -1225,7 +1225,7 @@ export const components = [
     'UISheetElement',
     'createSheetElementClass',
     'defineSheetElement',
-    'sheet.css',
+    ['core/sheet.css', 'sheet.css'],
     [
       attribute('modal', 'boolean', {
         description:
@@ -1303,7 +1303,7 @@ export const components = [
     'UIPopoverElement',
     'createPopoverElementClass',
     'definePopoverElement',
-    ['popover.css', 'floating.css'],
+    ['core/floating.css', 'core/popover.css', 'popover.css'],
     [
       attribute('placement', 'string', {
         set: 'floatingPlacements',
@@ -1345,7 +1345,7 @@ export const components = [
     'UIHoverCardElement',
     'createHoverCardElementClass',
     'defineHoverCardElement',
-    ['popover.css', 'floating.css'],
+    ['core/floating.css', 'core/popover.css', 'popover.css'],
     [
       attribute('anchor', 'string', {
         description:
@@ -1391,7 +1391,7 @@ export const components = [
   selector(
     'tooltip',
     "ui-hover-card[variant='tooltip']",
-    ['popover.css', 'floating.css'],
+    ['core/floating.css', 'core/popover.css', 'popover.css'],
     [],
     [
       part(
@@ -1426,7 +1426,7 @@ export const components = [
     'UIMenuElement',
     'createMenuElementClass',
     'defineMenuElement',
-    ['menu.css', 'floating.css'],
+    ['core/floating.css', 'core/menu.css', 'menu.css'],
     [
       attribute('orientation', 'string', {
         set: 'menuOrientations',
@@ -1513,7 +1513,7 @@ export const components = [
     'UIMenuButtonElement',
     'createMenuButtonElementClass',
     'defineMenuButtonElement',
-    ['menu.css', 'floating.css'],
+    ['core/floating.css', 'core/menu.css', 'menu.css'],
     [
       attribute('open', 'boolean', {
         description: 'Present to render the menu open on load.',
@@ -1548,7 +1548,7 @@ export const components = [
     'UIContextMenuElement',
     'createContextMenuElementClass',
     'defineContextMenuElement',
-    'context-menu.css',
+    ['core/context-menu.css', 'core/menu.css', 'context-menu.css', 'menu.css'],
     [],
     [
       part(
@@ -1708,7 +1708,7 @@ export const components = [
     'UIListboxElement',
     'createListboxElementClass',
     'defineListboxElement',
-    ['listbox.css', 'options.css'],
+    ['core/listbox.css', 'core/options.css', 'listbox.css', 'options.css'],
     [
       attribute('multiple', 'boolean', {
         description:
@@ -1754,7 +1754,7 @@ export const components = [
     'UISelectElement',
     'createSelectElementClass',
     'defineSelectElement',
-    ['select.css', 'options.css', 'floating.css'],
+    ['core/floating.css', 'core/options.css', 'core/select.css', 'options.css', 'select.css'],
     [
       attribute('open', 'boolean', {
         description: 'Present to render the listbox open on load.',
@@ -1839,7 +1839,7 @@ export const components = [
     'UIComboboxElement',
     'createComboboxElementClass',
     'defineComboboxElement',
-    ['combobox.css', 'options.css', 'floating.css'],
+    ['core/combobox.css', 'core/floating.css', 'core/options.css', 'combobox.css', 'options.css'],
     [
       attribute('value', 'string', {
         property: valueProperty,
@@ -1900,7 +1900,7 @@ export const components = [
     'UIToasterElement',
     'createToasterElementClass',
     'defineToasterElement',
-    'toast.css',
+    ['core/toast.css', 'toast.css'],
     [
       attribute('placement', 'string', {
         set: 'toasterPlacements',
@@ -1928,7 +1928,7 @@ export const components = [
     'UIToastElement',
     'createToastElementClass',
     'defineToastElement',
-    'toast.css',
+    ['core/toast.css', 'toast.css'],
     [
       attribute('duration', 'number', {
         property: { name: 'duration', type: 'string' },

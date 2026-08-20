@@ -1,9 +1,4 @@
 @layer ui.components {
-  ui-popover,
-  ui-hover-card:not([anchor]) {
-    display: contents;
-  }
-
   /* The frame all floating surfaces share. Sizing and padding belong to the per-component boxes. */
   :where(ui-popover, ui-hover-card) > [popover],
   ui-hover-card[anchor] {
@@ -22,8 +17,6 @@
   ui-hover-card[anchor]:not([variant='tooltip']) {
     max-inline-size: min(22rem, calc(100vw - 2rem));
     max-block-size: calc(100dvh - 6rem);
-    overflow: auto;
-    overscroll-behavior: contain;
     border-radius: var(--ui-radius-lg);
     padding: var(--ui-space-4);
     line-height: 1.5;
@@ -40,7 +33,6 @@
     --ui-tooltip-fg: light-dark(#ffffff, #17171a);
 
     max-inline-size: min(16rem, calc(100vw - 2rem));
-    overflow: visible;
     border-radius: var(--ui-radius-md);
     padding: var(--ui-space-2) var(--ui-space-3);
     border-color: color-mix(in oklab, var(--ui-tooltip-bg), var(--ui-tooltip-fg) 24%);
@@ -70,25 +62,6 @@
     color: var(--ui-fg-muted);
   }
 
-  :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]):not(:popover-open) {
-    display: none;
-  }
-
-  /*
-   * Without anchor positioning the surface has no anchor to sit beside, so it is placed near the top
-   * of the viewport. Scoped to `@supports not` so it cannot compete with the anchored rules below;
-   * an unscoped version of this used to be overridden by source order alone.
-   */
-  @supports not (anchor-name: --ui-anchor) {
-    :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]):popover-open {
-      position: fixed;
-      inset: auto;
-      inset-block-start: 5rem;
-      inset-inline-start: 50%;
-      translate: -50% 0;
-    }
-  }
-
   :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor])::backdrop {
     background: transparent;
   }
@@ -99,33 +72,29 @@
    * deliberately do not: a select whose listbox is centred on a wide trigger reads as broken. Do not
    * "fix" this one to match that one.
    *
-   * `inset: auto` and `position-try-fallbacks` come from `floating.css`; the gap is `margin-block`
+   * `inset: auto` and `position-try-fallbacks` come from `core/floating.css`; the gap is `margin-block`
    * rather than `translate`, so it counts toward the overflow calculation the fallbacks run on.
    */
   @supports (anchor-name: --ui-anchor) {
     ui-hover-card[anchor]:popover-open,
     :where(ui-popover, ui-hover-card) > [popover]:popover-open {
-      position-area: block-end center;
       margin-block: var(--ui-floating-offset, 0.375rem);
     }
 
     ui-hover-card[anchor]:where([placement='top']):popover-open,
     :where(ui-popover, ui-hover-card):where([placement='top']) > [popover]:popover-open {
-      position-area: block-start center;
       margin: 0;
       margin-block: var(--ui-floating-offset, 0.375rem);
     }
 
     ui-hover-card[anchor]:where([placement='right']):popover-open,
     :where(ui-popover, ui-hover-card):where([placement='right']) > [popover]:popover-open {
-      position-area: inline-end center;
       margin: 0;
       margin-inline: var(--ui-floating-offset, 0.375rem);
     }
 
     ui-hover-card[anchor]:where([placement='left']):popover-open,
     :where(ui-popover, ui-hover-card):where([placement='left']) > [popover]:popover-open {
-      position-area: inline-start center;
       margin: 0;
       margin-inline: var(--ui-floating-offset, 0.375rem);
     }

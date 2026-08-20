@@ -1,5 +1,5 @@
 import { access, readFile, readdir } from 'node:fs/promises'
-import { extname, resolve } from 'node:path'
+import { extname, resolve, sep } from 'node:path'
 import { examples } from '@timelessui/examples'
 
 const root = resolve(import.meta.dirname, '../../..')
@@ -22,9 +22,18 @@ const missingTags = [...manifestTags].filter((tag) => !documentedTags.has(tag))
 if (missingTags.length > 0)
   throw new Error(`Undocumented custom elements: ${missingTags.join(', ')}`)
 
-const availableCss = (await readdir(resolve(root, 'packages/components/src/css'))).filter(
-  (name) => name.endsWith('.css') && name !== 'components.css',
-)
+/**
+ * Recursive, and relative to `src/css`, so `core/<component>.css` is required to appear in some
+ * example's `styles` exactly as a top-level stylesheet is. A non-recursive listing would have gone
+ * quiet on the whole `core/` directory — the completeness gate skipping precisely the files
+ * milestone 028 added. `components.css` and `core.css` are the two aggregates; no example lists an
+ * aggregate.
+ */
+const AGGREGATE_CSS = new Set(['components.css', 'core.css'])
+const cssRoot = resolve(root, 'packages/components/src/css')
+const availableCss = (await readdir(cssRoot, { recursive: true }))
+  .map((name) => name.split(sep).join('/'))
+  .filter((name) => name.endsWith('.css') && !AGGREGATE_CSS.has(name))
 const documentedCss = new Set(examples.flatMap((example) => example.styles))
 const missingCss = availableCss.filter((name) => !documentedCss.has(name))
 if (missingCss.length > 0) throw new Error(`Undocumented CSS exports: ${missingCss.join(', ')}`)

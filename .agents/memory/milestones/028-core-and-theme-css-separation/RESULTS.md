@@ -85,6 +85,35 @@ text on a dark page. Setting `color-scheme: light dark` on the same fixture comp
 `rgb(244, 244, 245)`. So `light-dark()` silently returns the wrong branch rather than failing, which
 is why `color-scheme` belongs in the non-optional file and not in the theme.
 
+### Cascade-layer order can replace the `:popover-open` specificity reliance, and is not worth it
+
+The open question, answered by measurement rather than by reading the spec. Two probes in one
+fixture:
+
+| Probe                                                                                                       | Result                                                   |
+| ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `@layer ui.components.base, ui.components.floating;`, equal specificity, floating declared _first_          | The later sub-layer won, so sub-layer ordering does work |
+| A rule directly in `@layer ui.components` against one in `@layer ui.components.floating`, declared after it | The **bare parent-layer rule won**                       |
+
+So the mechanism exists. The second probe is what kills it. Rules sitting directly in a layer
+outrank that layer's own nested sub-layers, and all 42 theme stylesheets use bare
+`@layer ui.components`. Put core in a sub-layer and every theme rule outranks every core rule — the
+behavioral floor becomes the weakest thing in the package, which is backwards. Fixing that means
+converting all 42 theme stylesheets to a sub-layer too, or adding a fourth name to the layer
+contract that `theming.mdx` documents and milestone 029 is planned around.
+
+The alternative shape —
+`@layer ui.tokens, ui.components, ui.core.surface, ui.core.floating, ui.utilities;` — does work
+without touching the theme files, and would remove the specificity reliance cleanly. It was still
+rejected: it adds two names to the public layer contract and changes override semantics so the theme
+can no longer override core, to buy the removal of one pseudo-class that is independently justified.
+`applyFloatingPosition` writes the fallback hook and removes it again in `clearFloatingPosition`, so
+the hook already implies open and `:popover-open` is redundant as a state guard — but the
+coordinates it reads _are_ only meaningful while the surface is open, so the selector is true, not
+merely convenient.
+
+**Kept the `:popover-open` selector.** `core/floating.css` now says so, and says where to find this.
+
 ## Platform behavior still to confirm
 
 Three tasks require it and are written as verification rather than assertion:
@@ -136,6 +165,91 @@ without forbidding the honest neighbours.
 
 Credit where due: the third site was pointed out in review, not found by this implementation's own
 sweep, which had taken the plan's two named sites as the count.
+
+## The extraction, and what it cost
+
+### `display` is wholly core's, decided by a gate rather than by taste
+
+The first pass extracted `display` where its absence looked behavioral and left it where it looked
+like layout — `ui-sheet > dialog > header { display: grid }` stayed in the theme, for instance. That
+judgement is not reproducible, and the boundary check caught it: once the check forbade the theme
+from declaring any core-owned property, the two sheet rules failed and the ambiguity had to be
+resolved rather than felt. It resolves in core's favour, which is also what the milestone's own
+baseline implies — it counted all 109 `display` declarations as behavior-critical, not a subset.
+
+The rule that came out of it, and that the gate now enforces: `display` moves to core together with
+any declaration in the same rule without which the moved value produces a different box _axis or
+flow_ — `flex-direction`, `grid-auto-flow`, and the structural `grid-template-columns`. Gaps,
+alignment, padding, and sizing stay in the theme. `display: flex` in core with
+`flex-direction: column` left in the theme would render a column layout as a row, which is broken
+rather than plain.
+
+### The one real bug the split introduced
+
+`min-inline-size: anchor-size(width)` — the "a Select surface is never narrower than its trigger"
+rule — was extracted into `core/options.css`. But `options.css` declares its own `min-inline-size`
+on the surface, at equal specificity (this library keeps almost everything at 0,0,0 inside
+`:where()`), and `components.css` imports `core.css` before the theme. So the theme won and every
+Select surface rendered at 14rem instead of its trigger's width. Measured in the browser:
+`min-inline-size` computed to `224px` against a `573px` trigger.
+
+Nothing failed. No gate, no test, no console warning — it just looked slightly wrong, which is the
+worst failure mode available and the one a 43-stylesheet rewrite is most likely to produce.
+
+Two fixes. The declaration went back to the theme, because sizing is the tier this milestone
+deliberately excluded and `min-inline-size` was never in the measured behavior-critical set — it was
+over-extraction, not a cascade problem to work around. And the boundary check grew two rules so the
+class of bug cannot recur: core may declare no size, and a theme file whose component has a core
+file may declare no core-owned property. The second rule self-scopes to components that have been
+extracted, so a half-finished extraction fails rather than passing quietly.
+
+### The size gate misreports a file split, in both directions
+
+The recorded CSS figures moved a long way, and most of the movement is measurement artifact rather
+than payload:
+
+| Entry    | Recorded gzip | Real gzip, comments stripped and files concatenated |
+| -------- | ------------: | --------------------------------------------------: |
+| popover  | 2,640 → 3,621 |                                         992 → 1,013 |
+| listbox  | 3,871 → 5,782 |                                       1,420 → 1,455 |
+| select   | 4,710 → 6,629 |                                       1,571 → 1,619 |
+| combobox | 4,790 → 6,631 |                                       1,583 → 1,641 |
+
+Two effects stack. `check-performance.mjs` gzips each stylesheet separately and sums, so splitting
+the same bytes across more files raises the figure — the script's own comment warns about exactly
+this. And the core stylesheets are **53% comments by byte**, which is this repository's house style
+for CSS but means the unminified raw figure is mostly prose.
+
+Measured the way a consumer's bundler would — concatenate, then gzip once, comments stripped — the
+real cost of the duplicated selectors is between 21 and 58 bytes gzipped per entry, 2% to 4%. Raw,
+it is about 1.2 KB per entry. Gzip absorbs duplicated selector text almost completely, which is what
+one would expect from highly repetitive input.
+
+`performance-baselines.json` was re-baselined to the measured figures so the gate stays meaningful
+across the remaining phases; phase 7 re-baselines again once phase 3 lands. Whether the metric
+should become concatenated-then-gzipped is a real question this milestone surfaced but did not
+decide — changing a gate's definition mid-milestone weakens it, and the current definition is at
+least consistent with itself.
+
+### Core-only rendering, verified per surface
+
+Confirmed by loading `tokens.css` plus the ten core stylesheets into a docs preview page with every
+other stylesheet removed, in the in-app Chromium:
+
+| Surface     | Core-only result                                                                                                                                                         |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Select      | Host `inline-grid` not `inline`; surface opens, anchors below and left-aligned to the trigger; `overflow: auto` intact; a `hidden` option still computes `display: none` |
+| Menu Button | Host `display: contents`; menu opens, anchors below and left-aligned; items are flex rows                                                                                |
+| Sheet       | Host `display: contents`; panel reaches the top layer, `position: fixed`, column, pinned to the right edge, body scrolls, focus moves inside                             |
+
+In all three the theme is provably absent — UA popover background, `border-radius: 0`, no shadow,
+and the serif fallback face. Plain and correct, which is the milestone's stated test for done.
+
+One consequence worth naming: core-only, the Sheet panel is content-height rather than full-height,
+because `block-size: 100dvh` and the `max-block-size` reset are sizing and stay in the theme, and
+the UA gives `dialog` `height: fit-content`. It is still edge-pinned, scrollable, and operable, so
+it meets "positioned, structurally intact, and operable" — but it is a visible difference, not a
+purely cosmetic one, and it is the clearest example of where the narrow-tier decision shows.
 
 ## Decisions and constraints
 

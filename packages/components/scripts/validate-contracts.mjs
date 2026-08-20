@@ -40,7 +40,7 @@ const IGNORED_SELECTOR_ATTRIBUTES = new Set([
 /**
  * A contract's root must be selected by the CSS it claims. The check is across the contract's
  * stylesheets collectively rather than each one individually: a component whose CSS is split — the
- * collection surfaces share `options.css`, and everything anchored shares `floating.css` — has files
+ * collection surfaces share `options.css`, and everything anchored shares `core/floating.css` — has files
  * that legitimately select a private runtime hook rather than any one root. What the check is
  * actually for is catching a contract pointed at the wrong stylesheet, and that still holds.
  */

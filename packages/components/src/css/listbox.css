@@ -23,29 +23,17 @@
 
   /* The simple shape: the host is the listbox and the scroll container. */
   ui-listbox[role='listbox'] {
-    display: grid;
     align-content: start;
     gap: var(--ui-space-1);
-    overflow: auto;
-    overscroll-behavior: contain;
     padding: var(--ui-space-1);
   }
 
   /* The framed shape: the host holds the listbox plus whatever sits beside it. */
-  ui-listbox:not([role='listbox']) {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
   ui-listbox [role='listbox'] {
-    display: grid;
     align-content: start;
     gap: var(--ui-space-1);
     flex: 1;
     min-block-size: 0;
-    overflow: auto;
-    overscroll-behavior: contain;
     padding: var(--ui-space-1);
   }
 }

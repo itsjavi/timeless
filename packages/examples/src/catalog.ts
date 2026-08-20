@@ -396,7 +396,7 @@ export const examples = [
     title: 'Toast',
     description: 'Announce transient status from an explicit toaster.',
     definitions: ['ui-toaster', 'ui-toast'],
-    styles: ['tokens.css', 'theme-atmosphere.css', 'toast.css'],
+    styles: ['tokens.css', 'core/toast.css', 'theme-atmosphere.css', 'toast.css'],
     render: () =>
       createToaster([
         { title: 'Preview ready', description: 'The static example finished building.' },
@@ -664,11 +664,13 @@ export const examples = [
     definitions: ['ui-combobox'],
     styles: [
       'tokens.css',
+      'core/combobox.css',
+      'core/floating.css',
+      'core/options.css',
       'theme-atmosphere.css',
       'button.css',
       'combobox.css',
       'options.css',
-      'floating.css',
     ],
     render: () =>
       createCombobox({
@@ -693,7 +695,14 @@ export const examples = [
     guidance:
       'Listbox is the inline core [Select](/docs/components/select/) and [Combobox](/docs/components/combobox/) compose: the same option semantics, selection, groups, typeahead, and paging, without a trigger or a popover. Use it directly when the choices should always be visible, and reach for one of the other two when they should not.',
     definitions: ['ui-listbox'],
-    styles: ['tokens.css', 'theme-atmosphere.css', 'listbox.css', 'options.css'],
+    styles: [
+      'tokens.css',
+      'core/listbox.css',
+      'core/options.css',
+      'theme-atmosphere.css',
+      'listbox.css',
+      'options.css',
+    ],
     render: () =>
       createListbox({
         id: 'status-list',
@@ -714,7 +723,14 @@ export const examples = [
     title: 'Menu',
     description: 'Roving keyboard navigation for commands.',
     definitions: ['ui-menu'],
-    styles: ['tokens.css', 'theme-atmosphere.css', 'button.css', 'menu.css', 'floating.css'],
+    styles: [
+      'tokens.css',
+      'core/floating.css',
+      'core/menu.css',
+      'theme-atmosphere.css',
+      'button.css',
+      'menu.css',
+    ],
     render: () =>
       createMenu({
         label: 'Editor commands',
@@ -752,11 +768,13 @@ export const examples = [
     definitions: ['ui-context-menu', 'ui-menu'],
     styles: [
       'tokens.css',
+      'core/context-menu.css',
+      'core/floating.css',
+      'core/menu.css',
       'theme-atmosphere.css',
       'button.css',
       'menu.css',
       'context-menu.css',
-      'floating.css',
     ],
     render: () =>
       createContextMenu({
@@ -783,11 +801,12 @@ export const examples = [
     definitions: ['ui-menu-button', 'ui-menu'],
     styles: [
       'tokens.css',
+      'core/floating.css',
+      'core/menu.css',
       'theme-atmosphere.css',
       'button.css',
       'menu.css',
       'popover.css',
-      'floating.css',
     ],
     render: () =>
       createMenuButton({
@@ -843,11 +862,13 @@ export const examples = [
     definitions: ['ui-select'],
     styles: [
       'tokens.css',
+      'core/floating.css',
+      'core/options.css',
+      'core/select.css',
       'theme-atmosphere.css',
       'button.css',
       'select.css',
       'options.css',
-      'floating.css',
     ],
     render: () =>
       createCustomSelect({
@@ -930,7 +951,14 @@ export const examples = [
     title: 'Hover Card',
     description: 'Open supporting content from pointer or keyboard intent.',
     definitions: ['ui-hover-card'],
-    styles: ['tokens.css', 'theme-atmosphere.css', 'button.css', 'popover.css', 'floating.css'],
+    styles: [
+      'tokens.css',
+      'core/floating.css',
+      'core/popover.css',
+      'theme-atmosphere.css',
+      'button.css',
+      'popover.css',
+    ],
     render: () =>
       createHoverCard({
         id: 'hover-reference',
@@ -950,7 +978,14 @@ export const examples = [
     title: 'Popover',
     description: 'Connect an authored trigger to a native popover.',
     definitions: ['ui-popover'],
-    styles: ['tokens.css', 'theme-atmosphere.css', 'button.css', 'popover.css', 'floating.css'],
+    styles: [
+      'tokens.css',
+      'core/floating.css',
+      'core/popover.css',
+      'theme-atmosphere.css',
+      'button.css',
+      'popover.css',
+    ],
     render: () =>
       createPopover({
         id: 'release-popover',
@@ -970,7 +1005,14 @@ export const examples = [
     title: 'Sheet',
     description: 'Present an authored native dialog from a viewport edge.',
     definitions: ['ui-sheet'],
-    styles: ['tokens.css', 'theme-atmosphere.css', 'button.css', 'sheet.css', 'dialog.css'],
+    styles: [
+      'tokens.css',
+      'core/sheet.css',
+      'theme-atmosphere.css',
+      'button.css',
+      'sheet.css',
+      'dialog.css',
+    ],
     render: () =>
       createSheet({
         id: 'settings-sheet',
@@ -1011,7 +1053,14 @@ export const examples = [
     title: 'Tooltip',
     description: 'A concise tooltip built on the hover-card controller.',
     definitions: ['ui-hover-card'],
-    styles: ['tokens.css', 'theme-atmosphere.css', 'button.css', 'popover.css', 'floating.css'],
+    styles: [
+      'tokens.css',
+      'core/floating.css',
+      'core/popover.css',
+      'theme-atmosphere.css',
+      'button.css',
+      'popover.css',
+    ],
     render: () =>
       createTooltip({
         id: 'copy-tooltip',
@@ -1067,12 +1116,14 @@ export const examples = [
     definitions: ['ui-select', 'ui-dialog'],
     styles: [
       'tokens.css',
+      'core/floating.css',
+      'core/options.css',
+      'core/select.css',
       'theme-atmosphere.css',
       'button.css',
       'dialog.css',
       'select.css',
       'options.css',
-      'floating.css',
     ],
     render: () =>
       createCommandPalette({
@@ -1120,9 +1171,10 @@ export const examples = [
     definitions: ['ui-color-picker', 'ui-popover'],
     styles: [
       'tokens.css',
+      'core/floating.css',
+      'core/popover.css',
       'theme-atmosphere.css',
       'popover.css',
-      'floating.css',
       'color-picker.css',
       'color-swatch.css',
     ],

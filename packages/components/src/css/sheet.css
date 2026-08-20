@@ -1,26 +1,9 @@
 @layer ui.components {
-  ui-sheet {
-    display: contents;
-  }
-
   /*
-   * `translate` is the whole visual half of swipe-to-dismiss. JavaScript writes one signed length
-   * into `--ui-sheet-drag-offset` and nothing else; which axis that length moves is decided here,
-   * per position, because only the stylesheet knows which edge the panel is anchored to.
+   * Placement, the drag axis, and the column are behavior and live in `core/sheet.css`. What is left
+   * here is the panel's size, its edges, and its motion.
    */
   ui-sheet > dialog {
-    position: fixed;
-    /*
-     * A column, so the header and footer keep their height and the body takes what is left. The
-     * scrolling `> section` used to be `block-size: 100%`, which made the panel's content taller
-     * than the panel itself and clipped the footer out of reach — visible as soon as the drag handle
-     * added anything above it.
-     */
-    display: flex;
-    flex-direction: column;
-    inset-block: 0;
-    inset-inline: auto 0;
-    translate: var(--ui-sheet-drag-offset, 0px) 0;
     inline-size: min(88vw, 28rem);
     block-size: 100dvh;
     max-inline-size: none;
@@ -29,18 +12,12 @@
     border: 0;
     border-inline-start: 1px solid var(--ui-line);
     padding: 0;
-    overflow: hidden;
     background: var(--ui-bg-surface);
     box-shadow: var(--ui-shadow-floating);
     color: var(--ui-fg);
   }
 
-  ui-sheet > dialog:not([open]) {
-    display: none;
-  }
-
   ui-sheet[position='left'] > dialog {
-    inset-inline: 0 auto;
     border-inline: 0 1px solid var(--ui-line);
   }
 
@@ -49,16 +26,13 @@
     inline-size: 100dvw;
     block-size: min(80dvh, 24rem);
     border-inline: 0;
-    translate: 0 var(--ui-sheet-drag-offset, 0px);
   }
 
   ui-sheet[position='top'] > dialog {
-    inset-block: 0 auto;
     border-block-end: 1px solid var(--ui-line);
   }
 
   ui-sheet[position='bottom'] > dialog {
-    inset-block: auto 0;
     border-block-start: 1px solid var(--ui-line);
   }
 
@@ -77,8 +51,6 @@
   }
 
   ui-sheet > dialog > header {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--ui-space-2) var(--ui-space-4);
     align-items: start;
     border-block-end: 1px solid var(--ui-line);
@@ -111,31 +83,15 @@
    * since a mouse-down in the body is far more likely to be a text selection.
    */
   ui-sheet > dialog [data-ui-part~='drag-handle'] {
-    position: absolute;
-    z-index: 1;
-    display: grid;
     place-items: center;
-    inset-block: 0;
-    inset-inline: 0 auto;
     inline-size: var(--ui-space-4);
-    touch-action: none;
     cursor: grab;
-  }
-
-  ui-sheet[position='left'] > dialog [data-ui-part~='drag-handle'] {
-    inset-inline: auto 0;
   }
 
   ui-sheet[position='top'] > dialog [data-ui-part~='drag-handle'],
   ui-sheet[position='bottom'] > dialog [data-ui-part~='drag-handle'] {
-    inset-block: 0 auto;
-    inset-inline: 0;
     inline-size: auto;
     block-size: var(--ui-space-4);
-  }
-
-  ui-sheet[position='top'] > dialog [data-ui-part~='drag-handle'] {
-    inset-block: auto 0;
   }
 
   /* The pill lies across the drag axis, so it reads as something to pull rather than to press. */
@@ -165,14 +121,12 @@
   ui-sheet > dialog > section {
     flex: 1;
     min-block-size: 0;
-    overflow: auto;
     padding: var(--ui-space-5);
     color: var(--ui-fg-muted);
     line-height: 1.55;
   }
 
   ui-sheet > dialog > footer {
-    display: flex;
     flex-wrap: wrap;
     gap: var(--ui-space-3);
     justify-content: end;

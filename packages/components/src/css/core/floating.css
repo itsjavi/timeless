@@ -1,20 +1,17 @@
 /*
- * The anchoring layer every floating surface depends on.
+ * Anchoring. The whole of `floating.css` is core, because none of it is a look — it is the
+ * implementation of "the surface opens beside its trigger". Without this file Select, Combobox, Menu,
+ * Menu Button, Hover Card, and Popover all open unanchored, which is the defect that opened
+ * milestone 028: the documentation said CSS was optional while this file was load-bearing.
  *
- * These rules used to live in `popover.css`, which made every anchored component — Select,
- * Combobox, Menu Button, a menubar submenu — silently depend on a stylesheet its own contract never
- * named. A consumer who imported `tokens.css`, `button.css`, and `select.css` got an unanchored,
- * viewport-centred listbox. The dependency is now declared: every contract that anchors lists this
- * file, and the three copies of the fallback reset that had been pasted into `select.css`,
- * `menu.css`, and `popover.css` are one rule again.
- *
- * Every rule here selects a private runtime hook rather than a component root, because the set of
+ * Every rule selects a private runtime hook rather than a component root, because the set of
  * components that anchor is a runtime fact, not a selector: `syncFloatingAnchor` marks whichever
- * trigger and surface a component handed it. That also puts the three states — anchored, UA
- * default, JS fallback — in one file in one order, so which one wins never depends on the order a
- * consumer happens to import stylesheets in.
+ * trigger and surface a component handed it. That also puts the three states — anchored, UA default,
+ * JS fallback — in one file in one order, so which one wins never depends on the order a consumer
+ * happens to import stylesheets in.
  *
- * Each component stylesheet adds only its own `position-area` and gap on top of this.
+ * Each component's `core/<component>.css` adds only its own `position-area` on top of this. The gap
+ * is `margin`, which is spacing rather than behavior, so it stays in the theme.
  */
 
 @layer ui.components {
@@ -49,8 +46,11 @@
    * `applyFloatingPosition` stamps this hook and the two coordinates only when support is missing,
    * so in a supporting browser this block never matches and no private hook is written.
    *
-   * `:popover-open` is load-bearing rather than decorative: it raises the specificity above the UA
-   * default each component declares under `@supports not`, so this wins wherever it is imported.
+   * `:popover-open` raises the specificity to 0,2,0, above the 0,1,0 UA default each component
+   * declares under `@supports not`, so this wins wherever it is imported. Milestone 028 tested
+   * whether cascade-layer order could carry that instead and kept the selector; see that milestone's
+   * RESULTS.md for the measurements. The pseudo-class is also true rather than merely convenient —
+   * the coordinates it reads are only meaningful while the surface is open.
    */
   [data-ui-internal-floating='fallback']:popover-open {
     position: fixed;

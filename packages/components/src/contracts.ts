@@ -1697,7 +1697,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-sheet',
     },
-    css: ['sheet.css'],
+    css: ['core/sheet.css', 'sheet.css'],
     attributes: [
       {
         name: 'modal',
@@ -1819,7 +1819,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-popover',
     },
-    css: ['popover.css', 'floating.css'],
+    css: ['core/floating.css', 'core/popover.css', 'popover.css'],
     attributes: [
       {
         name: 'placement',
@@ -1882,7 +1882,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-hover-card',
     },
-    css: ['popover.css', 'floating.css'],
+    css: ['core/floating.css', 'core/popover.css', 'popover.css'],
     attributes: [
       {
         name: 'anchor',
@@ -1962,7 +1962,7 @@ export const componentContracts = {
       kind: 'selector',
       name: "ui-hover-card[variant='tooltip']",
     },
-    css: ['popover.css', 'floating.css'],
+    css: ['core/floating.css', 'core/popover.css', 'popover.css'],
     attributes: [],
     parts: [
       {
@@ -2009,7 +2009,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-menu',
     },
-    css: ['menu.css', 'floating.css'],
+    css: ['core/floating.css', 'core/menu.css', 'menu.css'],
     attributes: [
       {
         name: 'orientation',
@@ -2138,7 +2138,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-menu-button',
     },
-    css: ['menu.css', 'floating.css'],
+    css: ['core/floating.css', 'core/menu.css', 'menu.css'],
     attributes: [
       {
         name: 'open',
@@ -2212,7 +2212,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-context-menu',
     },
-    css: ['context-menu.css'],
+    css: ['core/context-menu.css', 'core/menu.css', 'context-menu.css', 'menu.css'],
     attributes: [],
     parts: [
       {
@@ -2479,7 +2479,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-listbox',
     },
-    css: ['listbox.css', 'options.css'],
+    css: ['core/listbox.css', 'core/options.css', 'listbox.css', 'options.css'],
     attributes: [
       {
         name: 'multiple',
@@ -2683,7 +2683,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-select',
     },
-    css: ['select.css', 'options.css', 'floating.css'],
+    css: ['core/floating.css', 'core/options.css', 'core/select.css', 'options.css', 'select.css'],
     attributes: [
       {
         name: 'open',
@@ -3006,7 +3006,13 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-combobox',
     },
-    css: ['combobox.css', 'options.css', 'floating.css'],
+    css: [
+      'core/combobox.css',
+      'core/floating.css',
+      'core/options.css',
+      'combobox.css',
+      'options.css',
+    ],
     attributes: [
       {
         name: 'value',
@@ -3300,7 +3306,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-toaster',
     },
-    css: ['toast.css'],
+    css: ['core/toast.css', 'toast.css'],
     attributes: [
       {
         name: 'placement',
@@ -3347,7 +3353,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-toast',
     },
-    css: ['toast.css'],
+    css: ['core/toast.css', 'toast.css'],
     attributes: [
       {
         name: 'duration',

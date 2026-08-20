@@ -1,5 +1,5 @@
 import { readFile, readdir } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { resolve, sep } from 'node:path'
 import { examples, renderExample } from '../src/catalog.ts'
 import { components } from '../../components/scripts/component-registry.mjs'
 import { checkMarkup } from '../../components/scripts/check-markup.mjs'
@@ -20,7 +20,12 @@ const publicTags = new Set(
   ),
 )
 const cssDirectory = resolve(root, 'packages/components/src/css')
-const cssFiles = new Set((await readdir(cssDirectory)).filter((name) => name.endsWith('.css')))
+/** Recursive: `core/<component>.css` is a real stylesheet an example may legitimately import. */
+const cssFiles = new Set(
+  (await readdir(cssDirectory, { recursive: true }))
+    .map((name) => name.split(sep).join('/'))
+    .filter((name) => name.endsWith('.css')),
+)
 const publicConfiguration = new Set(
   components.flatMap((component) =>
     component.attributes.flatMap((attribute) =>

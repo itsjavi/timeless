@@ -170,8 +170,9 @@
     "./css/*.css": "./dist/css/*.css"
   },
   "scripts": {
-    "build": "pnpm generate:check && pnpm contracts:validate && pnpm manifest:validate && tsdown --copy src/css",
+    "build": "pnpm generate:check && pnpm contracts:validate && pnpm core:validate && pnpm manifest:validate && tsdown --copy src/css",
     "contracts:validate": "node scripts/validate-contracts.mjs",
+    "core:validate": "node scripts/check-core-boundary.mjs",
     "exports:validate": "node scripts/check-exports.mjs",
     "generated-dom:check": "node scripts/check-generated-dom.mjs",
     "generate": "node scripts/generate-elements.mjs",

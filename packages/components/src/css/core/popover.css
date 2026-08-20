@@ -1,0 +1,80 @@
+/*
+ * Popover and Hover Card: box participation, scrolling, and placement.
+ *
+ * `display: contents` on the host is not cosmetic — without it a `ui-popover` is an inline box, which
+ * puts a wrapper between the trigger and its surface and breaks the layout the author wrote.
+ *
+ * The `@supports not` branch is the UA default for a browser without anchor positioning. It is here
+ * rather than in the theme because "the surface appears somewhere sensible" is behavior; where the
+ * theme would put it is not a choice a consumer loses by dropping the theme.
+ */
+
+@layer ui.components {
+  ui-popover,
+  ui-hover-card:not([anchor]) {
+    display: contents;
+  }
+
+  /* The panel scrolls; the height clamp that gives it something to scroll is the theme's. */
+  :where(ui-popover, ui-hover-card:not([variant='tooltip'])) > [popover],
+  ui-hover-card[anchor]:not([variant='tooltip']) {
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* Not redundant: the UA gives every `[popover]` `overflow: auto`, and a label must not scroll. */
+  ui-hover-card[variant='tooltip'] > [popover],
+  ui-hover-card[variant='tooltip'][anchor] {
+    overflow: visible;
+  }
+
+  :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]):not(:popover-open) {
+    display: none;
+  }
+
+  /*
+   * Without anchor positioning the surface has no anchor to sit beside, so it is placed near the top
+   * of the viewport. Scoped to `@supports not` so it cannot compete with the anchored rules below;
+   * an unscoped version of this used to be overridden by source order alone.
+   */
+  @supports not (anchor-name: --ui-anchor) {
+    :where(:where(ui-popover, ui-hover-card) > [popover], ui-hover-card[anchor]):popover-open {
+      position: fixed;
+      inset: auto;
+      inset-block-start: 5rem;
+      inset-inline-start: 50%;
+      translate: -50% 0;
+    }
+  }
+
+  /*
+   * A popover and a tooltip centre on their anchor, which is the convention for a surface that is
+   * about the trigger rather than a list of choices. The collection surfaces in `core/options.css`
+   * deliberately do not: a select whose listbox is centred on a wide trigger reads as broken. Do not
+   * "fix" this one to match that one.
+   *
+   * `inset: auto` and `position-try-fallbacks` come from `core/floating.css`. The gap is `margin` and
+   * stays in the theme — it is spacing, and the fallbacks still run without it.
+   */
+  @supports (anchor-name: --ui-anchor) {
+    ui-hover-card[anchor]:popover-open,
+    :where(ui-popover, ui-hover-card) > [popover]:popover-open {
+      position-area: block-end center;
+    }
+
+    ui-hover-card[anchor]:where([placement='top']):popover-open,
+    :where(ui-popover, ui-hover-card):where([placement='top']) > [popover]:popover-open {
+      position-area: block-start center;
+    }
+
+    ui-hover-card[anchor]:where([placement='right']):popover-open,
+    :where(ui-popover, ui-hover-card):where([placement='right']) > [popover]:popover-open {
+      position-area: inline-end center;
+    }
+
+    ui-hover-card[anchor]:where([placement='left']):popover-open,
+    :where(ui-popover, ui-hover-card):where([placement='left']) > [popover]:popover-open {
+      position-area: inline-start center;
+    }
+  }
+}
