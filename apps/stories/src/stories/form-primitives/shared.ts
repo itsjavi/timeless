@@ -5,6 +5,7 @@ import formCss from '@timelessui/components/css/form.css?raw'
 import otpFieldCss from '@timelessui/components/css/otp-field.css?raw'
 import rangeCss from '@timelessui/components/css/range.css?raw'
 import rangeFieldCss from '@timelessui/components/css/range-field.css?raw'
+import themeCss from '@timelessui/components/css/theme-atmosphere.css?raw'
 import tokensCss from '@timelessui/components/css/tokens.css?raw'
 import { defineTimelessElements } from '@timelessui/components/define'
 import demoCss from '../styles.css?raw'
@@ -14,6 +15,7 @@ const formPrimitiveParameters = {
   renderer: 'html',
   css: [
     tokensCss,
+    themeCss,
     buttonCss,
     formsCss,
     formCss,

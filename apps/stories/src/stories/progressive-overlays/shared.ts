@@ -7,6 +7,7 @@ import floatingCss from '@timelessui/components/css/floating.css?raw'
 import popoverCss from '@timelessui/components/css/popover.css?raw'
 import sheetCss from '@timelessui/components/css/sheet.css?raw'
 import tabsCss from '@timelessui/components/css/tabs.css?raw'
+import themeCss from '@timelessui/components/css/theme-atmosphere.css?raw'
 import tokensCss from '@timelessui/components/css/tokens.css?raw'
 import toastCss from '@timelessui/components/css/toast.css?raw'
 import { defineTimelessElements } from '@timelessui/components/define'
@@ -17,6 +18,7 @@ const progressiveOverlayParameters = {
   renderer: 'html',
   css: [
     tokensCss,
+    themeCss,
     buttonCss,
     codeCss,
     tabsCss,

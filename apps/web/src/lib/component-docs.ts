@@ -62,6 +62,13 @@ export function documentedContracts(names: readonly ComponentName[]): Documented
   })
 }
 
+/**
+ * The two tiers every component imports and none of them is described by: `tokens.css` is the layer
+ * order and `color-scheme`, and `theme-atmosphere.css` is the token values. Reading either as
+ * "properties this component uses" would list the whole theme on every page.
+ */
+const GLOBAL_STYLESHEETS = new Set(['tokens.css', 'theme-atmosphere.css'])
+
 export type ComponentStyling = {
   /** Custom properties a consumer may set, declared per component. */
   readonly variables: readonly { name: string; description: string; owner: string }[]
@@ -83,7 +90,7 @@ export async function stylingFor(
   const source = (
     await Promise.all(
       styles
-        .filter((style) => style !== 'tokens.css')
+        .filter((style) => !GLOBAL_STYLESHEETS.has(style))
         .map((style) =>
           readFile(resolve(process.cwd(), '../../packages/components/src/css', style), 'utf8'),
         ),

@@ -8,6 +8,7 @@ import numberStepperCss from '@timelessui/components/css/number-stepper.css?raw'
 import floatingCss from '@timelessui/components/css/floating.css?raw'
 import popoverCss from '@timelessui/components/css/popover.css?raw'
 import rangeCss from '@timelessui/components/css/range.css?raw'
+import themeCss from '@timelessui/components/css/theme-atmosphere.css?raw'
 import tokensCss from '@timelessui/components/css/tokens.css?raw'
 import toggleCss from '@timelessui/components/css/toggle.css?raw'
 import { defineTimelessElements } from '@timelessui/components/define'
@@ -34,6 +35,7 @@ export function createMissingComponentMeta(group: string, component: string): St
       renderer: 'html',
       css: [
         tokensCss,
+        themeCss,
         buttonCss,
         toggleCss,
         emptyCss,

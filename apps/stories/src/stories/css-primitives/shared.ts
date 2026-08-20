@@ -14,6 +14,7 @@ import separatorCss from '@timelessui/components/css/separator.css?raw'
 import skeletonCss from '@timelessui/components/css/skeleton.css?raw'
 import spinnerCss from '@timelessui/components/css/spinner.css?raw'
 import tableCss from '@timelessui/components/css/table.css?raw'
+import themeCss from '@timelessui/components/css/theme-atmosphere.css?raw'
 import tokensCss from '@timelessui/components/css/tokens.css?raw'
 import demoCss from '../styles.css?raw'
 import primitiveDemoCss from './shared.css?raw'
@@ -22,6 +23,7 @@ const cssPrimitiveParameters = {
   renderer: 'html',
   css: [
     tokensCss,
+    themeCss,
     buttonCss,
     alertCss,
     avatarCss,

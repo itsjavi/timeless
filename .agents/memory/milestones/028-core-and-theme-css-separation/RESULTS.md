@@ -44,9 +44,50 @@ Supporting facts:
 | `tokens.css`                                         | 93 lines, 26 `light-dark()` values                         |
 | CSS gzip, the four measured entries                  | popover 2,640, listbox 3,871, select 4,710, combobox 4,790 |
 
-## Platform behavior confirmed before planning
+## Platform behavior confirmed during implementation
 
-Nothing yet. Four tasks require it and are written as verification rather than assertion:
+Measured in the in-app Chromium browser pane, `prefers-color-scheme: dark`, against fixtures built
+by concatenating the real stylesheets. Fixtures live in the gitignored `.local/m028-fixtures/`.
+
+### The layer statement orders the three Timeless layers; it is not what makes consumer CSS win
+
+Phase 1's task was written as "confirm a single consumer class still beats a component rule". It
+does — but that verification would have passed either way, and would have credited the wrong
+mechanism.
+
+A control fixture with `button.css` and an unlayered consumer rule and **no `tokens.css` at all**
+was built to check. The consumer rule still won: `button { font-weight: 100 }` at 0,0,1, declared
+_before_ `.ui-button { font-weight: 650 }` at 0,1,0, computed to `100`. Unlayered author CSS beats
+layered rules at any specificity as a property of the cascade, so it needs no statement — what earns
+it is that every Timeless rule sits inside `@layer ui.components` in its own file. Deleting the
+statement would not have broken the override story, and the phase-1 check as written would not have
+noticed.
+
+What the statement actually decides is the order _among_ `ui.tokens`, `ui.components`, and
+`ui.utilities`, which is the guarantee `theming.mdx` makes when it tells consumers to put their CSS
+in `ui.utilities`. Two fixtures, identical but for `tokens.css`, with a consumer's
+`@layer ui.utilities { button { background: rgb(9,9,9) } }` declared _before_ `button.css`:
+
+| Fixture              | Computed background                 |
+| -------------------- | ----------------------------------- |
+| With `tokens.css`    | `rgb(9, 9, 9)` — utilities wins     |
+| Without `tokens.css` | `rgb(0, 100, 216)` — component wins |
+
+Without the statement, layers are created as first encountered, so `ui.utilities` was created before
+`ui.components` and therefore ranked below it. The statement is load-bearing, for that reason and
+not the one the file's own comment used to give. The comment was corrected to say so.
+
+### `color-scheme` in `tokens.css` is load-bearing
+
+With `theme-atmosphere.css` loaded and no `color-scheme`, in a browser preferring dark,
+`--ui-fg: light-dark(#17171a, #f4f4f5)` computed to `rgb(23, 23, 26)` — the **light** branch, dark
+text on a dark page. Setting `color-scheme: light dark` on the same fixture computed
+`rgb(244, 244, 245)`. So `light-dark()` silently returns the wrong branch rather than failing, which
+is why `color-scheme` belongs in the non-optional file and not in the theme.
+
+## Platform behavior still to confirm
+
+Three tasks require it and are written as verification rather than assertion:
 
 - That importing only `core.css` and `tokens.css` leaves every component positioned, structurally
   intact, and operable. This is the acceptance criterion for the milestone and cannot be reasoned
@@ -57,8 +98,6 @@ Nothing yet. Four tasks require it and are written as verification rather than a
   not confirming.
 - That the anchoring fallback branch can or cannot win by layer order instead of `:popover-open`
   specificity.
-- That `tokens.css` alone still establishes the layer order after the split, confirmed by a consumer
-  class beating a component rule.
 
 ## Decisions and constraints
 

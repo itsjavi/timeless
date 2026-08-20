@@ -5,6 +5,7 @@ import floatingCss from '@timelessui/components/css/floating.css?raw'
 import listboxCss from '@timelessui/components/css/listbox.css?raw'
 import optionsCss from '@timelessui/components/css/options.css?raw'
 import popoverCss from '@timelessui/components/css/popover.css?raw'
+import themeCss from '@timelessui/components/css/theme-atmosphere.css?raw'
 import tokensCss from '@timelessui/components/css/tokens.css?raw'
 import demoCss from '../styles.css?raw'
 import { defineLargeDatasetElements } from './large-dataset.fixture'
@@ -16,6 +17,7 @@ const meta: StoryLiteMeta = {
     renderer: 'html',
     css: [
       tokensCss,
+      themeCss,
       buttonCss,
       floatingCss,
       popoverCss,

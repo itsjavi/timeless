@@ -10,6 +10,7 @@ import optionsCss from '@timelessui/components/css/options.css?raw'
 import menuCss from '@timelessui/components/css/menu.css?raw'
 import popoverCss from '@timelessui/components/css/popover.css?raw'
 import selectCss from '@timelessui/components/css/select.css?raw'
+import themeCss from '@timelessui/components/css/theme-atmosphere.css?raw'
 import tokensCss from '@timelessui/components/css/tokens.css?raw'
 import toolbarCss from '@timelessui/components/css/toolbar.css?raw'
 import { defineTimelessElements } from '@timelessui/components/define'
@@ -20,6 +21,7 @@ const collectionNavigationParameters = {
   renderer: 'html',
   css: [
     tokensCss,
+    themeCss,
     buttonCss,
     floatingCss,
     popoverCss,

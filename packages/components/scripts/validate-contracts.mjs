@@ -125,11 +125,15 @@ function validateContractShape() {
 
 /**
  * `atmosphereTokenGroups` is documented as the public token contract, so it must name exactly the
- * custom properties `tokens.css` declares on `:root`. A token in the stylesheet but not the list is
- * undocumented; a token in the list but not the stylesheet does not exist.
+ * custom properties `theme-atmosphere.css` declares on `:root`. A token in the stylesheet but not
+ * the list is undocumented; a token in the list but not the stylesheet does not exist.
+ *
+ * The same function proves the other half of the split: `tokens.css` carries the layer statement and
+ * `color-scheme` and no token value at all. Without that assertion a value drifts back into the one
+ * file a consumer cannot opt out of, and the theme stops being optional again.
  */
 async function validatePublicTokens() {
-  const stylesheet = await readFile(resolve(packageRoot, 'src/css/tokens.css'), 'utf8')
+  const stylesheet = await readFile(resolve(packageRoot, 'src/css/theme-atmosphere.css'), 'utf8')
   const listed = new Set(
     [
       ...(await readFile(resolve(packageRoot, 'src/tokens.ts'), 'utf8')).matchAll(
@@ -143,12 +147,28 @@ async function validatePublicTokens() {
 
   const undocumented = [...declared].filter((token) => !listed.has(token))
   if (undocumented.length > 0) {
-    throw new Error(`tokens.css declares undocumented public tokens: ${undocumented.join(', ')}`)
+    throw new Error(
+      `theme-atmosphere.css declares undocumented public tokens: ${undocumented.join(', ')}`,
+    )
   }
   const missing = [...listed].filter((token) => !declared.has(token))
   if (missing.length > 0) {
     throw new Error(
-      `atmosphereTokenGroups lists tokens tokens.css never declares: ${missing.join(', ')}`,
+      `atmosphereTokenGroups lists tokens theme-atmosphere.css never declares: ${missing.join(', ')}`,
+    )
+  }
+
+  const base = await readFile(resolve(packageRoot, 'src/css/tokens.css'), 'utf8')
+  const stripped = base.replace(/\/\*[\s\S]*?\*\//g, '')
+  const leaked = [...stripped.matchAll(/(--ui-[a-z0-9-]+)\s*:/g)].map((match) => match[1])
+  if (leaked.length > 0) {
+    throw new Error(
+      `tokens.css must hold no theme value, but declares ${[...new Set(leaked)].join(', ')}`,
+    )
+  }
+  if (!stripped.includes('@layer ui.tokens, ui.components, ui.utilities;')) {
+    throw new Error(
+      'tokens.css no longer declares the ui.tokens, ui.components, ui.utilities order',
     )
   }
   return declared.size

@@ -15,15 +15,24 @@
 
 ## 1. Split `tokens.css`
 
-- [ ] Move the token values out of `tokens.css` into `theme-atmosphere.css`
-- [ ] Leave `tokens.css` holding the `@layer ui.tokens, ui.components, ui.utilities;` statement and
+- [x] Move the token values out of `tokens.css` into `theme-atmosphere.css`
+- [x] Leave `tokens.css` holding the `@layer ui.tokens, ui.components, ui.utilities;` statement and
       `color-scheme: light dark`
-- [ ] Confirm `tokens.css` contains no `light-dark()` call and no colour, radius, shadow, space,
+- [x] Confirm `tokens.css` contains no `light-dark()` call and no colour, radius, shadow, space,
       type, or motion value
-- [ ] Confirm `components.css` imports `tokens.css` then `theme-atmosphere.css`, in that order
-- [ ] Verify in a browser that importing `tokens.css` alone still establishes the layer order, by
+- [x] Point `validate-contracts.mjs` at `theme-atmosphere.css` for the token contract, and add the
+      assertion that `tokens.css` declares no token value and still carries the layer statement
+- [x] Confirm both new assertions fail when violated, not just pass when satisfied
+- [x] Confirm `components.css` imports `tokens.css` then `theme-atmosphere.css`, in that order
+- [x] Verify in a browser that importing `tokens.css` alone still establishes the layer order, by
       confirming a single consumer class still beats a component rule
-- [ ] Add `theme-atmosphere.css` to the relevant example `styles` so `validate-docs` stays clean
+- [x] Separate the two mechanisms that verification conflates, and record which one the layer
+      statement is actually responsible for
+- [x] Verify `color-scheme` in `tokens.css` is load-bearing, by confirming `light-dark()` resolves
+      to the wrong branch without it
+- [x] Add `theme-atmosphere.css` to every example's `styles`, and to the StoryLite shared CSS
+      arrays, so previews still render Atmosphere
+- [x] Point `TokenTable.astro` and `stylingFor` at the split files
 
 ## 2. Extract core for the anchored surfaces
 

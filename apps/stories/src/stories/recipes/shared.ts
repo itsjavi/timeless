@@ -13,6 +13,7 @@ import popoverCss from '@timelessui/components/css/popover.css?raw'
 import selectCss from '@timelessui/components/css/select.css?raw'
 import rangeCss from '@timelessui/components/css/range.css?raw'
 import toggleCss from '@timelessui/components/css/toggle.css?raw'
+import themeCss from '@timelessui/components/css/theme-atmosphere.css?raw'
 import tokensCss from '@timelessui/components/css/tokens.css?raw'
 import { defineTimelessElements } from '@timelessui/components/define'
 import demoCss from '../styles.css?raw'
@@ -24,6 +25,7 @@ export function createRecipeMeta(path: string): StoryLiteMeta {
       renderer: 'html',
       css: [
         tokensCss,
+        themeCss,
         buttonCss,
         avatarCss,
         badgeCss,
