@@ -42,6 +42,11 @@ test('large dataset fixture retains a usable native input without JavaScript', a
  */
 test('an authored popovertarget opens the select surface without JavaScript', async ({ page }) => {
   await page.goto('/stories/library-navigation-select--default/')
+  /*
+   * `button`, not `combobox`, and deliberately: `role="combobox"` is written by enhancement, so with
+   * scripting off the trigger is still the plain button the author wrote — which is the whole point.
+   * It also carries no `aria-activedescendant` here, so the attribute and its role arrive together.
+   */
   const trigger = page.getByRole('button', { name: /Role/ })
   const surface = page.locator("ui-select [role='listbox']")
 

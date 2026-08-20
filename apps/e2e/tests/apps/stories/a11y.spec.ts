@@ -71,6 +71,35 @@ test.describe('StoryLite WCAG 2.2 A and AA automation', () => {
         )
         await page.keyboard.press('Escape')
       }
+      /*
+       * A Select's `aria-activedescendant` only exists while the surface is open with an active
+       * option, so scanning the closed default state could never see it — which is how the trigger
+       * carried the attribute on a plain `button`, illegal for that role, past every green run of this
+       * sweep. Opening a surface here is an opt-in list, so each overlay has to be named.
+       */
+      if (route.endsWith('library-navigation-select--default/')) {
+        await page.getByRole('combobox', { name: /Role/ }).click()
+        await expect(page.locator('[role="listbox"][popover]:popover-open')).toBeVisible()
+        await page.keyboard.press('ArrowDown')
+        recordViolations(
+          violations,
+          route,
+          'open with an active option',
+          await makeAxeBuilder(page).include('#ss-canvas').analyze(),
+        )
+        await page.keyboard.press('Escape')
+      }
+      if (route.endsWith('library-navigation-menu-button--default/')) {
+        await page.getByRole('button', { name: 'Actions' }).click()
+        await expect(page.locator('ui-menu[popover]:popover-open')).toBeVisible()
+        recordViolations(
+          violations,
+          route,
+          'open',
+          await makeAxeBuilder(page).include('#ss-canvas').analyze(),
+        )
+        await page.keyboard.press('Escape')
+      }
       if (route.endsWith('library-overlays-sheet--default/')) {
         await page.getByRole('button', { name: 'Open release sheet' }).click()
         await expect(page.locator('#release-sheet')).toBeVisible()
