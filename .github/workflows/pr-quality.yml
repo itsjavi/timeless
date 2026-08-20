@@ -45,7 +45,7 @@ jobs:
           pnpm contracts:check
           pnpm -F @timelessui/components manifest:validate
           pnpm publint
-          pnpm -F @timelessui/components attw
+          pnpm attw
 
   static-site:
     name: static-site

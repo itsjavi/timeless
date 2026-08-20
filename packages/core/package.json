@@ -37,9 +37,11 @@
     "build": "tsdown",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "publint": "publint --strict --pack=false"
+    "publint": "publint --strict --pack=false",
+    "attw": "attw --pack --profile esm-only"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "publint": "^0.3.23",
     "tsdown": "^0.22.14",
     "typescript": "catalog:",
