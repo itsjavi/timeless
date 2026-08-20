@@ -1,8 +1,8 @@
 {
   "entries": {
     "popover": {
-      "cssGzipBytes": 2640,
-      "cssRawBytes": 7622,
+      "cssGzipBytes": 3621,
+      "cssRawBytes": 9975,
       "gzipBytes": 5644,
       "modules": [
         "capabilities-DnKhwAK2.js",
@@ -12,11 +12,11 @@
         "popover.js"
       ],
       "rawBytes": 18340,
-      "stylesheets": ["floating.css", "popover.css"]
+      "stylesheets": ["core/floating.css", "core/popover.css", "themes/atmosphere/popover.css"]
     },
     "listbox": {
-      "cssGzipBytes": 3871,
-      "cssRawBytes": 13329,
+      "cssGzipBytes": 6192,
+      "cssRawBytes": 18935,
       "gzipBytes": 15380,
       "modules": [
         "collection.js",
@@ -27,11 +27,16 @@
         "value-state.js"
       ],
       "rawBytes": 55052,
-      "stylesheets": ["listbox.css", "options.css"]
+      "stylesheets": [
+        "core/listbox.css",
+        "core/options.css",
+        "themes/atmosphere/listbox.css",
+        "themes/atmosphere/options.css"
+      ]
     },
     "select": {
-      "cssGzipBytes": 4710,
-      "cssRawBytes": 15075,
+      "cssGzipBytes": 7039,
+      "cssRawBytes": 20561,
       "gzipBytes": 30023,
       "modules": [
         "capabilities-DnKhwAK2.js",
@@ -45,11 +50,17 @@
         "value-state.js"
       ],
       "rawBytes": 113729,
-      "stylesheets": ["floating.css", "options.css", "select.css"]
+      "stylesheets": [
+        "core/floating.css",
+        "core/options.css",
+        "core/select.css",
+        "themes/atmosphere/options.css",
+        "themes/atmosphere/select.css"
+      ]
     },
     "combobox": {
-      "cssGzipBytes": 4790,
-      "cssRawBytes": 15344,
+      "cssGzipBytes": 7041,
+      "cssRawBytes": 20691,
       "gzipBytes": 28522,
       "modules": [
         "capabilities-DnKhwAK2.js",
@@ -63,7 +74,13 @@
         "value-state.js"
       ],
       "rawBytes": 106755,
-      "stylesheets": ["combobox.css", "floating.css", "options.css"]
+      "stylesheets": [
+        "core/combobox.css",
+        "core/floating.css",
+        "core/options.css",
+        "themes/atmosphere/combobox.css",
+        "themes/atmosphere/options.css"
+      ]
     }
   }
 }

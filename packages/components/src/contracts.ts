@@ -147,7 +147,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-button',
     },
-    css: ['button.css'],
+    css: ['core/button.css', 'themes/atmosphere/button.css'],
     attributes: [
       {
         name: 'data-ui-variant',
@@ -238,7 +238,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-toggle',
     },
-    css: ['toggle.css'],
+    css: ['core/toggle.css', 'themes/atmosphere/toggle.css'],
     attributes: [
       {
         name: 'data-ui-variant',
@@ -282,7 +282,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-alert',
     },
-    css: ['alert.css'],
+    css: ['core/alert.css', 'themes/atmosphere/alert.css'],
     attributes: [
       {
         name: 'data-ui-variant',
@@ -344,7 +344,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-avatar',
     },
-    css: ['avatar.css'],
+    css: ['core/avatar.css', 'themes/atmosphere/avatar.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -401,7 +401,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-badge',
     },
-    css: ['badge.css'],
+    css: ['core/badge.css', 'themes/atmosphere/badge.css'],
     attributes: [
       {
         name: 'data-ui-variant',
@@ -438,7 +438,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-separator',
     },
-    css: ['separator.css'],
+    css: ['core/separator.css', 'themes/atmosphere/separator.css'],
     attributes: [
       {
         name: 'data-ui-orientation',
@@ -477,7 +477,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-card',
     },
-    css: ['card.css'],
+    css: ['core/card.css', 'themes/atmosphere/card.css'],
     attributes: [
       {
         name: 'data-ui-variant',
@@ -550,7 +550,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-skeleton',
     },
-    css: ['skeleton.css'],
+    css: ['core/skeleton.css', 'themes/atmosphere/skeleton.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -588,7 +588,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-progress',
     },
-    css: ['progress.css'],
+    css: ['core/progress.css', 'themes/atmosphere/progress.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -637,7 +637,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-link',
     },
-    css: ['link.css'],
+    css: ['themes/atmosphere/link.css'],
     attributes: [
       {
         name: 'data-ui-variant',
@@ -659,7 +659,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-kbd',
     },
-    css: ['kbd.css'],
+    css: ['core/kbd.css', 'themes/atmosphere/kbd.css'],
     attributes: [],
     parts: [],
     states: [],
@@ -672,7 +672,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-code',
     },
-    css: ['code.css'],
+    css: ['core/code.css', 'themes/atmosphere/code.css'],
     attributes: [],
     parts: [],
     states: [],
@@ -685,7 +685,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-group',
     },
-    css: ['group.css'],
+    css: ['core/group.css', 'themes/atmosphere/group.css'],
     attributes: [
       {
         name: 'data-ui-orientation',
@@ -726,7 +726,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-list',
     },
-    css: ['list.css'],
+    css: ['core/list.css', 'themes/atmosphere/list.css'],
     attributes: [
       {
         name: 'data-ui-variant',
@@ -789,7 +789,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-table',
     },
-    css: ['table.css'],
+    css: ['core/table.css', 'themes/atmosphere/table.css'],
     attributes: [
       {
         name: 'data-ui-density',
@@ -839,7 +839,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-collapsible',
     },
-    css: ['collapsible.css'],
+    css: ['core/collapsible.css', 'themes/atmosphere/collapsible.css'],
     attributes: [
       {
         name: 'data-ui-density',
@@ -897,7 +897,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-spinner',
     },
-    css: ['spinner.css'],
+    css: ['core/spinner.css', 'themes/atmosphere/spinner.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -934,7 +934,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-empty',
     },
-    css: ['empty.css'],
+    css: ['core/empty.css', 'themes/atmosphere/empty.css'],
     attributes: [
       {
         name: 'data-ui-density',
@@ -969,7 +969,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-meter-field',
     },
-    css: ['meter.css'],
+    css: ['core/meter.css', 'themes/atmosphere/meter.css'],
     attributes: [],
     parts: [
       {
@@ -989,7 +989,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-color-swatch',
     },
-    css: ['color-swatch.css'],
+    css: ['core/color-swatch.css', 'themes/atmosphere/color-swatch.css'],
     attributes: [],
     parts: [
       {
@@ -1027,7 +1027,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-field',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'themes/atmosphere/forms.css'],
     attributes: [
       {
         name: 'data-ui-layout',
@@ -1072,7 +1072,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-fieldset',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'themes/atmosphere/forms.css'],
     attributes: [
       {
         name: 'data-ui-density',
@@ -1129,7 +1129,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-label',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'themes/atmosphere/forms.css'],
     attributes: [],
     parts: [],
     states: [],
@@ -1142,7 +1142,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-description',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'themes/atmosphere/forms.css'],
     attributes: [],
     parts: [],
     states: [],
@@ -1155,7 +1155,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-error',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'themes/atmosphere/forms.css'],
     attributes: [],
     parts: [],
     states: [],
@@ -1168,7 +1168,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-input',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'themes/atmosphere/forms.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -1203,7 +1203,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-textarea',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'themes/atmosphere/forms.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -1238,7 +1238,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-select',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'themes/atmosphere/forms.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -1279,7 +1279,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-checkbox',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'themes/atmosphere/forms.css'],
     attributes: [],
     parts: [],
     states: [
@@ -1305,7 +1305,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-radio',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'themes/atmosphere/forms.css'],
     attributes: [],
     parts: [],
     states: [
@@ -1331,7 +1331,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-choice',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'themes/atmosphere/forms.css'],
     attributes: [
       {
         name: 'data-ui-density',
@@ -1372,7 +1372,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-choice-group',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'themes/atmosphere/forms.css'],
     attributes: [
       {
         name: 'data-ui-orientation',
@@ -1422,7 +1422,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-switch',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'themes/atmosphere/forms.css'],
     attributes: [],
     parts: [],
     states: [
@@ -1448,7 +1448,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-range',
     },
-    css: ['range.css'],
+    css: ['core/range.css', 'themes/atmosphere/range.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -1499,7 +1499,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-file',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'themes/atmosphere/forms.css'],
     attributes: [],
     parts: [],
     states: [
@@ -1525,7 +1525,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-tabs',
     },
-    css: ['tabs.css'],
+    css: ['core/tabs.css', 'themes/atmosphere/tabs.css'],
     attributes: [
       {
         name: 'activation',
@@ -1626,7 +1626,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-dialog',
     },
-    css: ['dialog.css'],
+    css: ['core/dialog.css', 'themes/atmosphere/dialog.css'],
     attributes: [
       {
         name: 'kind',
@@ -1697,7 +1697,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-sheet',
     },
-    css: ['sheet.css'],
+    css: ['core/sheet.css', 'themes/atmosphere/sheet.css'],
     attributes: [
       {
         name: 'modal',
@@ -1819,7 +1819,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-popover',
     },
-    css: ['popover.css', 'floating.css'],
+    css: ['core/floating.css', 'core/popover.css', 'themes/atmosphere/popover.css'],
     attributes: [
       {
         name: 'placement',
@@ -1882,7 +1882,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-hover-card',
     },
-    css: ['popover.css', 'floating.css'],
+    css: ['core/floating.css', 'core/popover.css', 'themes/atmosphere/popover.css'],
     attributes: [
       {
         name: 'anchor',
@@ -1962,7 +1962,7 @@ export const componentContracts = {
       kind: 'selector',
       name: "ui-hover-card[variant='tooltip']",
     },
-    css: ['popover.css', 'floating.css'],
+    css: ['core/floating.css', 'core/popover.css', 'themes/atmosphere/popover.css'],
     attributes: [],
     parts: [
       {
@@ -2009,7 +2009,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-menu',
     },
-    css: ['menu.css', 'floating.css'],
+    css: ['core/floating.css', 'core/menu.css', 'themes/atmosphere/menu.css'],
     attributes: [
       {
         name: 'orientation',
@@ -2138,7 +2138,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-menu-button',
     },
-    css: ['menu.css', 'floating.css'],
+    css: ['core/floating.css', 'core/menu.css', 'themes/atmosphere/menu.css'],
     attributes: [
       {
         name: 'open',
@@ -2212,7 +2212,12 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-context-menu',
     },
-    css: ['context-menu.css'],
+    css: [
+      'core/context-menu.css',
+      'core/menu.css',
+      'themes/atmosphere/context-menu.css',
+      'themes/atmosphere/menu.css',
+    ],
     attributes: [],
     parts: [
       {
@@ -2291,7 +2296,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-toolbar',
     },
-    css: ['toolbar.css'],
+    css: ['core/toolbar.css', 'themes/atmosphere/toolbar.css'],
     attributes: [
       {
         name: 'orientation',
@@ -2342,7 +2347,12 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-radio-group',
     },
-    css: ['forms.css', 'choice-groups.css'],
+    css: [
+      'core/choice-groups.css',
+      'core/forms.css',
+      'themes/atmosphere/choice-groups.css',
+      'themes/atmosphere/forms.css',
+    ],
     attributes: [
       {
         name: 'orientation',
@@ -2413,7 +2423,12 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-checkbox-group',
     },
-    css: ['forms.css', 'choice-groups.css'],
+    css: [
+      'core/choice-groups.css',
+      'core/forms.css',
+      'themes/atmosphere/choice-groups.css',
+      'themes/atmosphere/forms.css',
+    ],
     attributes: [
       {
         name: 'orientation',
@@ -2479,7 +2494,12 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-listbox',
     },
-    css: ['listbox.css', 'options.css'],
+    css: [
+      'core/listbox.css',
+      'core/options.css',
+      'themes/atmosphere/listbox.css',
+      'themes/atmosphere/options.css',
+    ],
     attributes: [
       {
         name: 'multiple',
@@ -2683,7 +2703,13 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-select',
     },
-    css: ['select.css', 'options.css', 'floating.css'],
+    css: [
+      'core/floating.css',
+      'core/options.css',
+      'core/select.css',
+      'themes/atmosphere/options.css',
+      'themes/atmosphere/select.css',
+    ],
     attributes: [
       {
         name: 'open',
@@ -3012,7 +3038,13 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-combobox',
     },
-    css: ['combobox.css', 'options.css', 'floating.css'],
+    css: [
+      'core/combobox.css',
+      'core/floating.css',
+      'core/options.css',
+      'themes/atmosphere/combobox.css',
+      'themes/atmosphere/options.css',
+    ],
     attributes: [
       {
         name: 'value',
@@ -3306,7 +3338,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-toaster',
     },
-    css: ['toast.css'],
+    css: ['core/toast.css', 'themes/atmosphere/toast.css'],
     attributes: [
       {
         name: 'placement',
@@ -3353,7 +3385,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-toast',
     },
-    css: ['toast.css'],
+    css: ['core/toast.css', 'themes/atmosphere/toast.css'],
     attributes: [
       {
         name: 'duration',
@@ -3419,7 +3451,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-toggle-group',
     },
-    css: ['toggle.css'],
+    css: ['core/toggle.css', 'themes/atmosphere/toggle.css'],
     attributes: [
       {
         name: 'attached',
@@ -3499,7 +3531,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-number-stepper',
     },
-    css: ['number-stepper.css'],
+    css: ['core/number-stepper.css', 'themes/atmosphere/number-stepper.css'],
     attributes: [],
     parts: [
       {
@@ -3545,7 +3577,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-color-picker',
     },
-    css: ['color-picker.css'],
+    css: ['core/color-picker.css', 'themes/atmosphere/color-picker.css'],
     attributes: [
       {
         name: 'format',
@@ -3730,7 +3762,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-form',
     },
-    css: ['form.css'],
+    css: ['core/form.css'],
     attributes: [],
     parts: [
       {
@@ -3773,7 +3805,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-range-field',
     },
-    css: ['range-field.css'],
+    css: ['core/range-field.css', 'themes/atmosphere/range-field.css'],
     attributes: [],
     parts: [
       {
@@ -3855,7 +3887,12 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-otp-field',
     },
-    css: ['forms.css', 'otp-field.css'],
+    css: [
+      'core/forms.css',
+      'core/otp-field.css',
+      'themes/atmosphere/forms.css',
+      'themes/atmosphere/otp-field.css',
+    ],
     attributes: [
       {
         name: 'name',

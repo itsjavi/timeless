@@ -1,0 +1,17 @@
+/*
+ * Empty's boxes.
+ */
+
+@layer ui.components {
+  .ui-empty {
+    display: grid;
+  }
+
+  .ui-empty > [data-ui-part~='art'] {
+    display: grid;
+  }
+
+  .ui-empty > [data-ui-part~='actions'] {
+    display: flex;
+  }
+}

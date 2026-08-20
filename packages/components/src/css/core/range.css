@@ -1,0 +1,18 @@
+/*
+ * Range's box and the `appearance` resets that let the track and thumb be drawn by CSS rather than by
+ * the UA.
+ */
+
+@layer ui.components {
+  .ui-range {
+    display: grid;
+  }
+
+  .ui-range > input[style*='--ui-range-gradient'] {
+    appearance: none;
+  }
+
+  .ui-range > input[style*='--ui-range-gradient']::-webkit-slider-thumb {
+    appearance: none;
+  }
+}

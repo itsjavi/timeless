@@ -1,0 +1,156 @@
+/*
+ * The shared option-collection core: which boxes exist, what hides, what scrolls, and where the
+ * anchored surface lands. Everything here is shared by Listbox, Select, and Combobox.
+ *
+ * The `display: none` rules are the ones that matter most. Filtering, paging, group collapse, the
+ * chip template, and the closed surface all express themselves by `hidden`, `:empty`, `:has()`, or
+ * `:not(:popover-open)` — so without this file a filtered-out option is still on screen and a closed
+ * surface still renders. That is a correctness failure, not a plain-looking one, which is why these
+ * are core and not cosmetics.
+ *
+ * Every rule is wrapped in `:where()` past the root, matching the theme file, so the whole file sits
+ * at a single low specificity and consumer CSS wins without a fight.
+ */
+
+@layer ui.components {
+  /* The option row is a two-column grid: label, then the selected indicator. */
+  :where(ui-listbox, ui-select, ui-combobox) :where([role='option']) {
+    display: grid;
+  }
+
+  /* Filtering and paging both express themselves by setting `hidden`. */
+  :where(ui-listbox, ui-select, ui-combobox) :where([role='option'][hidden]) {
+    display: none;
+  }
+
+  :where(ui-listbox, ui-select, ui-combobox) :where([data-ui-part~='option-indicator']) {
+    display: none;
+  }
+
+  :where(ui-listbox, ui-select, ui-combobox)
+    :where([role='option'][aria-selected='true'] [data-ui-part~='option-indicator']) {
+    display: block;
+  }
+
+  :where(ui-listbox, ui-select, ui-combobox) :where([data-ui-part~='group']) {
+    display: grid;
+  }
+
+  /*
+   * A group whose every option is filtered out collapses. Expressed with `:has()` rather than a JS
+   * `hidden` write, so the JS never has to decide what an empty group looks like.
+   */
+  :where(ui-listbox, ui-select, ui-combobox)
+    :where([data-ui-part~='group']:not(:has([role='option']:not([hidden])))) {
+    display: none;
+  }
+
+  /*
+   * The surface, shared by Select and Combobox. A column: the search field, header, option list,
+   * footer, and pager stack. As a row they would sit side by side.
+   *
+   * `overflow: hidden` is what keeps the rounded surface from being painted over by a scrolling child,
+   * and what makes the inner list the scroll container rather than the surface.
+   */
+  :where(ui-select, ui-combobox) > :where([data-ui-part~='surface'], [role='listbox'][popover]) {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  :where(ui-select, ui-combobox)
+    > :where([data-ui-part~='surface'], [role='listbox'][popover]):not(:popover-open) {
+    display: none;
+  }
+
+  /* The scrolling option list. It is the surface itself in the simple shape, a child in the rich one. */
+  :where(ui-select, ui-combobox) :where([role='listbox']) {
+    display: grid;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  :where(ui-listbox, ui-select, ui-combobox) :where([data-ui-part~='pager']) {
+    display: flex;
+  }
+
+  :where(ui-listbox, ui-select, ui-combobox) :where([data-ui-part~='pager'][hidden]) {
+    display: none;
+  }
+
+  :where(ui-select, ui-combobox) :where([data-ui-part~='chips']) {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  :where(ui-select, ui-combobox) :where([data-ui-part~='chips']:empty) {
+    display: none;
+  }
+
+  :where(ui-select, ui-combobox) :where([data-ui-part~='chip']) {
+    display: inline-flex;
+  }
+
+  /* The template is markup the component clones; it must never render. */
+  :where(ui-select, ui-combobox) :where([data-ui-part~='chip-template']) {
+    display: none;
+  }
+
+  :where(ui-select, ui-combobox) :where([data-ui-part~='chip-remove']) {
+    display: inline-flex;
+  }
+
+  /*
+   * The anchored surface, shared by Select and Combobox.
+   *
+   * `position-area` is a 3x3 grid around the anchor. Two side keywords name a single corner tile,
+   * which is why `bottom left` sat diagonally below-and-left of the trigger and `bottom center`
+   * centred on it. A side plus `span-*` places the surface in that row and spans outward, which is
+   * what edge alignment means. Popover and Hover Card keep `block-end center` on purpose — a popover
+   * and a tooltip centre on their anchor by convention; only these collection surfaces edge-align.
+   *
+   * The sizing that goes with these — the `anchor-size(width)` minimum and the `max-block-size: 100%`
+   * self-clamp — stays in the theme. Both are sizing, which this milestone deliberately left out of
+   * core, and both are declared by the theme on a selector of equal specificity: splitting them
+   * across two files inverted their source order and the theme's plain `min-inline-size` silently
+   * won, making every Select surface 14rem instead of its trigger's width.
+   *
+   * The gap is `margin`, which is spacing and stays in the theme. It is deliberately not `translate`:
+   * a transform is applied after layout, so it does not participate in the overflow calculation
+   * `position-try-fallbacks` runs — the browser would judge the surface as fitting and then translate
+   * it part-way off screen.
+   *
+   * These rules must not be scoped to `:popover-open` if an exit transition is ever added, or the
+   * surface will jump to the UA-centred fallback mid-close.
+   */
+  @supports (anchor-name: --ui-anchor) {
+    :where(ui-select, ui-combobox) > :where([data-ui-part~='surface'], [role='listbox']) {
+      position-area: block-end span-inline-end;
+    }
+
+    :where(ui-select, ui-combobox):where([align='end'])
+      > :where([data-ui-part~='surface'], [role='listbox']) {
+      position-area: block-end span-inline-start;
+    }
+
+    :where(ui-select):where([placement='top'])
+      > :where([data-ui-part~='surface'], [role='listbox']) {
+      position-area: block-start span-inline-end;
+    }
+
+    :where(ui-select):where([placement='top'][align='end'])
+      > :where([data-ui-part~='surface'], [role='listbox']) {
+      position-area: block-start span-inline-start;
+    }
+
+    :where(ui-select):where([placement='right'])
+      > :where([data-ui-part~='surface'], [role='listbox']) {
+      position-area: inline-end span-block-end;
+    }
+
+    :where(ui-select):where([placement='left'])
+      > :where([data-ui-part~='surface'], [role='listbox']) {
+      position-area: inline-start span-block-end;
+    }
+  }
+}

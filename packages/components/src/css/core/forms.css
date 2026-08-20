@@ -1,0 +1,50 @@
+/*
+ * The form controls' boxes and native-control behavior.
+ *
+ * The `appearance` resets and `resize` are the behavioral part. `.ui-select` also carries
+ * `color-scheme: light dark`, which is not the page-level `color-scheme` in `tokens.css`: the option
+ * list of a native select is drawn by the platform in its own popup, and this is what makes that popup
+ * follow the user's scheme rather than always rendering light.
+ */
+
+@layer ui.components {
+  .ui-field {
+    display: grid;
+  }
+
+  .ui-field :where([data-ui-part~='control']) {
+    display: grid;
+  }
+
+  .ui-textarea {
+    resize: vertical;
+  }
+
+  .ui-select {
+    appearance: none;
+    color-scheme: light dark;
+  }
+
+  .ui-choice {
+    display: grid;
+  }
+
+  .ui-choice :where([data-ui-part~='body']) {
+    display: grid;
+  }
+
+  .ui-choice-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ui-fieldset {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ui-switch {
+    appearance: none;
+    position: relative;
+  }
+}

@@ -1,0 +1,20 @@
+@layer ui.components {
+  ui-toolbar {
+    flex-wrap: wrap;
+    gap: var(--ui-space-1);
+    align-items: center;
+  }
+
+  ui-toolbar[orientation='vertical'] {
+    align-items: stretch;
+  }
+
+  ui-toolbar :where([data-ui-part~='item'], button, a[href]) {
+    border-radius: var(--ui-radius-md);
+  }
+
+  ui-toolbar :where([data-ui-part~='item'], button, a[href]):focus-visible {
+    outline: 2px solid var(--ui-focus);
+    outline-offset: 2px;
+  }
+}

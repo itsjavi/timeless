@@ -7,13 +7,13 @@ type Props = { group: keyof typeof atmosphereTokenGroups }
 const { group } = Astro.props
 
 const stylesheet = await readFile(
-  resolve(process.cwd(), '../../packages/components/src/css/tokens.css'),
+  resolve(process.cwd(), '../../packages/components/src/css/themes/atmosphere/tokens.css'),
   'utf8',
 )
 
 /**
- * Declared values come straight from `tokens.css`, so the table cannot drift from the stylesheet.
- * `validate-contracts.mjs` already proves the two lists name the same tokens.
+ * Declared values come straight from `themes/atmosphere/tokens.css`, so the table cannot drift from
+ * the stylesheet. `validate-contracts.mjs` already proves the two lists name the same tokens.
  */
 const declarations = new Map(
   [...stylesheet.matchAll(/^\s*(--ui-[a-z0-9-]+)\s*:\s*([^;]+);/gm)].map((match) => [

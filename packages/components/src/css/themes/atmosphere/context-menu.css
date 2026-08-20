@@ -1,0 +1,21 @@
+/*
+ * Context Menu's cosmetics, which are almost nothing: the whole of its placement is behavior and
+ * lives in `core/context-menu.css`, because a menu that ignores where the pointer was is not a
+ * differently-styled context menu. What is left here is the pointer affordance and one UA reset.
+ */
+
+@layer ui.components {
+  ui-context-menu > :where([data-ui-part~='target']) {
+    /* The gesture is the whole point of the region, so make it discoverable to a pointer. */
+    cursor: context-menu;
+  }
+
+  /*
+   * The UA gives every `[popover]` `margin: auto`, which is spacing rather than placement, so it is
+   * reset here beside the other spacing rather than in core. Core's `left`/`top` place the surface
+   * with or without this.
+   */
+  ui-context-menu > :where(ui-menu[popover], [role='menu'][popover]):popover-open {
+    margin: 0;
+  }
+}

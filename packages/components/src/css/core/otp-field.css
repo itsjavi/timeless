@@ -1,0 +1,9 @@
+/*
+ * OTP Field's box.
+ */
+
+@layer ui.components {
+  ui-otp-field {
+    display: flex;
+  }
+}

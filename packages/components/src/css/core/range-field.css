@@ -1,0 +1,32 @@
+/*
+ * Range Field's boxes, native-control resets, and the pointer routing that makes a two-handle range
+ * work at all.
+ *
+ * The `pointer-events` pair is the behavior. Two native range inputs are stacked in the same grid area;
+ * without `none` on the input boxes and `auto` back on the thumbs, the input on top swallows every
+ * pointer event and the other handle cannot be grabbed.
+ */
+
+@layer ui.components {
+  ui-range-field {
+    display: grid;
+  }
+
+  ui-range-field [data-ui-part~='track'] {
+    display: grid;
+  }
+
+  ui-range-field :where([data-ui-part~='from'], [data-ui-part~='to']) {
+    appearance: none;
+    pointer-events: none;
+  }
+
+  ui-range-field :where([data-ui-part~='from'], [data-ui-part~='to'])::-webkit-slider-thumb {
+    appearance: none;
+    pointer-events: auto;
+  }
+
+  ui-range-field :where([data-ui-part~='from'], [data-ui-part~='to'])::-moz-range-thumb {
+    pointer-events: auto;
+  }
+}

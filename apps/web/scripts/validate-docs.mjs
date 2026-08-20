@@ -1,5 +1,5 @@
 import { access, readFile, readdir } from 'node:fs/promises'
-import { extname, resolve } from 'node:path'
+import { extname, resolve, sep } from 'node:path'
 import { examples } from '@timelessui/examples'
 
 const root = resolve(import.meta.dirname, '../../..')
@@ -22,9 +22,18 @@ const missingTags = [...manifestTags].filter((tag) => !documentedTags.has(tag))
 if (missingTags.length > 0)
   throw new Error(`Undocumented custom elements: ${missingTags.join(', ')}`)
 
-const availableCss = (await readdir(resolve(root, 'packages/components/src/css'))).filter(
-  (name) => name.endsWith('.css') && name !== 'components.css',
-)
+/**
+ * Recursive, and relative to `src/css`, so `core/<component>.css` and
+ * `themes/atmosphere/<component>.css` are each required to appear in some example's `styles`. A
+ * non-recursive listing would have gone quiet on both directories at once — the completeness gate
+ * skipping precisely the files milestone 028 moved there. `core.css` and `themes/atmosphere.css` are
+ * the two aggregates; no example lists an aggregate.
+ */
+const AGGREGATE_CSS = new Set(['core.css', 'themes/atmosphere.css'])
+const cssRoot = resolve(root, 'packages/components/src/css')
+const availableCss = (await readdir(cssRoot, { recursive: true }))
+  .map((name) => name.split(sep).join('/'))
+  .filter((name) => name.endsWith('.css') && !AGGREGATE_CSS.has(name))
 const documentedCss = new Set(examples.flatMap((example) => example.styles))
 const missingCss = availableCss.filter((name) => !documentedCss.has(name))
 if (missingCss.length > 0) throw new Error(`Undocumented CSS exports: ${missingCss.join(', ')}`)
@@ -55,6 +64,32 @@ for (const file of contentFiles) {
     if (!examples.some((example) => example.id === match[1])) {
       throw new Error(`${file} references missing example ${match[1]}`)
     }
+  }
+}
+
+/**
+ * No page may claim the CSS is optional. Milestone 028 existed because two styling pages said so while
+ * `floating.css` was the anchor-positioning implementation, and the landing page said it a third time
+ * in a region the claim validator did not read. The wording is gone; this keeps it gone.
+ *
+ * Deliberately narrow. It forbids the one claim the library cannot honour, and leaves the honest
+ * neighbours sayable — the Atmosphere *theme* is optional, and pages should keep saying that.
+ */
+const OPTIONAL_CSS_CLAIMS = [
+  /\bcss\b[^.]{0,40}\bis (?:fully |entirely |completely )?optional/i,
+  /\boptional\b[^.]{0,20}\bcss\b/i,
+  /\bstylesheets?\b[^.]{0,30}\b(?:are|is) (?:fully |entirely |completely )?optional/i,
+  /\b(?:without|no) [Tt]imeless (?:CSS|stylesheets?)\b/,
+  /\bno [Tt]imeless stylesheet at all\b/i,
+]
+for (const file of contentFiles) {
+  const source = await readFile(file, 'utf8')
+  for (const pattern of OPTIONAL_CSS_CLAIMS) {
+    const match = source.match(pattern)
+    if (!match) continue
+    throw new Error(
+      `${file} claims the CSS is optional ("${match[0]}"); core is required, and only the theme is optional`,
+    )
   }
 }
 

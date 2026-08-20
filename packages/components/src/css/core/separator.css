@@ -1,0 +1,14 @@
+/*
+ * Separator's boxes.
+ */
+
+@layer ui.components {
+  .ui-separator:where([data-ui-orientation='vertical']):has([data-ui-part~='label']) {
+    display: inline-flex;
+    flex-direction: column;
+  }
+
+  .ui-separator:where([data-ui-variant='centered']) {
+    display: flex;
+  }
+}

@@ -87,7 +87,7 @@ export const rules = [
       'Never gate authored markup behind a loaded state, and never expect a component to generate visual anatomy for you.',
   },
   {
-    rule: 'Import stylesheets from `@timelessui/components/css/<file>` and register custom elements from `@timelessui/components/define/<tag>`. `tokens.css` is required once by every component, and registration is per-element and explicit.',
+    rule: 'Import stylesheets from `@timelessui/components/css/<file>` and register custom elements from `@timelessui/components/define/<tag>`. `tokens.css` and `core/<component>.css` are required — core is behavior, not appearance — while `themes/atmosphere/<component>.css` is the optional look. Registration is per-element and explicit.',
     detail:
       'A CSS component has nothing to register. A custom element that never upgrades is almost always a missing `define/` import.',
   },

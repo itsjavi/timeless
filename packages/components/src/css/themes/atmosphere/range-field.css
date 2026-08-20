@@ -1,0 +1,94 @@
+@layer ui.components {
+  /*
+   * Two native range inputs share one track. Both are stacked in the same grid area with their own
+   * backgrounds removed, so the visible track is drawn once, by this stylesheet, between the two
+   * measured bounds the element writes. `pointer-events` is off on the input boxes and back on for
+   * the thumbs, which is what lets the lower thumb stay grabbable underneath the upper input.
+   */
+  ui-range-field {
+    --ui-range-track: 0.375rem;
+    /*
+     * Larger than the single-thumb `.ui-range` default, because here the thumb *is* the whole
+     * target: the track is inert so the lower thumb stays grabbable under the upper input, and
+     * WCAG 2.2 Target Size (Minimum) wants at least 24px in both axes for something you drag.
+     */
+    --ui-range-thumb: 1.5rem;
+    --ui-range-fill: var(--ui-accent);
+    gap: var(--ui-space-3);
+    min-inline-size: 0;
+    color: var(--ui-fg);
+    font-size: 0.8125rem;
+  }
+
+  ui-range-field [data-ui-part~='track'] {
+    /* Fallbacks only. The element overwrites both with measured percentages. */
+    --ui-range-fill-start: 0%;
+    --ui-range-fill-end: 100%;
+    grid-template-areas: 'thumbs';
+    align-items: center;
+    min-block-size: var(--ui-range-thumb);
+  }
+
+  ui-range-field [data-ui-part~='track']::before {
+    content: '';
+    grid-area: thumbs;
+    align-self: center;
+    block-size: var(--ui-range-track);
+    border-radius: var(--ui-radius-pill);
+    background: linear-gradient(
+      to right,
+      var(--ui-bg-control) 0 var(--ui-range-fill-start),
+      var(--ui-range-fill) var(--ui-range-fill-start) var(--ui-range-fill-end),
+      var(--ui-bg-control) var(--ui-range-fill-end) 100%
+    );
+    box-shadow: var(--ui-shadow-inset);
+  }
+
+  ui-range-field :where([data-ui-part~='from'], [data-ui-part~='to']) {
+    grid-area: thumbs;
+    inline-size: 100%;
+    block-size: var(--ui-range-thumb);
+    margin: 0;
+    background: none;
+  }
+
+  ui-range-field :where([data-ui-part~='from'], [data-ui-part~='to'])::-webkit-slider-thumb {
+    inline-size: var(--ui-range-thumb);
+    block-size: var(--ui-range-thumb);
+    box-sizing: border-box;
+    border: 2px solid var(--ui-bg-surface);
+    border-radius: 50%;
+    background: var(--ui-fg);
+    box-shadow:
+      0 0 0 1px var(--ui-line-strong),
+      var(--ui-shadow-control);
+  }
+
+  ui-range-field :where([data-ui-part~='from'], [data-ui-part~='to'])::-moz-range-thumb {
+    box-sizing: border-box;
+    inline-size: var(--ui-range-thumb);
+    block-size: var(--ui-range-thumb);
+    border: 2px solid var(--ui-bg-surface);
+    border-radius: 50%;
+    background: var(--ui-fg);
+    box-shadow:
+      0 0 0 1px var(--ui-line-strong),
+      var(--ui-shadow-control);
+  }
+
+  ui-range-field :where([data-ui-part~='from'], [data-ui-part~='to']):focus-visible {
+    outline: 2px solid var(--ui-focus);
+    outline-offset: 2px;
+  }
+
+  ui-range-field :where([data-ui-part~='from'], [data-ui-part~='to']):disabled {
+    opacity: var(--ui-disabled-opacity);
+  }
+
+  ui-range-field [data-ui-part~='output'] {
+    color: var(--ui-fg-muted);
+    font-family: var(--ui-font-mono);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+  }
+}

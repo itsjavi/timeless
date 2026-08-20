@@ -1,51 +1,106 @@
 ---
 title: Loading CSS
-description: Choose one aggregate stylesheet or only the component contracts a route uses.
+description:
+  The three CSS tiers, which two are required, and how to replace the theme with your own.
 sidebar:
   order: 1
 ---
 
-Timeless CSS ships as plain stylesheets. There is no build step, no preprocessor, and no
-configuration — you choose how much of it enters your bundle.
+import { Aside } from '@astrojs/starlight/components'
+
+Timeless CSS ships as plain stylesheets in three tiers. There is no build step, no preprocessor, and
+no configuration — but two of the three tiers are required, and it is worth knowing which.
+
+| Tier                                      | Required | Holds                                                                    |
+| ----------------------------------------- | -------- | ------------------------------------------------------------------------ |
+| `tokens.css`                              | Yes      | The cascade-layer order, and `color-scheme`                              |
+| `core.css`, or `core/<component>.css`     | Yes      | Behavior: anchoring, box participation, scrolling, native control resets |
+| `themes/atmosphere.css`, or per component | No       | The look: colour, type, spacing, shadow, radius, motion                  |
+
+Core is the tier people are surprised by. It is not styling — it is the implementation of "the
+surface opens beside its trigger", "the closed menu is not on screen", and "the filtered option is
+gone". Without it a Select opens unanchored and a filtered option stays visible, which is a broken
+component rather than an unstyled one.
 
 ## One stylesheet, or only what you use
 
-For prototypes, documents, and anything where request granularity does not matter, import
-everything:
+For prototypes, documents, and anything where request granularity does not matter, import the theme
+— it pulls in the two required tiers itself:
 
 ```js
-import '@timelessui/components/css/components.css'
+import '@timelessui/components/css/themes/atmosphere.css'
 ```
 
-For applications, import the shared tokens plus the exact component styles a route renders:
+For applications, import the required tiers plus the exact component a route renders:
 
 ```js
 import '@timelessui/components/css/tokens.css'
-import '@timelessui/components/css/button.css'
-import '@timelessui/components/css/dialog.css'
+import '@timelessui/components/css/core/button.css'
+import '@timelessui/components/css/core/dialog.css'
+import '@timelessui/components/css/themes/atmosphere/button.css'
+import '@timelessui/components/css/themes/atmosphere/dialog.css'
 ```
 
 Both paths produce the same public classes, custom properties, layers, and state selectors. The only
-difference is how much CSS reaches the browser. Each component page lists the stylesheets that
-component needs under **Styling**.
+difference is how much CSS reaches the browser. Each component page lists every stylesheet that
+component needs under **Styling**, core files included.
+
+There is no default theme. `themes/atmosphere.css` names the theme it loads, and a second theme
+would be a sibling of the same shape — `themes/<name>.css` beside `themes/<name>/`.
 
 ## Always import tokens first
 
-`tokens.css` declares the layer order that makes consumer overrides win:
+`tokens.css` declares the order of the three Timeless layers:
 
 ```css
 @layer ui.tokens, ui.components, ui.utilities;
 ```
 
-If a component stylesheet loads first, it establishes the order instead and `ui.tokens` ends up with
-the highest precedence — which is the opposite of what you want. `components.css` already imports
-tokens in the right order; when importing granularly, put `tokens.css` first.
+Layers are ordered by first encounter, so whichever stylesheet is parsed first gets the
+lower-priority layers. Load a component stylesheet before `tokens.css` and the order is established
+by that file instead, which is how a rule you wrote in `ui.utilities` ends up losing to a component.
+
+`themes/atmosphere.css` imports tokens first on your behalf. When importing granularly, put
+`tokens.css` first yourself.
+
+`tokens.css` also sets `color-scheme: light dark`, which is what makes `light-dark()` resolve to the
+branch the reader asked for. Drop it and every scheme-dependent token silently returns its light
+value.
 
 See [Theming](/docs/styling/theming/) for what those layers mean in practice and which tokens and
 component variables you can override.
 
-## Using components without Timeless CSS
+## Bringing your own theme
 
-CSS is optional. Every component keeps its public anatomy in your markup, so you can skip the
-stylesheets entirely and style the same classes, attributes, and parts with your own CSS or utility
-classes. [Theming](/docs/styling/theming/#styling-without-timeless-css) covers that path.
+The theme tier is genuinely optional, and replacing it is the supported path — for a design system
+of your own, for Tailwind, or for any utility-class or CSS-in-JS setup. Import the two required
+tiers and nothing else:
+
+```js
+import '@timelessui/components/css/tokens.css'
+import '@timelessui/components/css/core.css'
+```
+
+Every component is then positioned, structurally intact, and operable, with no appearance of ours:
+UA colours, no radius, no shadow, the browser's default face. Style the public anatomy with whatever
+you like — [Theming](/docs/styling/theming/#styling-without-the-atmosphere-theme) covers the
+selectors that are yours to target.
+
+A colour, radius, shadow, or type utility can never lose to Timeless on this path, and not by
+convention: core is forbidden from declaring any of those properties, and a build check proves it.
+The only properties core does declare are the behavioural ones — `display`, `overflow`, `position`,
+the `inset` family, `appearance` and friends — so those are the only conflicts possible, and they
+are conflicts you would be picking deliberately.
+
+<Aside type="caution" title="Tailwind v4: import Timeless first">
+  Tailwind v4 emits native cascade layers. Because layers are ordered by first encounter, importing
+  your Tailwind stylesheet before Timeless puts every Tailwind layer *below* `ui.components` — and
+  layer order beats specificity, so a `flex` or `grid` utility silently loses to core with no error
+  to explain it. Import Timeless first. Tailwind v3 emits unlayered rules and always wins, either
+  way.
+</Aside>
+
+Two things to expect on this path. Sizing stays in the theme, so a few components sit at their
+content size rather than a designed one — a Sheet panel is content-height instead of full-height
+until you give it a size. And core carries no affordances, so there is no hover highlight and no
+focus ring until you add them.

@@ -1,0 +1,26 @@
+/*
+ * Color Swatch's box, its scroll container, and forced-colors handling. A swatch showing a colour has
+ * to keep showing it in forced-colors mode, which is what `forced-color-adjust: none` is for.
+ */
+
+@layer ui.components {
+  .ui-color-swatch {
+    display: grid;
+  }
+
+  .ui-color-swatch [data-ui-part~='chip'] {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ui-color-swatch
+    :where([data-ui-part~='label'], [data-ui-part~='value'], [data-ui-part~='warning']) {
+    overflow: hidden;
+  }
+
+  @media (forced-colors: active) {
+    .ui-color-swatch [data-ui-part~='chip'] {
+      forced-color-adjust: none;
+    }
+  }
+}

@@ -1,0 +1,67 @@
+@layer ui.components {
+  .ui-skeleton {
+    inline-size: var(--ui-skeleton-width, 100%);
+    block-size: var(--ui-skeleton-height, 1rem);
+    max-inline-size: 100%;
+    border-radius: var(--ui-radius-sm);
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        color-mix(in oklab, var(--ui-bg-surface-raised), var(--ui-fg) 8%),
+        transparent
+      ),
+      color-mix(in oklab, var(--ui-bg-surface-raised), var(--ui-fg) 5%);
+    background-position: 200% 0;
+    background-size: 200% 100%;
+    animation: ui-skeleton-shimmer 1.4s var(--ui-ease-standard) infinite;
+  }
+
+  .ui-skeleton:where([data-ui-size='sm']) {
+    --ui-skeleton-height: 0.75rem;
+  }
+
+  .ui-skeleton:where([data-ui-size='lg']) {
+    --ui-skeleton-height: 1.5rem;
+  }
+
+  .ui-skeleton:where([data-ui-shape='circle']) {
+    --ui-skeleton-width: var(--ui-skeleton-height, 2.5rem);
+    --ui-skeleton-height: 2.5rem;
+    border-radius: var(--ui-radius-pill);
+  }
+
+  .ui-skeleton:where([data-ui-shape='media']) {
+    --ui-skeleton-height: 8rem;
+    border-radius: var(--ui-radius-lg);
+  }
+
+  .ui-skeleton:where([data-ui-shape='media'][data-ui-size='sm']) {
+    --ui-skeleton-height: 5.5rem;
+  }
+
+  .ui-skeleton:where([data-ui-width='short']) {
+    --ui-skeleton-width: 42%;
+  }
+
+  .ui-skeleton:where([data-ui-width='medium']) {
+    --ui-skeleton-width: 68%;
+  }
+
+  @keyframes ui-skeleton-shimmer {
+    from {
+      background-position: 200% 0;
+    }
+
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-skeleton {
+      animation: none;
+      background-position: 0 0;
+    }
+  }
+}

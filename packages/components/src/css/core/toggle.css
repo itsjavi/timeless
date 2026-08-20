@@ -1,0 +1,9 @@
+/*
+ * Toggle's box.
+ */
+
+@layer ui.components {
+  ui-toggle-group {
+    display: inline-flex;
+  }
+}

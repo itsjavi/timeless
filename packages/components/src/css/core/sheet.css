@@ -1,0 +1,98 @@
+/*
+ * Sheet: the edge-anchored panel, and the axis its swipe gesture runs along.
+ *
+ * `translate` here is placement and direct manipulation, not motion. JavaScript writes one signed
+ * length into `--ui-sheet-drag-offset` and nothing else; which axis that length moves is decided here,
+ * per position, because only the stylesheet knows which edge the panel is anchored to. The spring-back
+ * `transition` and the entry `animation` that read the same property are motion, and stay in the theme
+ * — dropping them leaves the gesture working without a slide.
+ *
+ * The panel is a column so the header and footer keep their height and the body takes what is left.
+ * The scrolling `> section` used to be `block-size: 100%`, which made the panel's content taller than
+ * the panel itself and clipped the footer out of reach — visible as soon as the drag handle added
+ * anything above it.
+ */
+
+@layer ui.components {
+  ui-sheet {
+    display: contents;
+  }
+
+  ui-sheet > dialog {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    inset-block: 0;
+    inset-inline: auto 0;
+    translate: var(--ui-sheet-drag-offset, 0px) 0;
+    overflow: hidden;
+  }
+
+  ui-sheet > dialog:not([open]) {
+    display: none;
+  }
+
+  ui-sheet[position='left'] > dialog {
+    inset-inline: 0 auto;
+  }
+
+  /* A top or bottom sheet drags along the block axis instead. */
+  ui-sheet[position='top'] > dialog,
+  ui-sheet[position='bottom'] > dialog {
+    translate: 0 var(--ui-sheet-drag-offset, 0px);
+  }
+
+  ui-sheet[position='top'] > dialog {
+    inset-block: 0 auto;
+  }
+
+  ui-sheet[position='bottom'] > dialog {
+    inset-block: auto 0;
+  }
+
+  /*
+   * The grab affordance, pinned to the edge of the panel that faces the page — the edge you pull away
+   * from to close. It is positioned rather than laid out, so adding one shifts no content.
+   *
+   * It exists because the gesture yields to anything that can scroll: on a sheet whose body scrolls
+   * this is the one place a drag always starts. It is also the only place a mouse starts one at all,
+   * since a mouse-down in the body is far more likely to be a text selection. `touch-action: none` is
+   * what stops the browser claiming the same drag for a scroll.
+   */
+  ui-sheet > dialog [data-ui-part~='drag-handle'] {
+    position: absolute;
+    z-index: 1;
+    display: grid;
+    inset-block: 0;
+    inset-inline: 0 auto;
+    touch-action: none;
+  }
+
+  ui-sheet[position='left'] > dialog [data-ui-part~='drag-handle'] {
+    inset-inline: auto 0;
+  }
+
+  ui-sheet[position='top'] > dialog [data-ui-part~='drag-handle'],
+  ui-sheet[position='bottom'] > dialog [data-ui-part~='drag-handle'] {
+    inset-block: 0 auto;
+    inset-inline: 0;
+  }
+
+  ui-sheet[position='top'] > dialog [data-ui-part~='drag-handle'] {
+    inset-block: auto 0;
+  }
+
+  /* The header and footer are boxes; their columns, wrapping, and gaps are the theme's. */
+  ui-sheet > dialog > header {
+    display: grid;
+  }
+
+  ui-sheet > dialog > footer {
+    display: flex;
+  }
+
+  /* The body is the scroll container; the header and footer hold their height. */
+  ui-sheet > dialog > section {
+    overflow: auto;
+  }
+}

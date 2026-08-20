@@ -1,0 +1,78 @@
+/*
+ * Toaster and Toast: the fixed stack, and what makes it clickable through.
+ *
+ * `pointer-events: none` on the region with `auto` back on each toast is the whole reason a toast
+ * stack does not block the page it floats over. Without it the container swallows every click in a
+ * 24rem column down the side of the viewport, whether a toast is showing or not — so it is core, and
+ * one of the clearest cases in the library of a declaration that looks decorative and is not.
+ *
+ * `translate` is placement for the centred placements, not motion.
+ */
+
+@layer ui.components {
+  ui-toaster {
+    position: fixed;
+    inset-block-start: auto;
+    inset-block-end: var(--ui-space-5, 1rem);
+    inset-inline-start: auto;
+    inset-inline-end: var(--ui-space-5, 1rem);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    pointer-events: none;
+    translate: 0;
+  }
+
+  ui-toaster:where([placement='top-start']) {
+    inset-block-start: var(--ui-space-5, 1rem);
+    inset-block-end: auto;
+    inset-inline-end: auto;
+    inset-inline-start: var(--ui-space-5, 1rem);
+  }
+
+  ui-toaster:where([placement='top-center']) {
+    inset-block-start: var(--ui-space-5, 1rem);
+    inset-block-end: auto;
+    inset-inline-start: 50%;
+    inset-inline-end: auto;
+    translate: -50% 0;
+  }
+
+  ui-toaster:where([placement='top-end']) {
+    inset-block-start: var(--ui-space-5, 1rem);
+    inset-block-end: auto;
+  }
+
+  ui-toaster:where([placement='bottom-start']) {
+    inset-inline-end: auto;
+    inset-inline-start: var(--ui-space-5, 1rem);
+  }
+
+  ui-toaster:where([placement='bottom-center']) {
+    inset-inline-start: 50%;
+    inset-inline-end: auto;
+    translate: -50% 0;
+  }
+
+  ui-toast {
+    display: grid;
+    pointer-events: auto;
+  }
+
+  ui-toast:state(--closed) {
+    display: none;
+  }
+
+  ui-toast :where([data-ui-part~='content']) {
+    display: grid;
+  }
+
+  ui-toast :where([data-ui-part~='close']) {
+    appearance: none;
+    display: inline-grid;
+  }
+
+  ui-toast :where([data-ui-part~='close']) svg {
+    display: block;
+  }
+}

@@ -1,0 +1,22 @@
+/*
+ * Table's boxes, its scroll container, and `border-collapse`, which decides whether the table has one
+ * border grid or one per cell — a structural choice the theme's border colours then paint.
+ */
+
+@layer ui.components {
+  .ui-table {
+    overflow: auto;
+  }
+
+  .ui-table > table {
+    border-collapse: separate;
+  }
+
+  .ui-table :where([data-ui-part~='caption']) {
+    display: block;
+  }
+
+  .ui-table :where([data-ui-part~='description']) {
+    display: block;
+  }
+}

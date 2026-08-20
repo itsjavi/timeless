@@ -1,0 +1,37 @@
+/*
+ * Context Menu, which is the one surface in the library with no anchor element to position against,
+ * and therefore the one component whose placement is entirely core — there is no theme half.
+ *
+ * A pointer is not an element, so there is nothing to give an `anchor-name` to. The alternative would
+ * be generating an invisible zero-size element at the coordinates and anchoring to that — and a
+ * generated element that is optional, documented, and stylable through a stable public API is exactly
+ * what AGENTS.md permits, which an invisible positioning shim is none of. So the coordinates arrive
+ * as two custom properties and every decision about what they mean is made here.
+ *
+ * The clamp is the interesting part. Percentages in `translate` resolve against the element's own
+ * size, which is the only way CSS can reason about how wide or tall the surface turned out to be:
+ * `min(0px, …)` shifts the surface back inside the viewport by exactly its overflow and by nothing
+ * when it already fits. Near the bottom edge that leaves the menu bottom-aligned to the viewport
+ * rather than flipped above the pointer — the surface stays adjacent to where the click landed, and a
+ * menu taller than the space below would need clamping after a flip anyway.
+ */
+
+@layer ui.components {
+  ui-context-menu {
+    display: contents;
+  }
+
+  ui-context-menu > :where(ui-menu[popover], [role='menu'][popover]):popover-open {
+    position: fixed;
+    inset: auto;
+    left: var(--ui-context-menu-x, 0px);
+    top: var(--ui-context-menu-y, 0px);
+    translate: min(
+        0px,
+        100dvw - var(--ui-context-menu-inset, 0.5rem) - var(--ui-context-menu-x, 0px) - 100%
+      )
+      min(0px, 100dvh - var(--ui-context-menu-inset, 0.5rem) - var(--ui-context-menu-y, 0px) - 100%);
+    position-area: none;
+    position-try-fallbacks: none;
+  }
+}

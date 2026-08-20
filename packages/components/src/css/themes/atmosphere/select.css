@@ -1,0 +1,23 @@
+/*
+ * Select: the trigger.
+ *
+ * The popover surface, the option row, and everything else inside the surface are shared with
+ * Listbox and Combobox and live in `options.css`. Anchoring, the fallback reset, and
+ * `position-try-fallbacks` live in `core/floating.css`.
+ */
+
+@layer ui.components {
+  ui-select {
+    gap: var(--ui-space-2);
+    min-inline-size: min(100%, 14rem);
+  }
+
+  ui-select [data-ui-part~='trigger'] {
+    justify-content: space-between;
+  }
+
+  ui-select [data-ui-part~='value'] {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

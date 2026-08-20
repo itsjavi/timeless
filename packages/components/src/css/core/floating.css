@@ -1,0 +1,66 @@
+/*
+ * Anchoring. The whole of `floating.css` is core, because none of it is a look — it is the
+ * implementation of "the surface opens beside its trigger". Without this file Select, Combobox, Menu,
+ * Menu Button, Hover Card, and Popover all open unanchored, which is the defect that opened
+ * milestone 028: the documentation said CSS was optional while this file was load-bearing.
+ *
+ * Every rule selects a private runtime hook rather than a component root, because the set of
+ * components that anchor is a runtime fact, not a selector: `syncFloatingAnchor` marks whichever
+ * trigger and surface a component handed it. That also puts the three states — anchored, UA default,
+ * JS fallback — in one file in one order, so which one wins never depends on the order a consumer
+ * happens to import stylesheets in.
+ *
+ * Each component's `core/<component>.css` adds only its own `position-area` on top of this. The gap
+ * is `margin`, which is spacing rather than behavior, so it stays in the theme.
+ */
+
+@layer ui.components {
+  /*
+   * `--ui-floating-anchor` is a per-instance name written by `syncFloatingAnchor`, which is how two
+   * surfaces on one page avoid capturing each other's anchor. `anchor-scope` is the declarative form
+   * of the same idea, but it lands later than anchor positioning itself in every engine, so adopting
+   * it would narrow support for no behavioral gain.
+   */
+  [data-ui-internal-floating-anchor] {
+    anchor-name: var(--ui-floating-anchor);
+  }
+
+  [data-ui-internal-floating-content] {
+    position-anchor: var(--ui-floating-anchor);
+  }
+
+  @supports (anchor-name: --ui-anchor) {
+    [data-ui-internal-floating-content] {
+      inset: auto;
+      /* Positioning is `position-area` and `margin`; nothing anchored is placed with a transform. */
+      translate: none;
+      position-try-fallbacks:
+        flip-block,
+        flip-inline,
+        flip-block flip-inline;
+    }
+  }
+
+  /*
+   * The JavaScript fallback, for a browser with the Popover API but without anchor positioning.
+   * `applyFloatingPosition` stamps this hook and the two coordinates only when support is missing,
+   * so in a supporting browser this block never matches and no private hook is written.
+   *
+   * `:popover-open` raises the specificity to 0,2,0, above the 0,1,0 UA default each component
+   * declares under `@supports not`, so this wins wherever it is imported. Milestone 028 tested
+   * whether cascade-layer order could carry that instead and kept the selector; see that milestone's
+   * RESULTS.md for the measurements. The pseudo-class is also true rather than merely convenient —
+   * the coordinates it reads are only meaningful while the surface is open.
+   */
+  [data-ui-internal-floating='fallback']:popover-open {
+    position: fixed;
+    inset: auto;
+    left: var(--ui-floating-left);
+    top: var(--ui-floating-top);
+    right: auto;
+    bottom: auto;
+    translate: 0 0;
+    position-area: none;
+    position-try-fallbacks: none;
+  }
+}

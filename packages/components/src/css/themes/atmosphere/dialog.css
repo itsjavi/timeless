@@ -1,0 +1,51 @@
+@layer ui.components {
+  ui-dialog > dialog {
+    inline-size: min(34rem, calc(100vw - 2rem));
+    max-block-size: min(42rem, calc(100vh - 2rem));
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius-lg);
+    padding: 0;
+    background: var(--ui-bg-surface);
+    box-shadow: var(--ui-shadow-floating);
+    color: var(--ui-fg);
+  }
+
+  ui-dialog > dialog::backdrop {
+    background: light-dark(rgb(0 0 0 / 28%), rgb(0 0 0 / 56%));
+  }
+
+  ui-dialog > dialog > header {
+    gap: var(--ui-space-2);
+    border-block-end: 1px solid var(--ui-line);
+    padding: var(--ui-space-5);
+  }
+
+  ui-dialog > dialog > section {
+    padding: var(--ui-space-5);
+    color: var(--ui-fg-muted);
+    line-height: 1.55;
+  }
+
+  ui-dialog > dialog > footer {
+    flex-wrap: wrap;
+    gap: var(--ui-space-3);
+    justify-content: end;
+    border-block-start: 1px solid var(--ui-line);
+    padding: var(--ui-space-4) var(--ui-space-5);
+    background: var(--ui-bg-surface-subtle);
+  }
+
+  ui-dialog > dialog > header > :where(h1, h2, h3) {
+    margin: 0;
+    color: var(--ui-fg);
+    font-size: 1rem;
+    font-weight: 750;
+    line-height: 1.25;
+  }
+
+  ui-dialog > dialog > header > p {
+    margin: 0;
+    color: var(--ui-fg-muted);
+    line-height: 1.5;
+  }
+}

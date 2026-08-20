@@ -1,0 +1,81 @@
+@layer ui.components {
+  .ui-table {
+    box-sizing: border-box;
+    min-inline-size: 0;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius-lg);
+    background: var(--ui-bg-surface);
+  }
+
+  .ui-table:focus-visible {
+    outline: 2px solid var(--ui-focus);
+    outline-offset: 3px;
+  }
+
+  .ui-table > table {
+    inline-size: max(100%, var(--ui-table-min-inline-size, 34rem));
+    border-spacing: 0;
+    color: var(--ui-fg);
+    font-size: 0.9375rem;
+    line-height: 1.4;
+  }
+
+  .ui-table:where([data-ui-density='compact']) > table {
+    font-size: 0.875rem;
+  }
+
+  .ui-table caption {
+    padding: var(--ui-space-4) var(--ui-space-5);
+    text-align: start;
+  }
+
+  .ui-table :where([data-ui-part~='caption']) {
+    color: var(--ui-fg);
+    font-weight: 750;
+  }
+
+  .ui-table :where([data-ui-part~='description']) {
+    margin-block-start: var(--ui-space-1);
+    color: var(--ui-fg-muted);
+    font-size: 0.875rem;
+  }
+
+  .ui-table :where(th, td) {
+    padding: 0.75rem var(--ui-space-5);
+    border-block-start: 1px solid var(--ui-line);
+    text-align: start;
+    vertical-align: middle;
+  }
+
+  .ui-table:where([data-ui-density='compact']) :where(th, td) {
+    padding-block: var(--ui-space-3);
+  }
+
+  .ui-table thead th {
+    background: var(--ui-bg-surface-raised);
+    color: var(--ui-fg-muted);
+    font-size: 0.8125rem;
+    font-weight: 750;
+  }
+
+  .ui-table tbody th {
+    color: var(--ui-fg);
+    font-weight: 700;
+  }
+
+  .ui-table tbody tr:hover {
+    background: var(--ui-accent-soft);
+  }
+
+  .ui-table :where([data-ui-align='end']) {
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+
+  .ui-table :where([data-ui-part~='empty']) {
+    color: var(--ui-fg-muted);
+    text-align: center;
+  }
+}

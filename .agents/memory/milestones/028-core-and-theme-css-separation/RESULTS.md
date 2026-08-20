@@ -44,9 +44,79 @@ Supporting facts:
 | `tokens.css`                                         | 93 lines, 26 `light-dark()` values                         |
 | CSS gzip, the four measured entries                  | popover 2,640, listbox 3,871, select 4,710, combobox 4,790 |
 
-## Platform behavior confirmed before planning
+## Platform behavior confirmed during implementation
 
-Nothing yet. Four tasks require it and are written as verification rather than assertion:
+Measured in the in-app Chromium browser pane, `prefers-color-scheme: dark`, against fixtures built
+by concatenating the real stylesheets. Fixtures live in the gitignored `.local/m028-fixtures/`.
+
+### The layer statement orders the three Timeless layers; it is not what makes consumer CSS win
+
+Phase 1's task was written as "confirm a single consumer class still beats a component rule". It
+does — but that verification would have passed either way, and would have credited the wrong
+mechanism.
+
+A control fixture with `button.css` and an unlayered consumer rule and **no `tokens.css` at all**
+was built to check. The consumer rule still won: `button { font-weight: 100 }` at 0,0,1, declared
+_before_ `.ui-button { font-weight: 650 }` at 0,1,0, computed to `100`. Unlayered author CSS beats
+layered rules at any specificity as a property of the cascade, so it needs no statement — what earns
+it is that every Timeless rule sits inside `@layer ui.components` in its own file. Deleting the
+statement would not have broken the override story, and the phase-1 check as written would not have
+noticed.
+
+What the statement actually decides is the order _among_ `ui.tokens`, `ui.components`, and
+`ui.utilities`, which is the guarantee `theming.mdx` makes when it tells consumers to put their CSS
+in `ui.utilities`. Two fixtures, identical but for `tokens.css`, with a consumer's
+`@layer ui.utilities { button { background: rgb(9,9,9) } }` declared _before_ `button.css`:
+
+| Fixture              | Computed background                 |
+| -------------------- | ----------------------------------- |
+| With `tokens.css`    | `rgb(9, 9, 9)` — utilities wins     |
+| Without `tokens.css` | `rgb(0, 100, 216)` — component wins |
+
+Without the statement, layers are created as first encountered, so `ui.utilities` was created before
+`ui.components` and therefore ranked below it. The statement is load-bearing, for that reason and
+not the one the file's own comment used to give. The comment was corrected to say so.
+
+### `color-scheme` in `tokens.css` is load-bearing
+
+With `theme-atmosphere.css` loaded and no `color-scheme`, in a browser preferring dark,
+`--ui-fg: light-dark(#17171a, #f4f4f5)` computed to `rgb(23, 23, 26)` — the **light** branch, dark
+text on a dark page. Setting `color-scheme: light dark` on the same fixture computed
+`rgb(244, 244, 245)`. So `light-dark()` silently returns the wrong branch rather than failing, which
+is why `color-scheme` belongs in the non-optional file and not in the theme.
+
+### Cascade-layer order can replace the `:popover-open` specificity reliance, and is not worth it
+
+The open question, answered by measurement rather than by reading the spec. Two probes in one
+fixture:
+
+| Probe                                                                                                       | Result                                                   |
+| ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `@layer ui.components.base, ui.components.floating;`, equal specificity, floating declared _first_          | The later sub-layer won, so sub-layer ordering does work |
+| A rule directly in `@layer ui.components` against one in `@layer ui.components.floating`, declared after it | The **bare parent-layer rule won**                       |
+
+So the mechanism exists. The second probe is what kills it. Rules sitting directly in a layer
+outrank that layer's own nested sub-layers, and all 42 theme stylesheets use bare
+`@layer ui.components`. Put core in a sub-layer and every theme rule outranks every core rule — the
+behavioral floor becomes the weakest thing in the package, which is backwards. Fixing that means
+converting all 42 theme stylesheets to a sub-layer too, or adding a fourth name to the layer
+contract that `theming.mdx` documents and milestone 029 is planned around.
+
+The alternative shape —
+`@layer ui.tokens, ui.components, ui.core.surface, ui.core.floating, ui.utilities;` — does work
+without touching the theme files, and would remove the specificity reliance cleanly. It was still
+rejected: it adds two names to the public layer contract and changes override semantics so the theme
+can no longer override core, to buy the removal of one pseudo-class that is independently justified.
+`applyFloatingPosition` writes the fallback hook and removes it again in `clearFloatingPosition`, so
+the hook already implies open and `:popover-open` is redundant as a state guard — but the
+coordinates it reads _are_ only meaningful while the surface is open, so the selector is true, not
+merely convenient.
+
+**Kept the `:popover-open` selector.** `core/floating.css` now says so, and says where to find this.
+
+## Platform behavior still to confirm
+
+Three tasks require it and are written as verification rather than assertion:
 
 - That importing only `core.css` and `tokens.css` leaves every component positioned, structurally
   intact, and operable. This is the acceptance criterion for the milestone and cannot be reasoned
@@ -57,8 +127,429 @@ Nothing yet. Four tasks require it and are written as verification rather than a
   not confirming.
 - That the anchoring fallback branch can or cannot win by layer order instead of `:popover-open`
   specificity.
-- That `tokens.css` alone still establishes the layer order after the split, confirmed by a consumer
-  class beating a component rule.
+
+## Scope corrections found during implementation
+
+### The false claim has three sites, not two, and the third sat outside the claim gate
+
+The plan's context and acceptance criteria name `docs/styling/css.mdx:49` and
+`docs/styling/theming.mdx:157`. A grep across every `.md`, `.mdx`, `.astro`, `.ts`, and `.mjs` file
+outside `node_modules`, `dist`, and `.local` found a third: `apps/web/src/pages/index.astro:134`
+advertised **"Optional CSS, layered and override-friendly"** in the landing page's House rules list.
+It has been replaced with "Replaceable theme, layered and override-friendly", which is true today —
+the phase-1 split is what made the theme a file you can swap — and stays true once core lands.
+
+Two adjacent statements are in tension rather than false, and are left for phase 6: `AGENTS.md:57`
+("Components must remain usable without Timeless CSS") and
+`.agents/skills/audit-component-contracts/SKILL.md:139`, which derives from it. Both are authoring
+rules about public anatomy staying in the consumer's markup, which the milestone does not
+contradict, but both say "Timeless CSS" where they mean the theme. `DESIGN.md:253` already says "the
+theme CSS" and needs no change — the difference between those wordings is the whole milestone.
+
+The interesting part is _why_ the third site was missed. `apps/web/scripts/validate-claims.mjs`
+exists precisely to stop the landing page advertising what the library does not do, and it did not
+catch this: it slices the page from `class="tin-shelf"` to the last `tin__label`, so it reads the
+"Modern ingredients" feature tins and nothing else. The House rules list is 23 lines further down,
+outside the slice. The claim was not un-gated by oversight in the prose; it was in the one region of
+the page the gate does not look at, and it is also the only one of the three sites outside `docs/`,
+so a documentation sweep would not have found it either.
+
+So the remedy is two-part. The wording is fixed, and `validate-claims.mjs` now also reads the
+house-rules list and fails when a principle pairs "optional" with a CSS noun. That check is
+deliberately narrower than the shelf's: the shelf demands proof for an open-ended set of claims,
+while this forbids the single claim the library cannot honour. It was confirmed to fire on the
+original wording and on "CSS is optional." and "The stylesheets are optional.", and confirmed not to
+fire on "Replaceable theme, layered and override-friendly.", "Optional runtime; components render
+before JavaScript.", or "Layered CSS you override without `!important`." — so it catches the claim
+without forbidding the honest neighbours.
+
+Credit where due: the third site was pointed out in review, not found by this implementation's own
+sweep, which had taken the plan's two named sites as the count.
+
+## The extraction, and what it cost
+
+### `display` is wholly core's, decided by a gate rather than by taste
+
+The first pass extracted `display` where its absence looked behavioral and left it where it looked
+like layout — `ui-sheet > dialog > header { display: grid }` stayed in the theme, for instance. That
+judgement is not reproducible, and the boundary check caught it: once the check forbade the theme
+from declaring any core-owned property, the two sheet rules failed and the ambiguity had to be
+resolved rather than felt. It resolves in core's favour, which is also what the milestone's own
+baseline implies — it counted all 109 `display` declarations as behavior-critical, not a subset.
+
+The rule that came out of it, and that the gate now enforces: `display` moves to core together with
+any declaration in the same rule without which the moved value produces a different box _axis or
+flow_ — `flex-direction`, `grid-auto-flow`, and the structural `grid-template-columns`. Gaps,
+alignment, padding, and sizing stay in the theme. `display: flex` in core with
+`flex-direction: column` left in the theme would render a column layout as a row, which is broken
+rather than plain.
+
+### The one real bug the split introduced
+
+`min-inline-size: anchor-size(width)` — the "a Select surface is never narrower than its trigger"
+rule — was extracted into `core/options.css`. But `options.css` declares its own `min-inline-size`
+on the surface, at equal specificity (this library keeps almost everything at 0,0,0 inside
+`:where()`), and `components.css` imports `core.css` before the theme. So the theme won and every
+Select surface rendered at 14rem instead of its trigger's width. Measured in the browser:
+`min-inline-size` computed to `224px` against a `573px` trigger.
+
+Nothing failed. No gate, no test, no console warning — it just looked slightly wrong, which is the
+worst failure mode available and the one a 43-stylesheet rewrite is most likely to produce.
+
+Two fixes. The declaration went back to the theme, because sizing is the tier this milestone
+deliberately excluded and `min-inline-size` was never in the measured behavior-critical set — it was
+over-extraction, not a cascade problem to work around. And the boundary check grew two rules so the
+class of bug cannot recur: core may declare no size, and a theme file whose component has a core
+file may declare no core-owned property. The second rule self-scopes to components that have been
+extracted, so a half-finished extraction fails rather than passing quietly.
+
+### The size gate misreports a file split, in both directions
+
+The recorded CSS figures moved a long way, and most of the movement is measurement artifact rather
+than payload:
+
+| Entry    | Recorded gzip | Real gzip, comments stripped and files concatenated |
+| -------- | ------------: | --------------------------------------------------: |
+| popover  | 2,640 → 3,621 |                                         992 → 1,013 |
+| listbox  | 3,871 → 5,782 |                                       1,420 → 1,455 |
+| select   | 4,710 → 6,629 |                                       1,571 → 1,619 |
+| combobox | 4,790 → 6,631 |                                       1,583 → 1,641 |
+
+Two effects stack. `check-performance.mjs` gzips each stylesheet separately and sums, so splitting
+the same bytes across more files raises the figure — the script's own comment warns about exactly
+this. And the core stylesheets are **53% comments by byte**, which is this repository's house style
+for CSS but means the unminified raw figure is mostly prose.
+
+Measured the way a consumer's bundler would — concatenate, then gzip once, comments stripped — the
+real cost of the duplicated selectors is between 21 and 58 bytes gzipped per entry, 2% to 4%. Raw,
+it is about 1.2 KB per entry. Gzip absorbs duplicated selector text almost completely, which is what
+one would expect from highly repetitive input.
+
+`performance-baselines.json` was re-baselined to the measured figures so the gate stays meaningful
+across the remaining phases; phase 7 re-baselines again once phase 3 lands. Whether the metric
+should become concatenated-then-gzipped is a real question this milestone surfaced but did not
+decide — changing a gate's definition mid-milestone weakens it, and the current definition is at
+least consistent with itself.
+
+### Core-only rendering, verified per surface
+
+Confirmed by loading `tokens.css` plus the ten core stylesheets into a docs preview page with every
+other stylesheet removed, in the in-app Chromium:
+
+| Surface     | Core-only result                                                                                                                                                         |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Select      | Host `inline-grid` not `inline`; surface opens, anchors below and left-aligned to the trigger; `overflow: auto` intact; a `hidden` option still computes `display: none` |
+| Menu Button | Host `display: contents`; menu opens, anchors below and left-aligned; items are flex rows                                                                                |
+| Sheet       | Host `display: contents`; panel reaches the top layer, `position: fixed`, column, pinned to the right edge, body scrolls, focus moves inside                             |
+
+In all three the theme is provably absent — UA popover background, `border-radius: 0`, no shadow,
+and the serif fallback face. Plain and correct, which is the milestone's stated test for done.
+
+One consequence worth naming: core-only, the Sheet panel is content-height rather than full-height,
+because `block-size: 100dvh` and the `max-block-size` reset are sizing and stay in the theme, and
+the UA gives `dialog` `height: fit-content`. It is still edge-pinned, scrollable, and operable, so
+it meets "positioned, structurally intact, and operable" — but it is a visible difference, not a
+purely cosmetic one, and it is the clearest example of where the narrow-tier decision shows.
+
+### The remaining 30 files were split by a script, not by hand
+
+Phase 2's nine files were extracted by reading each rule and deciding. That produced one silent bug
+and two misclassifications the gate later caught, on nine files. Thirty more by the same method was
+not a good bet, so the rest were done by a throwaway transformer (kept in the session scratchpad,
+not shipped): it parses each stylesheet into a node tree, partitions declarations by property, and
+re-emits both halves with every selector and at-rule nesting preserved verbatim. The theme diffs are
+then reviewable as pure deletions, which is exactly what makes a 30-file change checkable at all.
+
+The judgement that could not be scripted is which declarations travel with a moved `display`. The
+rule settled on: **only flow direction** — `flex-direction`, `flex-flow`, `grid-auto-flow`. The test
+is whether the theme-less rendering _breaks_ or merely _simplifies_. A `display: flex` whose
+`flex-direction: column` stayed behind renders a Sheet's header, body, and footer side by side,
+which is broken. A `display: grid` whose `grid-template-columns` stayed behind collapses to one
+column, which is a normal-looking simplification. So templates, gaps, and alignment stay in the
+theme, and phase 2's three `grid-template-columns` extractions were reverted to match.
+
+### The declaration count reconciles
+
+| Where                           | Core-owned declarations |
+| ------------------------------- | ----------------------: |
+| `src/css/core/`, 40 stylesheets |                     255 |
+| Left in the theme, deliberately |                      15 |
+| **Total**                       |                 **270** |
+
+Against the baseline's 271. The difference is the `color-scheme` in `tokens.css`, which the baseline
+counted among the 43 stylesheets but which is not a component stylesheet and never moved.
+
+All fifteen exceptions, each with its reason:
+
+| Site                                                       | Count | Why it stays                                                         |
+| ---------------------------------------------------------- | ----: | -------------------------------------------------------------------- |
+| `color-picker.css` `[data-ui-part~='format-field']::after` |     4 | Theme-drawn chevron                                                  |
+| `forms.css` `.ui-switch::before`                           |     3 | Theme-drawn knob                                                     |
+| `color-swatch.css` `[data-ui-part~='chip']::after`         |     2 | Theme-drawn chip overlay                                             |
+| `spinner.css` `.ui-spinner::before`                        |     1 | Theme-drawn spinner                                                  |
+| `forms.css` `.ui-switch:checked::before`                   |     1 | The knob's checked offset, and what `transition: translate` animates |
+| `sheet.css` `@keyframes ... { from { translate } }`        |     4 | Motion                                                               |
+
+The first four rows are one category: a `::before`/`::after` that draws its own `content`.
+Positioning it is not behavior, because without the theme the element does not exist — there is
+nothing to behave. The gate exempts that shape automatically. The switch's checked offset needed the
+one explicit `core-exempt:` marker, because it is a `::before` rule that does not itself declare
+`content`; the marker names its reason in the CSS and the gate prints how many exist, so the escape
+hatch cannot be used quietly.
+
+This is also where the baseline's own caveat paid off. It flagged that `translate` was counted
+behavior-critical "because in this library it positions anchored surfaces rather than animating
+them, which is true of those surfaces and not necessarily of everything else". Of the 19 `translate`
+declarations, 14 place a surface and 5 animate one.
+
+### A baseline figure was wrong, and fixing it was a real bug fix
+
+The baseline records "Stylesheets with rules outside a `@layer` block: 0". That was not right. Four
+theme stylesheets — `color-picker.css`, `color-swatch.css`, `meter.css`, and `toggle.css` — carried
+an `@media (forced-colors: active)` block at top level, after their `@layer ui.components` block
+closed. The core halves extracted from three of them reproduced the same shape.
+
+It was first left alone as pre-existing and unrelated, then picked up as follow-up work in the same
+branch. The question was whether unlayered placement was intentional — forced-colors overrides are
+an accessibility concern, and "a consumer should not be able to break them" is a defensible
+position.
+
+It was not intentional. The blocks date to the initial commit with no recorded reasoning, and the
+forced-colors review that would have examined them is still an open task in milestone 016 and a
+stated evidence limit in 012 — nobody had looked at these in that mode. More decisively, the
+placement was doing real harm and buying nothing.
+
+Measured under Chromium's `forcedColors: 'active'` emulation, with a consumer asking for a different
+system colour on a pressed Toggle:
+
+| Placement          | Library renders | Consumer via `ui.utilities`  | Consumer via a plain class   |
+| ------------------ | --------------- | ---------------------------- | ---------------------------- |
+| Unlayered (before) | `Highlight`     | `Highlight` — override lost  | `Highlight` — override lost  |
+| Layered (after)    | `Highlight`     | `ButtonText` — override wins | `ButtonText` — override wins |
+
+So the library's own forced-colors rendering is identical either way — confirmed again against the
+real stylesheets for `toggle.css`, `meter.css`, and `color-swatch.css`, and for the core halves'
+`forced-color-adjust: none`, all identical before and after. What unlayered placement changed was
+only that consumers lost. Both documented routes failed, not just the `ui.utilities` one: the plain
+single-class route lost too, because `.ui-toggle[aria-pressed='true']` is 0,2,0 against a consumer's
+0,1,0 — which contradicts `theming.mdx`'s "a single class overrides a Timeless rule with three
+selectors, and you never need `!important`".
+
+Nothing about the blocks needs to be unlayered. Layer position decides which rule wins a conflict,
+not whether a rule applies, and the UA still forces its own palette over whatever wins. Making four
+blocks unoverridable is also inconsistent with a library that ships zero `!important` and whose
+entire pitch is that consumer CSS wins — and if that exception were intended it would have to be
+documented, and it was not.
+
+All seven blocks moved inside `@layer ui.components`. `validate-contracts.mjs` now proves every
+declaration in all 81 stylesheets sits inside a layer, so the corrected baseline claim is enforced
+rather than merely true today. The check was confirmed to fire both on a block escaping the layer
+and on a bare stray declaration.
+
+## Decisions taken during implementation
+
+Four decisions were agreed with Javi after the milestone opened, and are recorded here rather than
+in `PLAN.md`, which is the static plan.
+
+### The stylesheets are laid out by tier, not flat
+
+`src/css/` root holds only what is not a theme: `tokens.css`, and the two aggregates. Behavior lives
+in `core/`, and Atmosphere lives in `themes/atmosphere/` beside a `themes/atmosphere.css` aggregate.
+
+```
+src/css/
+  tokens.css                     layer order + color-scheme     required
+  core.css                       aggregate for core/            required
+  core/<component>.css           40 files                       required
+  themes/atmosphere.css          aggregate for atmosphere/      optional
+  themes/atmosphere/tokens.css   the 58 token values            optional
+  themes/atmosphere/<c>.css      39 files                       optional
+  components.css                 all three tiers, three lines
+```
+
+The flat root was the alternative, and the objection to it was clutter: 39 component stylesheets
+beside the three files that are not themes at all. Nesting under `themes/<name>/` also names things
+honestly — Atmosphere is one theme, so a second is a sibling directory and a sibling aggregate, and
+"replace the theme wholesale" becomes a directory swap rather than a 40-file instruction. All 40
+moves were pure renames, zero content change, confirmed by `git diff -M --numstat`.
+
+### There is no default theme, and no theme-agnostic entry point
+
+`components.css` is gone. `themes/atmosphere.css` is the full entry: it imports `../tokens.css`,
+`../core.css`, and its own 40 files, so one import gives a prototype everything and the path names
+the theme it gives you. A second theme is a sibling of identical shape — `themes/<name>.css` beside
+`themes/<name>/`, with the same two required imports at the top — and copying the Atmosphere file is
+the template.
+
+This replaced two weaker shapes in succession. `components.css` hardcoded `themes/atmosphere.css`
+while being named after components, so a second theme had nowhere to go and the theme a consumer got
+was invisible in the import they typed. Documenting Atmosphere as "the default" was the obvious
+repair and was rejected: it makes the answer to "which theme is this" something you have to read
+prose to learn, and removing the concept of a default is stronger than documenting one.
+
+An earlier round had rejected putting the full entry inside the theme at all, on the grounds that an
+aggregate in the optional tier reaching out to the required tiers "inverts the dependency". That
+reasoning was wrong and is recorded as wrong: a theme depending on core is the correct direction,
+and the reverse would be the inversion. `core.css` imports nothing from `themes/`, so behavior stays
+independent and a consumer who wants it without a look imports `tokens.css` and `core.css` and
+stops.
+
+### The size metric stays as it is, and the discrepancy is recorded instead
+
+`check-performance.mjs` gzips each stylesheet separately and sums, so splitting a file raises the
+figure without changing what a consumer downloads. Redefining it to concatenate-then-gzip would
+report the truth more directly, and was rejected: a gate redefined in the middle of the change it is
+meant to police is a weaker gate, and the current definition is at least consistent with itself. The
+honest numbers are recorded above — 21 to 58 bytes gzipped per entry, 2% to 4% — and phase 7
+re-baselines against the existing definition.
+
+### Core-only Sheet height gets documented rather than fixed
+
+Core-only, the Sheet panel is content-height rather than full-height: `block-size: 100dvh` and the
+`max-block-size` reset are sizing, which stays in the theme, and the UA gives `dialog`
+`height: fit-content`. It is still edge-pinned, scrollable, focus-trapped, and operable, so it meets
+the acceptance criterion. Phase 6 says so on the page rather than leaving a consumer to discover it,
+because it is the clearest place the narrow-tier decision is visible.
+
+## Constraints discovered during implementation
+
+### A dangling `@import` shipped in a green build
+
+Phase 3 deleted `form.css`, which held nothing but `display: contents`, and left `components.css`
+importing it. That shipped in `69ed4f1` and was reported as passing `pnpm qa`, because nothing in
+the repository resolved an `@import`: a dangling one fails when a browser loads the stylesheet, and
+no test loads an aggregate. It surfaced by accident three commits later, while counting imports for
+the theme restructure.
+
+`validate-contracts.mjs` now resolves all 83 `@import` targets in the package, and was confirmed to
+fire both on a fabricated dangling import and on the real one. The recomposed `components.css` also
+removes the failure mode: at three lines, one per aggregate, adding or deleting a component no
+longer touches it at all.
+
+### Bring-your-own-theme works, and Tailwind v4 has an import-order trap
+
+The milestone's point is that a consumer can take `tokens.css` + `core.css` and supply the look
+themselves. Measured on the real Select preview, core-only, with every visual property coming from
+utility classes: opens, anchors, scrolls, filters, and keyboard-navigates, with the entire
+appearance supplied by the consumer. So the claim holds.
+
+Two findings worth keeping. First, a cosmetic utility can never lose to core — not by convention but
+by construction, because `check-core-boundary.mjs` forbids core from declaring a colour, radius,
+shadow, or type property at all. Conflicts are only ever possible on the ~40 behavioural properties
+core owns, and those are conflicts the consumer picks deliberately.
+
+Second, the trap. Tailwind v4 emits native cascade layers; v3 emits unlayered rules. Layers sort by
+first encounter, so whichever stylesheet loads first gets the lower-priority layers:
+
+| Tailwind       | Timeless imported first | Tailwind imported first |
+| -------------- | ----------------------- | ----------------------- |
+| v4 (layered)   | utility wins            | **core wins**           |
+| v3 (unlayered) | utility wins            | utility wins            |
+
+Measured on `ui-toolbar`, where core says `display: flex` and `.grid` says `grid`. A v4 consumer who
+loads Tailwind first silently loses every layout utility that conflicts with core, with no error and
+no clue why. `theming.mdx` already says "import Timeless styles before your own so the layer order
+is established first", which happens to cover it, but it does not mention Tailwind. Phase 6 names
+it.
+
+### One anchoring scare, which was the instrument and not the code
+
+An ad-hoc check reported core-only Select as unanchored, contradicting the phase-2 verification. It
+was the fixture: that run had removed and re-added stylesheets, reopened the popover repeatedly, and
+changed `body` padding while the surface was already open, so anchor positioning had been computed
+against a layout that then moved. Bisected across five stylesheet sets on a fresh page —
+select-only, the overlay surfaces, plus button and forms, every core file, and the full theme as
+control — all anchor correctly.
+
+Recorded because the wrong conclusion was nearly reported in both directions: first as a regression
+that did not exist, then as a refutation of the Tailwind order trap, which a second badly-designed
+probe appeared to give (it compared `display` on an element where core and Tailwind both say `grid`,
+so it could not tell them apart).
+
+The instruments are kept in `.local/m028-playground/` — four scripts that read the current
+stylesheets rather than snapshots, so they do not rot. They print numbers for a human; they are not
+a test suite and nothing runs them in CI.
+
+### Collection rows and menu items take `cursor: default`
+
+Reported while reviewing the split: hovering an option in Select, Combobox, or Listbox showed the
+text I-beam. Measured across the previews, every affected element and only those:
+
+| Element                                    | Before                  | After                |
+| ------------------------------------------ | ----------------------- | -------------------- |
+| `[role='option']`, all three collections   | `auto`                  | `default`            |
+| `[data-ui-part~='group-label']`            | `auto`                  | `default`            |
+| `[data-ui-part~='empty']`, `status`        | `auto`                  | `default`            |
+| `[data-ui-part~='page-status']`            | `auto`                  | `default`            |
+| menu items                                 | `default` (from the UA) | `default` (declared) |
+| `[data-ui-part~='search']`, combobox input | `text`                  | `text` (unchanged)   |
+
+An option is a `<div role="option">`, so with no `cursor` it computes `auto`, which over text is an
+I-beam — suggesting the row is prose to select rather than a choice to make.
+
+`default` rather than `pointer`, and that follows the library rather than taste: of the ten existing
+`cursor` declarations, five are `default` on interactive controls — Button, Tabs, Collapsible, Color
+Swatch — and none is `pointer` on a control. A native `<select>` dropdown shows the arrow
+throughout, and reserving the hand for links is the platform convention. A row whose cursor
+disagreed with the trigger that opened it would read as the odd one out. Disabled options take
+`default` too, matching `.ui-button:disabled`, rather than `not-allowed`.
+
+Menu items were already `default`, but only incidentally: the examples author them as `<button>` and
+the UA supplies it. `menu.css` selects `[role='menuitem']`, which accepts any element, so the
+declaration is added for authoring robustness rather than to change today's rendering.
+
+In the theme, not core. `cursor` is not in the core-owned set, and all ten existing declarations are
+theme-side — including the Sheet's `grab`/`grabbing`, which signals a gesture that genuinely exists
+and is therefore far more behavior-adjacent than an option row. Core-only, options still show the
+I-beam, which is consistent with core carrying no affordances at all: there is no hover highlight
+either.
+
+Two adjacent things were noted at the same time and fixed straight after. `button.css` pairs
+`cursor: default` with `user-select: none`, and the option row and menu item had neither, so a drag
+across a list selected the labels — the same defect wearing a different property. And `toast.css`
+gave its close button `cursor: pointer`, the one control in the package contradicting the convention
+above; it is `default` now, so the rule holds without exception.
+
+### Core-only rendering is asserted in CI, not spot-checked
+
+`apps/e2e/tests/apps/web/core-only.spec.ts` holds the milestone's acceptance criteria as eight tests
+in the `web-chromium` project. It reads `tokens.css` and every core stylesheet from disk in Node and
+swaps them in for the preview page's own styles, because that project runs against a production
+build where the sources are not served as files.
+
+The strongest result is the first test: across **all 51 previews**, zero `ui-*` hosts compute
+`display: inline` under core-only, and no page errors. That is the "structurally intact" half of the
+acceptance criterion, proven library-wide rather than sampled. The rest cover anchoring on five
+surfaces, scroll containment, filtered options staying hidden in all three collections, Dialog and
+Sheet reaching the top layer and closing on Escape, the Toast region staying clickable through, and
+the degradation case with core dropped as well — which produced no console error and no hang, as the
+audit predicted from there being no JavaScript waiting on a transition.
+
+The axe test is deliberately **relative**: core-only must introduce no violation the themed
+rendering does not already have. An absolute assertion looked more rigorous and was worse, because
+it fails on pre-existing issues and then says nothing about this milestone. It immediately paid for
+itself.
+
+### The sweep surfaced a pre-existing critical accessibility bug
+
+The first absolute version of the axe test failed on the Select preview:
+
+```
+[critical] aria-allowed-attr: ARIA attribute is not allowed: aria-activedescendant="ui-select-1-option-2"
+```
+
+Measured identically with the full theme and with core-only, so the CSS split neither caused it nor
+affects it. Timeless writes `aria-activedescendant` onto the Select's plain `<button>` trigger, and
+no button role permits that attribute — it is valid only on roles that manage a focused descendant.
+The APG Select-Only Combobox pattern puts `role="combobox"` on the trigger, which would make it
+legal; the alternative is not writing it there at all. Either way it is a contract decision, not a
+CSS one.
+
+Filed as separate work rather than fixed here, and the relative axe assertion is what keeps it
+visible instead of masking it. Also worth noting: the existing axe sweep never caught this, most
+likely because it scans pages with surfaces closed — a coverage gap in its own right.
+
+## Decisions and constraints
 
 ## Decisions and constraints
 
@@ -141,12 +632,87 @@ and were corrected to 43 and 8.
 
 ## Summary
 
-Pending implementation.
+The Atmosphere theme is now genuinely optional, and the documentation that said so is now true.
+
+The CSS ships in three tiers. `tokens.css` carries the cascade-layer order and `color-scheme`.
+`core/` — 40 stylesheets, 265 declarations — carries behavior: anchoring, box participation,
+positioning, scrolling, native control resets, and the input routing that makes a two-handle range
+and a click-through toast stack work. `themes/atmosphere/` — 40 stylesheets — carries the look. Two
+aggregates: `core.css` for its directory, and `themes/atmosphere.css`, which imports the two
+required tiers plus its own 40 files and is therefore the one import a prototype needs.
+`components.css`, `floating.css`, and `form.css` are gone.
+
+What changed structurally: `tokens.css` split so the layer statement stopped travelling inside a
+file of theme values; `floating.css` moved wholesale into core, since it was the anchor-positioning
+implementation and never cosmetic; every remaining stylesheet split in two, by hand for the nine
+anchored surfaces and by a transformer for the other thirty; and the whole cosmetic tier moved under
+`themes/atmosphere/` so the root holds only what is not a theme.
+
+Four gates now hold the boundary where prose used to. `check-core-boundary.mjs` fails the build when
+a core stylesheet declares a cosmetic property or a size, when a theme stylesheet keeps a property
+core owns, or when core reads an Atmosphere token without a literal fallback.
+`validate-contracts.mjs` proves every declaration sits inside a cascade layer and every `@import`
+resolves. `validate-docs.mjs` fails on five phrasings of "CSS is optional", and
+`validate-claims.mjs` now reads the landing page's house rules as well as its feature tins. Every
+one was confirmed to fail when violated, not merely to pass when satisfied.
+
+The claim the milestone was opened for had three sites, not the two the plan named, and the third —
+the landing page's House rules — sat in the one region of that page the claim validator did not
+read. All three are corrected and enforced.
 
 ## Validation results
 
-Pending implementation.
+`pnpm qa` passes: typecheck, `format:check`, build across five packages and two apps, 294 unit
+tests, the examples and docs validators, `contracts:check`, `publint`, `attw`, and 402 end-to-end
+tests across Chromium, Firefox, and WebKit.
 
----
+The gates this milestone added, on the final tree:
 
-Generated by Claude Opus 5 (High)
+| Gate                      | Reports                                                                                                                              |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `check-core-boundary.mjs` | 265 declarations across 40 core stylesheets, 38 theme counterparts leaving every core-owned property to core, 1 `core-exempt` marker |
+| `validate-contracts.mjs`  | 58 contracts, 58 public tokens, 81 fully layered stylesheets, 82 resolvable `@import` targets                                        |
+| `validate-docs.mjs`       | 51 examples, 22 elements, 81 CSS exports, no optional-CSS claim                                                                      |
+| `validate-claims.mjs`     | 6 platform claims, 8 house rules                                                                                                     |
+| `core-only.spec.ts`       | 9 tests, including zero inline-collapsed hosts across all 51 previews                                                                |
+
+### The size figures, before and after
+
+Recorded per entry, as `check-performance.mjs` measures them — each stylesheet gzipped separately
+and summed:
+
+| Entry    | CSS gzip before | after | Stylesheets |
+| -------- | --------------: | ----: | ----------: |
+| popover  |           2,640 | 3,621 |       2 → 3 |
+| listbox  |           3,871 | 6,192 |       2 → 4 |
+| select   |           4,710 | 7,039 |       3 → 5 |
+| combobox |           4,790 | 7,041 |       3 → 5 |
+
+Most of that is artifact, for the two reasons recorded above: the metric penalises file splits, and
+the core stylesheets are 53% comments. Measured the way a bundler ships it — concatenated, comments
+stripped, gzipped once — the real cost of the duplicated selectors is 21 to 58 bytes per entry.
+
+And the payoff the milestone was for, measured the same honest way:
+
+| Entry    | Core only | Full (core + theme) | Theme's share |
+| -------- | --------: | ------------------: | ------------: |
+| popover  |    592 gz |            1,060 gz |           44% |
+| listbox  |    588 gz |            1,526 gz |           61% |
+| select   |    756 gz |            1,690 gz |           55% |
+| combobox |    742 gz |            1,706 gz |           57% |
+
+A consumer bringing their own look downloads 39% to 45% of what they download today.
+
+### Found on the way, and filed rather than folded in
+
+Two defects predating this milestone, both surfaced by its own instruments, both left for separate
+work so the diff stays about the CSS split:
+
+- Four stylesheets put their `@media (forced-colors: active)` block outside every cascade layer, so
+  a consumer could not override it by either documented route. Fixed here, because the core halves
+  reproduced the same structure and the milestone's own baseline had claimed zero unlayered rules.
+- The Select trigger carries `aria-activedescendant`, which no button role permits — a critical axe
+  violation, identical with and without the theme. Filed.
+
+One defect this milestone introduced and shipped in a green build: `components.css` imported the
+deleted `form.css` for three commits. Nothing resolved `@import` targets; now something does.

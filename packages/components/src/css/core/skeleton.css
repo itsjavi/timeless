@@ -1,0 +1,9 @@
+/*
+ * Skeleton's box.
+ */
+
+@layer ui.components {
+  .ui-skeleton {
+    display: block;
+  }
+}

@@ -1,0 +1,19 @@
+/*
+ * Collapsible's boxes, and the `overflow` that keeps a closed panel's content from spilling.
+ */
+
+@layer ui.components {
+  .ui-collapsible > summary {
+    display: grid;
+  }
+
+  .ui-collapsible > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  @supports selector(::details-content) {
+    .ui-collapsible::details-content {
+      overflow: hidden;
+    }
+  }
+}

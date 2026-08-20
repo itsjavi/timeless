@@ -1,0 +1,51 @@
+@layer ui.components {
+  .ui-empty {
+    --ui-empty-gap: var(--ui-space-3);
+    justify-items: center;
+    gap: var(--ui-empty-gap);
+    max-inline-size: 32rem;
+    margin-inline: auto;
+    padding: 2.5rem var(--ui-space-5);
+    color: var(--ui-fg);
+    text-align: center;
+  }
+
+  .ui-empty[data-ui-density='compact'] {
+    --ui-empty-gap: var(--ui-space-2);
+    padding-block: 1.5rem;
+  }
+
+  .ui-empty[data-ui-density='spacious'] {
+    --ui-empty-gap: var(--ui-space-4);
+    padding-block: 4rem;
+  }
+
+  .ui-empty > :where(h1, h2, h3, p) {
+    margin: 0;
+  }
+
+  .ui-empty > :where(h1, h2, h3) {
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .ui-empty > p {
+    max-inline-size: 44ch;
+    color: var(--ui-fg-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .ui-empty > [data-ui-part~='art'] {
+    place-items: center;
+    min-inline-size: 3rem;
+    min-block-size: 3rem;
+    color: var(--ui-fg-muted);
+  }
+
+  .ui-empty > [data-ui-part~='actions'] {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--ui-space-2);
+  }
+}
