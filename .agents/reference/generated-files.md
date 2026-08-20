@@ -53,7 +53,10 @@ pnpm -F @timelessui/components run generate
   change what every agent-facing artifact says about how Timeless markup is authored. It states no
   component, attribute, or value; those come from the registry.
 - `scripts/check-markup.mjs` — the contract checker, and its colocated `check-markup.test.mjs`.
-  Reads the registry at runtime rather than being generated from it.
+  Reads the registry at runtime rather than being generated from it. It also reads
+  `ACTIVE_DESCENDANT_ROLES` out of `src/listbox.ts` as _text_, so the checker and the runtime cannot
+  disagree about which roles carry `aria-activedescendant`; renaming that constant throws rather
+  than checking against nothing.
 - `src/index.ts` — the public barrel.
 
 ## Gotcha

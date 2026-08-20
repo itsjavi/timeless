@@ -71,6 +71,43 @@ describe('checkMarkup', () => {
     expect(checkMarkup('<ui-popover data-ui-part="trigger"></ui-popover>')).toEqual([])
   })
 
+  /*
+   * An authored role wins over the `combobox` the enhancement applies, and the runtime then declines
+   * to write `aria-activedescendant` onto a role that forbids it. That is correct and silent, so this
+   * is the only thing that tells the author their active option is never announced.
+   */
+  describe('a Select trigger whose role cannot carry the relationship', () => {
+    const select = (trigger) =>
+      `<ui-select>${trigger}<div data-ui-part="listbox" role="listbox" popover="manual"><div role="option">A</div></div></ui-select>`
+
+    it('reports an authored role that forbids aria-activedescendant', () => {
+      const findings = checkMarkup(
+        select('<button data-ui-part="trigger" role="button" aria-label="Role">Pick</button>'),
+      )
+      expect(findings.map((finding) => finding.kind)).toEqual(['role-forbids-relationship'])
+      expect(findings[0].message).toContain('role="button"')
+      expect(findings[0].message).toContain('combobox')
+    })
+
+    it('accepts the role Timeless applies, and an absent role', () => {
+      expect(
+        checkMarkup(
+          select('<button data-ui-part="trigger" role="combobox" aria-label="Role">Pick</button>'),
+        ),
+      ).toEqual([])
+      expect(
+        checkMarkup(select('<button data-ui-part="trigger" aria-label="Role">Pick</button>')),
+      ).toEqual([])
+    })
+
+    it('reports the missing name as well, since the two are separate problems', () => {
+      expect(kinds(select('<button data-ui-part="trigger" role="button">Pick</button>'))).toEqual([
+        'role-forbids-relationship',
+        'missing-accessible-name',
+      ])
+    })
+  })
+
   it('ignores markup that uses no Timeless root', () => {
     expect(checkMarkup('<section class="prose"><p data-testid="x">Hello</p></section>')).toEqual([])
   })

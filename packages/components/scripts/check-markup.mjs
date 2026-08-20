@@ -17,6 +17,8 @@
  * keeps the module dependency-free and runnable anywhere. Malformed markup is out of its remit;
  * `pnpm test:e2e` and the browser are authoritative for that.
  */
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { components } from './component-registry.mjs'
 
 /**
@@ -32,14 +34,34 @@ import { components } from './component-registry.mjs'
  * - `boolean-with-value` — a presence-based attribute written with a value.
  * - `internal-attribute` — a private runtime hook written by hand.
  * - `missing-accessible-name` — a root whose exposed role cannot take its name from its content.
+ * - `role-forbids-relationship` — an authored role that cannot carry an ARIA relationship the
+ *   component needs to wire, so the component correctly declines to write it.
  *
  * @typedef {'unknown-element' | 'configuration-on-host' | 'missing-data-ui-prefix'
  *   | 'undeclared-attribute' | 'unpermitted-value' | 'boolean-with-value' | 'internal-attribute'
- *   | 'missing-accessible-name'
+ *   | 'missing-accessible-name' | 'role-forbids-relationship'
  * } MarkupFindingKind
  *
  * @typedef {{ kind: MarkupFindingKind, tag: string, attribute?: string, message: string }} MarkupFinding
  */
+
+/**
+ * The roles that can carry `aria-activedescendant`, read out of `src/listbox.ts` rather than copied,
+ * so the checker and the runtime cannot disagree about which roles work. Reading authored TypeScript
+ * as text is the same approach `generate-elements.mjs` and `check-core-boundary.mjs` take to
+ * `src/tokens.ts`, and like them this throws rather than silently checking against an empty set.
+ */
+const activeDescendantRoles = readActiveDescendantRoles()
+
+function readActiveDescendantRoles() {
+  const source = readFileSync(resolve(import.meta.dirname, '../src/listbox.ts'), 'utf8')
+  const body = /const ACTIVE_DESCENDANT_ROLES = new Set\(\[([\s\S]*?)\]\)/.exec(source)?.[1]
+  const roles = new Set([...(body ?? '').matchAll(/'([a-z]+)'/g)].map((match) => match[1]))
+  if (roles.size === 0) {
+    throw new Error('Could not read ACTIVE_DESCENDANT_ROLES from src/listbox.ts')
+  }
+  return roles
+}
 
 const contracts = components
 
@@ -224,6 +246,30 @@ export function checkMarkup(markup) {
   for (const hostMatch of markup.matchAll(/<ui-select\b[\s\S]*?(?:<\/ui-select>|$)/gi)) {
     const triggerTag = hostMatch[0].match(TRIGGER_TAG)?.[0]
     if (!triggerTag) continue
+
+    /*
+     * An authored `role` wins over the `combobox` the enhancement would apply, and
+     * `syncListboxActiveDescendant` then declines to write `aria-activedescendant` onto a role that
+     * forbids it — writing an invalid attribute would be worse than writing none. That leaves the
+     * author with a Select whose active option is never announced and nothing saying why, which is
+     * this finding's whole job.
+     */
+    const authoredRole = triggerTag.match(/\srole\s*=\s*"([^"]*)"/i)?.[1]
+    if (
+      authoredRole !== undefined &&
+      !authoredRole
+        .trim()
+        .split(/\s+/)
+        .some((token) => activeDescendantRoles.has(token))
+    ) {
+      findings.push({
+        kind: 'role-forbids-relationship',
+        tag: 'ui-select',
+        attribute: 'role',
+        message: `The Select trigger has role="${authoredRole}", which cannot carry aria-activedescendant, so the active option is never announced. Use one of ${[...activeDescendantRoles].sort().join(', ')}, or drop the role and let Timeless apply combobox.`,
+      })
+    }
+
     if (/\saria-labelledby\s*=/i.test(triggerTag)) continue
     if (/\saria-label\s*=/i.test(triggerTag)) continue
     findings.push({

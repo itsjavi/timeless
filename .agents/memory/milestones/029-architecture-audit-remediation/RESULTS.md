@@ -262,9 +262,13 @@ either way. The guard lives in the shared writer rather than in Select, so Combo
 calling the public helper get it too. An absent role is permitted, because a native `<input>`
 carries the attribute legally and an attribute bag cannot say what the tag is.
 
-Not done, and worth considering separately: `checkMarkup` reports nothing when a Select trigger
-takes a role that cannot carry the relationship. The runtime now degrades correctly and silently; a
-diagnostic would tell the author why.
+The runtime degradation is correct but silent, so `checkMarkup` reports it too, as
+`role-forbids-relationship` beside the `missing-accessible-name` finding that already covers the
+same trigger. It names the offending role and the roles that would work. The role set is read out of
+`src/listbox.ts` as text rather than copied — the approach `generate-elements.mjs` and
+`check-core-boundary.mjs` already take to `src/tokens.ts` — so the checker and the runtime cannot
+disagree about which roles work, and renaming the constant throws instead of checking against an
+empty set.
 
 ## Two defects fixed in passing
 
