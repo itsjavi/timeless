@@ -8,7 +8,11 @@ sidebar:
 import { Aside } from '@astrojs/starlight/components'
 import TokenTable from '../../../../components/docs/TokenTable.astro'
 
-Timeless has three styling surfaces, in order of how often you should reach for them:
+Timeless ships CSS in three tiers — the layer order, behavior, and the look — and only the last is
+optional. [Loading CSS](/docs/styling/css/) covers which is which. This page is about the last one:
+how to change how Timeless looks, or replace its appearance entirely.
+
+There are three styling surfaces, in order of how often you should reach for them:
 
 1. **Design tokens** — global values every component reads. Change these to rebrand everything.
 2. **Component variables** — per-component custom properties. Change these to restyle one component.
@@ -152,9 +156,18 @@ Each component documents the custom properties it reads from its own root. They 
 Component variables are the right tool when a token would be too broad: `--ui-radius-control` rounds
 every control, while `--ui-button-radius` rounds only buttons.
 
-## Styling without Timeless CSS
+## Styling without the Atmosphere theme
 
-Components stay usable with no Timeless stylesheet at all. The public anatomy is the contract:
+The theme is the optional tier. Import `tokens.css` and `core.css` and no theme at all, and every
+component stays positioned, structurally intact, and operable while looking like nothing in
+particular — which is exactly what you want when the look is yours to supply. See
+[Loading CSS](/docs/styling/css/#bringing-your-own-theme) for the imports and the Tailwind caveat.
+
+What you must keep is core. It is not a look: it is what anchors a Select surface to its trigger,
+keeps a closed menu off screen, and keeps a filtered option hidden. Dropping it leaves components
+that render but misbehave, which is worse than unstyled.
+
+The public anatomy is the contract, and it is unchanged whether the theme is loaded or not:
 
 - `.ui-*` classes identify CSS component roots.
 - `data-ui-*` attributes carry contract-declared configuration on those roots.
@@ -162,7 +175,7 @@ Components stay usable with no Timeless stylesheet at all. The public anatomy is
 - `data-ui-part` identifies authored anatomy.
 - Native attributes, ARIA, and platform pseudo-classes carry state.
 
-So a utility-class or CSS-in-JS project can skip the stylesheets and target the same anatomy:
+So a utility-class or CSS-in-JS project targets the same anatomy:
 
 ```css
 [data-ui-part~='trigger'] {
@@ -173,5 +186,9 @@ ui-tabs [role='tab'][aria-selected='true'] {
   /* your own selected-tab styling */
 }
 ```
+
+You can also replace the theme wholesale rather than opt out of it. `themes/atmosphere/` is one
+directory of plain stylesheets, one per component, plus its own `tokens.css` holding the token
+values this page documents. A second theme is a sibling of the same shape.
 
 Never target `data-ui-internal-*`. Those are private runtime hooks and change without notice.

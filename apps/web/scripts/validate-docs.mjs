@@ -67,6 +67,32 @@ for (const file of contentFiles) {
   }
 }
 
+/**
+ * No page may claim the CSS is optional. Milestone 028 existed because two styling pages said so while
+ * `floating.css` was the anchor-positioning implementation, and the landing page said it a third time
+ * in a region the claim validator did not read. The wording is gone; this keeps it gone.
+ *
+ * Deliberately narrow. It forbids the one claim the library cannot honour, and leaves the honest
+ * neighbours sayable — the Atmosphere *theme* is optional, and pages should keep saying that.
+ */
+const OPTIONAL_CSS_CLAIMS = [
+  /\bcss\b[^.]{0,40}\bis (?:fully |entirely |completely )?optional/i,
+  /\boptional\b[^.]{0,20}\bcss\b/i,
+  /\bstylesheets?\b[^.]{0,30}\b(?:are|is) (?:fully |entirely |completely )?optional/i,
+  /\b(?:without|no) [Tt]imeless (?:CSS|stylesheets?)\b/,
+  /\bno [Tt]imeless stylesheet at all\b/i,
+]
+for (const file of contentFiles) {
+  const source = await readFile(file, 'utf8')
+  for (const pattern of OPTIONAL_CSS_CLAIMS) {
+    const match = source.match(pattern)
+    if (!match) continue
+    throw new Error(
+      `${file} claims the CSS is optional ("${match[0]}"); core is required, and only the theme is optional`,
+    )
+  }
+}
+
 console.log(
   `Validated documentation for ${examples.length} examples, ${manifestTags.size} elements, and ${availableCss.length} CSS exports.`,
 )

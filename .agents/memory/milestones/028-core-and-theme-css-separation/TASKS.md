@@ -132,31 +132,22 @@
 
 ## 6. Document the three tiers
 
-- [ ] Document the bring-your-own-theme path: `tokens.css` + `core.css` and nothing else, which is
-      what a Tailwind or utility-CSS consumer wants
-- [ ] Name Tailwind explicitly, and say that with v4 Timeless must be imported first — v4 emits
-      native cascade layers, so whichever stylesheet loads first sorts lower, and a consumer who
-      loads Tailwind first silently loses every layout utility that conflicts with core's
-- [ ] Say plainly that a cosmetic utility can never lose to core, because the boundary gate forbids
-      core from declaring colour, radius, shadow, or type at all
-- [ ] Rewrite `docs/styling/css.mdx:47-51` to state required core, required tokens, optional theme
-- [ ] Rewrite `docs/styling/theming.mdx:155-165` to the same three tiers, including the "skip the
-      stylesheets" sentence at `:165` that the plan's line range stops short of
-- [x] Replace the home page's "Optional CSS, layered and override-friendly" house rule at
-      `apps/web/src/pages/index.astro:134` — a third claim site, outside the two the acceptance
-      criteria name
-- [x] Gate the house-rules list in `validate-claims.mjs`, which sliced only the tin shelf and so
-      never covered the list the claim was in
-- [x] Confirm that gate fires on the original wording and on two other phrasings, and does not fire
-      on the honest neighbouring claims
-- [ ] Reconcile `AGENTS.md:57` and `audit-component-contracts/SKILL.md:139`, which both require
-      components stay usable with the stylesheet absent — true of the theme, not of core
-- [ ] Once the MDX prose lands, decide whether the claim gate should cover the docs too, so the
-      wording cannot regress there either
-- [ ] Remove every claim that CSS is fully optional
-- [ ] Confirm every component page's **Styling** section lists its core stylesheet
-- [ ] State plainly that the component stylesheets and `theme-atmosphere.css` are Atmosphere's
-      cosmetics and can be replaced wholesale
+- [x] Rewrite `docs/styling/css.mdx` to state required core, required tokens, optional theme, with
+      the tier table up front
+- [x] Rewrite `docs/styling/theming.mdx` to the same three tiers, replacing "Styling without
+      Timeless CSS" with "Styling without the Atmosphere theme"
+- [x] Document the bring-your-own-theme path: `tokens.css` + `core.css` and nothing else
+- [x] Name Tailwind explicitly, and say that with v4 Timeless must be imported first
+- [x] Say plainly that a cosmetic utility can never lose to core, and that a build check proves it
+- [x] Say that sizing stays in the theme, so a Sheet is content-height core-only
+- [x] Remove every claim that CSS is fully optional
+- [x] Gate it: `validate-docs.mjs` now fails on five phrasings of the claim, and permits the honest
+      neighbours — proven both ways
+- [x] Reconcile `AGENTS.md:57` and `audit-component-contracts/SKILL.md` rule 8 to say "the
+      Atmosphere theme" where they meant it
+- [x] Confirm every component page's **Styling** section lists its core stylesheet
+- [x] State plainly that the component stylesheets and the theme's tokens are Atmosphere's cosmetics
+      and can be replaced wholesale
 
 ## 7. Re-baseline and close out
 

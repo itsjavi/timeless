@@ -136,11 +136,16 @@ grep -rn "data-ui-" packages/components/src --include='*.ts' | grep -vE "data-ui
 Runtime state and diagnostics are never exposed through public `data-ui-*`. Public state uses native
 attributes, ARIA, platform pseudo-classes, or `ElementInternals.states` with `:state()`.
 
-### 8. Components without Timeless CSS
+### 8. Components without the Atmosphere theme
 
-Confirm the component is still usable, and still carries its semantics, with the stylesheet absent —
-consumers must be able to style the public anatomy with their own CSS or utility classes. This is a
-reading check, not a grep.
+Confirm the component is still usable, and still carries its semantics, with its
+`themes/atmosphere/<component>.css` absent — consumers must be able to drop the theme and style the
+public anatomy with their own CSS or utility classes. This is a reading check, not a grep.
+
+Note the boundary: `tokens.css` and `core/<component>.css` are _required_, because core is behavior
+rather than appearance. `check-core-boundary.mjs` proves which declarations may live in each half,
+and `apps/e2e/tests/apps/web/core-only.spec.ts` proves the theme-free rendering still works. What is
+left for a reader is whether the component still _reads_ correctly without the theme.
 
 ## Reporting
 

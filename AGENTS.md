@@ -54,8 +54,9 @@ See `.agents/README.md` for the layout, the frontmatter contract, and how to add
 - Decorative anatomy and generated behavior hooks must be hidden from assistive technology when
   appropriate, and stories must show copyable markup with proper labels and relationships.
 - When CSS is not enough, prefer Light DOM over Shadow DOM.
-- Components must remain usable without Timeless CSS. Consumers should be able to style the public
-  anatomy with their own CSS or utility classes.
+- Components must remain usable without the Atmosphere theme. `tokens.css` and `core.css` are
+  required — core is behavior, not appearance — but a consumer must be able to drop the theme and
+  style the public anatomy with their own CSS or utility classes.
 - Keep all consumer-facing and customizable styling in CSS files. Component JS must not write visual
   declarations such as colors, spacing, borders, shadows, layout, position, inset, transforms, or
   animation styles directly.
