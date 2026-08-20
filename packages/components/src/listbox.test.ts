@@ -103,6 +103,59 @@ describe('enhanceListboxParts', () => {
     expect(input.getAttribute('aria-activedescendant')).toBeNull()
   })
 
+  /*
+   * Select gives its trigger `role="combobox"` because no button role permits
+   * `aria-activedescendant` — axe rates that critical. An author-set role deliberately wins over the
+   * enhancement, so the attribute has to be refused per role rather than assumed legal, and the
+   * highlight has to survive the refusal.
+   */
+  it('withholds the relationship from a controller whose role forbids it', () => {
+    const trigger = new FakeListboxElement()
+    const host = new FakeListboxElement()
+    const options = [new FakeListboxElement('Apple'), new FakeListboxElement('Banana')]
+    options[0]!.id = 'apple'
+    options[1]!.id = 'banana'
+    trigger.setAttribute('role', 'button')
+
+    expect(syncListboxActiveDescendant(trigger, { host, options }, 1)).toBe(1)
+    expect(trigger.getAttribute('aria-activedescendant')).toBeNull()
+    // The highlight is a separate job, and it still happens.
+    expect(options.map((option) => option.hasAttribute('data-ui-internal-active'))).toEqual([
+      false,
+      true,
+    ])
+  })
+
+  it('clears a relationship stranded by a role that no longer permits it', () => {
+    const trigger = new FakeListboxElement()
+    const host = new FakeListboxElement()
+    const options = [new FakeListboxElement('Apple'), new FakeListboxElement('Banana')]
+    options[0]!.id = 'apple'
+    options[1]!.id = 'banana'
+    trigger.setAttribute('role', 'combobox')
+
+    syncListboxActiveDescendant(trigger, { host, options }, 1)
+    expect(trigger.getAttribute('aria-activedescendant')).toBe('banana')
+
+    trigger.setAttribute('role', 'button')
+    syncListboxActiveDescendant(trigger, { host, options }, 0)
+    expect(trigger.getAttribute('aria-activedescendant')).toBeNull()
+  })
+
+  it('still names the active option for the roles ARIA permits', () => {
+    const host = new FakeListboxElement()
+    const options = [new FakeListboxElement('Apple'), new FakeListboxElement('Banana')]
+    options[0]!.id = 'apple'
+    options[1]!.id = 'banana'
+
+    for (const role of ['combobox', 'textbox', 'searchbox', 'application', 'group']) {
+      const controller = new FakeListboxElement()
+      controller.setAttribute('role', role)
+      syncListboxActiveDescendant(controller, { host, options }, 1)
+      expect(controller.getAttribute('aria-activedescendant')).toBe('banana')
+    }
+  })
+
   it('moves the active option without touching the selection', () => {
     const host = new FakeListboxElement()
     const input = new FakeListboxElement()

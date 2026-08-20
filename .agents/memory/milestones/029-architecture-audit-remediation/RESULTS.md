@@ -241,6 +241,31 @@ came to cover four of twenty modules while being described as general. Deriving 
 element's absence from the baselines fails the check, which matches the declare-then-regenerate
 ordering the rest of the build already enforces.
 
+## The one item 028 filed, and the path its fix left open
+
+028's flagged item — the Select trigger carrying `aria-activedescendant`, which no button role
+permits — was already closed on `main` before this branch existed, by `26799a0` (#9): the trigger
+takes `role="combobox"`, `checkMarkup` reports the accessible name that role then needs, and the axe
+sweep opens the Select with an active option so the state that carries the attribute is actually
+scanned. This milestone's own pull request initially described that item as outstanding, which was
+wrong.
+
+What #9 left open is one path to the same defect. `role="combobox"` is applied only when the author
+has not set a role, deliberately, so a consumer who sets `role="button"` on the trigger got
+`aria-activedescendant` written onto it anyway — measured in Chromium on the built package:
+`aria-activedescendant="ui-select-1-option-2"` on `role="button"`.
+
+`syncListboxActiveDescendant` now refuses a controller whose stated role forbids the attribute, and
+clears one stranded by a role that changed under it. Marking the active option and naming it are
+separate jobs, so the highlight is unaffected — verified in the same probe, one highlighted option
+either way. The guard lives in the shared writer rather than in Select, so Combobox and any consumer
+calling the public helper get it too. An absent role is permitted, because a native `<input>`
+carries the attribute legally and an attribute bag cannot say what the tag is.
+
+Not done, and worth considering separately: `checkMarkup` reports nothing when a Select trigger
+takes a role that cannot carry the relationship. The runtime now degrades correctly and silently; a
+diagnostic would tell the author why.
+
 ## Two defects fixed in passing
 
 **`tsdown.config.ts` fed declaration files through the decorator transform.** The plugin matched any
