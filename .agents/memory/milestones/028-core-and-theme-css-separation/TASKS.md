@@ -125,6 +125,13 @@
 
 ## 6. Document the three tiers
 
+- [ ] Document the bring-your-own-theme path: `tokens.css` + `core.css` and nothing else, which is
+      what a Tailwind or utility-CSS consumer wants
+- [ ] Name Tailwind explicitly, and say that with v4 Timeless must be imported first — v4 emits
+      native cascade layers, so whichever stylesheet loads first sorts lower, and a consumer who
+      loads Tailwind first silently loses every layout utility that conflicts with core's
+- [ ] Say plainly that a cosmetic utility can never lose to core, because the boundary gate forbids
+      core from declaring colour, radius, shadow, or type at all
 - [ ] Rewrite `docs/styling/css.mdx:47-51` to state required core, required tokens, optional theme
 - [ ] Rewrite `docs/styling/theming.mdx:155-165` to the same three tiers, including the "skip the
       stylesheets" sentence at `:165` that the plan's line range stops short of

@@ -426,6 +426,50 @@ fire both on a fabricated dangling import and on the real one. The recomposed `c
 removes the failure mode: at three lines, one per aggregate, adding or deleting a component no
 longer touches it at all.
 
+### Bring-your-own-theme works, and Tailwind v4 has an import-order trap
+
+The milestone's point is that a consumer can take `tokens.css` + `core.css` and supply the look
+themselves. Measured on the real Select preview, core-only, with every visual property coming from
+utility classes: opens, anchors, scrolls, filters, and keyboard-navigates, with the entire
+appearance supplied by the consumer. So the claim holds.
+
+Two findings worth keeping. First, a cosmetic utility can never lose to core — not by convention but
+by construction, because `check-core-boundary.mjs` forbids core from declaring a colour, radius,
+shadow, or type property at all. Conflicts are only ever possible on the ~40 behavioural properties
+core owns, and those are conflicts the consumer picks deliberately.
+
+Second, the trap. Tailwind v4 emits native cascade layers; v3 emits unlayered rules. Layers sort by
+first encounter, so whichever stylesheet loads first gets the lower-priority layers:
+
+| Tailwind       | Timeless imported first | Tailwind imported first |
+| -------------- | ----------------------- | ----------------------- |
+| v4 (layered)   | utility wins            | **core wins**           |
+| v3 (unlayered) | utility wins            | utility wins            |
+
+Measured on `ui-toolbar`, where core says `display: flex` and `.grid` says `grid`. A v4 consumer who
+loads Tailwind first silently loses every layout utility that conflicts with core, with no error and
+no clue why. `theming.mdx` already says "import Timeless styles before your own so the layer order
+is established first", which happens to cover it, but it does not mention Tailwind. Phase 6 names
+it.
+
+### One anchoring scare, which was the instrument and not the code
+
+An ad-hoc check reported core-only Select as unanchored, contradicting the phase-2 verification. It
+was the fixture: that run had removed and re-added stylesheets, reopened the popover repeatedly, and
+changed `body` padding while the surface was already open, so anchor positioning had been computed
+against a layout that then moved. Bisected across five stylesheet sets on a fresh page —
+select-only, the overlay surfaces, plus button and forms, every core file, and the full theme as
+control — all anchor correctly.
+
+Recorded because the wrong conclusion was nearly reported in both directions: first as a regression
+that did not exist, then as a refutation of the Tailwind order trap, which a second badly-designed
+probe appeared to give (it compared `display` on an element where core and Tailwind both say `grid`,
+so it could not tell them apart).
+
+The instruments are kept in `.local/m028-playground/` — four scripts that read the current
+stylesheets rather than snapshots, so they do not rot. They print numbers for a human; they are not
+a test suite and nothing runs them in CI.
+
 ## Decisions and constraints
 
 ## Decisions and constraints
