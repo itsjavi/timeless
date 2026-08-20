@@ -15,7 +15,7 @@ test('renders the main Timeless website', async ({ page }) => {
   )
   await expect(page.getByRole('link', { name: 'AI', exact: true })).toHaveAttribute(
     'href',
-    '/docs/reference/agents/',
+    '/docs/getting-started/agents/',
   )
   await expect(page.getByRole('link', { name: 'Stories', exact: true })).toHaveAttribute(
     'href',
@@ -144,7 +144,7 @@ test('reaches the page sections through the disclosure on narrow viewports', asy
   await expect(page.getByRole('navigation', { name: 'Page sections' })).toBeVisible()
   await expect(page.getByRole('link', { name: 'AI', exact: true })).toHaveAttribute(
     'href',
-    '/docs/reference/agents/',
+    '/docs/getting-started/agents/',
   )
   await expectNoPageOverflow(page)
 

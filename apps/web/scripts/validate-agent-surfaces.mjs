@@ -121,11 +121,12 @@ if (!llms.includes(grammar)) {
   )
 }
 
-const agentsPage = await readFile(resolve(dist, 'docs/reference/agents/index.html'), 'utf8').catch(
-  () => {
-    throw new Error('No dist/docs/reference/agents/index.html.')
-  },
-)
+const agentsPage = await readFile(
+  resolve(dist, 'docs/getting-started/agents/index.html'),
+  'utf8',
+).catch(() => {
+  throw new Error('No dist/docs/getting-started/agents/index.html.')
+})
 /* One rule, spot-checked in rendered form, proves the page renders the generated block. */
 if (!agentsPage.includes('Never author')) {
   throw new Error('The agents page does not render the generated AGENTS.md block.')

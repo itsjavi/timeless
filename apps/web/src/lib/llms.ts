@@ -2,7 +2,7 @@
  * The bodies of `/llms.txt` and `/llms-full.txt`.
  *
  * They live here rather than in the route files because three callers need them: the two endpoints,
- * and `AgentSurfaceSizes.astro`, which publishes their measured token counts on the agents reference
+ * and `AgentSurfaceSizes.astro`, which publishes their measured token counts on the AI agents
  * page. A hardcoded token count in that page would be exactly the kind of unvalidated claim
  * `validate-claims.mjs` exists to prevent, so the number is measured from the same string that ships.
  */
@@ -79,7 +79,7 @@ export async function buildLlmsTxt(): Promise<string> {
   lines.push('## Optional', '')
   lines.push(
     `- [Full documentation](${SITE}/llms-full.txt): every guide and every contract in one file.`,
-    `- [Using Timeless with AI agents](${SITE}/docs/reference/agents.md): the skill, the Markdown routes, and editor tooling.`,
+    `- [Using Timeless with AI agents](${SITE}/docs/getting-started/agents.md): the skill, the Markdown routes, and editor tooling.`,
     '',
   )
 
@@ -120,7 +120,7 @@ export async function buildLlmsFullTxt(): Promise<string> {
     '# Timeless UI — full documentation',
     '',
     `Every guide and every component contract. See ${SITE}/llms.txt for the curated index, and`,
-    `${SITE}/docs/reference/agents/ for how these files are meant to be used.`,
+    `${SITE}/docs/getting-started/agents/ for how these files are meant to be used.`,
     '',
     '---',
     '',
