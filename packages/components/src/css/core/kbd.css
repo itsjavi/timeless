@@ -1,0 +1,9 @@
+/*
+ * Kbd's box.
+ */
+
+@layer ui.components {
+  .ui-kbd {
+    display: inline-flex;
+  }
+}

@@ -1,9 +1,14 @@
 import type { StoryLiteMeta } from '@storylite/storylite'
+import coreButtonCss from '@timelessui/components/css/core/button.css?raw'
 import buttonCss from '@timelessui/components/css/button.css?raw'
+import coreFormsCss from '@timelessui/components/css/core/forms.css?raw'
 import formsCss from '@timelessui/components/css/forms.css?raw'
-import formCss from '@timelessui/components/css/form.css?raw'
+import formCss from '@timelessui/components/css/core/form.css?raw'
+import coreOtpFieldCss from '@timelessui/components/css/core/otp-field.css?raw'
 import otpFieldCss from '@timelessui/components/css/otp-field.css?raw'
+import coreRangeCss from '@timelessui/components/css/core/range.css?raw'
 import rangeCss from '@timelessui/components/css/range.css?raw'
+import coreRangeFieldCss from '@timelessui/components/css/core/range-field.css?raw'
 import rangeFieldCss from '@timelessui/components/css/range-field.css?raw'
 import themeCss from '@timelessui/components/css/theme-atmosphere.css?raw'
 import tokensCss from '@timelessui/components/css/tokens.css?raw'
@@ -16,11 +21,16 @@ const formPrimitiveParameters = {
   css: [
     tokensCss,
     themeCss,
+    coreButtonCss,
     buttonCss,
+    coreFormsCss,
     formsCss,
     formCss,
+    coreRangeCss,
     rangeCss,
+    coreRangeFieldCss,
     rangeFieldCss,
+    coreOtpFieldCss,
     otpFieldCss,
     demoCss,
     formDemoCss,

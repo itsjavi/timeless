@@ -16,7 +16,6 @@
   /* The option row is a two-column grid: label, then the selected indicator. */
   :where(ui-listbox, ui-select, ui-combobox) :where([role='option']) {
     display: grid;
-    grid-template-columns: 1fr auto;
   }
 
   /* Filtering and paging both express themselves by setting `hidden`. */

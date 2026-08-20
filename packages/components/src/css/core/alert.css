@@ -1,0 +1,22 @@
+/*
+ * Alert's boxes. The icon, content, and action rows are boxes; their gaps, colours, and type are
+ * the theme's.
+ */
+
+@layer ui.components {
+  .ui-alert {
+    display: grid;
+  }
+
+  .ui-alert :where([data-ui-part~='icon']) {
+    display: inline-grid;
+  }
+
+  .ui-alert :where([data-ui-part~='content']) {
+    display: grid;
+  }
+
+  .ui-alert :where([data-ui-part~='actions']) {
+    display: flex;
+  }
+}

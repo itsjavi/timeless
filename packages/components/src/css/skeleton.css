@@ -1,6 +1,5 @@
 @layer ui.components {
   .ui-skeleton {
-    display: block;
     inline-size: var(--ui-skeleton-width, 100%);
     block-size: var(--ui-skeleton-height, 1rem);
     max-inline-size: 100%;

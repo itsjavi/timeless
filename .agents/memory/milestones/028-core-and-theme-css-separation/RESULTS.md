@@ -251,6 +251,69 @@ the UA gives `dialog` `height: fit-content`. It is still edge-pinned, scrollable
 it meets "positioned, structurally intact, and operable" — but it is a visible difference, not a
 purely cosmetic one, and it is the clearest example of where the narrow-tier decision shows.
 
+### The remaining 30 files were split by a script, not by hand
+
+Phase 2's nine files were extracted by reading each rule and deciding. That produced one silent bug
+and two misclassifications the gate later caught, on nine files. Thirty more by the same method was
+not a good bet, so the rest were done by a throwaway transformer (kept in the session scratchpad,
+not shipped): it parses each stylesheet into a node tree, partitions declarations by property, and
+re-emits both halves with every selector and at-rule nesting preserved verbatim. The theme diffs are
+then reviewable as pure deletions, which is exactly what makes a 30-file change checkable at all.
+
+The judgement that could not be scripted is which declarations travel with a moved `display`. The
+rule settled on: **only flow direction** — `flex-direction`, `flex-flow`, `grid-auto-flow`. The test
+is whether the theme-less rendering _breaks_ or merely _simplifies_. A `display: flex` whose
+`flex-direction: column` stayed behind renders a Sheet's header, body, and footer side by side,
+which is broken. A `display: grid` whose `grid-template-columns` stayed behind collapses to one
+column, which is a normal-looking simplification. So templates, gaps, and alignment stay in the
+theme, and phase 2's three `grid-template-columns` extractions were reverted to match.
+
+### The declaration count reconciles
+
+| Where                           | Core-owned declarations |
+| ------------------------------- | ----------------------: |
+| `src/css/core/`, 40 stylesheets |                     255 |
+| Left in the theme, deliberately |                      15 |
+| **Total**                       |                 **270** |
+
+Against the baseline's 271. The difference is the `color-scheme` in `tokens.css`, which the baseline
+counted among the 43 stylesheets but which is not a component stylesheet and never moved.
+
+All fifteen exceptions, each with its reason:
+
+| Site                                                       | Count | Why it stays                                                         |
+| ---------------------------------------------------------- | ----: | -------------------------------------------------------------------- |
+| `color-picker.css` `[data-ui-part~='format-field']::after` |     4 | Theme-drawn chevron                                                  |
+| `forms.css` `.ui-switch::before`                           |     3 | Theme-drawn knob                                                     |
+| `color-swatch.css` `[data-ui-part~='chip']::after`         |     2 | Theme-drawn chip overlay                                             |
+| `spinner.css` `.ui-spinner::before`                        |     1 | Theme-drawn spinner                                                  |
+| `forms.css` `.ui-switch:checked::before`                   |     1 | The knob's checked offset, and what `transition: translate` animates |
+| `sheet.css` `@keyframes ... { from { translate } }`        |     4 | Motion                                                               |
+
+The first four rows are one category: a `::before`/`::after` that draws its own `content`.
+Positioning it is not behavior, because without the theme the element does not exist — there is
+nothing to behave. The gate exempts that shape automatically. The switch's checked offset needed the
+one explicit `core-exempt:` marker, because it is a `::before` rule that does not itself declare
+`content`; the marker names its reason in the CSS and the gate prints how many exist, so the escape
+hatch cannot be used quietly.
+
+This is also where the baseline's own caveat paid off. It flagged that `translate` was counted
+behavior-critical "because in this library it positions anchored surfaces rather than animating
+them, which is true of those surfaces and not necessarily of everything else". Of the 19 `translate`
+declarations, 14 place a surface and 5 animate one.
+
+### A baseline figure was wrong
+
+The baseline records "Stylesheets with rules outside a `@layer` block: 0". That is not right. Four
+theme stylesheets — `color-picker.css`, `color-swatch.css`, `meter.css`, and `toggle.css` — carry an
+`@media (forced-colors: active)` block at top level, outside any layer, which means it also outranks
+a consumer's own `@layer ui.utilities` rules and contradicts what `theming.mdx` promises about
+`ui.utilities`.
+
+It is pre-existing and unrelated to this split, so it was deliberately not changed here; the core
+files extracted from those three components reproduce the same structure and say so in a comment. It
+is filed as separate work rather than folded in.
+
 ## Decisions and constraints
 
 Four decisions were taken before the milestone opened rather than left to implementation.

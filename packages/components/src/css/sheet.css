@@ -51,6 +51,7 @@
   }
 
   ui-sheet > dialog > header {
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--ui-space-2) var(--ui-space-4);
     align-items: start;
     border-block-end: 1px solid var(--ui-line);

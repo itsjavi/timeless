@@ -1,0 +1,23 @@
+/*
+ * Meter's box and forced-colors handling. A meter's fill is information, so it keeps its colour in
+ * forced-colors mode.
+ *
+ * The unlayered `@media (forced-colors: active)` block matches the theme file's own structure. It is
+ * pre-existing and deliberately unchanged by milestone 028.
+ */
+
+@layer ui.components {
+  .ui-meter-field {
+    display: grid;
+  }
+
+  .ui-meter-field > meter {
+    appearance: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .ui-meter-field > meter {
+    forced-color-adjust: none;
+  }
+}

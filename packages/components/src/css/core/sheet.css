@@ -82,13 +82,9 @@
     inset-block: auto 0;
   }
 
-  /*
-   * The header is a two-part row — title area, then the close control — the same shape the option row
-   * and Toast use. The footer is a row of actions. `flex-wrap` and the gaps are the theme's.
-   */
+  /* The header and footer are boxes; their columns, wrapping, and gaps are the theme's. */
   ui-sheet > dialog > header {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   ui-sheet > dialog > footer {

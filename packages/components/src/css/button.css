@@ -15,9 +15,6 @@
     --ui-button-padding-x: 1.125rem;
     --ui-button-gap: 0.5rem;
     --ui-button-radius: var(--ui-radius-control);
-
-    appearance: none;
-    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: var(--ui-button-gap);

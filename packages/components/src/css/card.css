@@ -4,8 +4,6 @@
     --ui-card-border: var(--ui-line);
     --ui-card-gap: var(--ui-space-5);
     --ui-card-padding: var(--ui-space-5);
-
-    display: grid;
     gap: var(--ui-card-gap);
     min-inline-size: 0;
     max-inline-size: 100%;
@@ -33,7 +31,6 @@
   }
 
   .ui-card :where([data-ui-part~='header'], [data-ui-part~='body'], [data-ui-part~='footer']) {
-    display: grid;
     gap: var(--ui-space-2);
     min-inline-size: 0;
   }
@@ -63,7 +60,6 @@
   }
 
   .ui-card :where([data-ui-part~='actions']) {
-    display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--ui-space-3);

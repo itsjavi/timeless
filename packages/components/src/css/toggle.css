@@ -20,7 +20,6 @@
   }
 
   ui-toggle-group {
-    display: inline-flex;
     gap: var(--ui-space-2);
     align-items: center;
     min-inline-size: 0;

@@ -1,6 +1,5 @@
 @layer ui.components {
   .ui-kbd {
-    display: inline-flex;
     align-items: center;
     justify-content: center;
     min-block-size: 1.45rem;

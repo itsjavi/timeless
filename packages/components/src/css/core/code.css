@@ -1,0 +1,10 @@
+/*
+ * Code's box, and the scroll container a long sample needs.
+ */
+
+@layer ui.components {
+  pre.ui-code {
+    display: block;
+    overflow: auto;
+  }
+}

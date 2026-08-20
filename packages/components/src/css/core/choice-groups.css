@@ -1,0 +1,10 @@
+/*
+ * Radio Group and Checkbox Group boxes.
+ */
+
+@layer ui.components {
+  :where(ui-radio-group, ui-checkbox-group) {
+    display: flex;
+    flex-direction: column;
+  }
+}

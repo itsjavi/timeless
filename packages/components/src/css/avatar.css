@@ -5,9 +5,6 @@
     --ui-avatar-bg: var(--ui-bg-surface-raised);
     --ui-avatar-fg: var(--ui-fg);
     --ui-avatar-status: var(--ui-fg-subtle);
-
-    position: relative;
-    display: inline-grid;
     place-items: center;
     flex: 0 0 auto;
     inline-size: var(--ui-avatar-size);
@@ -71,9 +68,6 @@
   }
 
   .ui-avatar :where([data-ui-part~='status']) {
-    position: absolute;
-    inset-inline-end: -0.0625rem;
-    inset-block-end: -0.0625rem;
     inline-size: max(0.625rem, calc(var(--ui-avatar-size) * 0.26));
     block-size: max(0.625rem, calc(var(--ui-avatar-size) * 0.26));
     border: 2px solid var(--ui-bg-page);

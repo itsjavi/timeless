@@ -2,7 +2,6 @@
   .ui-color-swatch {
     --ui-color-swatch-size: 2rem;
     box-sizing: border-box;
-    display: grid;
     grid-template-columns: var(--ui-color-swatch-size) minmax(0, 1fr);
     grid-template-rows: auto auto;
     gap: 0 var(--ui-space-3);
@@ -46,13 +45,11 @@
   }
 
   .ui-color-swatch [data-ui-part~='chip'] {
-    position: relative;
     grid-column: 1;
     grid-row: 1 / -1;
     align-self: center;
     inline-size: var(--ui-color-swatch-size);
     block-size: var(--ui-color-swatch-size);
-    overflow: hidden;
     border: 1px solid color-mix(in oklab, var(--ui-line-strong), transparent 35%);
     border-radius: var(--ui-radius-sm);
     background: var(--ui-checkerboard);
@@ -69,7 +66,6 @@
     :where([data-ui-part~='label'], [data-ui-part~='value'], [data-ui-part~='warning']) {
     grid-column: 2;
     min-inline-size: 0;
-    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -100,6 +96,5 @@
 @media (forced-colors: active) {
   .ui-color-swatch [data-ui-part~='chip'] {
     border-color: CanvasText;
-    forced-color-adjust: none;
   }
 }

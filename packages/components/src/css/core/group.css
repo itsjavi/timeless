@@ -1,0 +1,9 @@
+/*
+ * Group's box.
+ */
+
+@layer ui.components {
+  .ui-group {
+    display: inline-flex;
+  }
+}

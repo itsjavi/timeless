@@ -1,0 +1,16 @@
+/*
+ * Toolbar's boxes. `orientation` is a public attribute that decides an axis, so the `display` and
+ * `flex-direction` pair expressing it is core: a vertical toolbar rendered as a row is not a
+ * differently-styled toolbar.
+ */
+
+@layer ui.components {
+  ui-toolbar {
+    display: flex;
+  }
+
+  ui-toolbar[orientation='vertical'] {
+    display: inline-flex;
+    flex-direction: column;
+  }
+}

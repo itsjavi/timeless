@@ -1,0 +1,9 @@
+/*
+ * Spinner's box.
+ */
+
+@layer ui.components {
+  .ui-spinner {
+    display: inline-flex;
+  }
+}

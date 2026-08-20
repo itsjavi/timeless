@@ -9,6 +9,7 @@ import {
   type ButtonSize,
   type ButtonVariant,
 } from '@timelessui/components'
+import coreButtonCss from '@timelessui/components/css/core/button.css?raw'
 import buttonCss from '@timelessui/components/css/button.css?raw'
 import themeCss from '@timelessui/components/css/theme-atmosphere.css?raw'
 import tokensCss from '@timelessui/components/css/tokens.css?raw'
@@ -55,7 +56,7 @@ const meta: StoryLiteMeta = {
   title: 'Library/Actions/Button',
   parameters: {
     renderer: 'html',
-    css: [tokensCss, themeCss, buttonCss, demoCss, buttonDemoCss],
+    css: [tokensCss, coreButtonCss, themeCss, buttonCss, demoCss, buttonDemoCss],
   },
 }
 export default meta

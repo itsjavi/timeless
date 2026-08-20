@@ -1,0 +1,17 @@
+/*
+ * Avatar's box and the badge's placement. The badge is positioned against the avatar's corner, which
+ * is where it means something rather than how it looks.
+ */
+
+@layer ui.components {
+  .ui-avatar {
+    position: relative;
+    display: inline-grid;
+  }
+
+  .ui-avatar :where([data-ui-part~='status']) {
+    position: absolute;
+    inset-inline-end: -0.0625rem;
+    inset-block-end: -0.0625rem;
+  }
+}

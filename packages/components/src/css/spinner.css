@@ -2,8 +2,6 @@
   .ui-spinner {
     --ui-spinner-size: 1rem;
     --ui-spinner-color: var(--ui-fg-muted);
-
-    display: inline-flex;
     align-items: center;
     gap: var(--ui-space-2);
     color: var(--ui-fg);

@@ -22,9 +22,7 @@
   }
 
   .ui-separator:where([data-ui-orientation='vertical']):has([data-ui-part~='label']) {
-    display: inline-flex;
     flex: 0 0 auto;
-    flex-direction: column;
     align-items: center;
     align-self: stretch;
     gap: var(--ui-space-2);
@@ -41,7 +39,6 @@
   }
 
   .ui-separator:where([data-ui-variant='centered']) {
-    display: flex;
     align-items: center;
     gap: var(--ui-space-3);
     block-size: auto;

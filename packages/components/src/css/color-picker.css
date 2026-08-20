@@ -4,9 +4,7 @@
     --ui-color-surface-on: var(--ui-color-on);
     --ui-color-picker-inline-size: 20rem;
     box-sizing: border-box;
-    display: grid;
     inline-size: min(var(--ui-color-picker-inline-size), 100%);
-    overflow: hidden;
     border: 1px solid var(--ui-line);
     border-radius: var(--ui-radius-lg);
     background: var(--ui-bg-surface);
@@ -24,12 +22,10 @@
     inline-size: min(var(--ui-color-picker-inline-size), calc(100vw - 2rem));
     min-inline-size: 0;
     padding: 0;
-    overflow: auto;
     box-shadow: var(--ui-shadow-floating);
   }
 
   ui-color-picker [data-ui-part~='preview'] {
-    display: grid;
     gap: var(--ui-space-2);
     align-content: space-between;
     min-block-size: 7.25rem;
@@ -41,7 +37,6 @@
   }
 
   ui-color-picker [data-ui-part~='preview-bar'] {
-    display: flex;
     gap: var(--ui-space-2);
     justify-content: space-between;
     align-items: center;
@@ -49,8 +44,6 @@
   }
 
   ui-color-picker [data-ui-part~='format-field'] {
-    position: relative;
-    display: inline-grid;
     flex: none;
   }
 
@@ -70,7 +63,6 @@
 
   ui-color-picker [data-ui-part~='format'] {
     box-sizing: border-box;
-    appearance: none;
     min-block-size: 1.875rem;
     border: 1px solid color-mix(in oklab, var(--ui-color-surface-on), transparent 76%);
     border-radius: var(--ui-radius-sm);
@@ -95,7 +87,6 @@
   }
 
   ui-color-picker [data-ui-part~='gamut-bar'] {
-    display: flex;
     gap: var(--ui-space-2);
     justify-content: end;
     align-items: center;
@@ -122,7 +113,6 @@
   }
 
   ui-color-picker [data-ui-part~='readout'] {
-    display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.0625rem var(--ui-space-2);
     align-items: center;
@@ -140,7 +130,6 @@
 
   ui-color-picker [data-ui-part~='copy'] {
     grid-area: 2 / 2;
-    display: grid;
     place-items: center;
     inline-size: 1.75rem;
     block-size: 1.75rem;
@@ -160,22 +149,12 @@
     grid-area: 1 / 1;
   }
 
-  ui-color-picker [data-ui-part~='copied-icon'],
-  ui-color-picker:state(--copied) [data-ui-part~='copy-icon'] {
-    display: none;
-  }
-
-  ui-color-picker:state(--copied) [data-ui-part~='copied-icon'] {
-    display: block;
-  }
-
   ui-color-picker :where([data-ui-part~='gamut']) {
     /* Same box model as the value input so both texts share one left edge. */
     border: 1px solid transparent;
     padding-inline: 0.25rem;
     min-inline-size: 0;
     line-height: 1.2;
-    overflow: hidden;
     color: color-mix(in oklab, var(--ui-color-surface-on), transparent 25%);
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -186,10 +165,8 @@
   }
 
   ui-color-picker [data-ui-part~='input-label'] {
-    position: absolute;
     inline-size: 1px;
     block-size: 1px;
-    overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
   }
@@ -224,19 +201,13 @@
   }
 
   ui-color-picker [data-ui-part~='channels'] {
-    display: grid;
     gap: var(--ui-space-3);
     border-block-start: 1px solid var(--ui-line);
     padding: var(--ui-space-4);
     background: var(--ui-bg-surface-raised);
   }
 
-  ui-color-picker [data-ui-part~='channel'][hidden] {
-    display: none;
-  }
-
   ui-color-picker [data-ui-part~='channel'] {
-    display: grid;
     grid-template-columns: 0.875rem minmax(0, 1fr) 3rem;
     gap: var(--ui-space-3);
     align-items: center;
@@ -251,7 +222,6 @@
   }
 
   ui-color-picker [data-ui-part~='channel-range'] {
-    appearance: none;
     inline-size: 100%;
     min-inline-size: 0;
     block-size: 0.625rem;
@@ -264,7 +234,6 @@
   }
 
   ui-color-picker [data-ui-part~='channel-range']::-webkit-slider-thumb {
-    appearance: none;
     inline-size: 1.125rem;
     block-size: 1.125rem;
     border: 3px solid #ffffff;
@@ -288,7 +257,6 @@
 
   ui-color-picker [data-ui-part~='channel-input'] {
     box-sizing: border-box;
-    appearance: textfield;
     inline-size: 100%;
     min-inline-size: 0;
     min-block-size: 1.625rem;
@@ -305,7 +273,6 @@
 
   ui-color-picker [data-ui-part~='channel-input']::-webkit-inner-spin-button,
   ui-color-picker [data-ui-part~='channel-input']::-webkit-outer-spin-button {
-    appearance: none;
     margin: 0;
   }
 
@@ -353,10 +320,5 @@
 @media (forced-colors: active) {
   ui-color-picker [data-ui-part~='preview'] {
     border-block-end: 1px solid CanvasText;
-    forced-color-adjust: none;
-  }
-
-  ui-color-picker [data-ui-part~='channel-range'] {
-    forced-color-adjust: none;
   }
 }

@@ -88,43 +88,43 @@ Import from `@timelessui/components/css/<file>`. `tokens.css` is required by eve
 
 | Root                               | Stylesheets                                                                                 |
 | ---------------------------------- | ------------------------------------------------------------------------------------------- |
-| `ui-button`                        | `button.css`                                                                                |
-| `ui-toggle`                        | `toggle.css`                                                                                |
-| `ui-alert`                         | `alert.css`                                                                                 |
-| `ui-avatar`                        | `avatar.css`                                                                                |
-| `ui-badge`                         | `badge.css`                                                                                 |
-| `ui-separator`                     | `separator.css`                                                                             |
-| `ui-card`                          | `card.css`                                                                                  |
-| `ui-skeleton`                      | `skeleton.css`                                                                              |
-| `ui-progress`                      | `progress.css`                                                                              |
+| `ui-button`                        | `core/button.css`, `button.css`                                                             |
+| `ui-toggle`                        | `core/toggle.css`, `toggle.css`                                                             |
+| `ui-alert`                         | `core/alert.css`, `alert.css`                                                               |
+| `ui-avatar`                        | `core/avatar.css`, `avatar.css`                                                             |
+| `ui-badge`                         | `core/badge.css`, `badge.css`                                                               |
+| `ui-separator`                     | `core/separator.css`, `separator.css`                                                       |
+| `ui-card`                          | `core/card.css`, `card.css`                                                                 |
+| `ui-skeleton`                      | `core/skeleton.css`, `skeleton.css`                                                         |
+| `ui-progress`                      | `core/progress.css`, `progress.css`                                                         |
 | `ui-link`                          | `link.css`                                                                                  |
-| `ui-kbd`                           | `kbd.css`                                                                                   |
-| `ui-code`                          | `code.css`                                                                                  |
-| `ui-group`                         | `group.css`                                                                                 |
-| `ui-list`                          | `list.css`                                                                                  |
-| `ui-table`                         | `table.css`                                                                                 |
-| `ui-collapsible`                   | `collapsible.css`                                                                           |
-| `ui-spinner`                       | `spinner.css`                                                                               |
-| `ui-empty`                         | `empty.css`                                                                                 |
-| `ui-meter-field`                   | `meter.css`                                                                                 |
-| `ui-color-swatch`                  | `color-swatch.css`                                                                          |
-| `ui-field`                         | `forms.css`                                                                                 |
-| `ui-fieldset`                      | `forms.css`                                                                                 |
-| `ui-label`                         | `forms.css`                                                                                 |
-| `ui-description`                   | `forms.css`                                                                                 |
-| `ui-error`                         | `forms.css`                                                                                 |
-| `ui-input`                         | `forms.css`                                                                                 |
-| `ui-textarea`                      | `forms.css`                                                                                 |
-| `ui-select`                        | `forms.css`                                                                                 |
-| `ui-checkbox`                      | `forms.css`                                                                                 |
-| `ui-radio`                         | `forms.css`                                                                                 |
-| `ui-choice`                        | `forms.css`                                                                                 |
-| `ui-choice-group`                  | `forms.css`                                                                                 |
-| `ui-switch`                        | `forms.css`                                                                                 |
-| `ui-range`                         | `range.css`                                                                                 |
-| `ui-file`                          | `forms.css`                                                                                 |
-| `ui-tabs`                          | `tabs.css`                                                                                  |
-| `ui-dialog`                        | `dialog.css`                                                                                |
+| `ui-kbd`                           | `core/kbd.css`, `kbd.css`                                                                   |
+| `ui-code`                          | `core/code.css`, `code.css`                                                                 |
+| `ui-group`                         | `core/group.css`, `group.css`                                                               |
+| `ui-list`                          | `core/list.css`, `list.css`                                                                 |
+| `ui-table`                         | `core/table.css`, `table.css`                                                               |
+| `ui-collapsible`                   | `core/collapsible.css`, `collapsible.css`                                                   |
+| `ui-spinner`                       | `core/spinner.css`, `spinner.css`                                                           |
+| `ui-empty`                         | `core/empty.css`, `empty.css`                                                               |
+| `ui-meter-field`                   | `core/meter.css`, `meter.css`                                                               |
+| `ui-color-swatch`                  | `core/color-swatch.css`, `color-swatch.css`                                                 |
+| `ui-field`                         | `core/forms.css`, `forms.css`                                                               |
+| `ui-fieldset`                      | `core/forms.css`, `forms.css`                                                               |
+| `ui-label`                         | `core/forms.css`, `forms.css`                                                               |
+| `ui-description`                   | `core/forms.css`, `forms.css`                                                               |
+| `ui-error`                         | `core/forms.css`, `forms.css`                                                               |
+| `ui-input`                         | `core/forms.css`, `forms.css`                                                               |
+| `ui-textarea`                      | `core/forms.css`, `forms.css`                                                               |
+| `ui-select`                        | `core/forms.css`, `forms.css`                                                               |
+| `ui-checkbox`                      | `core/forms.css`, `forms.css`                                                               |
+| `ui-radio`                         | `core/forms.css`, `forms.css`                                                               |
+| `ui-choice`                        | `core/forms.css`, `forms.css`                                                               |
+| `ui-choice-group`                  | `core/forms.css`, `forms.css`                                                               |
+| `ui-switch`                        | `core/forms.css`, `forms.css`                                                               |
+| `ui-range`                         | `core/range.css`, `range.css`                                                               |
+| `ui-file`                          | `core/forms.css`, `forms.css`                                                               |
+| `ui-tabs`                          | `core/tabs.css`, `tabs.css`                                                                 |
+| `ui-dialog`                        | `core/dialog.css`, `dialog.css`                                                             |
 | `ui-sheet`                         | `core/sheet.css`, `sheet.css`                                                               |
 | `ui-popover`                       | `core/floating.css`, `core/popover.css`, `popover.css`                                      |
 | `ui-hover-card`                    | `core/floating.css`, `core/popover.css`, `popover.css`                                      |
@@ -132,17 +132,17 @@ Import from `@timelessui/components/css/<file>`. `tokens.css` is required by eve
 | `ui-menu`                          | `core/floating.css`, `core/menu.css`, `menu.css`                                            |
 | `ui-menu-button`                   | `core/floating.css`, `core/menu.css`, `menu.css`                                            |
 | `ui-context-menu`                  | `core/context-menu.css`, `core/menu.css`, `context-menu.css`, `menu.css`                    |
-| `ui-toolbar`                       | `toolbar.css`                                                                               |
-| `ui-radio-group`                   | `forms.css`, `choice-groups.css`                                                            |
-| `ui-checkbox-group`                | `forms.css`, `choice-groups.css`                                                            |
+| `ui-toolbar`                       | `core/toolbar.css`, `toolbar.css`                                                           |
+| `ui-radio-group`                   | `core/choice-groups.css`, `core/forms.css`, `choice-groups.css`, `forms.css`                |
+| `ui-checkbox-group`                | `core/choice-groups.css`, `core/forms.css`, `choice-groups.css`, `forms.css`                |
 | `ui-listbox`                       | `core/listbox.css`, `core/options.css`, `listbox.css`, `options.css`                        |
 | `ui-select`                        | `core/floating.css`, `core/options.css`, `core/select.css`, `options.css`, `select.css`     |
 | `ui-combobox`                      | `core/combobox.css`, `core/floating.css`, `core/options.css`, `combobox.css`, `options.css` |
 | `ui-toaster`                       | `core/toast.css`, `toast.css`                                                               |
 | `ui-toast`                         | `core/toast.css`, `toast.css`                                                               |
-| `ui-toggle-group`                  | `toggle.css`                                                                                |
-| `ui-number-stepper`                | `number-stepper.css`                                                                        |
-| `ui-color-picker`                  | `color-picker.css`                                                                          |
-| `ui-form`                          | `form.css`                                                                                  |
-| `ui-range-field`                   | `range-field.css`                                                                           |
-| `ui-otp-field`                     | `forms.css`, `otp-field.css`                                                                |
+| `ui-toggle-group`                  | `core/toggle.css`, `toggle.css`                                                             |
+| `ui-number-stepper`                | `core/number-stepper.css`, `number-stepper.css`                                             |
+| `ui-color-picker`                  | `core/color-picker.css`, `color-picker.css`                                                 |
+| `ui-form`                          | `core/form.css`                                                                             |
+| `ui-range-field`                   | `core/range-field.css`, `range-field.css`                                                   |
+| `ui-otp-field`                     | `core/forms.css`, `core/otp-field.css`, `forms.css`, `otp-field.css`                        |

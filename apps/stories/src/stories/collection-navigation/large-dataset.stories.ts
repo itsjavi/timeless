@@ -1,4 +1,5 @@
 import type { StoryLiteMeta, StoryLiteStoryDefinition } from '@storylite/storylite'
+import coreButtonCss from '@timelessui/components/css/core/button.css?raw'
 import buttonCss from '@timelessui/components/css/button.css?raw'
 import comboboxCss from '@timelessui/components/css/combobox.css?raw'
 import corePopoverCss from '@timelessui/components/css/core/popover.css?raw'
@@ -22,6 +23,7 @@ const meta: StoryLiteMeta = {
     css: [
       tokensCss,
       themeCss,
+      coreButtonCss,
       buttonCss,
       floatingCss,
       corePopoverCss,

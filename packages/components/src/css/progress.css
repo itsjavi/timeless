@@ -1,6 +1,5 @@
 @layer ui.components {
   .ui-progress {
-    display: grid;
     gap: var(--ui-space-2);
     color: var(--ui-fg);
   }
@@ -12,7 +11,6 @@
   .ui-progress > progress {
     inline-size: 100%;
     block-size: var(--ui-progress-height, 0.75rem);
-    overflow: hidden;
     border: 1px solid var(--ui-line);
     border-radius: var(--ui-radius-pill);
     background: var(--ui-bg-control-muted);
@@ -55,7 +53,6 @@
   }
 
   .ui-progress :where([data-ui-part~='header']) {
-    display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: var(--ui-space-4);

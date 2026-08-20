@@ -1,0 +1,22 @@
+/*
+ * Dialog's boxes and the panel's scroll containment. Focus trapping, the backdrop, and the top layer
+ * all come from `showModal()`, not from CSS.
+ */
+
+@layer ui.components {
+  ui-dialog {
+    display: contents;
+  }
+
+  ui-dialog > dialog {
+    overflow: hidden;
+  }
+
+  ui-dialog > dialog > header {
+    display: grid;
+  }
+
+  ui-dialog > dialog > footer {
+    display: flex;
+  }
+}

@@ -13,11 +13,9 @@
   }
 
   pre.ui-code {
-    display: block;
     max-inline-size: 100%;
     border-color: var(--ui-line);
     padding: var(--ui-space-4);
-    overflow: auto;
     background: var(--ui-bg-surface);
     font-size: 0.875rem;
     white-space: pre;

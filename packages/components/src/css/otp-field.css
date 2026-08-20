@@ -6,8 +6,6 @@
    */
   ui-otp-field {
     --ui-otp-cell: 2.75rem;
-
-    display: flex;
     flex-wrap: wrap;
     gap: var(--ui-space-3);
     align-items: center;

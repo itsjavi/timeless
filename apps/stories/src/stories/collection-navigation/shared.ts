@@ -1,5 +1,7 @@
 import type { StoryLiteMeta } from '@storylite/storylite'
+import coreButtonCss from '@timelessui/components/css/core/button.css?raw'
 import buttonCss from '@timelessui/components/css/button.css?raw'
+import coreChoiceGroupCss from '@timelessui/components/css/core/choice-groups.css?raw'
 import choiceGroupCss from '@timelessui/components/css/choice-groups.css?raw'
 import comboboxCss from '@timelessui/components/css/combobox.css?raw'
 import contextMenuCss from '@timelessui/components/css/context-menu.css?raw'
@@ -11,6 +13,7 @@ import coreOptionsCss from '@timelessui/components/css/core/options.css?raw'
 import coreSelectCss from '@timelessui/components/css/core/select.css?raw'
 import coreComboboxCss from '@timelessui/components/css/core/combobox.css?raw'
 import floatingCss from '@timelessui/components/css/core/floating.css?raw'
+import coreFormsCss from '@timelessui/components/css/core/forms.css?raw'
 import formsCss from '@timelessui/components/css/forms.css?raw'
 import listboxCss from '@timelessui/components/css/listbox.css?raw'
 import optionsCss from '@timelessui/components/css/options.css?raw'
@@ -19,6 +22,7 @@ import popoverCss from '@timelessui/components/css/popover.css?raw'
 import selectCss from '@timelessui/components/css/select.css?raw'
 import themeCss from '@timelessui/components/css/theme-atmosphere.css?raw'
 import tokensCss from '@timelessui/components/css/tokens.css?raw'
+import coreToolbarCss from '@timelessui/components/css/core/toolbar.css?raw'
 import toolbarCss from '@timelessui/components/css/toolbar.css?raw'
 import { defineTimelessElements } from '@timelessui/components/define'
 import demoCss from '../styles.css?raw'
@@ -29,6 +33,7 @@ const collectionNavigationParameters = {
   css: [
     tokensCss,
     themeCss,
+    coreButtonCss,
     buttonCss,
     floatingCss,
     corePopoverCss,
@@ -37,8 +42,11 @@ const collectionNavigationParameters = {
     menuCss,
     coreContextMenuCss,
     contextMenuCss,
+    coreToolbarCss,
     toolbarCss,
+    coreFormsCss,
     formsCss,
+    coreChoiceGroupCss,
     choiceGroupCss,
     coreOptionsCss,
     optionsCss,

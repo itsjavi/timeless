@@ -12,8 +12,6 @@
    * class rather than a custom-element host.
    */
   :where(ui-radio-group, ui-checkbox-group) {
-    display: flex;
-    flex-direction: column;
     gap: var(--ui-space-3);
     min-inline-size: 0;
     color: var(--ui-fg);

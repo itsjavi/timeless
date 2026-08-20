@@ -14,6 +14,7 @@
 @layer ui.components {
   /* The option row. */
   :where(ui-listbox, ui-select, ui-combobox) :where([role='option']) {
+    grid-template-columns: 1fr auto;
     align-items: center;
     gap: var(--ui-space-2);
     min-block-size: 2rem;

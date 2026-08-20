@@ -1,8 +1,6 @@
 @layer ui.components {
   .ui-field {
     --ui-field-gap: var(--ui-space-2);
-
-    display: grid;
     gap: var(--ui-field-gap);
     min-inline-size: 0;
     color: var(--ui-fg);
@@ -27,7 +25,6 @@
   }
 
   .ui-field :where([data-ui-part~='control']) {
-    display: grid;
     gap: var(--ui-field-gap);
     min-inline-size: 0;
   }
@@ -95,7 +92,6 @@
   .ui-textarea {
     min-block-size: 6rem;
     padding: 0.625rem 0.75rem;
-    resize: vertical;
   }
 
   .ui-input:where([data-ui-size='sm']),
@@ -200,9 +196,6 @@
    */
   .ui-select {
     --ui-select-indicator: 0.625rem;
-
-    appearance: none;
-    color-scheme: light dark;
     padding-inline: 0.75rem calc(0.75rem + var(--ui-select-indicator) + var(--ui-space-3));
     background-image:
       linear-gradient(45deg, transparent 50%, currentColor 50%),
@@ -216,7 +209,6 @@
 
   .ui-select:where([data-ui-size='sm']) {
     --ui-select-indicator: 0.5rem;
-
     padding-inline: 0.625rem calc(0.625rem + var(--ui-select-indicator) + var(--ui-space-3));
     background-position:
       right calc(0.625rem + var(--ui-select-indicator) / 2) center,
@@ -225,7 +217,6 @@
 
   .ui-select:where([data-ui-size='lg']) {
     --ui-select-indicator: 0.75rem;
-
     padding-inline: 0.875rem calc(0.875rem + var(--ui-select-indicator) + var(--ui-space-3));
     background-position:
       right calc(0.875rem + var(--ui-select-indicator) / 2) center,
@@ -253,7 +244,6 @@
   }
 
   .ui-choice {
-    display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     gap: var(--ui-space-3);
     align-items: start;
@@ -274,7 +264,6 @@
   }
 
   .ui-choice :where([data-ui-part~='body']) {
-    display: grid;
     gap: var(--ui-space-1);
     min-inline-size: 0;
   }
@@ -298,8 +287,6 @@
    * only in which attribute selects the row, because one is a class and the other a custom element.
    */
   .ui-choice-group {
-    display: flex;
-    flex-direction: column;
     gap: var(--ui-space-3);
     min-inline-size: 0;
     margin: 0;
@@ -348,9 +335,6 @@
   .ui-fieldset {
     --ui-fieldset-gap: var(--ui-space-4);
     --ui-fieldset-padding: var(--ui-space-5);
-
-    display: flex;
-    flex-direction: column;
     gap: var(--ui-fieldset-gap);
     min-inline-size: 0;
     margin: 0;
@@ -401,9 +385,7 @@
   }
 
   .ui-switch {
-    appearance: none;
     box-sizing: border-box;
-    position: relative;
     inline-size: 2.25rem;
     block-size: 1.25rem;
     margin: 0;
@@ -435,6 +417,9 @@
   }
 
   .ui-switch:checked::before {
+    /* core-exempt: the knob is a theme-drawn `::before`, so it does not exist without this file, and
+       this offset is exactly what the `transition: translate` above animates. Placing a decoration is
+       not behavior. Its base `position: absolute` stays here for the same reason. */
     translate: 1rem 0;
   }
 

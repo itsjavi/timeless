@@ -1,0 +1,11 @@
+/*
+ * Button's box, and the `appearance` reset that stops a UA-drawn control fighting authored styling.
+ * Everything a button looks like is the theme's.
+ */
+
+@layer ui.components {
+  .ui-button {
+    appearance: none;
+    display: inline-flex;
+  }
+}

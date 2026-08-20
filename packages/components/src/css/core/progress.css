@@ -1,0 +1,17 @@
+/*
+ * Progress's box and the `overflow` that clips its fill to the track.
+ */
+
+@layer ui.components {
+  .ui-progress {
+    display: grid;
+  }
+
+  .ui-progress > progress {
+    overflow: hidden;
+  }
+
+  .ui-progress :where([data-ui-part~='header']) {
+    display: flex;
+  }
+}

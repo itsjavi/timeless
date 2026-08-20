@@ -1,0 +1,24 @@
+/*
+ * Number Stepper's boxes and the `appearance` resets that hide the UA spin buttons, which this
+ * component replaces with its own authored ones. Without the resets both sets render.
+ */
+
+@layer ui.components {
+  ui-number-stepper {
+    display: grid;
+  }
+
+  ui-number-stepper > input {
+    appearance: textfield;
+  }
+
+  ui-number-stepper > input::-webkit-inner-spin-button,
+  ui-number-stepper > input::-webkit-outer-spin-button {
+    appearance: none;
+  }
+
+  ui-number-stepper > :where(button, input):focus-visible {
+    position: relative;
+    z-index: 1;
+  }
+}

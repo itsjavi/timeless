@@ -1,0 +1,22 @@
+/*
+ * Tabs' boxes and the `appearance` reset on the tab buttons.
+ */
+
+@layer ui.components {
+  ui-tabs {
+    display: grid;
+  }
+
+  ui-tabs > [role='tablist'] {
+    display: flex;
+  }
+
+  ui-tabs [role='tab'] {
+    appearance: none;
+    display: inline-flex;
+  }
+
+  ui-tabs > [role='tabpanel'][hidden] {
+    display: none;
+  }
+}

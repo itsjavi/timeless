@@ -59,12 +59,19 @@
 
 ## 3. Extract core for the remainder
 
-- [ ] Extract core for the form surfaces: `forms`, `form`, `range`, `range-field`, `otp-field`,
+- [x] Extract core for the form surfaces: `forms`, `form`, `range`, `range-field`, `otp-field`,
       `number-stepper`, `choice-groups`
-- [ ] Extract core for the remaining components with behavior-critical declarations
-- [ ] Confirm `components.css` and `link.css` need no core file
-- [ ] Confirm every one of the 271 behavior-critical declarations is either in a core file or
-      deliberately left in the theme, with the reason recorded for each exception
+- [x] Extract core for the remaining components with behavior-critical declarations — 40 core
+      stylesheets in total
+- [x] Retire `src/css/form.css`, which held nothing but `display: contents`
+- [x] Let the `css()` registry factory accept a stylesheet list, as the two element factories
+      already did, so a CSS-only component can name both halves
+- [x] Confirm `components.css` and `link.css` need no core file
+- [x] Confirm every one of the 271 behavior-critical declarations is either in a core file or
+      deliberately left in the theme, with the reason recorded for each exception — 255 in core, 15
+      in the theme, all fifteen enumerated in RESULTS.md
+- [x] Give the gate the two exemptions the extraction actually needs, and print the explicit count
+      so it cannot grow quietly
 
 ## 4. Prove the boundary mechanically
 
@@ -78,9 +85,11 @@
 - [x] Confirm the check runs inside `pnpm qa` rather than only in CI — it is in the package `build`
 - [x] Confirm every core stylesheet either reads no token or carries a literal fallback for each
       token it reads
-- [ ] Add each core stylesheet to the `css` array of every contract that needs it
-- [ ] Run `pnpm -F @timelessui/components run contracts:validate` and confirm both directions pass
-- [ ] Add each core stylesheet to the relevant example `styles`
+- [x] Add each core stylesheet to the `css` array of every contract that needs it — all 58 contracts
+- [x] Run `pnpm -F @timelessui/components run contracts:validate` and confirm both directions pass
+- [x] Add each core stylesheet to the relevant example `styles`, derived from the contracts each
+      example documents rather than by hand
+- [x] Add each core stylesheet to the StoryLite CSS bundles that render its component
 
 ## 5. Verify core-only rendering
 

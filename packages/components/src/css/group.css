@@ -1,8 +1,6 @@
 @layer ui.components {
   .ui-group {
     --ui-group-gap: var(--ui-space-2);
-
-    display: inline-flex;
     gap: var(--ui-group-gap);
     align-items: center;
     min-inline-size: 0;

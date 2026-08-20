@@ -1,0 +1,12 @@
+/*
+ * Form's box. `display: contents` is the whole of it — the element coordinates validation and submits;
+ * it must not introduce a box between the author's markup and their layout.
+ *
+ * There is no `form.css`: nothing in this component was ever cosmetic.
+ */
+
+@layer ui.components {
+  ui-form {
+    display: contents;
+  }
+}

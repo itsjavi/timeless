@@ -1,6 +1,5 @@
 @layer ui.components {
   .ui-meter-field {
-    display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--ui-space-2);
     align-items: center;
@@ -17,7 +16,6 @@
   }
 
   .ui-meter-field > meter {
-    appearance: none;
     grid-column: 1 / -1;
     inline-size: 100%;
     block-size: 0.625rem;
@@ -60,7 +58,6 @@
 
 @media (forced-colors: active) {
   .ui-meter-field > meter {
-    forced-color-adjust: none;
     color: Highlight;
   }
 }

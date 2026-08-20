@@ -1,14 +1,11 @@
 @layer ui.components {
   ui-toolbar {
-    display: flex;
     flex-wrap: wrap;
     gap: var(--ui-space-1);
     align-items: center;
   }
 
   ui-toolbar[orientation='vertical'] {
-    display: inline-flex;
-    flex-direction: column;
     align-items: stretch;
   }
 

@@ -1,7 +1,6 @@
 @layer ui.components {
   .ui-empty {
     --ui-empty-gap: var(--ui-space-3);
-    display: grid;
     justify-items: center;
     gap: var(--ui-empty-gap);
     max-inline-size: 32rem;
@@ -38,7 +37,6 @@
   }
 
   .ui-empty > [data-ui-part~='art'] {
-    display: grid;
     place-items: center;
     min-inline-size: 3rem;
     min-block-size: 3rem;
@@ -46,7 +44,6 @@
   }
 
   .ui-empty > [data-ui-part~='actions'] {
-    display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: var(--ui-space-2);

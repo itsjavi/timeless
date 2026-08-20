@@ -1,0 +1,17 @@
+/*
+ * Card's boxes.
+ */
+
+@layer ui.components {
+  .ui-card {
+    display: grid;
+  }
+
+  .ui-card :where([data-ui-part~='header'], [data-ui-part~='body'], [data-ui-part~='footer']) {
+    display: grid;
+  }
+
+  .ui-card :where([data-ui-part~='actions']) {
+    display: flex;
+  }
+}

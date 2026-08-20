@@ -6,8 +6,6 @@
     --ui-badge-gap: var(--ui-space-1);
     --ui-badge-height: 1.5rem;
     --ui-badge-padding-x: var(--ui-space-2);
-
-    display: inline-flex;
     align-items: center;
     gap: var(--ui-badge-gap);
     min-block-size: var(--ui-badge-height);

@@ -1,0 +1,17 @@
+/*
+ * List's boxes.
+ */
+
+@layer ui.components {
+  .ui-list {
+    display: grid;
+  }
+
+  .ui-list :where([data-ui-part~='title']) {
+    display: block;
+  }
+
+  .ui-list :where([data-ui-part~='description']) {
+    display: block;
+  }
+}

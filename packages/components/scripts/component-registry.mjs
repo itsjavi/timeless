@@ -308,7 +308,7 @@ const css = (
   name,
   kind: 'css',
   root: { kind: 'class', name: root },
-  css: [stylesheet],
+  css: [stylesheet].flat(),
   attributes,
   parts,
   states,
@@ -608,7 +608,7 @@ export const components = [
   css(
     'button',
     'ui-button',
-    'button.css',
+    ['core/button.css', 'button.css'],
     [
       attribute('data-ui-variant', 'string', {
         set: 'buttonVariants',
@@ -639,7 +639,7 @@ export const components = [
   css(
     'toggle',
     'ui-toggle',
-    'toggle.css',
+    ['core/toggle.css', 'toggle.css'],
     [
       attribute('data-ui-variant', 'string', {
         set: 'buttonVariants',
@@ -658,7 +658,7 @@ export const components = [
   css(
     'alert',
     'ui-alert',
-    'alert.css',
+    ['core/alert.css', 'alert.css'],
     [
       attribute('data-ui-variant', 'string', {
         set: 'alertVariants',
@@ -679,7 +679,7 @@ export const components = [
   css(
     'avatar',
     'ui-avatar',
-    'avatar.css',
+    ['core/avatar.css', 'avatar.css'],
     [
       size('primitiveSizes', 'Avatar diameter.'),
       attribute('data-ui-shape', 'string', {
@@ -702,7 +702,7 @@ export const components = [
   css(
     'badge',
     'ui-badge',
-    'badge.css',
+    ['core/badge.css', 'badge.css'],
     [
       attribute('data-ui-variant', 'string', {
         set: 'badgeVariants',
@@ -716,7 +716,7 @@ export const components = [
   css(
     'separator',
     'ui-separator',
-    'separator.css',
+    ['core/separator.css', 'separator.css'],
     [
       attribute('data-ui-orientation', 'string', {
         set: 'separatorOrientations',
@@ -736,7 +736,7 @@ export const components = [
   css(
     'card',
     'ui-card',
-    'card.css',
+    ['core/card.css', 'card.css'],
     [
       attribute('data-ui-variant', 'string', {
         set: 'cardVariants',
@@ -755,23 +755,28 @@ export const components = [
       part('actions', false, undefined, 'Container for card actions.'),
     ],
   ),
-  css('skeleton', 'ui-skeleton', 'skeleton.css', [
-    size('primitiveSizes', 'Line height for the `text` shape, diameter for `circle`.'),
-    attribute('data-ui-shape', 'string', {
-      set: 'skeletonShapes',
-      default: 'text',
-      description: 'Placeholder geometry.',
-    }),
-    attribute('data-ui-width', 'string', {
-      set: 'skeletonWidths',
-      default: 'full',
-      description: 'Inline size, so a group of lines can look like real text.',
-    }),
-  ]),
+  css(
+    'skeleton',
+    'ui-skeleton',
+    ['core/skeleton.css', 'skeleton.css'],
+    [
+      size('primitiveSizes', 'Line height for the `text` shape, diameter for `circle`.'),
+      attribute('data-ui-shape', 'string', {
+        set: 'skeletonShapes',
+        default: 'text',
+        description: 'Placeholder geometry.',
+      }),
+      attribute('data-ui-width', 'string', {
+        set: 'skeletonWidths',
+        default: 'full',
+        description: 'Inline size, so a group of lines can look like real text.',
+      }),
+    ],
+  ),
   css(
     'progress',
     'ui-progress',
-    'progress.css',
+    ['core/progress.css', 'progress.css'],
     [size('primitiveSizes', 'Track thickness and label size.'), density('compactDensities')],
     [
       part('header', false, undefined, 'Row holding the label and output.'),
@@ -786,27 +791,32 @@ export const components = [
       description: 'Link color intent.',
     }),
   ]),
-  css('kbd', 'ui-kbd', 'kbd.css'),
-  css('code', 'ui-code', 'code.css'),
-  css('group', 'ui-group', 'group.css', [
-    attribute('data-ui-orientation', 'string', {
-      set: 'groupOrientations',
-      default: 'horizontal',
-      description: 'Layout direction of the grouped controls.',
-    }),
-    density('primitiveDensities', 'Gap between grouped controls.'),
-    attribute('data-ui-wrap', 'boolean', {
-      description: 'Present to let the group wrap onto multiple lines.',
-    }),
-    attribute('data-ui-attached', 'boolean', {
-      description:
-        'Present to collapse the gap and join adjacent controls into one segmented control.',
-    }),
-  ]),
+  css('kbd', 'ui-kbd', ['core/kbd.css', 'kbd.css']),
+  css('code', 'ui-code', ['core/code.css', 'code.css']),
+  css(
+    'group',
+    'ui-group',
+    ['core/group.css', 'group.css'],
+    [
+      attribute('data-ui-orientation', 'string', {
+        set: 'groupOrientations',
+        default: 'horizontal',
+        description: 'Layout direction of the grouped controls.',
+      }),
+      density('primitiveDensities', 'Gap between grouped controls.'),
+      attribute('data-ui-wrap', 'boolean', {
+        description: 'Present to let the group wrap onto multiple lines.',
+      }),
+      attribute('data-ui-attached', 'boolean', {
+        description:
+          'Present to collapse the gap and join adjacent controls into one segmented control.',
+      }),
+    ],
+  ),
   css(
     'list',
     'ui-list',
-    'list.css',
+    ['core/list.css', 'list.css'],
     [
       attribute('data-ui-variant', 'string', {
         set: 'listVariants',
@@ -831,7 +841,7 @@ export const components = [
   css(
     'table',
     'ui-table',
-    'table.css',
+    ['core/table.css', 'table.css'],
     [
       density('compactDensities', 'Cell padding.'),
       attribute('data-ui-align', 'string', {
@@ -850,7 +860,7 @@ export const components = [
   css(
     'collapsible',
     'ui-collapsible',
-    'collapsible.css',
+    ['core/collapsible.css', 'collapsible.css'],
     [density('compactDensities', 'Summary and content padding.')],
     [],
     [],
@@ -873,7 +883,7 @@ export const components = [
   css(
     'spinner',
     'ui-spinner',
-    'spinner.css',
+    ['core/spinner.css', 'spinner.css'],
     [
       size('primitiveSizes', 'Spinner diameter.'),
       attribute('data-ui-variant', 'string', {
@@ -887,7 +897,7 @@ export const components = [
   css(
     'empty',
     'ui-empty',
-    'empty.css',
+    ['core/empty.css', 'empty.css'],
     [density('primitiveDensities', 'Vertical rhythm of the empty state.')],
     [
       part('art', false, undefined, 'Decorative illustration or icon.'),
@@ -897,14 +907,14 @@ export const components = [
   css(
     'meter',
     'ui-meter-field',
-    'meter.css',
+    ['core/meter.css', 'meter.css'],
     [],
     [part('hint', false, undefined, 'Supporting text under the meter.')],
   ),
   css(
     'colorSwatch',
     'ui-color-swatch',
-    'color-swatch.css',
+    ['core/color-swatch.css', 'color-swatch.css'],
     [],
     [
       part('chip', false, undefined, 'The color area. Set the color through `--ui-swatch-color`.'),
@@ -916,7 +926,7 @@ export const components = [
   css(
     'field',
     'ui-field',
-    'forms.css',
+    ['core/forms.css', 'forms.css'],
     [
       attribute('data-ui-layout', 'string', {
         set: 'fieldLayouts',
@@ -938,7 +948,7 @@ export const components = [
   css(
     'fieldset',
     'ui-fieldset',
-    'forms.css',
+    ['core/forms.css', 'forms.css'],
     [density('formDensities', 'Gap between grouped controls, and the padding around them.')],
     [
       part(
@@ -965,13 +975,13 @@ export const components = [
       ),
     ],
   ),
-  css('label', 'ui-label', 'forms.css'),
-  css('description', 'ui-description', 'forms.css'),
-  css('error', 'ui-error', 'forms.css'),
+  css('label', 'ui-label', ['core/forms.css', 'forms.css']),
+  css('description', 'ui-description', ['core/forms.css', 'forms.css']),
+  css('error', 'ui-error', ['core/forms.css', 'forms.css']),
   css(
     'input',
     'ui-input',
-    'forms.css',
+    ['core/forms.css', 'forms.css'],
     [size('formControlSizes')],
     [],
     [
@@ -982,7 +992,7 @@ export const components = [
   css(
     'textarea',
     'ui-textarea',
-    'forms.css',
+    ['core/forms.css', 'forms.css'],
     [size('formControlSizes')],
     [],
     [
@@ -993,7 +1003,7 @@ export const components = [
   css(
     'nativeSelect',
     'ui-select',
-    'forms.css',
+    ['core/forms.css', 'forms.css'],
     [
       size(
         'formControlSizes',
@@ -1015,7 +1025,7 @@ export const components = [
   css(
     'checkbox',
     'ui-checkbox',
-    'forms.css',
+    ['core/forms.css', 'forms.css'],
     [],
     [],
     [
@@ -1026,7 +1036,7 @@ export const components = [
   css(
     'radio',
     'ui-radio',
-    'forms.css',
+    ['core/forms.css', 'forms.css'],
     [],
     [],
     [
@@ -1037,7 +1047,7 @@ export const components = [
   css(
     'choice',
     'ui-choice',
-    'forms.css',
+    ['core/forms.css', 'forms.css'],
     [density('formDensities', 'Gap between the control and its label.')],
     [
       part('body', false, undefined, 'Wrapper for the title and description beside the control.'),
@@ -1048,7 +1058,7 @@ export const components = [
   css(
     'choiceGroup',
     'ui-choice-group',
-    'forms.css',
+    ['core/forms.css', 'forms.css'],
     [
       attribute('data-ui-orientation', 'string', {
         set: 'choiceGroupOrientations',
@@ -1073,7 +1083,7 @@ export const components = [
   css(
     'switch',
     'ui-switch',
-    'forms.css',
+    ['core/forms.css', 'forms.css'],
     [],
     [],
     [
@@ -1084,7 +1094,7 @@ export const components = [
   css(
     'range',
     'ui-range',
-    'range.css',
+    ['core/range.css', 'range.css'],
     [size('formControlSizes', 'Track thickness, thumb diameter, and label size.')],
     [part('hint', false, undefined, 'Supporting text or the live `<output>` value.')],
     [
@@ -1099,7 +1109,7 @@ export const components = [
   css(
     'file',
     'ui-file',
-    'forms.css',
+    ['core/forms.css', 'forms.css'],
     [],
     [],
     [
@@ -1114,7 +1124,7 @@ export const components = [
     'UITabsElement',
     'createTabsElementClass',
     'defineTabsElement',
-    'tabs.css',
+    ['core/tabs.css', 'tabs.css'],
     [
       attribute('activation', 'string', {
         set: 'tabsActivations',
@@ -1173,7 +1183,7 @@ export const components = [
     'UIDialogElement',
     'createDialogElementClass',
     'defineDialogElement',
-    'dialog.css',
+    ['core/dialog.css', 'dialog.css'],
     [
       attribute('kind', 'string', {
         set: 'dialogKinds',
@@ -1604,7 +1614,7 @@ export const components = [
     'UIToolbarElement',
     'createToolbarElementClass',
     'defineToolbarElement',
-    'toolbar.css',
+    ['core/toolbar.css', 'toolbar.css'],
     [
       attribute('orientation', 'string', {
         set: 'toolbarOrientations',
@@ -1637,7 +1647,7 @@ export const components = [
     'UIRadioGroupElement',
     'createRadioGroupElementClass',
     'defineRadioGroupElement',
-    ['forms.css', 'choice-groups.css'],
+    ['core/choice-groups.css', 'core/forms.css', 'choice-groups.css', 'forms.css'],
     [
       attribute('orientation', 'string', {
         set: 'choiceGroupOrientations',
@@ -1675,7 +1685,7 @@ export const components = [
     'UICheckboxGroupElement',
     'createCheckboxGroupElementClass',
     'defineCheckboxGroupElement',
-    ['forms.css', 'choice-groups.css'],
+    ['core/choice-groups.css', 'core/forms.css', 'choice-groups.css', 'forms.css'],
     [
       attribute('orientation', 'string', {
         set: 'choiceGroupOrientations',
@@ -1970,7 +1980,7 @@ export const components = [
     'UIToggleGroupElement',
     'createToggleGroupElementClass',
     'defineToggleGroupElement',
-    'toggle.css',
+    ['core/toggle.css', 'toggle.css'],
     [
       attribute('attached', 'boolean', {
         property: false,
@@ -2014,7 +2024,7 @@ export const components = [
     'UINumberStepperElement',
     'createNumberStepperElementClass',
     'defineNumberStepperElement',
-    'number-stepper.css',
+    ['core/number-stepper.css', 'number-stepper.css'],
     [],
     [
       part(
@@ -2044,7 +2054,7 @@ export const components = [
     'UIColorPickerElement',
     'createColorPickerElementClass',
     'defineColorPickerElement',
-    'color-picker.css',
+    ['core/color-picker.css', 'color-picker.css'],
     [
       attribute('format', 'string', {
         set: 'colorPickerFormats',
@@ -2127,7 +2137,7 @@ export const components = [
     'UIFormElement',
     'createFormElementClass',
     'defineFormElement',
-    'form.css',
+    'core/form.css',
     [],
     [
       part(
@@ -2166,7 +2176,7 @@ export const components = [
     'UIRangeFieldElement',
     'createRangeFieldElementClass',
     'defineRangeFieldElement',
-    'range-field.css',
+    ['core/range-field.css', 'range-field.css'],
     [],
     [
       part(
@@ -2226,7 +2236,7 @@ export const components = [
     'UIOtpFieldElement',
     'createOtpFieldElementClass',
     'defineOtpFieldElement',
-    ['forms.css', 'otp-field.css'],
+    ['core/forms.css', 'core/otp-field.css', 'forms.css', 'otp-field.css'],
     [
       attribute('name', 'string', {
         description:

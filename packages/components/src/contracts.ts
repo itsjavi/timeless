@@ -147,7 +147,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-button',
     },
-    css: ['button.css'],
+    css: ['core/button.css', 'button.css'],
     attributes: [
       {
         name: 'data-ui-variant',
@@ -238,7 +238,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-toggle',
     },
-    css: ['toggle.css'],
+    css: ['core/toggle.css', 'toggle.css'],
     attributes: [
       {
         name: 'data-ui-variant',
@@ -282,7 +282,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-alert',
     },
-    css: ['alert.css'],
+    css: ['core/alert.css', 'alert.css'],
     attributes: [
       {
         name: 'data-ui-variant',
@@ -344,7 +344,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-avatar',
     },
-    css: ['avatar.css'],
+    css: ['core/avatar.css', 'avatar.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -401,7 +401,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-badge',
     },
-    css: ['badge.css'],
+    css: ['core/badge.css', 'badge.css'],
     attributes: [
       {
         name: 'data-ui-variant',
@@ -438,7 +438,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-separator',
     },
-    css: ['separator.css'],
+    css: ['core/separator.css', 'separator.css'],
     attributes: [
       {
         name: 'data-ui-orientation',
@@ -477,7 +477,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-card',
     },
-    css: ['card.css'],
+    css: ['core/card.css', 'card.css'],
     attributes: [
       {
         name: 'data-ui-variant',
@@ -550,7 +550,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-skeleton',
     },
-    css: ['skeleton.css'],
+    css: ['core/skeleton.css', 'skeleton.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -588,7 +588,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-progress',
     },
-    css: ['progress.css'],
+    css: ['core/progress.css', 'progress.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -659,7 +659,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-kbd',
     },
-    css: ['kbd.css'],
+    css: ['core/kbd.css', 'kbd.css'],
     attributes: [],
     parts: [],
     states: [],
@@ -672,7 +672,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-code',
     },
-    css: ['code.css'],
+    css: ['core/code.css', 'code.css'],
     attributes: [],
     parts: [],
     states: [],
@@ -685,7 +685,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-group',
     },
-    css: ['group.css'],
+    css: ['core/group.css', 'group.css'],
     attributes: [
       {
         name: 'data-ui-orientation',
@@ -726,7 +726,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-list',
     },
-    css: ['list.css'],
+    css: ['core/list.css', 'list.css'],
     attributes: [
       {
         name: 'data-ui-variant',
@@ -789,7 +789,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-table',
     },
-    css: ['table.css'],
+    css: ['core/table.css', 'table.css'],
     attributes: [
       {
         name: 'data-ui-density',
@@ -839,7 +839,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-collapsible',
     },
-    css: ['collapsible.css'],
+    css: ['core/collapsible.css', 'collapsible.css'],
     attributes: [
       {
         name: 'data-ui-density',
@@ -897,7 +897,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-spinner',
     },
-    css: ['spinner.css'],
+    css: ['core/spinner.css', 'spinner.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -934,7 +934,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-empty',
     },
-    css: ['empty.css'],
+    css: ['core/empty.css', 'empty.css'],
     attributes: [
       {
         name: 'data-ui-density',
@@ -969,7 +969,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-meter-field',
     },
-    css: ['meter.css'],
+    css: ['core/meter.css', 'meter.css'],
     attributes: [],
     parts: [
       {
@@ -989,7 +989,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-color-swatch',
     },
-    css: ['color-swatch.css'],
+    css: ['core/color-swatch.css', 'color-swatch.css'],
     attributes: [],
     parts: [
       {
@@ -1027,7 +1027,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-field',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'forms.css'],
     attributes: [
       {
         name: 'data-ui-layout',
@@ -1072,7 +1072,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-fieldset',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'forms.css'],
     attributes: [
       {
         name: 'data-ui-density',
@@ -1129,7 +1129,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-label',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'forms.css'],
     attributes: [],
     parts: [],
     states: [],
@@ -1142,7 +1142,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-description',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'forms.css'],
     attributes: [],
     parts: [],
     states: [],
@@ -1155,7 +1155,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-error',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'forms.css'],
     attributes: [],
     parts: [],
     states: [],
@@ -1168,7 +1168,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-input',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'forms.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -1203,7 +1203,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-textarea',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'forms.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -1238,7 +1238,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-select',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'forms.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -1279,7 +1279,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-checkbox',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'forms.css'],
     attributes: [],
     parts: [],
     states: [
@@ -1305,7 +1305,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-radio',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'forms.css'],
     attributes: [],
     parts: [],
     states: [
@@ -1331,7 +1331,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-choice',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'forms.css'],
     attributes: [
       {
         name: 'data-ui-density',
@@ -1372,7 +1372,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-choice-group',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'forms.css'],
     attributes: [
       {
         name: 'data-ui-orientation',
@@ -1422,7 +1422,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-switch',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'forms.css'],
     attributes: [],
     parts: [],
     states: [
@@ -1448,7 +1448,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-range',
     },
-    css: ['range.css'],
+    css: ['core/range.css', 'range.css'],
     attributes: [
       {
         name: 'data-ui-size',
@@ -1499,7 +1499,7 @@ export const componentContracts = {
       kind: 'class',
       name: 'ui-file',
     },
-    css: ['forms.css'],
+    css: ['core/forms.css', 'forms.css'],
     attributes: [],
     parts: [],
     states: [
@@ -1525,7 +1525,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-tabs',
     },
-    css: ['tabs.css'],
+    css: ['core/tabs.css', 'tabs.css'],
     attributes: [
       {
         name: 'activation',
@@ -1626,7 +1626,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-dialog',
     },
-    css: ['dialog.css'],
+    css: ['core/dialog.css', 'dialog.css'],
     attributes: [
       {
         name: 'kind',
@@ -2291,7 +2291,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-toolbar',
     },
-    css: ['toolbar.css'],
+    css: ['core/toolbar.css', 'toolbar.css'],
     attributes: [
       {
         name: 'orientation',
@@ -2342,7 +2342,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-radio-group',
     },
-    css: ['forms.css', 'choice-groups.css'],
+    css: ['core/choice-groups.css', 'core/forms.css', 'choice-groups.css', 'forms.css'],
     attributes: [
       {
         name: 'orientation',
@@ -2413,7 +2413,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-checkbox-group',
     },
-    css: ['forms.css', 'choice-groups.css'],
+    css: ['core/choice-groups.css', 'core/forms.css', 'choice-groups.css', 'forms.css'],
     attributes: [
       {
         name: 'orientation',
@@ -3419,7 +3419,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-toggle-group',
     },
-    css: ['toggle.css'],
+    css: ['core/toggle.css', 'toggle.css'],
     attributes: [
       {
         name: 'attached',
@@ -3499,7 +3499,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-number-stepper',
     },
-    css: ['number-stepper.css'],
+    css: ['core/number-stepper.css', 'number-stepper.css'],
     attributes: [],
     parts: [
       {
@@ -3545,7 +3545,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-color-picker',
     },
-    css: ['color-picker.css'],
+    css: ['core/color-picker.css', 'color-picker.css'],
     attributes: [
       {
         name: 'format',
@@ -3730,7 +3730,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-form',
     },
-    css: ['form.css'],
+    css: ['core/form.css'],
     attributes: [],
     parts: [
       {
@@ -3773,7 +3773,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-range-field',
     },
-    css: ['range-field.css'],
+    css: ['core/range-field.css', 'range-field.css'],
     attributes: [],
     parts: [
       {
@@ -3855,7 +3855,7 @@ export const componentContracts = {
       kind: 'element',
       name: 'ui-otp-field',
     },
-    css: ['forms.css', 'otp-field.css'],
+    css: ['core/forms.css', 'core/otp-field.css', 'forms.css', 'otp-field.css'],
     attributes: [
       {
         name: 'name',

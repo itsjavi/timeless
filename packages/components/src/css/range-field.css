@@ -14,8 +14,6 @@
      */
     --ui-range-thumb: 1.5rem;
     --ui-range-fill: var(--ui-accent);
-
-    display: grid;
     gap: var(--ui-space-3);
     min-inline-size: 0;
     color: var(--ui-fg);
@@ -26,8 +24,6 @@
     /* Fallbacks only. The element overwrites both with measured percentages. */
     --ui-range-fill-start: 0%;
     --ui-range-fill-end: 100%;
-
-    display: grid;
     grid-template-areas: 'thumbs';
     align-items: center;
     min-block-size: var(--ui-range-thumb);
@@ -49,17 +45,14 @@
   }
 
   ui-range-field :where([data-ui-part~='from'], [data-ui-part~='to']) {
-    appearance: none;
     grid-area: thumbs;
     inline-size: 100%;
     block-size: var(--ui-range-thumb);
     margin: 0;
     background: none;
-    pointer-events: none;
   }
 
   ui-range-field :where([data-ui-part~='from'], [data-ui-part~='to'])::-webkit-slider-thumb {
-    appearance: none;
     inline-size: var(--ui-range-thumb);
     block-size: var(--ui-range-thumb);
     box-sizing: border-box;
@@ -69,7 +62,6 @@
     box-shadow:
       0 0 0 1px var(--ui-line-strong),
       var(--ui-shadow-control);
-    pointer-events: auto;
   }
 
   ui-range-field :where([data-ui-part~='from'], [data-ui-part~='to'])::-moz-range-thumb {
@@ -82,7 +74,6 @@
     box-shadow:
       0 0 0 1px var(--ui-line-strong),
       var(--ui-shadow-control);
-    pointer-events: auto;
   }
 
   ui-range-field :where([data-ui-part~='from'], [data-ui-part~='to']):focus-visible {

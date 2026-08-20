@@ -16,6 +16,7 @@
   }
 
   ui-toast {
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--ui-space-4);
     align-items: start;
     border: 1px solid var(--ui-line);

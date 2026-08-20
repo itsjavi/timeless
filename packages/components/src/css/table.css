@@ -4,7 +4,6 @@
     min-inline-size: 0;
     inline-size: 100%;
     max-inline-size: 100%;
-    overflow: auto;
     border: 1px solid var(--ui-line);
     border-radius: var(--ui-radius-lg);
     background: var(--ui-bg-surface);
@@ -17,7 +16,6 @@
 
   .ui-table > table {
     inline-size: max(100%, var(--ui-table-min-inline-size, 34rem));
-    border-collapse: separate;
     border-spacing: 0;
     color: var(--ui-fg);
     font-size: 0.9375rem;
@@ -34,13 +32,11 @@
   }
 
   .ui-table :where([data-ui-part~='caption']) {
-    display: block;
     color: var(--ui-fg);
     font-weight: 750;
   }
 
   .ui-table :where([data-ui-part~='description']) {
-    display: block;
     margin-block-start: var(--ui-space-1);
     color: var(--ui-fg-muted);
     font-size: 0.875rem;

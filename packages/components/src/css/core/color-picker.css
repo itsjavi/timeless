@@ -1,0 +1,109 @@
+/*
+ * Color Picker's boxes, scroll containers, native-control resets, and forced-colors handling.
+ *
+ * The `appearance` resets are the load-bearing part: the channel sliders and the numeric inputs are
+ * native controls this component draws itself, and without the resets a UA-drawn slider and a UA spin
+ * button render on top of the authored anatomy. `forced-color-adjust: none` keeps the colour preview
+ * and the channel tracks showing real colour in forced-colors mode, where the whole point of the
+ * component is the colour it is showing.
+ *
+ * The unlayered `@media (forced-colors: active)` block matches the theme file's own structure. It is
+ * pre-existing and deliberately unchanged by milestone 028.
+ */
+
+@layer ui.components {
+  ui-color-picker {
+    display: grid;
+    overflow: hidden;
+  }
+
+  ui-color-picker[popover] {
+    overflow: auto;
+  }
+
+  ui-color-picker [data-ui-part~='preview'] {
+    display: grid;
+  }
+
+  ui-color-picker [data-ui-part~='preview-bar'] {
+    display: flex;
+  }
+
+  ui-color-picker [data-ui-part~='format-field'] {
+    position: relative;
+    display: inline-grid;
+  }
+
+  ui-color-picker [data-ui-part~='format'] {
+    appearance: none;
+  }
+
+  ui-color-picker [data-ui-part~='gamut-bar'] {
+    display: flex;
+  }
+
+  ui-color-picker [data-ui-part~='readout'] {
+    display: grid;
+  }
+
+  ui-color-picker [data-ui-part~='copy'] {
+    display: grid;
+  }
+
+  ui-color-picker [data-ui-part~='copied-icon'],
+  ui-color-picker:state(--copied) [data-ui-part~='copy-icon'] {
+    display: none;
+  }
+
+  ui-color-picker:state(--copied) [data-ui-part~='copied-icon'] {
+    display: block;
+  }
+
+  ui-color-picker :where([data-ui-part~='gamut']) {
+    overflow: hidden;
+  }
+
+  ui-color-picker [data-ui-part~='input-label'] {
+    position: absolute;
+    overflow: hidden;
+  }
+
+  ui-color-picker [data-ui-part~='channels'] {
+    display: grid;
+  }
+
+  ui-color-picker [data-ui-part~='channel'][hidden] {
+    display: none;
+  }
+
+  ui-color-picker [data-ui-part~='channel'] {
+    display: grid;
+  }
+
+  ui-color-picker [data-ui-part~='channel-range'] {
+    appearance: none;
+  }
+
+  ui-color-picker [data-ui-part~='channel-range']::-webkit-slider-thumb {
+    appearance: none;
+  }
+
+  ui-color-picker [data-ui-part~='channel-input'] {
+    appearance: textfield;
+  }
+
+  ui-color-picker [data-ui-part~='channel-input']::-webkit-inner-spin-button,
+  ui-color-picker [data-ui-part~='channel-input']::-webkit-outer-spin-button {
+    appearance: none;
+  }
+}
+
+@media (forced-colors: active) {
+  ui-color-picker [data-ui-part~='preview'] {
+    forced-color-adjust: none;
+  }
+
+  ui-color-picker [data-ui-part~='channel-range'] {
+    forced-color-adjust: none;
+  }
+}

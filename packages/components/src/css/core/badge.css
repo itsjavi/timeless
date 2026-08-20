@@ -1,0 +1,9 @@
+/*
+ * Badge's box.
+ */
+
+@layer ui.components {
+  .ui-badge {
+    display: inline-flex;
+  }
+}

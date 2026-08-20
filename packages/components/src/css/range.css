@@ -2,8 +2,6 @@
   .ui-range {
     --ui-range-track: 0.375rem;
     --ui-range-thumb: 1rem;
-
-    display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--ui-space-2);
     align-items: center;
@@ -15,14 +13,12 @@
   .ui-range:where([data-ui-size='sm']) {
     --ui-range-track: 0.25rem;
     --ui-range-thumb: 0.875rem;
-
     font-size: 0.75rem;
   }
 
   .ui-range:where([data-ui-size='lg']) {
     --ui-range-track: 0.5rem;
     --ui-range-thumb: 1.25rem;
-
     font-size: 0.875rem;
   }
 
@@ -44,14 +40,12 @@
   }
 
   .ui-range > input[style*='--ui-range-gradient'] {
-    appearance: none;
     block-size: var(--ui-range-track);
     border-radius: var(--ui-radius-pill);
     background: var(--ui-range-gradient);
   }
 
   .ui-range > input[style*='--ui-range-gradient']::-webkit-slider-thumb {
-    appearance: none;
     inline-size: var(--ui-range-thumb);
     block-size: var(--ui-range-thumb);
     border: 2px solid var(--ui-bg-surface);

@@ -28,8 +28,19 @@
  *    custom properties written by the runtime — `--ui-floating-anchor`, `--ui-floating-left` — are
  *    exempt: they are state, not theme, and no literal default would be correct for them.
  *
- * `@keyframes` blocks are exempt from rule 3: an animation naming a property core places with is
- * motion, not a competing declaration.
+ * Rule 3 has three exemptions, because "behavior-critical" is a property of the declaration in
+ * context, not of the property name alone. The milestone's own baseline said as much: it counted
+ * `translate` as behavior-critical "because in this library it positions anchored surfaces rather than
+ * animating them, which is true of those surfaces and not necessarily of everything else".
+ *
+ * - `@keyframes` blocks. An animation naming a property core places with is motion, not a competing
+ *   declaration.
+ * - A `::before`/`::after` rule that declares `content`. The element is drawn by the theme and does
+ *   not exist without it, so positioning it is not behavior — there is nothing to behave. Splitting
+ *   such a rule would leave core absolutely positioning a pseudo-element that has no content.
+ * - A declaration preceded by a `core-exempt:` comment naming a reason. The escape hatch for genuine
+ *   one-offs, deliberately visible in the CSS and greppable. The count is printed on every run so
+ *   these cannot quietly multiply.
  */
 import { readFile, readdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -138,6 +149,7 @@ const themeTokens = new Set(
 if (themeTokens.size === 0) throw new Error('Could not read the Atmosphere token list')
 
 const failures = []
+let exempted = 0
 const files = (await readdir(coreRoot, { recursive: true }))
   .filter((name) => name.endsWith('.css'))
   .sort()
@@ -183,7 +195,7 @@ for (const file of files) {
   const themeSource = await readFile(resolve(cssRoot, file), 'utf8').catch(() => null)
   if (themeSource === null) continue
   themeChecked += 1
-  for (const [property, line] of declarations(stripKeyframes(stripComments(themeSource)))) {
+  for (const [property, line] of themeDeclarations(stripKeyframes(themeSource))) {
     if (!CORE_OWNED.has(property)) continue
     failures.push(
       `${file}:${line} declares \`${property}\`, which core/${file} owns — extraction must move a declaration, not leave one behind`,
@@ -196,8 +208,52 @@ if (failures.length > 0) {
 }
 
 console.log(
-  `Core boundary holds: ${coreDeclarations} declarations across ${files.length} core stylesheets, and ${themeChecked} theme counterparts leave every core-owned property to core.`,
+  `Core boundary holds: ${coreDeclarations} declarations across ${files.length} core stylesheets, ` +
+    `${themeChecked} theme counterparts leave every core-owned property to core, ` +
+    `and ${exempted} ${exempted === 1 ? 'declaration is' : 'declarations are'} marked \`core-exempt\`.`,
 )
+
+/**
+ * Rule-aware scan of a theme stylesheet, applying rule 3's exemptions. Rules are found by matching a
+ * selector against its brace-delimited body; the library's stylesheets are oxfmt-formatted and nest
+ * only at-rules, so a body never contains a nested style rule.
+ */
+function themeDeclarations(source) {
+  const found = []
+  for (const match of stripComments(source).matchAll(/([^{}]*)\{([^{}]*)\}/g)) {
+    const [, selector, body] = match
+    if (!selector.includes(':') && !selector.includes('[') && selector.trim().startsWith('@')) {
+      continue
+    }
+    // The theme drew this pseudo-element; positioning something that does not exist is not behavior.
+    if (/::(before|after)/.test(selector) && /(?:^|[{;])\s*content\s*:/.test(body)) continue
+    const bodyStart = match.index + selector.length + 1
+    const raw = source.slice(bodyStart, bodyStart + body.length)
+    for (const [property, offset] of bodyDeclarations(body)) {
+      // An explicit marker immediately above the declaration opts it out.
+      if (/\/\*\s*core-exempt:[^*]*\*\/\s*$/.test(raw.slice(0, offset))) {
+        exempted += 1
+        continue
+      }
+      found.push([property, lineOf(source, bodyStart + offset)])
+    }
+  }
+  return found
+}
+
+/**
+ * Offsets point at the property name itself, not at the `;` or block start the pattern anchors on, so
+ * that slicing up to the offset includes any comment sitting directly above the declaration. Anchored
+ * at the previous character, the first declaration in a block reported offset 0 and its `core-exempt`
+ * marker was invisible.
+ */
+function bodyDeclarations(body) {
+  const found = []
+  for (const match of body.matchAll(/(?:^|[{;])\s*((?:--)?[a-z][a-z0-9-]*)\s*:/gi)) {
+    found.push([match[1].toLowerCase(), match.index + match[0].indexOf(match[1])])
+  }
+  return found
+}
 
 function isCosmetic(property) {
   if (property.startsWith('--')) return false

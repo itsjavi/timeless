@@ -5,8 +5,6 @@
     --ui-alert-fg: var(--ui-fg);
     --ui-alert-icon-fg: var(--ui-fg-muted);
     --ui-alert-padding: var(--ui-space-5);
-
-    display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--ui-space-3);
     align-items: start;
@@ -53,7 +51,6 @@
   }
 
   .ui-alert :where([data-ui-part~='icon']) {
-    display: inline-grid;
     place-items: center;
     inline-size: 1.25rem;
     block-size: 1.25rem;
@@ -64,7 +61,6 @@
   }
 
   .ui-alert :where([data-ui-part~='content']) {
-    display: grid;
     gap: var(--ui-space-1);
     min-inline-size: 0;
   }
@@ -85,7 +81,6 @@
   }
 
   .ui-alert :where([data-ui-part~='actions']) {
-    display: flex;
     flex-wrap: wrap;
     gap: var(--ui-space-3);
     margin-block-start: var(--ui-space-2);
