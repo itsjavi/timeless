@@ -60,12 +60,13 @@
 
 ## 3. Stop shipping the contract registry to the browser
 
-- [ ] Extend `generate-elements.mjs` to emit `attributes.ts` with per-component defaults inlined
-- [ ] Confirm `attributes.ts` no longer imports `componentContracts`
-- [ ] Confirm `uiAttributes()` and `uiAttributeString()` behavior is unchanged, defaults included
-- [ ] Run `generate:check` and confirm no stale-file failure
-- [ ] Measure the gzip delta for an entry importing `uiAttributes`, and record before and after
-- [ ] Confirm `validate.ts` still has the contract record it needs
+- [x] Extend `generate-elements.mjs` to emit `attributes.ts` with per-component defaults inlined
+- [x] Confirm `attributes.ts` no longer imports `componentContracts`
+- [x] Confirm `uiAttributes()` and `uiAttributeString()` behavior is unchanged, defaults included
+- [x] Run `generate:check` and confirm no stale-file failure
+- [x] Measure the gzip delta for an entry importing `uiAttributes`, and record before and after —
+      19,328 → 1,573 gzip, 109,958 → 5,269 raw
+- [x] Confirm `validate.ts` still has the contract record it needs
 
 ## 4. One typeahead state machine
 

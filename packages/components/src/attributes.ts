@@ -25,8 +25,6 @@ import type {
   FormDensity,
 } from './values/forms'
 
-import { componentContracts } from './contracts'
-
 /** Configuration accepted by each CSS-only component root, keyed by contract name. */
 export type UIAttributeConfig = {
   button: {
@@ -182,6 +180,82 @@ export type UIAttributeComponent = keyof UIAttributeConfig
 export type UIAttributeResult = { class: string } & Record<`data-ui-${string}`, string>
 
 /**
+ * The root class and the declared attribute defaults, inlined at generation time. Reading the two
+ * out of `componentContracts` pulled the whole contract registry into the browser for a helper that
+ * emits strings, which made the typed convenience API the most expensive import in the package.
+ * `componentContracts` stays where it belongs: `validate.ts` and genuine introspection.
+ */
+const roots: Readonly<
+  Record<
+    UIAttributeComponent,
+    { readonly class: string; readonly defaults: Readonly<Record<string, string>> }
+  >
+> = {
+  button: { class: 'ui-button', defaults: { 'data-ui-variant': 'primary', 'data-ui-size': 'md' } },
+  toggle: { class: 'ui-toggle', defaults: { 'data-ui-variant': 'primary', 'data-ui-size': 'md' } },
+  alert: {
+    class: 'ui-alert',
+    defaults: { 'data-ui-variant': 'neutral', 'data-ui-density': 'normal' },
+  },
+  avatar: { class: 'ui-avatar', defaults: { 'data-ui-size': 'md', 'data-ui-shape': 'circle' } },
+  badge: { class: 'ui-badge', defaults: { 'data-ui-variant': 'neutral', 'data-ui-size': 'md' } },
+  separator: {
+    class: 'ui-separator',
+    defaults: { 'data-ui-orientation': 'horizontal', 'data-ui-variant': 'default' },
+  },
+  card: {
+    class: 'ui-card',
+    defaults: { 'data-ui-variant': 'surface', 'data-ui-density': 'normal' },
+  },
+  skeleton: {
+    class: 'ui-skeleton',
+    defaults: { 'data-ui-size': 'md', 'data-ui-shape': 'text', 'data-ui-width': 'full' },
+  },
+  progress: {
+    class: 'ui-progress',
+    defaults: { 'data-ui-size': 'md', 'data-ui-density': 'normal' },
+  },
+  link: { class: 'ui-link', defaults: { 'data-ui-variant': 'default' } },
+  kbd: { class: 'ui-kbd', defaults: {} },
+  code: { class: 'ui-code', defaults: {} },
+  group: {
+    class: 'ui-group',
+    defaults: { 'data-ui-orientation': 'horizontal', 'data-ui-density': 'normal' },
+  },
+  list: { class: 'ui-list', defaults: { 'data-ui-variant': 'plain', 'data-ui-density': 'normal' } },
+  table: { class: 'ui-table', defaults: { 'data-ui-density': 'normal', 'data-ui-align': 'start' } },
+  collapsible: { class: 'ui-collapsible', defaults: { 'data-ui-density': 'normal' } },
+  spinner: {
+    class: 'ui-spinner',
+    defaults: { 'data-ui-size': 'md', 'data-ui-variant': 'neutral' },
+  },
+  empty: { class: 'ui-empty', defaults: { 'data-ui-density': 'normal' } },
+  meter: { class: 'ui-meter-field', defaults: {} },
+  colorSwatch: { class: 'ui-color-swatch', defaults: {} },
+  field: {
+    class: 'ui-field',
+    defaults: { 'data-ui-layout': 'stacked', 'data-ui-density': 'normal' },
+  },
+  fieldset: { class: 'ui-fieldset', defaults: { 'data-ui-density': 'normal' } },
+  label: { class: 'ui-label', defaults: {} },
+  description: { class: 'ui-description', defaults: {} },
+  error: { class: 'ui-error', defaults: {} },
+  input: { class: 'ui-input', defaults: { 'data-ui-size': 'md' } },
+  textarea: { class: 'ui-textarea', defaults: { 'data-ui-size': 'md' } },
+  nativeSelect: { class: 'ui-select', defaults: { 'data-ui-size': 'md' } },
+  checkbox: { class: 'ui-checkbox', defaults: {} },
+  radio: { class: 'ui-radio', defaults: {} },
+  choice: { class: 'ui-choice', defaults: { 'data-ui-density': 'normal' } },
+  choiceGroup: {
+    class: 'ui-choice-group',
+    defaults: { 'data-ui-orientation': 'vertical', 'data-ui-density': 'normal' },
+  },
+  switch: { class: 'ui-switch', defaults: {} },
+  range: { class: 'ui-range', defaults: { 'data-ui-size': 'md' } },
+  file: { class: 'ui-file', defaults: {} },
+}
+
+/**
  * Builds the root class and `data-ui-*` attributes for a CSS-only component.
  *
  * ```ts
@@ -198,7 +272,7 @@ export function uiAttributes<TComponent extends UIAttributeComponent>(
 ): UIAttributeResult {
   const { class: extraClass, ...values } = config as Record<string, unknown>
   const result: UIAttributeResult = {
-    class: [componentContracts[component].root.name, extraClass].filter(Boolean).join(' '),
+    class: [roots[component].class, extraClass].filter(Boolean).join(' '),
   }
   for (const [key, value] of Object.entries(values)) {
     if (value === undefined || value === false) continue
@@ -232,14 +306,9 @@ export function uiAttributeString<TComponent extends UIAttributeComponent>(
   config: UIAttributeConfig[TComponent] & { class?: string } = {} as UIAttributeConfig[TComponent],
   options: UIAttributeStringOptions = {},
 ): string {
-  const defaults = new Map<string, string | undefined>(
-    componentContracts[component].attributes.map((attribute) => [
-      attribute.name,
-      'default' in attribute ? attribute.default : undefined,
-    ]),
-  )
+  const defaults = roots[component].defaults
   const entries = Object.entries(uiAttributes(component, config)).filter(
-    ([name, value]) => options.omitDefaults === false || defaults.get(name) !== value,
+    ([name, value]) => options.omitDefaults === false || defaults[name] !== value,
   )
   return entries.map(([name, value]) => `${name}="${escapeAttribute(value)}"`).join(' ')
 }

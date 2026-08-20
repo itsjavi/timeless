@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { uiAttributes, uiAttributeString } from './attributes'
+import { uiAttributes, uiAttributeString, type UIAttributeComponent } from './attributes'
+import { componentContracts } from './contracts'
 
 describe('uiAttributes', () => {
   it('emits the root class and the configured data attributes', () => {
@@ -76,5 +77,28 @@ describe('uiAttributeString', () => {
 
   it('serializes a presence-based boolean as an empty value', () => {
     expect(uiAttributeString('group', { wrap: true })).toBe('class="ui-group" data-ui-wrap=""')
+  })
+})
+
+/**
+ * The helper inlines each root class and its declared defaults so it does not pull the contract
+ * registry into the browser. That is only sound while the inlined copy still says what the registry
+ * says, for every component rather than the handful the cases above name.
+ */
+describe('the inlined contract data', () => {
+  const cssComponents = Object.entries(componentContracts).filter(
+    ([, contract]) => contract.root.kind === 'class',
+  )
+
+  it.each(cssComponents)('matches the %s contract', (name, contract) => {
+    const component = name as UIAttributeComponent
+    expect(uiAttributes(component).class).toBe(contract.root.name)
+
+    const defaults = Object.fromEntries(
+      contract.attributes
+        .filter((attribute) => 'default' in attribute)
+        .map((attribute) => [attribute.name.slice('data-ui-'.length), attribute.default]),
+    )
+    expect(uiAttributeString(component, defaults)).toBe(`class="${contract.root.name}"`)
   })
 })
