@@ -124,6 +124,7 @@ export type ComponentName =
   | 'tooltip'
   | 'menu'
   | 'menuButton'
+  | 'contextMenu'
   | 'toolbar'
   | 'radioGroup'
   | 'checkboxGroup'
@@ -1659,6 +1660,20 @@ export const componentContracts = {
         description:
           'Optional explicit close button inside the panel. Add `command="close"` and `commandfor` to close it from markup; the platform then also copies the button `value` into `returnValue`.',
       },
+      {
+        name: 'title',
+        required: false,
+        selector: "[data-ui-part~='title'], header > :where(h1, h2, h3)",
+        description:
+          "Names the dialog. Timeless points the panel's `aria-labelledby` at it, generating an id only if you left one off. A heading in the panel `<header>` counts without the token. An `aria-labelledby` you author always wins.",
+      },
+      {
+        name: 'description',
+        required: false,
+        selector: "[data-ui-part~='description'], header > p",
+        description:
+          'Supporting line under the title, wired with `aria-describedby` the same way. A `<p>` in the panel `<header>` counts without the token.',
+      },
     ],
     states: [],
     variables: [],
@@ -1673,7 +1688,7 @@ export const componentContracts = {
         },
       ],
       notes:
-        'Focus trapping, the backdrop, and the top layer all come from `showModal()`. Timeless moves initial focus into the panel and returns it to the trigger on close. Give the panel an accessible name with `aria-labelledby`. A dialog invoker gets no implicit `aria-expanded` from the platform, so Timeless keeps writing it on both the authored-command and click paths.',
+        'Focus trapping, the backdrop, and the top layer all come from `showModal()`. Timeless moves initial focus into the panel and returns it to the trigger on close, and names the panel from its `title` and `description` parts. A dialog invoker gets no implicit `aria-expanded` from the platform, so Timeless keeps writing it on both the authored-command and click paths.',
     },
   },
   sheet: {
@@ -1726,9 +1741,44 @@ export const componentContracts = {
         description:
           'Optional explicit close button. Add `command="close"` and `commandfor` to close it from markup, on modal and non-modal sheets alike; the platform then also copies the button `value` into `returnValue`.',
       },
+      {
+        name: 'drag-handle',
+        required: false,
+        selector: "[data-ui-part~='drag-handle']",
+        description:
+          'Optional grab area for the swipe gesture. A swipe works anywhere on the panel that is not a scrollable region, so this is an affordance rather than a requirement — but it is the one place a drag always starts, which is what a bottom sheet over a scrolling body needs. Decorative: hide it from assistive technology and keep a real close control.',
+      },
+      {
+        name: 'title',
+        required: false,
+        selector: "[data-ui-part~='title'], header > :where(h1, h2, h3)",
+        description:
+          "Names the sheet. Timeless points the panel's `aria-labelledby` at it, generating an id only if you left one off. A heading in the panel `<header>` counts without the token. An `aria-labelledby` you author always wins.",
+      },
+      {
+        name: 'description',
+        required: false,
+        selector: "[data-ui-part~='description'], header > p",
+        description:
+          'Supporting line under the title, wired with `aria-describedby` the same way. A `<p>` in the panel `<header>` counts without the token.',
+      },
     ],
-    states: [],
-    variables: [],
+    states: [
+      {
+        name: '--dragging',
+        source: 'custom-state',
+        public: false,
+        description:
+          'Set while a swipe is in progress, so the stylesheet can suspend the entry animation and the spring-back transition. Internal; do not author it.',
+      },
+    ],
+    variables: [
+      {
+        name: '--ui-sheet-drag-offset',
+        description:
+          'How far the panel has been dragged along its own axis, written as a length while a swipe is in progress and cleared on release. The stylesheet turns it into a `translate`; setting it yourself only moves the panel.',
+      },
+    ],
     events: [
       {
         name: 'ui-open',
@@ -1746,7 +1796,7 @@ export const componentContracts = {
         name: 'ui-dismiss',
         type: 'CustomEvent<SheetEventDetail>',
         description:
-          'Dispatched when the sheet closes through Escape or a backdrop click rather than an explicit control.',
+          'Dispatched when the sheet closes through Escape, a backdrop click, or a swipe past the dismiss threshold, rather than through an explicit control. The detail names which. A swipe reports `swipe` and behaves exactly like a backdrop click, because that is what it is: a pointer gesture on the overlay rather than a command.',
         cancelable: false,
       },
     ],
@@ -1760,7 +1810,7 @@ export const componentContracts = {
         },
       ],
       notes:
-        'A `modal` sheet traps focus through `showModal()`; without `modal` the page stays interactive and focus is not trapped. Timeless restores focus to the trigger either way.',
+        'A `modal` sheet traps focus through `showModal()`; without `modal` the page stays interactive and focus is not trapped. Timeless restores focus to the trigger either way, including after a swipe. Naming comes from the `title` and `description` parts. Swipe-to-dismiss is an addition, never the only way out: Escape and a close control both stay, so the sheet is fully operable without a pointer.',
     },
   },
   popover: {
@@ -1903,7 +1953,7 @@ export const componentContracts = {
         },
       ],
       notes:
-        'The card opens on both pointer hover and keyboard focus, so it is reachable without a mouse. `close-delay` keeps it open while the pointer crosses the gap into the surface. Never put the only copy of important content here.',
+        'The card opens on both pointer hover and keyboard focus, so it is reachable without a mouse, and clicking the trigger toggles it. `close-delay` keeps it open while the pointer crosses the gap into the surface, so the content inside is reachable. Under `variant="tooltip"` the click toggle is dropped — a tooltip describes its trigger rather than disclosing a surface — while the gap-crossing behavior stays, because WCAG 2.2 SC 1.4.13 requires it. See [Tooltip](/docs/components/tooltip/). Never put the only copy of important content here.',
     },
   },
   tooltip: {
@@ -1950,7 +2000,7 @@ export const componentContracts = {
         },
       ],
       notes:
-        'A tooltip names or describes its trigger and nothing else. Point the trigger at it with `aria-describedby` and give the surface `role="tooltip"`; Timeless wires relationships, never content. It opens on hover and on keyboard focus, so it is reachable without a mouse. Because it holds no interactive content and cannot be reached by Tab, never put the only copy of anything here — for content the user may want to read at length or click, use Hover Card instead.',
+        'A tooltip names or describes its trigger and nothing else. Point the trigger at it with `aria-describedby` and give the surface `role="tooltip"`; Timeless wires relationships, never content. It opens on hover and on keyboard focus, so it is reachable without a mouse, and closes when either leaves. It is deliberately not a disclosure: clicking the trigger does not toggle the label, so a trigger that is also a button keeps its own job on click. The pointer can still be moved onto the label without it disappearing, because WCAG 2.2 SC 1.4.13 requires hover-triggered content to be hoverable — reading a label is not interacting with it. Never put the only copy of anything here — for content the user may want to read at length or click, use Hover Card instead. Both variants share one `open-delay` / `close-delay` pair, documented once on Hover Card; a tooltip that should appear faster sets the attribute rather than getting a different default, because one attribute cannot have two.',
     },
   },
   menu: {
@@ -1984,7 +2034,41 @@ export const componentContracts = {
         required: true,
         selector: "[role^='menuitem']",
         description:
-          'One command. Use `role="menuitem"`, or `menuitemcheckbox` / `menuitemradio` with `aria-checked`. Timeless manages roving `tabindex` and typeahead.',
+          'One command. A menu-item role is what makes an element an item — a bare `<button>` inside the menu is not one. Use `role="menuitem"`, or `menuitemcheckbox` / `menuitemradio` for a checkable command. Timeless manages roving `tabindex`, typeahead, and `aria-checked`.',
+      },
+      {
+        name: 'group',
+        required: false,
+        selector: "[data-ui-part~='group']",
+        description:
+          'A `role="group"` wrapper around related items. Items inside it stay navigable, and a `menuitemradio` clears only the radios in its own group.',
+      },
+      {
+        name: 'group-label',
+        required: false,
+        selector: "[data-ui-part~='group-label']",
+        description: 'The label for a `group`, wired to it with `aria-labelledby`.',
+      },
+      {
+        name: 'separator',
+        required: false,
+        selector: "[role='separator'], hr",
+        description:
+          'A divider between items or groups. Navigation and typeahead skip it, because it carries no menu-item role.',
+      },
+      {
+        name: 'submenu-trigger',
+        required: false,
+        selector: "[aria-haspopup='menu']",
+        description:
+          'An item that owns a submenu. You do not author this token: give the item `aria-controls` naming the submenu, or put the submenu immediately after it, and Timeless writes `aria-haspopup`, `aria-controls`, and `aria-expanded`.',
+      },
+      {
+        name: 'submenu',
+        required: false,
+        selector: "ui-menu[popover], [role='menu'][popover]",
+        description:
+          'A nested menu opened from a `submenu-trigger`. Author it as a popover so it stays hidden before enhancement; Timeless adds `popover="auto"` if you leave it off.',
       },
     ],
     states: [],
@@ -1994,7 +2078,21 @@ export const componentContracts = {
         description: 'Minimum width of the menu surface.',
       },
     ],
-    events: [],
+    events: [
+      {
+        name: 'ui-before-change',
+        type: 'CustomEvent<MenuCheckedDetail>',
+        description:
+          'Cancelable proposal dispatched before a checkable item changes. Call `preventDefault()` to reject the transition and keep the current value.',
+        cancelable: true,
+      },
+      {
+        name: 'ui-change',
+        type: 'CustomEvent<MenuCheckedDetail>',
+        description: 'Dispatched after a checkable item has changed. Bubbles and is composed.',
+        cancelable: false,
+      },
+    ],
     accessibility: {
       pattern: 'menubar',
       patternLabel: 'Menu and Menubar',
@@ -2005,11 +2103,21 @@ export const componentContracts = {
         },
         {
           key: 'Home / End',
-          action: 'Move focus to the first or last enabled item.',
+          action: 'Move focus to the first or last item.',
         },
         {
           key: 'Enter / Space',
-          action: 'Activate the focused item.',
+          action: 'Activate the focused item, or open its submenu.',
+        },
+        {
+          key: 'Arrow Right',
+          action:
+            'Open the focused item\'s submenu and focus its first enabled item. Under `dir="rtl"` this is Arrow Left.',
+        },
+        {
+          key: 'Arrow Left',
+          action:
+            'Close the submenu and return focus to the item that opened it. From a first-level submenu of a menubar, move along the bar instead. Under `dir="rtl"` this is Arrow Right.',
         },
         {
           key: 'Escape',
@@ -2021,7 +2129,7 @@ export const componentContracts = {
         },
       ],
       notes:
-        'The menu is one tab stop and disabled items are skipped. Typeahead matching is locale-aware.',
+        'The menu is one tab stop. Disabled items stay reachable with the arrow keys, which is the APG treatment — a command you cannot use is easier to understand than one that is not there — but they never take the resting tab stop and never activate. Activating a `menuitemcheckbox` toggles its `aria-checked`; activating a `menuitemradio` sets it and clears the other radios in its group. Both dispatch a cancelable `ui-before-change` first, so a consumer that already owns `aria-checked` can keep owning it. Typeahead matching is locale-aware. Submenus open on the keyboard and on click; there is deliberately no hover-with-intent opening.',
     },
   },
   menuButton: {
@@ -2096,6 +2204,85 @@ export const componentContracts = {
       ],
       notes:
         'Escape and outside-click dismissal come from the Popover API rather than from Timeless. The trigger carries `aria-haspopup="menu"` and `aria-expanded`.',
+    },
+  },
+  contextMenu: {
+    kind: 'custom-element',
+    root: {
+      kind: 'element',
+      name: 'ui-context-menu',
+    },
+    css: ['context-menu.css'],
+    attributes: [],
+    parts: [
+      {
+        name: 'target',
+        required: true,
+        selector: "[data-ui-part~='target']",
+        description:
+          'The region a secondary click opens the menu over. Give it a role that supports `aria-haspopup` and make it focusable — Timeless adds `tabindex="0"` when it has none, because the keyboard path cannot exist without a tab stop. It then wires `aria-haspopup`, `aria-controls`, and `aria-expanded`; the role and the accessible name stay yours.',
+      },
+      {
+        name: 'menu',
+        required: true,
+        selector: "ui-menu[popover], [role='menu'][popover]",
+        description:
+          'The menu surface, a `ui-menu` authored as a popover. Every item, group, separator, and submenu inside it is the [Menu](/docs/components/menu/) contract, unchanged — this element only decides when and where it opens.',
+      },
+    ],
+    states: [],
+    variables: [
+      {
+        name: '--ui-context-menu-x',
+        description:
+          'Horizontal position the surface opens at, written at runtime from the pointer or from the focused element. The stylesheet turns it into a clamped `left`.',
+      },
+      {
+        name: '--ui-context-menu-y',
+        description:
+          'Vertical position, the same way. Together these are the whole positioning input: there is no anchor element, because a pointer is not an element.',
+      },
+      {
+        name: '--ui-context-menu-inset',
+        description:
+          'Minimum gap kept between the surface and the viewport edge when the coordinates would push it off screen.',
+      },
+    ],
+    events: [
+      {
+        name: 'ui-open',
+        type: 'CustomEvent<ContextMenuToggleDetail>',
+        description: 'Dispatched after the context menu opens.',
+        cancelable: false,
+      },
+      {
+        name: 'ui-close',
+        type: 'CustomEvent<ContextMenuToggleDetail>',
+        description: 'Dispatched after the context menu closes.',
+        cancelable: false,
+      },
+    ],
+    accessibility: {
+      pattern: null,
+      patternLabel: 'Context Menu',
+      keys: [
+        {
+          key: 'Shift + F10',
+          action:
+            'Open the menu for the focused target. Some environments consume the shortcut before the page sees it, which is why the dedicated key below is also supported.',
+        },
+        {
+          key: 'Context Menu key',
+          action: 'Open the menu for the focused target.',
+        },
+        {
+          key: 'Escape',
+          action:
+            'Close the menu and return focus to the target. Handled by the Popover API and by Menu.',
+        },
+      ],
+      notes:
+        'The APG has no context-menu pattern, so this documents a composition rather than claiming one: a [Menu](/docs/components/menu/) surface, opened by a secondary click or by the keyboard. Everything inside is the menu pattern — roving focus, typeahead, submenu keys, checkable items. Escape, light dismiss, and top-layer stacking come from the Popover API. **This is the one Timeless component with no no-JavaScript fallback**: the platform has no declarative way to open a surface at pointer coordinates, so with scripting off the browser shows its own context menu and the authored `ui-menu` stays hidden. Never put a command here that is not also reachable another way.',
     },
   },
   toolbar: {

@@ -22,12 +22,18 @@ import {
   showModalCommand,
   supportsInvokerCommands,
 } from './invoker'
+import {
+  nameSurfaceFromParts,
+  SURFACE_DESCRIPTION_SELECTOR,
+  SURFACE_TITLE_SELECTOR,
+  type SurfaceLabelLike,
+} from './overlay-naming'
 import { queryOwnedPart } from './parts'
 import { sheetPositions } from './values/sheet'
 import type { SheetPosition } from './values/sheet'
 
 export { sheetPositions, type SheetPosition }
-export type SheetDismissSource = 'close' | 'escape' | 'outside'
+export type SheetDismissSource = 'close' | 'escape' | 'outside' | 'swipe'
 export type SheetEventSource = SheetDismissSource | 'api' | 'trigger'
 
 export type SheetEventDetail = {
@@ -55,6 +61,8 @@ export type SheetEnhancementParts = {
   readonly host: SheetElementLike
   readonly trigger: SheetTriggerLike | null
   readonly panel: NativeSheetDialogLike | null
+  readonly title?: SurfaceLabelLike | null
+  readonly description?: SurfaceLabelLike | null
 }
 
 export type SheetEnhancementOptions = {
@@ -91,6 +99,42 @@ export type SheetEnhancementResult =
 const TRIGGER_SELECTOR = "[data-ui-part~='trigger']"
 const PANEL_SELECTOR = 'dialog'
 const CLOSE_SELECTOR = "[data-ui-part~='close'], [formmethod='dialog']"
+const DRAG_HANDLE_SELECTOR = "[data-ui-part~='drag-handle']"
+const DRAG_OFFSET_PROPERTY = '--ui-sheet-drag-offset'
+const DRAGGING_STATE = '--dragging'
+
+/**
+ * The swipe thresholds.
+ *
+ * A pure distance rule, deliberately: velocity makes a fast flick dismiss from a shorter drag,
+ * which feels better and is far harder to assert. Distance is predictable, and it is the part that
+ * has to be right first. `SHEET_DRAG_RATIO` is measured against the panel's own extent along the
+ * drag axis, so a narrow sheet and a tall one ask for the same proportion of effort;
+ * `SHEET_DRAG_MINIMUM` stops a very small panel from closing on a stray few pixels.
+ */
+export const SHEET_DRAG_RATIO = 0.4
+export const SHEET_DRAG_MINIMUM = 48
+
+export type SheetDragAxis = 'x' | 'y'
+
+export type SheetDragRect = {
+  readonly top: number
+  readonly left: number
+  readonly right: number
+  readonly bottom: number
+}
+
+export type SheetDragViewport = {
+  readonly width: number
+  readonly height: number
+}
+
+export type SheetScrollableLike = {
+  readonly clientHeight: number
+  readonly clientWidth: number
+  readonly scrollHeight: number
+  readonly scrollWidth: number
+}
 
 export type UISheetElementConstructor = CustomElementConstructor & {
   elementName?: string
@@ -123,6 +167,23 @@ export function createSheetElementClass(targetWindow?: Window): UISheetElementCo
     #returnFocusTarget: FocusTarget | null = null
     #supportsInvokerCommands = false
     #syncingOpen = false
+    /**
+     * Where the gesture that produced the next `click` started.
+     *
+     * A backdrop dismissal is a click that both began and ended on the panel element itself. Without
+     * the first half, any drag inside the panel dismisses it: the browser fires `click` on the
+     * nearest common ancestor of the press and the release, which for a drag from the header to the
+     * body — or a swipe that ends past the panel edge — is the `<dialog>`.
+     */
+    #pointerDownTarget: EventTarget | null = null
+    #drag: {
+      readonly axis: SheetDragAxis
+      readonly direction: 1 | -1
+      readonly extent: number
+      readonly origin: number
+      readonly pointerId: number
+      progress: number
+    } | null = null
 
     protected override connected(): void {
       this.observeParts((signal) => this.enhance(signal))
@@ -135,11 +196,16 @@ export function createSheetElementClass(targetWindow?: Window): UISheetElementCo
 
     private enhance(signal: AbortSignal): void {
       this.#supportsInvokerCommands = supportsInvokerCommands(this.ownerDocument.defaultView)
+      const panel = this.panel
       const result = enhanceSheetParts(
         {
           host: this,
           trigger: this.trigger,
-          panel: this.panel,
+          panel,
+          title: panel ? queryOwnedPart<HTMLElement>(panel, SURFACE_TITLE_SELECTOR) : null,
+          description: panel
+            ? queryOwnedPart<HTMLElement>(panel, SURFACE_DESCRIPTION_SELECTOR)
+            : null,
         },
         {
           generatedId: nextAvailableSheetInstanceId(this.ownerDocument),
@@ -158,6 +224,10 @@ export function createSheetElementClass(targetWindow?: Window): UISheetElementCo
       this.on(this.panel, 'close', this.handleClose, { signal })
       this.on(this.panel, 'command', this.handlePanelCommand, { signal })
       this.on(this.panel, 'toggle', this.handlePanelToggle, { signal })
+      this.on(this.panel, 'pointerdown', this.handlePointerDown, { signal })
+      this.on(this.panel, 'pointermove', this.handlePointerMove, { signal })
+      this.on(this.panel, 'pointerup', this.handlePointerUp, { signal })
+      this.on(this.panel, 'pointercancel', this.handlePointerCancel, { signal })
       this.syncOpenState(this.panel.open || this.open)
       if (this.open && !this.panel.open) {
         this.openSheet('api')
@@ -222,7 +292,7 @@ export function createSheetElementClass(targetWindow?: Window): UISheetElementCo
         return
       }
 
-      if (this.modal && event.target === panel) {
+      if (this.modal && event.target === panel && this.#pointerDownTarget === panel) {
         this.dismissAndClose('outside')
         return
       }
@@ -288,6 +358,112 @@ export function createSheetElementClass(targetWindow?: Window): UISheetElementCo
       this.emit<SheetEventDetail>('ui-open', { source: 'trigger' })
     }
 
+    /**
+     * Swipe-to-dismiss.
+     *
+     * The gesture is a touch idiom, so a mouse only starts one from the `drag-handle` part — a
+     * mouse-down anywhere else in the panel is far more likely to be a text selection. Either way
+     * it is an addition: Escape and the close control are untouched, so the sheet stays fully
+     * operable without a pointer and with scripting off.
+     */
+    private handlePointerDown = (event: Event): void => {
+      const pointerEvent = asPointerEvent(event, this.ownerDocument.defaultView)
+      const panel = this.panel
+      if (!pointerEvent || !panel) return
+      this.#pointerDownTarget = pointerEvent.target
+      if (!panel.open || this.#drag) return
+      if (!pointerEvent.isPrimary || pointerEvent.button > 0) return
+
+      const target = pointerEvent.target
+      const onHandle = closestOwnedElement(panel, target, DRAG_HANDLE_SELECTOR) !== null
+      if (!onHandle && pointerEvent.pointerType === 'mouse') return
+
+      const axis = sheetDragAxis(resolveSheetPosition(this.position))
+      if (!onHandle && this.startedInScrollableRegion(panel, target, axis)) return
+
+      const rect = panel.getBoundingClientRect()
+      const view = this.ownerDocument.defaultView
+      this.#drag = {
+        axis,
+        direction: sheetDismissDirection(axis, rect, {
+          height: view?.innerHeight ?? 0,
+          width: view?.innerWidth ?? 0,
+        }),
+        extent: axis === 'x' ? rect.width : rect.height,
+        origin: axis === 'x' ? pointerEvent.clientX : pointerEvent.clientY,
+        pointerId: pointerEvent.pointerId,
+        progress: 0,
+      }
+      this.setCustomState(DRAGGING_STATE, true)
+      try {
+        panel.setPointerCapture(pointerEvent.pointerId)
+      } catch {
+        // Capture is an optimisation; the listeners are on the panel either way.
+      }
+    }
+
+    private handlePointerMove = (event: Event): void => {
+      const pointerEvent = asPointerEvent(event, this.ownerDocument.defaultView)
+      const drag = this.#drag
+      const panel = this.panel
+      if (!pointerEvent || !drag || !panel || pointerEvent.pointerId !== drag.pointerId) return
+
+      const position = drag.axis === 'x' ? pointerEvent.clientX : pointerEvent.clientY
+      drag.progress = sheetDragProgress(position - drag.origin, drag.direction)
+      // The one visual value JavaScript writes. The stylesheet decides what a length means here.
+      panel.style.setProperty(DRAG_OFFSET_PROPERTY, `${drag.progress * drag.direction}px`)
+    }
+
+    private handlePointerUp = (event: Event): void => {
+      const pointerEvent = asPointerEvent(event, this.ownerDocument.defaultView)
+      const drag = this.#drag
+      if (!pointerEvent || !drag || pointerEvent.pointerId !== drag.pointerId) return
+
+      const dismiss = shouldDismissSheetDrag(drag.progress, drag.extent)
+      this.endDrag()
+      if (dismiss) {
+        this.dismissAndClose('swipe')
+      }
+    }
+
+    private handlePointerCancel = (event: Event): void => {
+      const pointerEvent = asPointerEvent(event, this.ownerDocument.defaultView)
+      if (pointerEvent && this.#drag && pointerEvent.pointerId !== this.#drag.pointerId) return
+      this.endDrag()
+    }
+
+    /** Clears the gesture, letting the stylesheet spring the panel back to its edge. */
+    private endDrag(): void {
+      const drag = this.#drag
+      this.#drag = null
+      if (!drag) return
+
+      const panel = this.panel
+      try {
+        panel?.releasePointerCapture(drag.pointerId)
+      } catch {
+        // Already released, which is the normal case after `pointerup`.
+      }
+      // The state goes first: the spring-back transition is read from the style the change lands in.
+      this.setCustomState(DRAGGING_STATE, false)
+      panel?.style.removeProperty(DRAG_OFFSET_PROPERTY)
+    }
+
+    private startedInScrollableRegion(
+      panel: HTMLElement,
+      target: EventTarget | null,
+      axis: SheetDragAxis,
+    ): boolean {
+      const ElementConstructor = this.ownerDocument.defaultView?.Element
+      let node =
+        ElementConstructor && target instanceof ElementConstructor ? (target as Element) : null
+      while (node && node !== panel) {
+        if (canScrollInAxis(node, axis) && isScrollableInAxis(node, axis)) return true
+        node = node.parentElement
+      }
+      return false
+    }
+
     private handleCancel = (): void => {
       if (this.#commandDismiss) {
         this.#commandDismiss = false
@@ -299,6 +475,7 @@ export function createSheetElementClass(targetWindow?: Window): UISheetElementCo
     }
 
     private handleClose = (): void => {
+      this.endDrag()
       const source = this.#closeSource
       this.#commandDismiss = false
       this.#openedByCommand = false
@@ -402,6 +579,7 @@ export function enhanceSheetParts(
   const modal = options.modal ?? false
   const position = options.position ?? 'right'
   panel.setAttribute('role', 'dialog')
+  nameSurfaceFromParts(panel, parts, panel.id)
   syncSheetModal(panel, modal)
   // A dialog invoker gets no implicit `aria-expanded` from the platform the way a popover trigger
   // does, so these stay written on both paths.
@@ -419,6 +597,53 @@ export function enhanceSheetParts(
         ? 'authored'
         : 'listener',
   }
+}
+
+/** Which physical axis a sheet in this position is dragged along. */
+export function sheetDragAxis(position: SheetPosition): SheetDragAxis {
+  return position === 'top' || position === 'bottom' ? 'y' : 'x'
+}
+
+/**
+ * Which sign of pointer movement closes the sheet, read from where the panel actually sits.
+ *
+ * A sheet is flush against one viewport edge and closes by moving toward it. Deriving that from the
+ * measured rect rather than from `position` is what makes the gesture correct under `dir="rtl"`,
+ * where `position="right"` puts the panel against the physical left edge.
+ */
+export function sheetDismissDirection(
+  axis: SheetDragAxis,
+  rect: SheetDragRect,
+  viewport: SheetDragViewport,
+): 1 | -1 {
+  const startGap = axis === 'x' ? rect.left : rect.top
+  const endGap = axis === 'x' ? viewport.width - rect.right : viewport.height - rect.bottom
+  return startGap <= endGap ? -1 : 1
+}
+
+/**
+ * How far the panel has travelled toward its closing edge.
+ *
+ * Movement the other way is absorbed rather than applied: dragging a sheet off the edge it is
+ * anchored to would open a gap the stylesheet has no way to fill.
+ */
+export function sheetDragProgress(delta: number, direction: 1 | -1): number {
+  return Math.max(0, delta * direction)
+}
+
+/** Whether a released drag has gone far enough to dismiss. */
+export function shouldDismissSheetDrag(progress: number, extent: number): boolean {
+  return progress >= Math.max(SHEET_DRAG_MINIMUM, extent * SHEET_DRAG_RATIO)
+}
+
+/**
+ * Whether an element can scroll along the drag axis, in which case the gesture belongs to it.
+ * A sheet that stole the scroll of its own body would be unusable on touch.
+ */
+export function canScrollInAxis(element: SheetScrollableLike, axis: SheetDragAxis): boolean {
+  return axis === 'x'
+    ? element.scrollWidth > element.clientWidth
+    : element.scrollHeight > element.clientHeight
 }
 
 export function isSheetPosition(value: string): value is SheetPosition {
@@ -482,6 +707,23 @@ function closeValue(
   }
 
   return undefined
+}
+
+function asPointerEvent(
+  event: Event,
+  targetWindow: (Window & typeof globalThis) | null,
+): PointerEvent | null {
+  const PointerEventConstructor = targetWindow?.PointerEvent
+  return PointerEventConstructor && event instanceof PointerEventConstructor ? event : null
+}
+
+/** Whether the element's own overflow makes it a scroll container along the axis. */
+function isScrollableInAxis(element: Element, axis: SheetDragAxis): boolean {
+  const view = element.ownerDocument.defaultView
+  if (!view) return false
+  const computed = view.getComputedStyle(element)
+  const overflow = axis === 'x' ? computed.overflowX : computed.overflowY
+  return overflow === 'auto' || overflow === 'scroll' || overflow === 'overlay'
 }
 
 function isDisabledControl(control: HTMLElement): boolean {

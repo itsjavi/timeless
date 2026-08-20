@@ -15,7 +15,7 @@ import {
   syncFloatingAnchor,
   type FloatingPlacement,
 } from './floating'
-import { findMenuItems } from './menu'
+import { findMenuItems, firstEnabledMenuItemIndex } from './menu'
 import { isPopoverOpen } from './popover'
 import { queryOwnedPart } from './parts'
 
@@ -211,7 +211,11 @@ export function createMenuButtonElementClass(
       if (!content) return
       const menu = content.localName === 'ui-menu' ? content : content.querySelector('ui-menu')
       const items = menu ? findMenuItems(menu) : findMenuItems(content)
-      items[0]?.focus()
+      // A disabled first item is still reachable with the arrow keys; it is just not where opening
+      // the menu should land, because focus would arrive on a command that cannot be run.
+      const index = firstEnabledMenuItemIndex(items)
+      if (index === null) return
+      items[index]?.focus()
     }
 
     private syncOpenState(open: boolean): void {

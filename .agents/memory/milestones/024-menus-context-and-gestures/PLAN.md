@@ -1,5 +1,5 @@
 ---
-status: Accepted
+status: Implemented
 ---
 
 # Milestone 024 Plan: Menus, Context Menus, and Overlay Gestures

@@ -31,6 +31,7 @@ describe('define entrypoint', () => {
       'ui-hover-card',
       'ui-menu',
       'ui-menu-button',
+      'ui-context-menu',
       'ui-toolbar',
       'ui-radio-group',
       'ui-checkbox-group',

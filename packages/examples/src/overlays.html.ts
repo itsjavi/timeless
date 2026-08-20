@@ -55,6 +55,8 @@ export type SheetProps = {
   readonly description: string
   readonly body: string
   readonly triggerLabel?: string
+  /** Omit the swipe affordance, for a sheet that should only be closed by its controls. */
+  readonly dragHandle?: boolean
   readonly modal?: boolean
   readonly open?: boolean
   readonly position?: SheetPosition
@@ -213,6 +215,17 @@ export function createCollapsible(props: CollapsibleProps): string {
  * `dialog.returnValue`. Where the browser lacks them the component's click listener does the same
  * work instead, so this markup is correct either way.
  */
+/**
+ * The naming is authored rather than left to enhancement, and the `title` and `description` parts
+ * are marked anyway.
+ *
+ * The dialog opens from `command="show-modal"` before any script runs, which is the whole point of
+ * it — so the accessible name has to be there before any script runs too. Enhancement would supply
+ * one, and does for a panel whose author wired nothing, but it cannot supply one to a dialog the
+ * platform has already opened on a page with no bundle. The tokens say what each element is; the
+ * `aria-labelledby` and `aria-describedby` are what make the pre-enhancement panel correct, and
+ * Timeless never overwrites them.
+ */
 export function createDialog(props: DialogProps): string {
   const kind = optionalAttribute('kind', props.kind, 'dialog')
   const titleId = `${props.id}-title`
@@ -225,8 +238,8 @@ export function createDialog(props: DialogProps): string {
   )}</button>
   <dialog id="${escapeAttribute(props.id)}" aria-labelledby="${escapeAttribute(titleId)}" aria-describedby="${escapeAttribute(descriptionId)}">
     <header>
-      <h2 id="${escapeAttribute(titleId)}">${escapeHtml(props.title)}</h2>
-      <p id="${escapeAttribute(descriptionId)}">${escapeHtml(props.description)}</p>
+      <h2 data-ui-part="title" id="${escapeAttribute(titleId)}">${escapeHtml(props.title)}</h2>
+      <p data-ui-part="description" id="${escapeAttribute(descriptionId)}">${escapeHtml(props.description)}</p>
     </header>
     <section>
       <p>${escapeHtml(props.body)}</p>
@@ -253,18 +266,24 @@ export function createSheet(props: SheetProps): string {
   const descriptionId = `${props.id}-description`
   const invokes = `commandfor="${escapeAttribute(props.id)}"`
   const opens = props.modal ? ` command="show-modal" ${invokes}` : ''
+  // The grab affordance for swipe-to-dismiss. Decorative: the close button is the real control, so
+  // the handle is hidden from assistive technology and the sheet loses nothing without a pointer.
+  const dragHandle =
+    props.dragHandle === false
+      ? ''
+      : `\n  <div data-ui-part="drag-handle" aria-hidden="true"></div>`
 
   return `<ui-sheet${position}${modal}${open}>
   <button class="ui-button" data-ui-part="trigger" type="button"${opens}>${escapeHtml(
     props.triggerLabel ?? 'Open sheet',
   )}</button>
-  <dialog id="${escapeAttribute(props.id)}" aria-labelledby="${escapeAttribute(titleId)}" aria-describedby="${escapeAttribute(descriptionId)}">
+  <dialog id="${escapeAttribute(props.id)}" aria-labelledby="${escapeAttribute(titleId)}" aria-describedby="${escapeAttribute(descriptionId)}">${dragHandle}
     <header>
-      <h2 id="${escapeAttribute(titleId)}">${escapeHtml(props.title)}</h2>
+      <h2 data-ui-part="title" id="${escapeAttribute(titleId)}">${escapeHtml(props.title)}</h2>
       <button class="ui-button" data-ui-variant="ghost" data-ui-size="sm" data-ui-part="close" type="button" aria-label="Close sheet" command="close" ${invokes}>
         ${closeGlyph}
       </button>
-      <p id="${escapeAttribute(descriptionId)}">${escapeHtml(props.description)}</p>
+      <p data-ui-part="description" id="${escapeAttribute(descriptionId)}">${escapeHtml(props.description)}</p>
     </header>
     <section>
       <p>${escapeHtml(props.body)}</p>

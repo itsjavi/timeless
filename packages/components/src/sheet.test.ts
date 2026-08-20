@@ -1,8 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { showModalCommand } from './invoker'
 import {
+  canScrollInAxis,
   enhanceSheetParts,
   resolveSheetPosition,
+  sheetDismissDirection,
+  sheetDragAxis,
+  sheetDragProgress,
+  shouldDismissSheetDrag,
   syncSheetModal,
   type NativeSheetDialogLike,
 } from './sheet'
@@ -193,5 +198,96 @@ describe('sheet helpers', () => {
 
     syncSheetModal(panel, false)
     expect(panel.getAttribute('aria-modal')).toBeNull()
+  })
+})
+
+describe('sheet swipe geometry', () => {
+  const viewport = { width: 1024, height: 768 }
+
+  it('drags along the axis the position anchors to', () => {
+    expect(sheetDragAxis('right')).toBe('x')
+    expect(sheetDragAxis('left')).toBe('x')
+    expect(sheetDragAxis('top')).toBe('y')
+    expect(sheetDragAxis('bottom')).toBe('y')
+  })
+
+  it('closes toward whichever edge the panel actually sits against', () => {
+    const right = { top: 0, left: 576, right: 1024, bottom: 768 }
+    const left = { top: 0, left: 0, right: 448, bottom: 768 }
+    const top = { top: 0, left: 0, right: 1024, bottom: 384 }
+    const bottom = { top: 384, left: 0, right: 1024, bottom: 768 }
+
+    expect(sheetDismissDirection('x', right, viewport)).toBe(1)
+    expect(sheetDismissDirection('x', left, viewport)).toBe(-1)
+    expect(sheetDismissDirection('y', top, viewport)).toBe(-1)
+    expect(sheetDismissDirection('y', bottom, viewport)).toBe(1)
+  })
+
+  /**
+   * The rect is what makes the gesture right under `dir="rtl"`: `position="right"` puts the panel
+   * against the physical left edge there, and the measurement already knows that.
+   */
+  it('follows the panel rather than the position under a mirrored writing direction', () => {
+    const mirroredRight = { top: 0, left: 0, right: 448, bottom: 768 }
+
+    expect(sheetDismissDirection(sheetDragAxis('right'), mirroredRight, viewport)).toBe(-1)
+  })
+
+  it('absorbs movement away from the closing edge', () => {
+    expect(sheetDragProgress(120, 1)).toBe(120)
+    expect(sheetDragProgress(-120, 1)).toBe(0)
+    expect(sheetDragProgress(-120, -1)).toBe(120)
+    expect(sheetDragProgress(120, -1)).toBe(0)
+  })
+
+  it('dismisses past the greater of the proportional and the minimum threshold', () => {
+    // 40% of a 400px panel is 160px, which is above the 48px floor.
+    expect(shouldDismissSheetDrag(159, 400)).toBe(false)
+    expect(shouldDismissSheetDrag(160, 400)).toBe(true)
+    // A short panel falls back to the floor, so a stray few pixels cannot close it.
+    expect(shouldDismissSheetDrag(40, 80)).toBe(false)
+    expect(shouldDismissSheetDrag(48, 80)).toBe(true)
+  })
+
+  it('yields the gesture to anything that can scroll along the axis', () => {
+    const scrollsDown = { clientHeight: 200, clientWidth: 300, scrollHeight: 900, scrollWidth: 300 }
+    const fits = { clientHeight: 200, clientWidth: 300, scrollHeight: 200, scrollWidth: 300 }
+
+    expect(canScrollInAxis(scrollsDown, 'y')).toBe(true)
+    expect(canScrollInAxis(scrollsDown, 'x')).toBe(false)
+    expect(canScrollInAxis(fits, 'y')).toBe(false)
+  })
+})
+
+describe('overlay naming', () => {
+  it('names the panel from its title and description parts', () => {
+    const host = new FakeSheetElement()
+    const trigger = new FakeSheetElement()
+    const panel = new FakeSheetElement()
+    const title = { id: '' }
+    const description = { id: 'authored-description' }
+
+    enhanceSheetParts(
+      { host, trigger, panel, title, description },
+      { generatedId: 'ui-sheet-9', supportsDialog: true, supportsInvokerCommands: true },
+    )
+
+    expect(title.id).toBe('ui-sheet-9-title')
+    expect(panel.getAttribute('aria-labelledby')).toBe('ui-sheet-9-title')
+    expect(panel.getAttribute('aria-describedby')).toBe('authored-description')
+  })
+
+  it('never overwrites an authored relationship', () => {
+    const host = new FakeSheetElement()
+    const trigger = new FakeSheetElement()
+    const panel = new FakeSheetElement()
+    panel.setAttribute('aria-labelledby', 'somewhere-else')
+
+    enhanceSheetParts(
+      { host, trigger, panel, title: { id: 'panel-title' } },
+      { generatedId: 'ui-sheet-10', supportsDialog: true, supportsInvokerCommands: true },
+    )
+
+    expect(panel.getAttribute('aria-labelledby')).toBe('somewhere-else')
   })
 })

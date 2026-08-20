@@ -21,6 +21,12 @@ import {
   showModalCommand,
   supportsInvokerCommands,
 } from './invoker'
+import {
+  nameSurfaceFromParts,
+  SURFACE_DESCRIPTION_SELECTOR,
+  SURFACE_TITLE_SELECTOR,
+  type SurfaceLabelLike,
+} from './overlay-naming'
 import { queryOwnedPart } from './parts'
 import { dialogKinds } from './values/dialog'
 import type { DialogKind } from './values/dialog'
@@ -47,6 +53,8 @@ export type DialogEnhancementParts = {
   readonly host: DialogElementLike
   readonly trigger: DialogTriggerLike | null
   readonly dialog: NativeDialogLike | null
+  readonly title?: SurfaceLabelLike | null
+  readonly description?: SurfaceLabelLike | null
 }
 
 export type DialogEnhancementOptions = {
@@ -120,6 +128,10 @@ export function createDialogElementClass(targetWindow?: Window): UIDialogElement
           host: this,
           trigger,
           dialog,
+          title: dialog ? queryOwnedPart<HTMLElement>(dialog, SURFACE_TITLE_SELECTOR) : null,
+          description: dialog
+            ? queryOwnedPart<HTMLElement>(dialog, SURFACE_DESCRIPTION_SELECTOR)
+            : null,
         },
         {
           generatedId: nextAvailableDialogInstanceId(this.ownerDocument),
@@ -285,6 +297,7 @@ export function enhanceDialogParts(
   const role = resolveDialogRole(options.kind ?? resolveDialogKind(dialog.getAttribute('role')))
   dialog.setAttribute('role', role)
   dialog.setAttribute('aria-modal', 'true')
+  nameSurfaceFromParts(dialog, parts, dialog.id)
   // A dialog invoker gets no implicit `aria-expanded` from the platform the way a popover trigger
   // does, so these stay written on both paths.
   trigger.setAttribute('aria-controls', dialog.id)

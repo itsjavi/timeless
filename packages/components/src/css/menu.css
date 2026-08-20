@@ -5,9 +5,6 @@
 
   ui-menu {
     box-sizing: border-box;
-  }
-
-  ui-menu {
     display: grid;
     gap: var(--ui-space-1);
     min-inline-size: var(--ui-menu-min-inline-size, 12rem);
@@ -54,11 +51,14 @@
     text-decoration: none;
   }
 
+  /*
+   * Hover and real focus are one treatment, and neither applies to a command that cannot be run.
+   * Without the guard a disabled item lit up under the pointer, which reads as available.
+   */
   ui-menu
     :where([role='menuitem'], [role='menuitemcheckbox'], [role='menuitemradio']):where(
-      :hover,
-      :focus-visible
-    ) {
+      :not([aria-disabled='true'])
+    ):where(:hover, :focus-visible) {
     outline: 0;
     background: var(--ui-bg-surface-raised);
   }
@@ -69,8 +69,25 @@
     color: var(--ui-accent);
   }
 
-  ui-menu [aria-disabled='true'] {
+  /* The same disabled treatment the option surfaces use, so the two families agree. */
+  ui-menu :where([role^='menuitem'][aria-disabled='true']) {
+    background: transparent;
+    color: var(--ui-fg-muted);
     opacity: var(--ui-disabled-opacity);
+  }
+
+  ui-menu :where([data-ui-part~='group']) {
+    display: grid;
+    gap: var(--ui-space-1);
+  }
+
+  ui-menu :where([data-ui-part~='group-label']) {
+    padding: var(--ui-space-2) var(--ui-space-3) var(--ui-space-1);
+    color: var(--ui-fg-muted);
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
   }
 
   ui-menu :where([role='separator'], hr) {

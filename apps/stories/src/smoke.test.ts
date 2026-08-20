@@ -21,6 +21,16 @@ import { Default as Toggle } from './stories/css-primitives/toggle.stories'
 import { Default as Empty } from './stories/css-primitives/empty.stories'
 import { Default as Meter } from './stories/css-primitives/meter.stories'
 import { Default as ToggleGroup } from './stories/collection-navigation/toggle-group.stories'
+import {
+  Default as ContextMenu,
+  PerRegion as ContextMenuPerRegion,
+} from './stories/collection-navigation/context-menu.stories'
+import {
+  GroupedAndCheckable as GroupedMenu,
+  Menubar,
+  Default as Menu,
+} from './stories/collection-navigation/menu.stories'
+import { Default as Sheet } from './stories/progressive-overlays/sheet.stories'
 import { Default as ColorPicker } from './stories/color-controls/color-picker.stories'
 import { Default as ColorSwatch } from './stories/color-controls/color-swatch.stories'
 import { Default as ChoiceGroup, RadioGroup } from './stories/form-primitives/choice-group.stories'
@@ -183,6 +193,42 @@ describe('catalog stories', () => {
     expect(ColorPicker.render()).toContain('data-ui-part="channel"')
   })
 
+  it('renders milestone 024 menu anatomy through declared parts and roles', () => {
+    const groupedHtml = GroupedMenu.render()
+    const menubarHtml = Menubar.render()
+    const contextHtml = ContextMenu.render()
+
+    // Groups and separators are authored; the role and the `aria-labelledby` between them are not.
+    expect(Menu.render()).toContain('role="menuitem"')
+    expect(groupedHtml).toContain('data-ui-part="group"')
+    expect(groupedHtml).toContain('data-ui-part="group-label"')
+    expect(groupedHtml).toContain('data-ui-part="separator"')
+    expect(groupedHtml).toContain('role="menuitemcheckbox" type="button" aria-checked="true"')
+    expect(groupedHtml).toContain('role="menuitemradio"')
+    expect(groupedHtml).not.toContain('aria-labelledby')
+
+    // Two levels of submenu, so the Arrow Right and Arrow Left keys have depth to prove themselves.
+    expect(menubarHtml).toContain('role="menubar"')
+    expect(menubarHtml).toContain('aria-controls="submenu-export-as"')
+
+    expect(contextHtml).toContain('<ui-context-menu>')
+    expect(contextHtml).toContain('data-ui-part="target"')
+    expect(contextHtml).toContain('popover="auto"')
+    expect(ContextMenuPerRegion.render()).toContain('id="row-context-menu"')
+  })
+
+  it('keeps milestone 024 copyable source free of demo wrappers and private hooks', () => {
+    for (const source of [
+      GroupedMenu.source(),
+      ContextMenu.source(),
+      ContextMenuPerRegion.source(),
+      Sheet.source(),
+    ]) {
+      expect(source).not.toContain('ui-demo-page')
+      expect(source).not.toContain('data-ui-internal-')
+    }
+  })
+
   it('renders progressive overlay stories through host and anatomy contracts', () => {
     expect(Tabs.render()).toContain('<ui-tabs')
     expect(Tabs.render()).toContain('role="tablist"')
@@ -194,8 +240,14 @@ describe('catalog stories', () => {
     expect(Collapsible.render()).toContain('<details class="ui-collapsible"')
     expect(ReleaseChecklist.render()).toContain('data-ui-density="compact"')
     expect(Dialog.render()).toContain('<ui-dialog')
-    expect(Dialog.render()).toContain('<ui-dialog')
+    // The parts name the anatomy; the authored `aria-labelledby` is what makes the panel correct
+    // before enhancement runs, on the path where the platform opens it from `command="show-modal"`.
+    expect(Dialog.render()).toContain('data-ui-part="title"')
+    expect(Dialog.render()).toContain('data-ui-part="description"')
     expect(Dialog.render()).toContain('aria-labelledby="release-dialog-title"')
+    expect(Sheet.render()).toContain('data-ui-part="title"')
+    expect(Sheet.render()).toContain('aria-labelledby="release-sheet-title"')
+    expect(Sheet.render()).toContain('data-ui-part="drag-handle"')
     expect(Popover.render()).toContain('<ui-popover')
     expect(Popover.render()).toContain('popover="auto"')
     expect(Popover.render()).toContain('popover="auto"')

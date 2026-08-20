@@ -20,7 +20,9 @@ import type { ToggleGroupOrientation, ToggleGroupSelection } from './values/togg
 import type { ColorPickerFormat } from './values/color-picker'
 import type { TabsChangeDetail } from './tabs'
 import type { SheetEventDetail } from './sheet'
+import type { MenuCheckedDetail } from './menu'
 import type { MenuButtonToggleDetail } from './menu-button'
+import type { ContextMenuToggleDetail } from './context-menu'
 import type { CheckboxGroupChangeDetail, RadioGroupChangeDetail } from './choice-group'
 import type { ListboxChangeDetail, ListboxPageDetail } from './listbox'
 import type {
@@ -103,7 +105,7 @@ export interface UISheetElementProps extends TimelessGlobalProps {
   'onui-open'?: (event: CustomEvent<SheetEventDetail>) => void
   /** Dispatched after the sheet closes. */
   'onui-close'?: (event: CustomEvent<SheetEventDetail>) => void
-  /** Dispatched when the sheet closes through Escape or a backdrop click rather than an explicit control. */
+  /** Dispatched when the sheet closes through Escape, a backdrop click, or a swipe past the dismiss threshold, rather than through an explicit control. The detail names which. A swipe reports `swipe` and behaves exactly like a backdrop click, because that is what it is: a pointer gesture on the overlay rather than a command. */
   'onui-dismiss'?: (event: CustomEvent<SheetEventDetail>) => void
 }
 
@@ -136,6 +138,10 @@ export interface UIHoverCardElementProps extends TimelessGlobalProps {
 export interface UIMenuElementProps extends TimelessGlobalProps {
   /** Arrow-key axis. Defaults to `horizontal` when the menu part is `role="menubar"`. */
   orientation?: MenuOrientation
+  /** Cancelable proposal dispatched before a checkable item changes. Call `preventDefault()` to reject the transition and keep the current value. */
+  'onui-before-change'?: (event: CustomEvent<MenuCheckedDetail>) => void
+  /** Dispatched after a checkable item has changed. Bubbles and is composed. */
+  'onui-change'?: (event: CustomEvent<MenuCheckedDetail>) => void
 }
 
 export interface UIMenuButtonElementProps extends TimelessGlobalProps {
@@ -147,6 +153,13 @@ export interface UIMenuButtonElementProps extends TimelessGlobalProps {
   'onui-open'?: (event: CustomEvent<MenuButtonToggleDetail>) => void
   /** Dispatched after the menu closes. */
   'onui-close'?: (event: CustomEvent<MenuButtonToggleDetail>) => void
+}
+
+export interface UIContextMenuElementProps extends TimelessGlobalProps {
+  /** Dispatched after the context menu opens. */
+  'onui-open'?: (event: CustomEvent<ContextMenuToggleDetail>) => void
+  /** Dispatched after the context menu closes. */
+  'onui-close'?: (event: CustomEvent<ContextMenuToggleDetail>) => void
 }
 
 export interface UIToolbarElementProps extends TimelessGlobalProps {
@@ -363,6 +376,7 @@ export interface TimelessIntrinsicElements {
   'ui-hover-card': UIHoverCardElementProps
   'ui-menu': UIMenuElementProps
   'ui-menu-button': UIMenuButtonElementProps
+  'ui-context-menu': UIContextMenuElementProps
   'ui-toolbar': UIToolbarElementProps
   'ui-radio-group': UIRadioGroupElementProps
   'ui-checkbox-group': UICheckboxGroupElementProps

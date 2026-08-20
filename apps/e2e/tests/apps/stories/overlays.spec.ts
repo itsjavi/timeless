@@ -1,6 +1,10 @@
 import type { Locator, Page } from '@playwright/test'
+import type { SheetProps } from '@timelessui/examples'
+import { settleAnimations } from '../../shared/animations'
 import { expect, test } from '../../shared/fixtures'
 import { expectNoPageOverflow, expectRouteDocumentReady } from '../../shared/test-utils'
+
+type SheetPosition = NonNullable<SheetProps['position']>
 
 type Rect = {
   readonly bottom: number
@@ -585,3 +589,298 @@ function rgbChannels(value: string): [number, number, number] {
 
   return [Number(match[1]), Number(match[2]), Number(match[3])]
 }
+
+/**
+ * Milestone 024: the two things a sheet gained, and one thing every overlay panel gained.
+ *
+ * The gesture is driven with the mouse on the `drag-handle` part, which is exactly the path the
+ * component allows for a mouse — a mouse-down in the panel body stays a text selection. Playwright
+ * cannot synthesise a touch drag, so the handle is also what makes the behavior testable at all.
+ */
+test.describe('stories sheet gestures and overlay naming', () => {
+  const dragBy = async (
+    page: Page,
+    panelSelector: string,
+    delta: { readonly x: number; readonly y: number },
+  ) => {
+    // The panel slides in on open. Grabbing a handle that is still moving lands the press where the
+    // handle was rather than where it is, and the gesture never starts.
+    await settleAnimations(page)
+    const handle = page.locator(`${panelSelector} [data-ui-part~='drag-handle']`)
+    const box = await handle.boundingBox()
+    expect(box, `no drag handle for ${panelSelector}`).not.toBeNull()
+    const startX = box!.x + box!.width / 2
+    const startY = box!.y + box!.height / 2
+
+    await page.mouse.move(startX, startY)
+    await page.mouse.down()
+    await page.mouse.move(startX + delta.x / 2, startY + delta.y / 2, { steps: 4 })
+    await page.mouse.move(startX + delta.x, startY + delta.y, { steps: 4 })
+    const midDrag = await page.locator(panelSelector).evaluate((panel) => ({
+      dragging: panel.closest('ui-sheet')?.matches(':state(--dragging)') ?? false,
+      offset: (panel as HTMLElement).style.getPropertyValue('--ui-sheet-drag-offset'),
+      translate: getComputedStyle(panel).translate,
+    }))
+    await page.mouse.up()
+    return midDrag
+  }
+
+  /**
+   * One gesture per position, and typed as a total record so a new `sheetPositions` value fails to
+   * compile here rather than quietly going untested.
+   */
+  const swipes: Record<SheetPosition, { readonly x: number; readonly y: number }> = {
+    top: { x: 0, y: -320 },
+    right: { x: 320, y: 0 },
+    bottom: { x: 0, y: 320 },
+    left: { x: -320, y: 0 },
+  }
+
+  for (const [position, delta] of Object.entries(swipes)) {
+    test(`dismisses a ${position} sheet with a swipe toward its own edge`, async ({ page }) => {
+      await page.goto('/stories/library-overlays-sheet--positions/')
+      await expectRouteDocumentReady(page)
+
+      const panel = page.locator(`#sheet-${position}`)
+      const trigger = page.locator(`ui-sheet:has(#sheet-${position}) [data-ui-part~='trigger']`)
+      await trigger.click()
+      await expect(panel).toBeVisible()
+
+      const midDrag = await dragBy(page, `#sheet-${position}`, delta)
+      // JavaScript writes one length; the stylesheet decides which axis it moves.
+      expect(midDrag.dragging).toBe(true)
+      expect(midDrag.offset).toBe(`${delta.x || delta.y}px`)
+      expect(midDrag.translate).not.toBe('none')
+
+      await expect(panel).toBeHidden()
+      await expect(trigger).toBeFocused()
+      await expect(panel).toHaveJSProperty('style.cssText', '')
+    })
+  }
+
+  test('reports a swipe as its own dismissal source', async ({ page }) => {
+    await page.goto('/stories/library-overlays-sheet--default/')
+    await expectRouteDocumentReady(page)
+
+    const host = page.locator('ui-sheet')
+    await host.evaluate((element) => {
+      element.addEventListener('ui-dismiss', (event) => {
+        element.setAttribute('data-test-dismiss', (event as CustomEvent).detail.source)
+      })
+    })
+
+    await page.getByRole('button', { name: 'Open release sheet' }).click()
+    await expect(page.locator('#release-sheet')).toBeVisible()
+    await dragBy(page, '#release-sheet', { x: 320, y: 0 })
+
+    await expect(page.locator('#release-sheet')).toBeHidden()
+    await expect(host).toHaveAttribute('data-test-dismiss', 'swipe')
+  })
+
+  test('springs a short swipe back instead of dismissing', async ({ page }) => {
+    await page.goto('/stories/library-overlays-sheet--default/')
+    await expectRouteDocumentReady(page)
+
+    const panel = page.locator('#release-sheet')
+    await page.getByRole('button', { name: 'Open release sheet' }).click()
+    await expect(panel).toBeVisible()
+
+    const midDrag = await dragBy(page, '#release-sheet', { x: 40, y: 0 })
+    expect(midDrag.offset).toBe('40px')
+
+    await expect(panel).toBeVisible()
+    // The offset is cleared on release, and the stylesheet animates the panel home from there.
+    await expect
+      .poll(() =>
+        panel.evaluate((element: HTMLElement) =>
+          element.style.getPropertyValue('--ui-sheet-drag-offset'),
+        ),
+      )
+      .toBe('')
+    await expect
+      .poll(() =>
+        panel.evaluate((element) => element.closest('ui-sheet')?.matches(':state(--dragging)')),
+      )
+      .toBe(false)
+  })
+
+  test('absorbs a swipe away from the closing edge', async ({ page }) => {
+    await page.goto('/stories/library-overlays-sheet--default/')
+    await expectRouteDocumentReady(page)
+
+    const panel = page.locator('#release-sheet')
+    await page.getByRole('button', { name: 'Open release sheet' }).click()
+    await expect(panel).toBeVisible()
+
+    const midDrag = await dragBy(page, '#release-sheet', { x: -240, y: 0 })
+    // A right-edge sheet dragged left would tear away from the edge it is anchored to.
+    expect(midDrag.offset).toBe('0px')
+    await expect(panel).toBeVisible()
+  })
+
+  /**
+   * The gesture belongs to whatever can scroll. Without this a bottom sheet over a scrolling body is
+   * unusable on touch, and it is also what keeps a drag inside the panel from closing it.
+   */
+  test('lets a scrollable region keep the gesture', async ({ page }) => {
+    await page.goto('/stories/library-overlays-sheet--default/')
+    await expectRouteDocumentReady(page)
+
+    const panel = page.locator('#release-sheet')
+    await page.getByRole('button', { name: 'Open release sheet' }).click()
+    await expect(panel).toBeVisible()
+
+    await settleAnimations(page)
+    const body = panel.locator('section')
+    const box = await body.boundingBox()
+    const startX = (box?.x ?? 0) + (box?.width ?? 0) / 2
+    const startY = (box?.y ?? 0) + (box?.height ?? 0) / 2
+    await page.mouse.move(startX, startY)
+    await page.mouse.down()
+    await page.mouse.move(startX + 320, startY, { steps: 6 })
+    const offset = await panel.evaluate((element: HTMLElement) =>
+      element.style.getPropertyValue('--ui-sheet-drag-offset'),
+    )
+    await page.mouse.up()
+
+    expect(offset).toBe('')
+    await expect(panel).toBeVisible()
+  })
+
+  test('names a dialog and a sheet from their authored title and description parts', async ({
+    page,
+  }) => {
+    await page.goto('/stories/library-overlays-dialog--default/')
+    await expectRouteDocumentReady(page)
+    await page.getByRole('button', { name: 'Review release' }).click()
+
+    const dialog = page.locator('#release-dialog')
+    await expect(dialog).toHaveAttribute(
+      'aria-labelledby',
+      await idOf(dialog.locator("[data-ui-part~='title']")),
+    )
+    await expect(dialog).toHaveAttribute(
+      'aria-describedby',
+      await idOf(dialog.locator("[data-ui-part~='description']")),
+    )
+    await expect(page.getByRole('dialog', { name: 'Release checklist' })).toBeVisible()
+    await page.keyboard.press('Escape')
+
+    await page.goto('/stories/library-overlays-sheet--default/')
+    await expectRouteDocumentReady(page)
+    await page.getByRole('button', { name: 'Open release sheet' }).click()
+
+    const sheet = page.locator('#release-sheet')
+    await expect(sheet).toHaveAttribute(
+      'aria-labelledby',
+      await idOf(sheet.locator("[data-ui-part~='title']")),
+    )
+    await expect(page.getByRole('dialog', { name: 'Release checklist' })).toBeVisible()
+  })
+
+  test('never overwrites an authored aria-labelledby', async ({ page }) => {
+    await page.goto('/stories/library-overlays-sheet--default/')
+    await expectRouteDocumentReady(page)
+
+    // Rewriting the panel's name and then forcing re-enhancement: an author who pointed the panel
+    // somewhere else meant it, so the parts must not win it back.
+    await page.locator('#release-sheet').evaluate((panel) => {
+      const heading = panel.ownerDocument.createElement('h2')
+      heading.id = 'authored-name'
+      heading.textContent = 'Authored name'
+      panel.prepend(heading)
+      panel.setAttribute('aria-labelledby', 'authored-name')
+    })
+
+    await page.getByRole('button', { name: 'Open release sheet' }).click()
+    await expect(page.locator('#release-sheet')).toHaveAttribute('aria-labelledby', 'authored-name')
+  })
+
+  /**
+   * The behavioral half of the tooltip pattern. A tooltip that toggles on click is a disclosure, and
+   * a trigger that is also a button loses its own activation to it.
+   *
+   * Hoverability is the other half, and it goes the other way: WCAG 2.2 SC 1.4.13 requires
+   * hover-triggered content to survive the pointer moving onto it, so the label stays put.
+   */
+  test('keeps a tooltip out of the click path but hoverable', async ({ page }) => {
+    await page.goto('/stories/library-overlays-tooltip--default/')
+    await expectRouteDocumentReady(page)
+
+    const trigger = page.locator('#copy-tooltip-anchor')
+    const tooltip = page.locator('#copy-tooltip')
+
+    await expect(tooltip).toBeHidden()
+    await trigger.hover()
+    await expect(tooltip).toBeVisible()
+
+    // The distinguishing assertion: a click leaves the label alone. Under the old shared behavior it
+    // toggled, which meant a trigger that was also a button lost its own activation to the tooltip.
+    await trigger.click()
+    await expect(tooltip).toBeVisible()
+
+    await tooltip.hover()
+    await expect(tooltip).toBeVisible()
+
+    // It closes when the pointer leaves both, which is the "persistent" half of the same criterion.
+    await page.mouse.move(4, 4)
+    await expect(tooltip).toBeHidden()
+  })
+
+  test('keeps a hover card click-toggleable and pointer-reachable', async ({ page }) => {
+    await page.goto('/stories/library-overlays-hover-card--default/')
+    await expectRouteDocumentReady(page)
+
+    const trigger = page.locator("ui-hover-card [data-ui-part~='trigger']").first()
+    const card = page.locator('ui-hover-card [popover]').first()
+
+    await trigger.click()
+    await expect(card).toBeVisible()
+    await trigger.click()
+    await expect(card).toBeHidden()
+  })
+})
+
+async function idOf(locator: Locator): Promise<string> {
+  const id = await locator.getAttribute('id')
+  expect(id, 'the part should carry an id after enhancement').toBeTruthy()
+  return id!
+}
+
+/**
+ * Direct manipulation is not decorative motion: the panel has to follow the pointer under
+ * `prefers-reduced-motion: reduce`. What that setting removes is the animation the *component*
+ * plays on its own — the spring back on release, and the slide on open.
+ */
+test.describe('stories sheet motion preferences', () => {
+  test('tracks the pointer with no transition when motion is reduced', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.goto('/stories/library-overlays-sheet--default/')
+    await expectRouteDocumentReady(page)
+
+    const panel = page.locator('#release-sheet')
+    await page.getByRole('button', { name: 'Open release sheet' }).click()
+    await expect(panel).toBeVisible()
+
+    await settleAnimations(page)
+    const handle = panel.locator("[data-ui-part~='drag-handle']")
+    const box = await handle.boundingBox()
+    const startX = (box?.x ?? 0) + (box?.width ?? 0) / 2
+    const startY = (box?.y ?? 0) + (box?.height ?? 0) / 2
+    await page.mouse.move(startX, startY)
+    await page.mouse.down()
+    await page.mouse.move(startX + 60, startY, { steps: 4 })
+
+    const midDrag = await panel.evaluate((element) => ({
+      offset: (element as HTMLElement).style.getPropertyValue('--ui-sheet-drag-offset'),
+      transitionDuration: getComputedStyle(element).transitionDuration,
+      animationName: getComputedStyle(element).animationName,
+    }))
+    await page.mouse.up()
+
+    expect(midDrag.offset).toBe('60px')
+    expect(midDrag.transitionDuration).toBe('0s')
+    expect(midDrag.animationName).toBe('none')
+    await expect(panel).toBeVisible()
+  })
+})

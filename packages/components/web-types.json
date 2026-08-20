@@ -104,7 +104,7 @@
             },
             {
               "name": "ui-dismiss",
-              "description": "Dispatched when the sheet closes through Escape or a backdrop click rather than an explicit control."
+              "description": "Dispatched when the sheet closes through Escape, a backdrop click, or a swipe past the dismiss threshold, rather than through an explicit control. The detail names which. A swipe reports `swipe` and behaves exactly like a backdrop click, because that is what it is: a pointer gesture on the overlay rather than a command."
             }
           ]
         },
@@ -182,7 +182,7 @@
         },
         {
           "name": "ui-menu",
-          "description": "Timeless `ui-menu`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Menu and Menubar pattern.",
+          "description": "Timeless `ui-menu`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Menu and Menubar pattern. Dispatches `ui-before-change`, `ui-change`.",
           "doc-url": "https://timeless.build/docs/components/",
           "attributes": [
             {
@@ -194,7 +194,16 @@
               }
             }
           ],
-          "events": []
+          "events": [
+            {
+              "name": "ui-before-change",
+              "description": "Cancelable proposal dispatched before a checkable item changes. Call `preventDefault()` to reject the transition and keep the current value."
+            },
+            {
+              "name": "ui-change",
+              "description": "Dispatched after a checkable item has changed. Bubbles and is composed."
+            }
+          ]
         },
         {
           "name": "ui-menu-button",
@@ -226,6 +235,22 @@
             {
               "name": "ui-close",
               "description": "Dispatched after the menu closes."
+            }
+          ]
+        },
+        {
+          "name": "ui-context-menu",
+          "description": "Timeless `ui-context-menu`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Context Menu pattern. Dispatches `ui-open`, `ui-close`.",
+          "doc-url": "https://timeless.build/docs/components/",
+          "attributes": [],
+          "events": [
+            {
+              "name": "ui-open",
+              "description": "Dispatched after the context menu opens."
+            },
+            {
+              "name": "ui-close",
+              "description": "Dispatched after the context menu closes."
             }
           ]
         },

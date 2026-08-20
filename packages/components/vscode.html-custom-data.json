@@ -127,7 +127,7 @@
     },
     {
       "name": "ui-menu",
-      "description": "Timeless `ui-menu`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Menu and Menubar pattern.",
+      "description": "Timeless `ui-menu`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Menu and Menubar pattern. Dispatches `ui-before-change`, `ui-change`.",
       "references": [
         {
           "name": "Component reference",
@@ -162,6 +162,17 @@
           "valueSet": "floatingPlacements"
         }
       ]
+    },
+    {
+      "name": "ui-context-menu",
+      "description": "Timeless `ui-context-menu`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Context Menu pattern. Dispatches `ui-open`, `ui-close`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ],
+      "attributes": []
     },
     {
       "name": "ui-toolbar",

@@ -1,15 +1,19 @@
-import { attr, createUIElementClass, element, listen, watch } from '@timelessui/core'
+import { attr, createId, createUIElementClass, element, listen, watch } from '@timelessui/core'
 import { collectionItemText } from './collection'
 import { syncFloatingAnchor } from './floating'
+import { queryOwnedParts } from './parts'
 import { menuOrientations } from './values/menu'
 import type { MenuOrientation } from './values/menu'
 
 export type MenuRole = 'menu' | 'menubar'
+export type MenuCheckableRole = 'menuitemcheckbox' | 'menuitemradio'
 export { menuOrientations, type MenuOrientation }
 
 export type MenuItemLike = {
   readonly textContent?: string | null
   click?(): void
+  /** Used to resolve an item's owning radio group. Absent on a structural test double with no DOM. */
+  closest?(selector: string): unknown
   focus(): void
   getAttribute(name: string): string | null
   hasAttribute(name: string): boolean
@@ -20,13 +24,32 @@ export type MenuItemLike = {
 
 export type MenuHostLike = MenuItemLike
 
+export type MenuGroupLike = {
+  getAttribute(name: string): string | null
+  hasAttribute(name: string): boolean
+  setAttribute(name: string, value: string): void
+  querySelector?(selector: string): { id: string } | null
+}
+
+/**
+ * The proposal and the outcome of a checkable item changing state. `role` is the item's own role,
+ * because a checkbox toggles while a radio only ever turns on.
+ */
+export type MenuCheckedDetail = {
+  readonly checked: boolean
+  readonly item: MenuItemLike
+  readonly role: MenuCheckableRole
+}
+
 export type MenuEnhancementParts = {
   readonly host: MenuHostLike
   readonly items: readonly MenuItemLike[]
+  readonly groups?: readonly MenuGroupLike[]
 }
 
 export type MenuEnhancementOptions = {
   readonly orientation: MenuOrientation
+  readonly generatedIdPrefix?: string
   readonly role?: MenuRole
 }
 
@@ -34,8 +57,19 @@ export type MenuEnhancementResult =
   | { readonly status: 'enhanced'; readonly activeIndex: number | null; readonly role: MenuRole }
   | { readonly status: 'invalid'; readonly missing: readonly string[] }
 
-const MENU_ITEM_SELECTOR =
-  '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"], button, a[href]'
+/**
+ * The declared `item` part, character for character.
+ *
+ * An element becomes a menu item by carrying a menu-item role, not by being a button. The selector
+ * used to also accept a bare `button` or `a[href]`, which made a `<button role="separator">` a
+ * focusable command and put the JavaScript one step ahead of the documented anatomy. Narrowing it
+ * also removes the need for a separator guard: one `role` attribute cannot be both.
+ */
+const MENU_ITEM_SELECTOR = "[role^='menuitem']"
+const MENU_GROUP_SELECTOR = "[data-ui-part~='group']"
+const MENU_GROUP_LABEL_SELECTOR = "[data-ui-part~='group-label']"
+/** An item's radio scope: its authored group, or the menu itself when it has none. */
+const MENU_GROUP_SCOPE_SELECTOR = "[data-ui-part~='group'], [role='group']"
 const TYPEAHEAD_RESET_MS = 700
 
 let typeaheadTimerFallback = 0
@@ -57,6 +91,7 @@ export function createMenuElementClass(targetWindow?: Window): UIMenuElementCons
 
     #typeahead = ''
     #typeaheadTimer = 0
+    #instanceId = ''
 
     protected override connected(): void {
       this.observeParts(() => this.enhance())
@@ -71,8 +106,10 @@ export function createMenuElementClass(targetWindow?: Window): UIMenuElementCons
         {
           host: this,
           items: this.items,
+          groups: this.groups,
         },
         {
+          generatedIdPrefix: this.instanceId,
           orientation: resolveMenuOrientation(this.orientation, this.getAttribute('role')),
           role: resolveMenuRole(this.getAttribute('role')),
         },
@@ -103,6 +140,7 @@ export function createMenuElementClass(targetWindow?: Window): UIMenuElementCons
       }
 
       syncMenuRovingTabIndex(this.items, this.items.indexOf(item))
+      this.toggleCheckedItem(item)
     }
 
     @listen('keydown')
@@ -115,6 +153,8 @@ export function createMenuElementClass(targetWindow?: Window): UIMenuElementCons
       const role = resolveMenuRole(this.getAttribute('role'))
       const orientation = resolveMenuOrientation(this.orientation, this.getAttribute('role'))
       const hadOpenSubmenu = role === 'menubar' && hasOpenSubmenu(items)
+      const rightToLeft = isRightToLeft(this)
+      const inlineDirection = menuInlineDirection(event.key, rightToLeft)
 
       if (role === 'menubar' && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
         if (this.openSubmenu(item, event.key === 'ArrowUp' ? 'last' : 'first')) {
@@ -123,21 +163,38 @@ export function createMenuElementClass(targetWindow?: Window): UIMenuElementCons
         return
       }
 
+      // A submenu opens outward and closes inward, whatever depth it sits at. The menubar traversal
+      // below is the depth-one special case: closing a first-level submenu moves along the bar.
+      if (role === 'menu' && inlineDirection === 'forward' && this.openSubmenu(item, 'first')) {
+        event.preventDefault()
+        return
+      }
+
       if (
         role === 'menu' &&
-        (event.key === 'ArrowRight' || event.key === 'ArrowLeft') &&
-        this.moveBetweenMenubarSubmenus(event.key === 'ArrowRight' ? 1 : -1)
+        inlineDirection !== null &&
+        this.moveBetweenMenubarSubmenus(inlineDirection === 'forward' ? 1 : -1)
       ) {
         event.preventDefault()
         return
       }
 
-      if (role === 'menu' && event.key === 'Escape' && this.closeContainingSubmenu()) {
+      if (role === 'menu' && inlineDirection === 'backward' && this.closeParentSubmenu()) {
         event.preventDefault()
         return
       }
 
-      const targetIndex = menuNavigationTarget(items, currentIndex, event.key, orientation)
+      if (role === 'menu' && event.key === 'Escape' && this.closeContainingPopover()) {
+        event.preventDefault()
+        return
+      }
+
+      const targetIndex = menuNavigationTarget(
+        items,
+        currentIndex,
+        rightToLeft ? mirrorInlineKey(event.key) : event.key,
+        orientation,
+      )
 
       if (targetIndex !== null) {
         event.preventDefault()
@@ -175,6 +232,30 @@ export function createMenuElementClass(targetWindow?: Window): UIMenuElementCons
       if (resolvedIndex !== null) {
         this.items[resolvedIndex]?.focus()
       }
+    }
+
+    /**
+     * Writes `aria-checked` for a checkable item, after offering the change to the author.
+     *
+     * The stylesheet has always drawn `[aria-checked='true']` while nothing wrote it, so the state
+     * was a promise the component did not keep. Consumers who already toggle it themselves stay in
+     * control by cancelling `ui-before-change`.
+     */
+    private toggleCheckedItem(item: HTMLElement): void {
+      const role = menuCheckableRole(item)
+      if (!role) return
+
+      const checked = role === 'menuitemradio' ? true : item.getAttribute('aria-checked') !== 'true'
+      // Re-activating a checked radio is a no-op in the APG pattern, so it is not a change at all.
+      if (role === 'menuitemradio' && item.getAttribute('aria-checked') === 'true') return
+
+      const detail: MenuCheckedDetail = { checked, item, role }
+      if (!this.emit<MenuCheckedDetail>('ui-before-change', detail, { cancelable: true })) {
+        return
+      }
+
+      applyMenuItemChecked(item, this.items, checked)
+      this.emit<MenuCheckedDetail>('ui-change', detail)
     }
 
     private openSubmenu(item: HTMLElement, focusTarget: 'first' | 'last'): boolean {
@@ -241,7 +322,28 @@ export function createMenuElementClass(targetWindow?: Window): UIMenuElementCons
       }
     }
 
-    private closeContainingSubmenu(): boolean {
+    /**
+     * The inward half of the submenu keys. Unlike Escape it acts only on a real submenu — one whose
+     * invoker is itself a menu item — so it never collapses the menu a Menu Button opened.
+     */
+    private closeParentSubmenu(): boolean {
+      const submenu = this.closest<HTMLElement>('[popover]')
+      if (!submenu || !isSubmenuOpen(submenu)) {
+        return false
+      }
+
+      const trigger = submenuTriggerForContent(submenu)
+      if (!trigger || !trigger.matches(MENU_ITEM_SELECTOR)) {
+        return false
+      }
+
+      submenu.hidePopover()
+      trigger.setAttribute('aria-expanded', 'false')
+      trigger.focus()
+      return true
+    }
+
+    private closeContainingPopover(): boolean {
       const submenu = this.closest<HTMLElement>('[popover]')
       if (!submenu || !isSubmenuOpen(submenu)) {
         return false
@@ -288,8 +390,19 @@ export function createMenuElementClass(targetWindow?: Window): UIMenuElementCons
       this.#typeaheadTimer = 0
     }
 
+    private get instanceId(): string {
+      if (!this.#instanceId) {
+        this.#instanceId = this.id || createId('ui-menu', this.ownerDocument)
+      }
+      return this.#instanceId
+    }
+
     private get items(): HTMLElement[] {
       return findMenuItems(this)
+    }
+
+    private get groups(): HTMLElement[] {
+      return findMenuGroups(this)
     }
   }
 
@@ -316,6 +429,7 @@ export function enhanceMenuParts(
     syncMenuItemSemantics(item)
     syncMenuItemSubmenuSemantics(item)
   }
+  enhanceMenuGroups(parts.groups ?? [], options.generatedIdPrefix ?? 'ui-menu')
 
   const activeIndex = syncMenuRovingTabIndex(parts.items, initialMenuActiveIndex(parts.items))
   return { status: 'enhanced', activeIndex, role }
@@ -357,6 +471,27 @@ export function menuNavigationTarget(
   return null
 }
 
+/**
+ * Which way an inline arrow points once writing direction is applied: `forward` opens a submenu,
+ * `backward` closes one. Under `dir="rtl"` the two keys swap, because a submenu opens toward the
+ * inline end wherever that happens to be.
+ */
+export function menuInlineDirection(
+  key: string,
+  rightToLeft: boolean,
+): 'forward' | 'backward' | null {
+  if (key !== 'ArrowRight' && key !== 'ArrowLeft') return null
+  const forward = rightToLeft ? 'ArrowLeft' : 'ArrowRight'
+  return key === forward ? 'forward' : 'backward'
+}
+
+/** Mirrors the inline arrows for a right-to-left horizontal menubar. Other keys pass through. */
+export function mirrorInlineKey(key: string): string {
+  if (key === 'ArrowRight') return 'ArrowLeft'
+  if (key === 'ArrowLeft') return 'ArrowRight'
+  return key
+}
+
 export function menuTypeaheadTarget(
   items: readonly MenuItemLike[],
   currentIndex: number,
@@ -396,15 +531,78 @@ export function isMenuItemDisabled(item: MenuItemLike): boolean {
   )
 }
 
+/** The checkable role an item carries, or `null` when it is a plain command. */
+export function menuCheckableRole(item: MenuItemLike): MenuCheckableRole | null {
+  const role = item.getAttribute('role')
+  return role === 'menuitemcheckbox' || role === 'menuitemradio' ? role : null
+}
+
+/**
+ * Writes the checked state for one item.
+ *
+ * A checkbox owns its own state. A radio turning on turns off the radios it shares a group with —
+ * its authored `group` part or `role="group"` wrapper, and the whole menu when it has neither. The
+ * scope matters: two radio groups in one menu must not clear each other.
+ */
+export function applyMenuItemChecked(
+  item: MenuItemLike,
+  items: readonly MenuItemLike[],
+  checked: boolean,
+): void {
+  if (menuCheckableRole(item) !== 'menuitemradio') {
+    item.setAttribute('aria-checked', String(checked))
+    return
+  }
+
+  const scope = menuItemGroupScope(item)
+  for (const candidate of items) {
+    if (menuCheckableRole(candidate) !== 'menuitemradio') continue
+    if (menuItemGroupScope(candidate) !== scope) continue
+    candidate.setAttribute('aria-checked', String(candidate === item && checked))
+  }
+}
+
+/** Every item the menu owns, through group wrappers but never into a nested menu. */
 export function findMenuItems(host: Element): HTMLElement[] {
-  return Array.from(host.children).filter((child): child is HTMLElement =>
-    child.matches(MENU_ITEM_SELECTOR),
-  )
+  return queryOwnedParts<HTMLElement>(host, MENU_ITEM_SELECTOR)
+}
+
+/** Every authored item group the menu owns. */
+export function findMenuGroups(host: Element): HTMLElement[] {
+  return queryOwnedParts<HTMLElement>(host, MENU_GROUP_SELECTOR)
+}
+
+/** The first item that can actually be activated, for opening and for the resting tab stop. */
+export function firstEnabledMenuItemIndex(items: readonly MenuItemLike[]): number | null {
+  const index = items.findIndex((item) => !isMenuItemDisabled(item))
+  return index >= 0 ? index : null
+}
+
+export function lastEnabledMenuItemIndex(items: readonly MenuItemLike[]): number | null {
+  for (let index = items.length - 1; index >= 0; index -= 1) {
+    if (!isMenuItemDisabled(items[index]!)) return index
+  }
+  return null
+}
+
+function menuItemGroupScope(item: MenuItemLike): unknown {
+  return item.closest?.(MENU_GROUP_SCOPE_SELECTOR) ?? null
+}
+
+function enhanceMenuGroups(groups: readonly MenuGroupLike[], generatedIdPrefix: string): void {
+  groups.forEach((group, index) => {
+    if (!group.hasAttribute('role')) group.setAttribute('role', 'group')
+    const label = group.querySelector?.(MENU_GROUP_LABEL_SELECTOR)
+    if (!label) return
+    if (!label.id) label.id = `${generatedIdPrefix}-group-${index + 1}-label`
+    if (!group.hasAttribute('aria-labelledby')) {
+      group.setAttribute('aria-labelledby', label.id)
+    }
+  })
 }
 
 function syncMenuItemSemantics(item: MenuItemLike): void {
-  const role = item.getAttribute('role')
-  if (role !== 'menuitemcheckbox' && role !== 'menuitemradio') {
+  if (!menuCheckableRole(item)) {
     item.setAttribute('role', 'menuitem')
   }
 
@@ -430,8 +628,15 @@ function syncMenuItemSubmenuSemantics(item: MenuItemLike): void {
   item.setAttribute('aria-expanded', isSubmenuOpen(submenu) ? 'true' : 'false')
 }
 
+/**
+ * Where focus rests when the menu is first enhanced.
+ *
+ * Arrow keys deliberately still travel through disabled items, which is the APG's recommended
+ * treatment — a command you cannot use is easier to understand than one that is not there. Landing
+ * the *initial* tab stop on one is a different thing, and just looks broken.
+ */
 function initialMenuActiveIndex(items: readonly MenuItemLike[]): number | null {
-  return items.length > 0 ? 0 : null
+  return firstEnabledMenuItemIndex(items) ?? (items.length > 0 ? 0 : null)
 }
 
 function adjacentMenuItemIndex(
@@ -445,6 +650,16 @@ function adjacentMenuItemIndex(
 
 function isTypeaheadEvent(event: KeyboardEvent): boolean {
   return event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey
+}
+
+function isRightToLeft(element: HTMLElement): boolean {
+  try {
+    const computed = element.ownerDocument.defaultView?.getComputedStyle(element)
+    if (computed?.direction) return computed.direction === 'rtl'
+  } catch {
+    // Falls through to the authored attribute below.
+  }
+  return element.closest('[dir]')?.getAttribute('dir')?.toLowerCase() === 'rtl'
 }
 
 function itemMatches(item: MenuItemLike, selector: string): boolean {
@@ -494,13 +709,14 @@ function closeSiblingSubmenus(
   }
 }
 
-function focusSubmenuItem(submenu: HTMLElement, target: 'first' | 'last'): void {
+function focusSubmenuItem(submenu: HTMLElement, target: 'first' | 'last'): boolean {
   const items = findMenuItems(submenu)
-  const index = target === 'last' ? items.length - 1 : 0
+  const index =
+    target === 'last' ? lastEnabledMenuItemIndex(items) : firstEnabledMenuItemIndex(items)
   const resolvedIndex = syncMenuRovingTabIndex(items, index)
-  if (resolvedIndex !== null) {
-    items[resolvedIndex]?.focus()
-  }
+  if (resolvedIndex === null) return false
+  items[resolvedIndex]?.focus()
+  return true
 }
 
 function submenuTriggerForContent(content: HTMLElement): HTMLElement | null {
