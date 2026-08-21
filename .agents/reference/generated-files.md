@@ -41,10 +41,24 @@ pnpm -F @timelessui/components run generate
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `context7.json` | Context7's indexing configuration. Its `rules` array is the authoring grammar in imperative form, which is why it is generated rather than authored at the root |
 
+One more file is machine-written and committed, by a script other than `generate-elements.mjs`, so
+`pnpm generate` neither writes nor checks it:
+
+| Path                             | Written by                                                                                                   |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `apps/stories/story-routes.json` | `apps/stories/scripts/write-route-catalog.mjs`, during `pnpm -F @apps/stories build`. The axe sweep reads it |
+
 ## Not generated — edit these directly
 
-- `src/css/*.css` — the stylesheets. `validate-contracts.mjs` proves them against the registry in
-  both directions.
+- `src/css/core/*.css` and `src/css/themes/atmosphere/*.css` — the two tiers of every component
+  stylesheet, plus the hand-authored aggregates `src/css/core.css` and
+  `src/css/themes/atmosphere.css` and the layer-order file `src/css/tokens.css`. Nothing sits at
+  `src/css/<component>.css` any more. `validate-contracts.mjs` proves them against the registry in
+  both directions, and `check-core-boundary.mjs` — `pnpm core:validate` — decides which of the two
+  tiers a given declaration may live in, also in both directions.
+- `scripts/performance-baselines.json` — hand-written, one entry per element module.
+  `check-performance.mjs` throws `Missing performance baseline` for a new element until you add one
+  from `performance:check -- --measure`.
 - `src/tokens.ts` — `uiTokenGroups` is authored TypeScript. `generate-elements.mjs` reads it as
   _text_ to build the CSS editor data, so keep the `uiTokenGroups = { ... } as const` shape
   parseable.

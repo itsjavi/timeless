@@ -3,6 +3,7 @@ import { resolve, sep } from 'node:path'
 import { examples, renderExample } from '../src/catalog.ts'
 import { components } from '../../components/scripts/component-registry.mjs'
 import { checkMarkup } from '../../components/scripts/check-markup.mjs'
+import { incompleteTiers, readStylesheetNames } from './css-tiers.mjs'
 
 const root = resolve(import.meta.dirname, '../../..')
 const manifest = JSON.parse(
@@ -26,6 +27,7 @@ const cssFiles = new Set(
     .map((name) => name.split(sep).join('/'))
     .filter((name) => name.endsWith('.css')),
 )
+const shippedStylesheets = await readStylesheetNames()
 const publicConfiguration = new Set(
   components.flatMap((component) =>
     component.attributes.flatMap((attribute) =>
@@ -78,6 +80,16 @@ for (const example of examples) {
         )
       }
     }
+  }
+  /*
+   * The three tiers have to arrive together, and only the declared contracts' own files are covered
+   * above — a composed component gets its stylesheets listed by hand. Twenty of these entries listed
+   * `themes/atmosphere/button.css` for a `.ui-button` trigger without `core/button.css`, which is the
+   * behaviour half, and every one of those lists is published on a component page as the required
+   * import set. Milestone 028 created the shape; nothing was watching it.
+   */
+  for (const problem of incompleteTiers(example.styles, shippedStylesheets)) {
+    throw new Error(`${example.id} imports ${problem}`)
   }
   const html = renderExample(example)
   if (!html.trim()) throw new Error(`${example.id} rendered an empty example`)

@@ -5,9 +5,10 @@ sidebar:
   order: 2
 ---
 
-Timeless targets Baseline 2025 browsers. The floor is set by the newest feature it requires, which
-is `:state()`: **Chrome and Edge 125, Safari 17.5, and Firefox 126.** There are no polyfills, so
-support tracks the platform features below.
+Timeless targets Baseline 2025 browsers. The floor is the newest requirement in each engine, and two
+features set it between them — `:state()` in Chrome and Firefox, `light-dark()` in Safari: **Chrome
+and Edge 125, Safari 17.5, and Firefox 126.** There are no polyfills, so support tracks the platform
+features below.
 
 Versions are taken from [MDN browser-compat-data](https://github.com/mdn/browser-compat-data) and
 record the first release of each feature, not a support promise. Check
@@ -39,6 +40,13 @@ current-but-not-latest may still be missing them. Each degrades to something usa
 | `@starting-style` and `allow-discrete` | 117           | 17.5   | 129     | Overlays appear and disappear without the enter and exit transition.                                                                                                           |
 | CSS anchor positioning                 | 125           | 26     | 147     | Overlay surfaces stay in normal flow next to their trigger instead of being anchored to it. They still open, close, dismiss, and trap focus correctly.                         |
 | Invoker Commands                       | 135           | 26.2   | 144     | A dialog or modal sheet trigger needs JavaScript to open its panel, because the component falls back to its click listener. Popovers are unaffected: they use `popovertarget`. |
+
+One requirement is not a version at all. [Copy Button](/docs/components/copy-button/) needs
+`navigator.clipboard`, which every target engine has shipped for years but which is undefined
+outside a secure context and refuses the write without transient user activation. So the same build
+works on `https://` and on `localhost` and does nothing over plain `http://` — a staging box, or a
+LAN address during development. The component reports that as `unsupported` on `ui-copy` rather than
+failing silently, and a trigger authored `hidden` is revealed only once the API is there.
 
 Anchor positioning is the widest gap in practice: Firefox only shipped it in 147, well above the
 Firefox 126 floor. It is a layout refinement rather than a functional requirement, so a popover in

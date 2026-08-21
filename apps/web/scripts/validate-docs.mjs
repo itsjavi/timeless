@@ -1,6 +1,11 @@
 import { access, readFile, readdir } from 'node:fs/promises'
 import { extname, resolve, sep } from 'node:path'
 import { examples } from '@timelessui/examples'
+import { valueSets } from '../../../packages/components/scripts/component-registry.mjs'
+import {
+  incompleteTiers,
+  readStylesheetNames,
+} from '../../../packages/examples/scripts/css-tiers.mjs'
 
 const root = resolve(import.meta.dirname, '../../..')
 const manifest = JSON.parse(
@@ -30,6 +35,7 @@ if (missingTags.length > 0)
  * the two aggregates; no example lists an aggregate.
  */
 const AGGREGATE_CSS = new Set(['core.css', 'themes/atmosphere.css'])
+const shippedStylesheets = await readStylesheetNames()
 const cssRoot = resolve(root, 'packages/components/src/css')
 const availableCss = (await readdir(cssRoot, { recursive: true }))
   .map((name) => name.split(sep).join('/'))
@@ -65,6 +71,98 @@ for (const file of contentFiles) {
       throw new Error(`${file} references missing example ${match[1]}`)
     }
   }
+
+  /*
+   * Every CSS import snippet has to name a real file and a complete set of tiers, by the same rule the
+   * catalog's `styles` arrays answer to. Ten pages named a component's theme stylesheet with no
+   * `themes/atmosphere/tokens.css`, so every `--ui-*` in the snippet a reader copied resolved to
+   * nothing — milestone 028 fallout that no check was looking for, in the pages a first-time consumer
+   * reads first.
+   */
+  const imported = [
+    ...new Set(
+      [...source.matchAll(/@timelessui\/components\/css\/([a-z0-9/.-]+\.css)/g)].map(
+        (match) => match[1],
+      ),
+    ),
+  ]
+  for (const name of imported) {
+    if (!shippedStylesheets.has(name) && !AGGREGATE_CSS.has(name)) {
+      throw new Error(`${file} imports @timelessui/components/css/${name}, which does not exist`)
+    }
+  }
+  for (const problem of incompleteTiers(imported, shippedStylesheets)) {
+    throw new Error(`${file} imports ${problem}`)
+  }
+}
+
+/**
+ * Every documented component's "Open in StoryLite" link has to reach a story that exists.
+ *
+ * Two independent things build that id. `apps/web/src/lib/stories.ts` composes
+ * `library-${domain}-${id}--default` from the catalog; `resolveStoryId` in
+ * `apps/stories/.storylite/config.ts` derives the real route from the story *filename*, through a
+ * table kept in sync by hand. Nothing compared them, so a story whose filename is missing from that
+ * table produced a silent 404 on a documentation page — which is exactly what milestone 026 hit, and
+ * only noticed because the route it wanted appeared under a different name.
+ *
+ * Reads the committed `story-routes.json`, which `pnpm -F @apps/stories build` writes.
+ */
+const storyRoutes = new Set(
+  JSON.parse(await readFile(resolve(root, 'apps/stories/story-routes.json'), 'utf8')),
+)
+const unreachable = examples
+  .filter((example) => example.domain !== 'recipes')
+  .map((example) => ({
+    id: example.id,
+    route: `/stories/library-${example.domain}-${example.id}--default/`,
+  }))
+  .filter((entry) => !storyRoutes.has(entry.route))
+if (unreachable.length > 0) {
+  throw new Error(
+    `These documented components link to a StoryLite route that does not exist:\n${unreachable
+      .map((entry) => `  ${entry.id} links to ${entry.route}`)
+      .join(
+        '\n',
+      )}\nAdd the story filename to storyDomains in apps/stories/.storylite/config.ts, then ` +
+      'run pnpm build:stories and commit the regenerated apps/stories/story-routes.json.',
+  )
+}
+
+/**
+ * `reference/packages.mdx` names every exported value array by hand, and it had drifted to 37 of 39 —
+ * `collectionAlignments` and `optionFilterModes` were added to the registry and never to the prose. The
+ * list is worth keeping by hand, because the sentence reads better than a generated table, but not
+ * worth trusting: this proves it in both directions.
+ */
+const packagesReference = await readFile(
+  resolve(contentRoot, 'docs/reference/packages.mdx'),
+  'utf8',
+)
+const listStart = packagesReference.indexOf('Permitted values are also exported individually')
+if (listStart === -1) {
+  throw new Error(
+    'reference/packages.mdx no longer names the exported value arrays; update this check or restore the list',
+  )
+}
+const listEnd = packagesReference.indexOf('\n\n', listStart)
+const namedArrays = new Set(
+  [...packagesReference.slice(listStart, listEnd).matchAll(/`([a-zA-Z]+)`/g)].map(
+    (match) => match[1],
+  ),
+)
+const declaredArrays = Object.keys(valueSets)
+const unnamed = declaredArrays.filter((name) => !namedArrays.has(name))
+if (unnamed.length > 0) {
+  throw new Error(
+    `reference/packages.mdx does not name the exported value arrays ${unnamed.join(', ')}`,
+  )
+}
+const invented = [...namedArrays].filter((name) => !declaredArrays.includes(name))
+if (invented.length > 0) {
+  throw new Error(
+    `reference/packages.mdx names value arrays the registry does not declare: ${invented.join(', ')}`,
+  )
 }
 
 /**
