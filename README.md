@@ -148,12 +148,21 @@ Three packages are published — `@timelessui/components`, `@timelessui/color`, 
 `@timelessui/examples` and the three apps are `private` and are never published.
 
 Pushing a `*.*.*` tag runs `.github/workflows/npm-publish.yml`, which validates the tag against the
-manifests, builds the packages, and publishes every workspace package that is not private. Bump the
-three versions first, in one commit, then tag:
+manifests, builds the packages, and publishes every workspace package that is not private. So a
+release is one version across the three manifests, one commit, and one tag — which is what
+`release:bump` does:
 
 ```bash
-pnpm release:check 0.1.0   # fails if any manifest disagrees with the tag
+pnpm release:bump minor    # or major, patch, or an explicit 0.2.0
 ```
+
+It rewrites every publishable manifest, commits `chore(release): <version>`, and tags that commit
+without a leading `v`, because the workflow's trigger pattern does not match one. It refuses to run
+on a dirty tree, since the tag names the commit that gets published, and it pushes nothing — pushing
+the tag is what starts the release. Add `--dry-run` to see the plan first.
+
+`pnpm release:check <version>` is the gate the workflow runs and `release:bump` runs for you: it
+fails if any manifest disagrees with the tag.
 
 The workflow needs an `NPM_TOKEN` repository secret with publish rights to the `@timelessui` scope,
 or a trusted publisher configured per package on npmjs.com — see the comments in the workflow for
