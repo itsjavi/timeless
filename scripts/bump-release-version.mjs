@@ -8,10 +8,17 @@
  * package would fire the same workflow several times over the same commit — and why the tag carries
  * no leading `v`: the workflow's trigger pattern does not match one.
  *
+ * A version is not only a manifest field: `web-types.json` is generated from
+ * `@timelessui/components`'s version, so rewriting the manifests alone leaves the generated output
+ * stale and `pnpm build` fails on `generate:check` — after the tag exists. So the bump regenerates and
+ * commits that output in the same commit, and the release commit is self-consistent by construction.
+ *
  * The working tree has to be clean, because the tag names the commit that gets published, and a
- * published version cannot be recalled. Nothing is pushed; the push is what starts the release, so it
- * stays a deliberate second step. `check-release-version.mjs` runs against the rewritten manifests
- * before the commit exists, so this can never produce a tag that gate would reject.
+ * published version cannot be recalled. That precondition is also what makes staging everything safe
+ * here: whatever is dirty after the rewrite and the regeneration is this script's own work, so there
+ * is nothing else to sweep up. Nothing is pushed; the push is what starts the release, so it stays a
+ * deliberate second step. `check-release-version.mjs` runs against the rewritten manifests before the
+ * commit exists, so this can never produce a tag that gate would reject.
  *
  * Private packages are left alone, for the same reason the check skips them: `pnpm publish -r` skips
  * them too. Reading the workspace from `pnpm ls` keeps "publishable" one definition, not two.
@@ -108,12 +115,29 @@ for (const rewrite of rewrites) {
 }
 
 if (dryRun) {
-  console.log(`\nWould then commit "chore(release): ${target}" on ${branch} and tag it ${target}.`)
+  console.log(
+    `\nWould then regenerate, commit "chore(release): ${target}" on ${branch}, and tag it ${target}.`,
+  )
   process.exit(0)
 }
 
 for (const rewrite of rewrites) {
   writeFileSync(rewrite.path, rewrite.contents)
+}
+
+/*
+ * `web-types.json` carries the version of the package it describes, so it drifts the moment the
+ * manifest does. `--if-present` rather than a named package because a second generated surface should
+ * be covered the day it lands, not the day a release breaks on it.
+ */
+try {
+  execFileSync('pnpm', ['-r', '--if-present', 'run', 'generate'], {
+    cwd: repoRoot,
+    stdio: 'inherit',
+  })
+} catch (error) {
+  revert()
+  fail(`Could not regenerate after the bump, so nothing was committed: ${message(error)}`)
 }
 
 // The same gate the publish workflow runs, against the manifests as they now stand — so a tag this
@@ -123,14 +147,30 @@ try {
     stdio: 'inherit',
   })
 } catch {
-  revert(rewrites)
+  revert()
   fail('The release version check rejected the rewritten manifests; nothing was committed.')
 }
 
+git(['add', '-A'])
+
+/*
+ * `pnpm run` verifies node_modules against the lockfile before it runs anything, and will install to
+ * reconcile them. The publishable packages depend on each other through `workspace:*` links, which the
+ * lockfile records without a version, so a bump has no business changing it — a staged lockfile means
+ * the install resolved something unrelated, and it must not ride along in a release commit.
+ */
+if (git(['diff', '--cached', '--name-only']).split('\n').includes('pnpm-lock.yaml')) {
+  revert()
+  fail(
+    'Regenerating changed pnpm-lock.yaml, which a version bump never should. Run `pnpm install`,\n' +
+      'commit the lockfile on its own, and bump again.',
+  )
+}
+
 try {
-  git(['commit', '-m', `chore(release): ${target}`, '--', ...rewrites.map((r) => r.relativePath)])
+  git(['commit', '-m', `chore(release): ${target}`])
 } catch (error) {
-  revert(rewrites)
+  revert()
   fail(`Could not create the release commit: ${message(error)}`)
 }
 
@@ -143,9 +183,14 @@ try {
   )
 }
 
+const committed = git(['show', '--name-only', '--format=', 'HEAD'])
+  .split('\n')
+  .filter((line) => line !== '')
+
 console.log(
-  `\nCommitted chore(release): ${target} on ${branch}, tagged ${target}.\n` +
-    `Nothing is pushed yet. Pushing the tag starts the publish:\n` +
+  `\nCommitted chore(release): ${target} on ${branch}, tagged ${target}:\n` +
+    committed.map((path) => `  ${path}`).join('\n') +
+    `\nNothing is pushed yet. Pushing the tag starts the publish:\n` +
     `  git push origin ${branch} && git push origin ${target}`,
 )
 
@@ -175,8 +220,15 @@ function resolveTarget(input, versions) {
   return `${major}.${minor}.${patch + 1}`
 }
 
-function revert(rewrites) {
-  git(['checkout', '--', ...rewrites.map((rewrite) => rewrite.relativePath)])
+/*
+ * Bounded by the clean-tree precondition: nothing was modified, staged, or untracked before this
+ * script wrote anything, so this restores the tree to the commit it started from and no further.
+ * `clean -fd` without `-x` leaves ignored files, which the precondition never covered, alone.
+ */
+function revert() {
+  git(['reset', '-q'])
+  git(['checkout', '-q', '--', '.'])
+  git(['clean', '-qfd'])
 }
 
 function tagExists(tag) {

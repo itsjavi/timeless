@@ -156,10 +156,12 @@ release is one version across the three manifests, one commit, and one tag — w
 pnpm release:bump minor    # or major, patch, or an explicit 0.2.0
 ```
 
-It rewrites every publishable manifest, commits `chore(release): <version>`, and tags that commit
-without a leading `v`, because the workflow's trigger pattern does not match one. It refuses to run
-on a dirty tree, since the tag names the commit that gets published, and it pushes nothing — pushing
-the tag is what starts the release. Add `--dry-run` to see the plan first.
+It rewrites every publishable manifest, regenerates the outputs that embed the version — today
+`web-types.json`, which is why a bump is not a manifest-only change — commits
+`chore(release): <version>`, and tags that commit without a leading `v`, because the workflow's
+trigger pattern does not match one. It refuses to run on a dirty tree, since the tag names the
+commit that gets published, and it pushes nothing — pushing the tag is what starts the release. Add
+`--dry-run` to see the plan first.
 
 `pnpm release:check <version>` is the gate the workflow runs and `release:bump` runs for you: it
 fails if any manifest disagrees with the tag.
