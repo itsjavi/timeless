@@ -2,7 +2,25 @@
   "name": "@timelessui/color",
   "version": "0.0.1",
   "description": "Dependency-free CSS color parsing, conversion, gamut, and contrast utilities.",
+  "keywords": [
+    "color",
+    "color-contrast",
+    "color-conversion",
+    "css",
+    "oklch",
+    "wcag"
+  ],
+  "homepage": "https://timeless.build",
+  "bugs": {
+    "url": "https://github.com/itsjavi/timeless/issues"
+  },
   "license": "MIT",
+  "author": "Javi Aguilar (https://github.com/itsjavi)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/itsjavi/timeless.git",
+    "directory": "packages/color"
+  },
   "files": [
     "dist",
     "README.md"

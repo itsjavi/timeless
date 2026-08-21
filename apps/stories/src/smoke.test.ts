@@ -74,6 +74,12 @@ import {
   Placements as ToastPlacements,
 } from './stories/progressive-overlays/toast.stories'
 import { Default as Tooltip } from './stories/progressive-overlays/tooltip.stories'
+import {
+  Default as CopyButton,
+  HiddenUntilSupported as CopyButtonHiddenUntilSupported,
+  InterceptedCopy as CopyButtonInterceptedCopy,
+  Shapes as CopyButtonShapes,
+} from './stories/copy-button.stories'
 
 describe('catalog stories', () => {
   it('renders shared recipes', () => {
@@ -191,6 +197,48 @@ describe('catalog stories', () => {
     expect(NumberStepper.render()).toContain('<ui-number-stepper')
     expect(ColorPicker.render()).toContain('<ui-color-picker')
     expect(ColorPicker.render()).toContain('data-ui-part="channel"')
+  })
+
+  it('renders milestone 026 copy anatomy with a stable accessible name', () => {
+    const defaultHtml = CopyButton.render()
+    const shapesHtml = CopyButtonShapes.render()
+
+    expect(defaultHtml).toContain('<ui-copy-button from="install-command"')
+    expect(defaultHtml).toContain('data-ui-part="status"')
+    expect(defaultHtml).toContain('role="status"')
+    // The name is on the button and both labels are hidden, so the copy never renames the control.
+    expect(defaultHtml).toContain('aria-label="Copy the install command"')
+    for (const part of ['idle', 'copied']) {
+      expect(defaultHtml).toMatch(
+        new RegExp(`<span[^>]*data-ui-part="${part}"[^>]*aria-hidden="true"`),
+      )
+    }
+
+    // The icon-only shape is the one that needs `copied-message`: no text to announce.
+    expect(shapesHtml).toContain('copied-message="API token copied"')
+    expect(shapesHtml).toContain('<svg data-ui-part="copied"')
+    // The attribute, not the order it is serialised in.
+    expect(CopyButtonHiddenUntilSupported.render()).toMatch(
+      /<button[^>]*\sdata-ui-part="trigger"[^>]*\shidden>/,
+    )
+
+    // The interception demo needs its fixture element, which only `setupPreview` can register, and
+    // the copyable source shows the listener rather than the wrapper.
+    expect(CopyButtonInterceptedCopy.render()).toContain('<story-copy-blob>')
+    expect(CopyButtonInterceptedCopy.source()).toContain('ui-before-copy')
+    expect(CopyButtonInterceptedCopy.source()).not.toContain('story-copy-blob')
+  })
+
+  it('keeps milestone 026 copyable source free of demo wrappers and private hooks', () => {
+    for (const source of [
+      CopyButton.source(),
+      CopyButtonShapes.source(),
+      CopyButtonHiddenUntilSupported.source(),
+      CopyButtonInterceptedCopy.source(),
+    ]) {
+      expect(source).not.toContain('ui-demo-page')
+      expect(source).not.toContain('data-ui-internal-')
+    }
   })
 
   it('renders milestone 024 menu anatomy through declared parts and roles', () => {

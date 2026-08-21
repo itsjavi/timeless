@@ -39,7 +39,8 @@ const meta: StoryLiteMeta = {
   title: 'Library/Overlays/Popover',
   parameters: {
     renderer: 'html',
-    css: [tokensCss, popoverCss, demoCss],
+    // Four per component since milestone 028: base tokens, theme tokens, core, theme.
+    css: [tokensCss, themeCss, corePopoverCss, popoverCss, demoCss],
     defineCustomElements: defineTimelessElements,
   },
 }
@@ -56,10 +57,32 @@ its own docs page, as `button.stories.ts` does.
 `Library/<Group>/<Component>` or `Recipes/<Group>/<Component>`. `<Group>` is the catalog group:
 Foundations, Actions, Content, Feedback, Forms, Navigation, Overlays, Color.
 
+### Route ids do not come from the title
+
+`resolveStoryId` in `apps/stories/.storylite/config.ts` builds every route id, and it reads the
+story **filename** — through a hand-maintained `storyDomains` table — plus its directory, never the
+title. A new story file is not in that table, so it gets a fallback id and the correctly titled
+story routes as `<filename>--default` instead of `library-<group>-<component>--default`. Add the
+filename:
+
+```ts
+const storyDomains: Record<string, string> = {
+  // ...
+  'copy-button': 'actions',
+}
+```
+
+Two things depend on getting this right, and neither is the title: the documentation's "Open in
+StoryLite" link is built as `library-${domain}-${id}--${story}` from the catalog
+(`apps/web/src/lib/stories.ts`), and the axe sweep in `apps/e2e` reads the built
+`apps/stories/story-routes.json`. Nothing compares the two, so a missing entry is a silent 404 on a
+documentation page.
+
 `apps/stories/scripts/write-route-catalog.mjs` **fails the build** on implementation-oriented
-prefixes. Never title a story `CSS Primitives/…`, `Form Primitives/…`, `Collection Navigation/…`,
-`Progressive Overlays/…`, or `Color Controls/…` — those are directory names, not catalog groups. The
-build also fails if no `Library/` or no `Recipes/` route exists.
+prefixes — `/stories/css-primitives-*`, `form-primitives-*`, `collection-navigation-*`,
+`progressive-overlays-*`, `color-controls-*` — which is what the directory fallback produces for a
+filename missing from the table. The build also fails if no `Library/` or no `Recipes/` route
+exists.
 
 ## Stories to export
 
@@ -128,11 +151,12 @@ Story-only page wrappers, demo data, demo grids, and one-off scenario compositio
 ## Demo styles
 
 Shared demo layout lives in `apps/stories/src/stories/styles.css`. Component-specific demo styles go
-in a dedicated `<component>.stories.css`, imported `?raw` and appended to `meta.parameters.css`.
-Wrap them in `@layer ui.showcase` so they never compete with component CSS.
+in a dedicated `<component>.stories.css` beside the story, imported `?raw` and appended to
+`meta.parameters.css`. Wrap them in `@layer ui.showcase` so they never compete with component CSS.
 
 Demo styles are demo styles. If a rule looks like it belongs to the component, it belongs in
-`packages/components/src/css/`.
+`packages/components/src/css/core/` if it is behavior or
+`packages/components/src/css/themes/atmosphere/` if it is a look.
 
 ## Long-form docs
 

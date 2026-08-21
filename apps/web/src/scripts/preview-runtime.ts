@@ -42,6 +42,8 @@ const loaders: Record<string, () => Promise<ElementDefiner>> = {
     (await import('@timelessui/components/define/ui-range-field')).defineRangeFieldElement,
   'ui-otp-field': async () =>
     (await import('@timelessui/components/define/ui-otp-field')).defineOtpFieldElement,
+  'ui-copy-button': async () =>
+    (await import('@timelessui/components/define/ui-copy-button')).defineCopyButtonElement,
 }
 
 const definitions = JSON.parse(document.body.dataset.definitions ?? '[]') as string[]

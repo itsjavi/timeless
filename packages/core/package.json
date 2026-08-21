@@ -2,7 +2,22 @@
   "name": "@timelessui/core",
   "version": "0.0.1",
   "description": "Thin Web Components authoring layer for Timeless UI.",
+  "keywords": [
+    "custom-elements",
+    "framework-agnostic",
+    "web-components"
+  ],
+  "homepage": "https://timeless.build",
+  "bugs": {
+    "url": "https://github.com/itsjavi/timeless/issues"
+  },
   "license": "MIT",
+  "author": "Javi Aguilar (https://github.com/itsjavi)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/itsjavi/timeless.git",
+    "directory": "packages/core"
+  },
   "files": [
     "dist",
     "README.md"
@@ -22,9 +37,11 @@
     "build": "tsdown",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "publint": "publint --strict --pack=false"
+    "publint": "publint --strict --pack=false",
+    "attw": "attw --pack --profile esm-only"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "publint": "^0.3.23",
     "tsdown": "^0.22.14",
     "typescript": "catalog:",

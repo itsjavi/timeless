@@ -65,6 +65,14 @@
         "themes/atmosphere/menu.css"
       ]
     },
+    "copy-button": {
+      "cssGzipBytes": 1483,
+      "cssRawBytes": 3102,
+      "gzipBytes": 4710,
+      "modules": ["copy-button.js", "parts-CQKYTKlq.js"],
+      "rawBytes": 14754,
+      "stylesheets": ["core/copy-button.css", "themes/atmosphere/copy-button.css"]
+    },
     "dialog": {
       "cssGzipBytes": 664,
       "cssRawBytes": 1638,

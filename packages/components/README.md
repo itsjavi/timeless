@@ -1,6 +1,11 @@
 # @timelessui/components
 
-CSS-first Timeless UI components.
+CSS-first Timeless UI components. This is the only package you install for components;
+`@timelessui/core` arrives as a dependency.
+
+```bash
+pnpm add @timelessui/components
+```
 
 The CSS ships in three tiers. `tokens.css` carries the cascade-layer order and `color-scheme`,
 `core/` carries behavior and is required, and `themes/atmosphere/` carries the look and is the tier

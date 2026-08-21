@@ -46,6 +46,7 @@ describe('define entrypoint', () => {
       'ui-form',
       'ui-range-field',
       'ui-otp-field',
+      'ui-copy-button',
     ])
     for (const constructor of registry.values()) {
       expect(RealmHTMLElement.prototype.isPrototypeOf(constructor.prototype)).toBe(true)

@@ -1,0 +1,58 @@
+/*
+ * Copy Button's box, the idle/copied swap, and the announcement region.
+ *
+ * The swap is behavior rather than look. `--copied` is the state the element sets, and which of the two
+ * authored labels is in flow is the only thing that makes that state visible at all; the same rule
+ * already sits in `core/color-picker.css` for the picker's own copy control.
+ *
+ * `revert-layer` restores whatever display the `copied` part already had instead of naming one, because
+ * the part is a `<span>` in a worded button and an `<svg>` in an icon-only one, and choosing `block` for
+ * both would break the first. A consumer's own rule still wins: `ui.utilities` comes after this layer,
+ * and unlayered CSS after that.
+ *
+ * `clip-path` on the status region is here rather than in the theme, because it is what makes that
+ * region an announcement channel rather than visible content. A consumer who drops Atmosphere must not
+ * get a second confirmation painted over their layout. The 1px box that conventionally accompanies it is
+ * sizing, so it stays in the theme.
+ */
+
+@layer ui.components {
+  ui-copy-button {
+    /* Containing block for the out-of-flow status region, so it cannot escape the component. */
+    position: relative;
+    display: inline-flex;
+  }
+
+  /*
+   * Hidden unconditionally and shown from the state, not the reverse: where `:state()` is unsupported
+   * the selector below is dropped, and the component degrades to showing only the idle label rather
+   * than both at once.
+   */
+  ui-copy-button [data-ui-part~='copied'] {
+    display: none;
+  }
+
+  ui-copy-button:state(--copied) [data-ui-part~='idle'] {
+    display: none;
+  }
+
+  ui-copy-button:state(--copied) [data-ui-part~='copied'] {
+    display: revert-layer;
+  }
+
+  /*
+   * `hidden` on the trigger has to beat whatever gives that trigger its own display — `.ui-button` sets
+   * `inline-flex`, and the UA's `[hidden]` rule loses to any author rule at all. Without this the
+   * opt-in reveal has nothing to reveal, because the button was on screen the whole time. The same rule
+   * already sits in `core/options.css` for every part the library hides by `hidden`.
+   */
+  ui-copy-button [data-ui-part~='trigger'][hidden] {
+    display: none;
+  }
+
+  ui-copy-button [data-ui-part~='status'] {
+    position: absolute;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}

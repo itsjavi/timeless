@@ -42,6 +42,7 @@ import type { ToggleGroupChangeDetail } from './toggle-group'
 import type { FormInvalidDetail } from './form'
 import type { RangeFieldChangeDetail } from './range-field'
 import type { OtpFieldChangeDetail, OtpFieldCompleteDetail } from './otp-field'
+import type { CopyDetail, CopyProposalDetail } from './copy-button'
 
 /**
  * Consumer-authored `data-*` and `aria-*` attributes stay open. The generated members above are
@@ -368,6 +369,25 @@ export interface UIOtpFieldElementProps extends TimelessGlobalProps {
   'onui-complete'?: (event: CustomEvent<OtpFieldCompleteDetail>) => void
 }
 
+export interface UICopyButtonElementProps extends TimelessGlobalProps {
+  /** The literal text to copy. Wins over `from` on presence rather than content, the way `value` does on an option: an explicit `value=""` is the author saying to copy nothing. */
+  value?: string
+  /** Id of the element to read instead of `value`. An `input`, `textarea`, or `select` gives its current `value`; anything else gives its text. Read at activation rather than cached, so this is the one to reach for when the text is long or changes: it stays current on its own, and nothing is duplicated into an attribute. Assigning the `value` property works too, but a long string then reflects into the DOM. */
+  from?: string
+  /** Milliseconds the `--copied` state persists after a successful copy, and with it the text in the `status` region — the two clear together, so copying the same value twice is announced twice. `0` clears both on the next task, which is short enough that a screen reader may miss the announcement. */
+  'feedback-duration'?: number
+  /** What the `status` region announces after a successful copy. Falls back to the `copied` part’s text, so a button whose confirmation is a word needs no message at all and an icon-only one does. With neither, nothing is announced. */
+  'copied-message'?: string
+  /** DOM property reflecting the `feedback-duration` attribute. */
+  feedbackDuration?: string
+  /** DOM property reflecting the `copied-message` attribute. */
+  copiedMessage?: string
+  /** Cancelable proposal dispatched before anything is written, carrying the resolved `value`. Call `preventDefault()` to reject the copy, and no `ui-copy` follows. Or call `detail.respondWith(promise)` to perform the write yourself — which is how you copy an image, a blob, or `text/html`, since `writeText` carries a string and nothing else. The element then awaits your promise and drives `--copied`, the announcement, and `ui-copy` from its outcome, so a confirmation never claims a copy that did not happen. Call it synchronously, and call your own clipboard method synchronously too — the click’s transient user activation is the same one the element depends on. `ClipboardItem` accepts a promised blob, so `new ClipboardItem({ 'image/png': blobPromise })` starts the write immediately while the data resolves. */
+  'onui-before-copy'?: (event: CustomEvent<CopyProposalDetail>) => void
+  /** Dispatched once per activation, on success and on every failure, unless a listener cancelled the proposal. The detail carries `status`, the resolved `value`, and a `reason` naming what went wrong: `empty` when nothing resolved, `unsupported` when there is no Clipboard API, `denied` when the browser refused the write, and `rejected` when a `respondWith` promise failed. */
+  'onui-copy'?: (event: CustomEvent<CopyDetail>) => void
+}
+
 export interface TimelessIntrinsicElements {
   'ui-tabs': UITabsElementProps
   'ui-dialog': UIDialogElementProps
@@ -391,6 +411,7 @@ export interface TimelessIntrinsicElements {
   'ui-form': UIFormElementProps
   'ui-range-field': UIRangeFieldElementProps
   'ui-otp-field': UIOtpFieldElementProps
+  'ui-copy-button': UICopyButtonElementProps
 }
 
 // @ts-ignore Preact is an optional consumer dependency.

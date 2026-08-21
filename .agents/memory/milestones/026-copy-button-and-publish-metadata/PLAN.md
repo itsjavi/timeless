@@ -1,5 +1,5 @@
 ---
-status: Accepted
+status: Implemented
 ---
 
 # Milestone 026 Plan: Copy Button and Publish Metadata

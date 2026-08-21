@@ -401,13 +401,23 @@ const valueList = (values: readonly string[] | undefined, fallbackType: string) 
   }
 
   <h2 id="progressive-enhancement">Before JavaScript runs</h2>
-  <p>
-    {
-      enhanced
-        ? 'The markup above is complete and usable on its own: native controls submit, labels associate, and authored ARIA is already correct. Registration adds state synchronisation, focus management, and keyboard coordination on top of it.'
-        : 'This primitive is CSS only. There is nothing to register and nothing to wait for.'
-    }
-  </p>
+  {
+    /*
+     * The generic claim holds for every enhanced component whose shell is the platform's — which is most
+     * of them, and the reason it is a default rather than a per-component string. Context Menu and Copy
+     * Button have no such shell, so they declare their own; a page that told a reader the markup above
+     * was usable on its own would be wrong about the one thing this section exists to say.
+     */
+    example.beforeJavaScript ? (
+      <p set:html={inlineMarkdown(example.beforeJavaScript)} />
+    ) : (
+      <p>
+        {enhanced
+          ? 'The markup above is complete and usable on its own: native controls submit, labels associate, and authored ARIA is already correct. Registration adds state synchronisation, focus management, and keyboard coordination on top of it.'
+          : 'This primitive is CSS only. There is nothing to register and nothing to wait for.'}
+      </p>
+    )
+  }
 
   {
     related.map((composition) => (

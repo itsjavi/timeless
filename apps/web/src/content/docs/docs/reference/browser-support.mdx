@@ -27,7 +27,7 @@ missing any of these cannot render Timeless correctly.
 | `color-mix()`            | 111           | 16.2   | 113     | Derived accent and danger fills                           |
 | Popover API              | 114           | 17     | 125     | Popover, Hover Card, Menu, Context Menu, Select, Combobox |
 | `light-dark()`           | 123           | 17.5   | 120     | Tokens and themed surfaces                                |
-| `:state()` custom states | 125           | 17.4   | 126     | Toast, Color Picker, and Sheet drag state                 |
+| `:state()` custom states | 125           | 17.4   | 126     | Sheet drag, Toast exit, Color Picker, and Copy Button     |
 
 ## Progressive features
 
@@ -75,11 +75,15 @@ content; the surface simply does not become a top-layer popover.
 
 This is why every component page documents markup that already works before JavaScript runs.
 
-[Context Menu](/docs/components/context-menu/) is the single exception, and it is a platform gap
-rather than a support one: there is no declarative way to open a surface at pointer coordinates, so
-with scripting off the browser shows its own context menu and the authored `ui-menu` stays hidden.
-Nothing reachable only from a context menu is reachable at all, in any browser, until the bundle
-loads. [Sheet](/docs/components/sheet/)'s swipe-to-dismiss is a gentler version of the same shape: a
+Two components are the exception, and both are platform gaps rather than support ones.
+[Context Menu](/docs/components/context-menu/) has no declarative way to open a surface at pointer
+coordinates, so with scripting off the browser shows its own context menu and the authored `ui-menu`
+stays hidden. Nothing reachable only from a context menu is reachable at all, in any browser, until
+the bundle loads. [Copy Button](/docs/components/copy-button/) has no declarative way to reach the
+clipboard: `navigator.clipboard` is undefined outside a secure context and refuses the write without
+a user gesture, and `document.execCommand('copy')` is deprecated. Author its trigger `hidden` and
+registration reveals it once the API is there, so no dead control renders.
+[Sheet](/docs/components/sheet/)'s swipe-to-dismiss is a gentler version of the same shape: a
 gesture is an addition, so Escape and the close control stay, and the sheet is fully operable
 without a pointer.
 

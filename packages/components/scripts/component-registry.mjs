@@ -2346,6 +2346,90 @@ export const components = [
       'There is no APG pattern for a one-time-code field, so the contract is a composition of things the platform already defines rather than invented ARIA: a named `role="group"` over native inputs, each independently tabbable and separately labelled by position. No roving `tabindex` is written, because every cell is a real tab stop. Autofill, the numeric keyboard, and paste come from the inputs themselves.',
     ),
   ),
+  customElement(
+    'copyButton',
+    'ui-copy-button',
+    'copy-button',
+    'UICopyButtonElement',
+    'createCopyButtonElementClass',
+    'defineCopyButtonElement',
+    ['core/copy-button.css', 'themes/atmosphere/copy-button.css'],
+    [
+      attribute('value', 'string', {
+        description:
+          'The literal text to copy. Wins over `from` on presence rather than content, the way `value` does on an option: an explicit `value=""` is the author saying to copy nothing.',
+      }),
+      attribute('from', 'string', {
+        description:
+          'Id of the element to read instead of `value`. An `input`, `textarea`, or `select` gives its current `value`; anything else gives its text. Read at activation rather than cached, so this is the one to reach for when the text is long or changes: it stays current on its own, and nothing is duplicated into an attribute. Assigning the `value` property works too, but a long string then reflects into the DOM.',
+      }),
+      attribute('feedback-duration', 'number', {
+        property: { name: 'feedbackDuration', type: 'string' },
+        default: '1800',
+        description:
+          'Milliseconds the `--copied` state persists after a successful copy, and with it the text in the `status` region \u2014 the two clear together, so copying the same value twice is announced twice. `0` clears both on the next task, which is short enough that a screen reader may miss the announcement.',
+      }),
+      attribute('copied-message', 'string', {
+        property: { name: 'copiedMessage' },
+        description:
+          'What the `status` region announces after a successful copy. Falls back to the `copied` part\u2019s text, so a button whose confirmation is a word needs no message at all and an icon-only one does. With neither, nothing is announced.',
+      }),
+    ],
+    [
+      part(
+        'trigger',
+        true,
+        undefined,
+        'Native button that copies. Author it as `<button type="button">` with an accessible name; the name must not change on copy, because a button renamed while it holds focus is announced inconsistently across screen readers.',
+      ),
+      part(
+        'idle',
+        false,
+        undefined,
+        'Shown while nothing has been copied. Decorative \u2014 hide it from assistive technology with `aria-hidden="true"`.',
+      ),
+      part(
+        'copied',
+        false,
+        undefined,
+        'Shown briefly after a successful copy. Decorative in the same way, and its text is the default announcement.',
+      ),
+      part(
+        'status',
+        false,
+        undefined,
+        'A `role="status"` region the confirmation is written into. Author it \u2014 Timeless writes text and never creates the element \u2014 and without it nothing is announced. It is clipped away by default, because the visible confirmation is the `copied` part; restyle it if you want it seen.',
+      ),
+    ],
+    [
+      state(
+        '--copied',
+        'custom-state',
+        true,
+        'Set for `feedback-duration` after a successful copy. Public: style `ui-copy-button:state(--copied)` yourself.',
+      ),
+    ],
+    [],
+    [
+      event(
+        'ui-before-copy',
+        'CustomEvent<CopyProposalDetail>',
+        "Cancelable proposal dispatched before anything is written, carrying the resolved `value`. Call `preventDefault()` to reject the copy, and no `ui-copy` follows. Or call `detail.respondWith(promise)` to perform the write yourself \u2014 which is how you copy an image, a blob, or `text/html`, since `writeText` carries a string and nothing else. The element then awaits your promise and drives `--copied`, the announcement, and `ui-copy` from its outcome, so a confirmation never claims a copy that did not happen. Call it synchronously, and call your own clipboard method synchronously too \u2014 the click\u2019s transient user activation is the same one the element depends on. `ClipboardItem` accepts a promised blob, so `new ClipboardItem({ 'image/png': blobPromise })` starts the write immediately while the data resolves.",
+        true,
+      ),
+      event(
+        'ui-copy',
+        'CustomEvent<CopyDetail>',
+        'Dispatched once per activation, on success and on every failure, unless a listener cancelled the proposal. The detail carries `status`, the resolved `value`, and a `reason` naming what went wrong: `empty` when nothing resolved, `unsupported` when there is no Clipboard API, `denied` when the browser refused the write, and `rejected` when a `respondWith` promise failed.',
+      ),
+    ],
+    accessibility(
+      'button',
+      'Button',
+      [],
+      'The trigger is a native button, so activation, focus, and the accessible name are the platform\u2019s. Timeless adds only what the platform cannot: the `idle`/`copied` swap is decorative and stays hidden from assistive technology, and the confirmation reaches a screen reader through the authored `status` region rather than by renaming the button. Copying needs `navigator.clipboard`, which is absent outside a secure context; a trigger authored `hidden` is revealed only once the API is there, so a control that cannot work is never shown.',
+    ),
+  ),
 ]
 
 export const elements = components.filter((component) => component.kind === 'custom-element')

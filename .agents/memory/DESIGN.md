@@ -234,7 +234,9 @@ Use these as a direction, not an excuse to add shadows everywhere.
   attribute's permitted values and default in the registry. A value the stylesheets do not implement
   fails the build, and so does an attribute nothing implements.
 - Use `data-ui-part` for authored Light DOM anatomy, native and ARIA state where available,
-  `:state()` for private host state, and `data-ui-internal-*` only for unavoidable runtime hooks.
+  `:state()` for host state with no public attribute equivalent, and `data-ui-internal-*` only for
+  unavoidable runtime hooks. Most custom states are internal; a state a consumer is meant to style
+  is declared public in the registry and documented as such, as Copy Button's `--copied` is.
 - Do not support old `data-ti-*` or PoC selectors in the new package.
 - Keep root exports side-effect free. CSS is imported explicitly.
 - Do not generate visual DOM from component JavaScript unless a milestone explicitly accepts it.

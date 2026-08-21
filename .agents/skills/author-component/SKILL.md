@@ -49,6 +49,9 @@ buttonVariants: {
 
 Then add the component with the helper that matches its kind:
 
+`stylesheet` takes a single value or an array; a component split across the two tiers passes an
+array.
+
 ```js
 css(name, root, stylesheet, attributes, parts, states, variables, a11y)
 
@@ -95,10 +98,26 @@ Choosing attribute style is a hard rule, not a preference:
   Unavoidable child runtime hooks use private `data-ui-internal-*`, which is never public and never
   documented.
 
-## 2. Write the stylesheet
+## 2. Write the stylesheets
 
-`packages/components/src/css/<name>.css`, in the right cascade layer (`ui.tokens`, `ui.components`,
-`ui.utilities`).
+**Two files, not one.** Since milestone 028 a component's CSS is split by tier, and both halves must
+be created and both added by hand to their aggregate:
+
+| File                                   | Holds                                                                                      | Aggregate                       |
+| -------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------- |
+| `src/css/core/<name>.css`              | Behavior: `display`, positioning, anchoring, scrolling, `appearance`, `pointer-events`     | `src/css/core.css`              |
+| `src/css/themes/atmosphere/<name>.css` | The look: colour, background, border, radius, shadow, type, transition, and **all sizing** | `src/css/themes/atmosphere.css` |
+
+Both go in the right cascade layer (`ui.tokens`, `ui.components`, `ui.utilities`), and the registry
+entry names both: `['core/<name>.css', 'themes/atmosphere/<name>.css']`.
+
+`check-core-boundary.mjs`, run as `pnpm core:validate` and inside `build`, decides which file a
+given declaration belongs in — in **both** directions, so a half-finished split fails rather than
+passing quietly. Read its header before arguing with it; the escape hatch is a `core-exempt:`
+comment naming a reason, and the count of those is printed on every run.
+
+A core stylesheet must also give every Atmosphere token it reads a literal fallback, because core
+has to work with no theme loaded.
 
 `validate-contracts.mjs` proves the stylesheet and the registry against each other in **both**
 directions: a value the CSS selects must be declared, and a declared value must be selected or be
@@ -133,10 +152,19 @@ Then confirm the proofs:
 
 ```bash
 pnpm -F @timelessui/components run contracts:validate
+pnpm -F @timelessui/components run core:validate
 pnpm -F @timelessui/components run manifest:validate
 pnpm -F @timelessui/components run exports:validate
+pnpm -F @timelessui/components run performance:check
 pnpm -F @timelessui/components run test
 ```
+
+Two of those need a hand-written entry before they can pass, and neither is generated:
+
+- `package.json` `exports` gains a `./<tag-without-the-ui-prefix>` subpath, or `exports:validate`
+  reports `Missing class entrypoint`.
+- `scripts/performance-baselines.json` gains an entry from `performance:check -- --measure`, or
+  `performance:check` reports `Missing performance baseline`.
 
 A public export must never change name or module. If a rename looks necessary, that is a breaking
 change and belongs in a milestone.
@@ -159,9 +187,17 @@ invoked declaratively, the author supplies the `id`.
 
 ## 6. Register in the catalog
 
-Add an entry to `packages/examples/src/catalog.ts` — `id`, `domain`, `component`, `definitions`,
-`styles`, and `guidance`. This one declaration drives the documentation sidebar,
-`/docs/components/`, the live previews, and the StoryLite route ids.
+Add an entry to `packages/examples/src/catalog.ts`. Required: `id`, `domain`, `group`, `contracts`,
+`component`, `title`, `description`, `definitions`, `styles`, and `render`. Optional and worth
+knowing: `guidance` compares sibling components, `authoring` says what the consumer must write, and
+`beforeJavaScript` overrides the reference page's generic "Before JavaScript runs" paragraph for a
+component that has no pre-registration shell. `contracts` is the field that decides which component
+APIs the page documents.
+
+This one declaration drives the documentation sidebar, `/docs/components/`, and the live previews.
+**Not** the StoryLite route ids: those come from `resolveStoryId` in
+`apps/stories/.storylite/config.ts`, which reads the story filename, and a new story needs a
+hand-added entry in its `storyDomains` table.
 
 `validate-docs.mjs` fails on any custom element with no catalog entry and any stylesheet no example
 references. For a component with no MDX page, `guidance` **is** its prose — that is where behavior
