@@ -1353,7 +1353,7 @@ export const examples = [
         id: 'package-tabs',
         label: 'Package details',
         items: [
-          { id: 'install', label: 'Install', content: 'Install from the workspace package.' },
+          { id: 'install', label: 'Install', content: 'Install @timelessui/components from npm.' },
           { id: 'usage', label: 'Usage', content: 'Author native Light DOM anatomy.' },
         ],
       }),
