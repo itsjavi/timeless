@@ -484,6 +484,11 @@ export const valueSets = {
     values: ['compact', 'normal'],
   },
   tableAlignments: { type: 'TableAlignment', module: 'primitives', values: ['start', 'end'] },
+  breadcrumbSeparators: {
+    type: 'BreadcrumbSeparator',
+    module: 'primitives',
+    values: ['chevron', 'slash'],
+  },
   formControlSizes: { type: 'FormControlSize', module: 'forms', values: ['sm', 'md', 'lg'] },
   fieldLayouts: { type: 'FieldLayout', module: 'forms', values: ['stacked', 'inline'] },
   formDensities: {
@@ -859,6 +864,102 @@ export const components = [
       part('description', false, undefined, 'Supporting copy inside the caption.'),
       part('empty', false, undefined, 'Row shown in place of data when the table has none.'),
     ],
+  ),
+  css(
+    'breadcrumb',
+    'ui-breadcrumb',
+    ['core/breadcrumb.css', 'themes/atmosphere/breadcrumb.css'],
+    [
+      attribute('data-ui-separator', 'string', {
+        set: 'breadcrumbSeparators',
+        default: 'chevron',
+        description:
+          'Which glyph is drawn between crumbs. Both are generated content rather than markup, so neither reaches the accessibility tree and neither is yours to author. For any other glyph, set `--ui-breadcrumb-separator` instead of asking for a new value here.',
+      }),
+      density('compactDensities', 'Gap between a crumb and its separator.'),
+    ],
+    [
+      part(
+        'item',
+        false,
+        undefined,
+        'One crumb. Use `<li>`; the separator is drawn before every crumb but the first, so nothing is authored between them.',
+      ),
+      part('link', false, undefined, 'The link inside a crumb. Use `<a href>`.'),
+      part(
+        'current',
+        false,
+        undefined,
+        'The final crumb, which names the page you are already on. Author it as a `<span>` rather than a link — a link to here goes nowhere — and put `aria-current="page"` on it.',
+      ),
+    ],
+    [
+      state(
+        'current',
+        'aria',
+        true,
+        'Author `aria-current="page"` on the final crumb. Timeless never writes it: which page you are on is not something a stylesheet can know.',
+      ),
+    ],
+    [
+      variable('--ui-breadcrumb-gap', 'Gap between a crumb and its separator.'),
+      variable(
+        '--ui-breadcrumb-separator',
+        'The separator glyph, as a CSS string. Comes from `data-ui-separator`; set it directly for a glyph the attribute does not offer. Keep the `/ ""` alternative text if you redeclare `content` yourself, or the glyph starts being announced.',
+      ),
+    ],
+    accessibility(
+      'breadcrumb',
+      'Breadcrumb',
+      [],
+      'No keyboard behavior of its own, and the APG says so too: a breadcrumb is links in a labelled landmark, and `Tab` is the traversal. Author `<nav>` with an `aria-label`, an `<ol>` inside it, and the final crumb as an unlinked `<span aria-current="page">`. The separator is a `::before` pseudo-element with empty alternative text, so it is drawn but never announced — which is why there is no separator part to author and no `aria-hidden` to remember.',
+    ),
+  ),
+  css(
+    'pagination',
+    'ui-pagination',
+    ['core/pagination.css', 'themes/atmosphere/pagination.css'],
+    [size('primitiveSizes', 'Cell height, padding, and font size.')],
+    [
+      part('item', false, undefined, 'One cell wrapper. Use `<li>`.'),
+      part(
+        'link',
+        false,
+        undefined,
+        'A page cell. Use `<a href>` for every page but the one you are on, and a `<span aria-current="page">` for that one.',
+      ),
+      part(
+        'previous',
+        false,
+        undefined,
+        'Steps back one page. Give it an accessible name that says so; `‹` alone names nothing. At the first page, render it as a `<span>` rather than a disabled link.',
+      ),
+      part('next', false, undefined, 'Steps forward one page, with the same two rules.'),
+      part(
+        'ellipsis',
+        false,
+        undefined,
+        'Stands for the pages omitted from a long range. Mark it `aria-hidden="true"`: the gap between page 3 and page 40 is not a page.',
+      ),
+    ],
+    [
+      state(
+        'current',
+        'aria',
+        true,
+        'Author `aria-current="page"` on the cell for the page being shown. Timeless never writes it.',
+      ),
+    ],
+    [
+      variable('--ui-pagination-gap', 'Gap between cells.'),
+      variable('--ui-pagination-cell-size', 'Minimum height and width of a cell.'),
+    ],
+    accessibility(
+      null,
+      'Pagination',
+      [],
+      'The APG has no pagination pattern, so this documents a composition: a `<nav>` with an `aria-label`, a list, and one link per page. They are links rather than buttons on purpose — a page is a URL, so it is shareable, middle-clickable, and in the back button’s history, none of which a click handler gives you. That has one consequence worth stating: **a disabled link is not a thing.** At the first or last page, render Previous or Next as a `<span>`, not an `<a aria-disabled="true">` that still navigates. Compose `<ul class="ui-group" data-ui-attached>` for a joined strip.',
+    ),
   ),
   css(
     'collapsible',
@@ -1398,7 +1499,7 @@ export const components = [
       'tooltip',
       'Tooltip',
       [key('Escape', 'Close the surface while the trigger has focus.')],
-      'The card opens on both pointer hover and keyboard focus, so it is reachable without a mouse, and clicking the trigger toggles it. `close-delay` keeps it open while the pointer crosses the gap into the surface, so the content inside is reachable. Under `variant="tooltip"` the click toggle is dropped — a tooltip describes its trigger rather than disclosing a surface — while the gap-crossing behavior stays, because WCAG 2.2 SC 1.4.13 requires it. See [Tooltip](/docs/components/tooltip/). Never put the only copy of important content here.',
+      'The card opens on both pointer hover and keyboard focus, so it is reachable without a mouse, and clicking the trigger toggles it. `close-delay` keeps it open while the pointer crosses the gap into the surface, and focus moving into the surface cancels the close outright — so a link or a button inside it is reachable with `Tab`, not only with a pointer. Under `variant="tooltip"` the click toggle is dropped — a tooltip describes its trigger rather than disclosing a surface — while the gap-crossing behavior stays, because WCAG 2.2 SC 1.4.13 requires it. See [Tooltip](/docs/components/tooltip/). Never put the only copy of important content here.',
     ),
   ),
   selector(

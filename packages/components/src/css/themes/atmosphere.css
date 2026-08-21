@@ -38,6 +38,8 @@
 @import './atmosphere/group.css';
 @import './atmosphere/list.css';
 @import './atmosphere/table.css';
+@import './atmosphere/breadcrumb.css';
+@import './atmosphere/pagination.css';
 @import './atmosphere/spinner.css';
 @import './atmosphere/forms.css';
 @import './atmosphere/range.css';

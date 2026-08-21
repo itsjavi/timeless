@@ -857,6 +857,17 @@
       ]
     },
     {
+      "name": "breadcrumbSeparators",
+      "values": [
+        {
+          "name": "chevron"
+        },
+        {
+          "name": "slash"
+        }
+      ]
+    },
+    {
       "name": "formControlSizes",
       "values": [
         {

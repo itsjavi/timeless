@@ -241,6 +241,51 @@ test('the toaster still places itself and stays clickable through', async ({ pag
   expect(stack?.pinnedToAnEdge, 'the toaster is not pinned to a viewport edge').toBe(true)
 })
 
+/**
+ * The two CSS-only components milestone 025 added put the whole tier split in one place: core lays the
+ * trail out and clips it, the theme draws the separator and the cell chrome. Core-only therefore has
+ * to leave both laid out and legible with no separator and no borders, which is exactly the
+ * "positioned, structurally intact, plain-looking" claim — and for a component with no JavaScript at
+ * all, the stylesheets are the only thing that could deliver it.
+ */
+test('the CSS-only navigation components stay laid out with no theme', async ({ page }) => {
+  await loadPreview(page, 'breadcrumb', CORE_ONLY)
+  const trail = await page.evaluate(() => {
+    const list = document.querySelector<HTMLElement>('.ui-breadcrumb ol')
+    const crumb = document.querySelector<HTMLElement>("[data-ui-part~='link']")
+    if (!list || !crumb) return null
+    return {
+      listDisplay: getComputedStyle(list).display,
+      listOverflow: getComputedStyle(list).overflow,
+      crumbEllipsis: getComputedStyle(crumb).textOverflow,
+      // The theme draws the separator, so with no theme there is none. That is the point.
+      separator: getComputedStyle(document.querySelector('li:nth-child(2)')!, '::before').content,
+    }
+  })
+  expect(trail, 'the breadcrumb preview never rendered').not.toBeNull()
+  expect(trail?.listDisplay).toBe('flex')
+  expect(trail?.listOverflow).toBe('hidden')
+  expect(trail?.crumbEllipsis).toBe('ellipsis')
+  expect(trail?.separator).toBe('none')
+
+  await loadPreview(page, 'pagination', CORE_ONLY)
+  const pager = await page.evaluate(() => {
+    const cells = [...document.querySelectorAll<HTMLElement>("[data-ui-part~='link']")]
+    const list = document.querySelector<HTMLElement>('.ui-pagination ul')
+    if (!list || cells.length === 0) return null
+    return {
+      listDisplay: getComputedStyle(list).display,
+      cellDisplays: [...new Set(cells.map((cell) => getComputedStyle(cell).display))],
+    }
+  })
+  expect(pager, 'the pagination preview never rendered').not.toBeNull()
+  expect(pager?.listDisplay).toBe('flex')
+  // `inline-flex`, blockified: a flex item's `display` computes to its block equivalent, so a cell
+  // inside the `<li>` flex container reports `flex`. Either way it is a centring box, which is what
+  // core owes a digit sitting in a square.
+  expect(pager?.cellDisplays).toEqual(['flex'])
+})
+
 test('dropping core as well degrades without erroring or hanging', async ({ page }) => {
   const failures: string[] = []
   page.on('pageerror', (error) => failures.push(String(error)))

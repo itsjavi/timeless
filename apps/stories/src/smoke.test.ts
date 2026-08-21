@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import { Default as TeamPresence } from './stories/recipes/team-presence.stories'
+import { Default as NavigationMenu } from './stories/recipes/navigation-menu.stories'
 import { Default, Sizes, Variants } from './stories/button.stories'
+import {
+  Default as Breadcrumb,
+  PageHeader as BreadcrumbPageHeader,
+  Truncation as BreadcrumbTruncation,
+} from './stories/breadcrumb.stories'
+import {
+  Boundaries as PaginationBoundaries,
+  Default as Pagination,
+  JoinedStrip as PaginationJoinedStrip,
+} from './stories/pagination.stories'
 import { Default as Alert } from './stories/css-primitives/alert.stories'
 import { Default as Avatar } from './stories/css-primitives/avatar.stories'
 import { Default as Badge } from './stories/css-primitives/badge.stories'
@@ -197,6 +208,60 @@ describe('catalog stories', () => {
     expect(NumberStepper.render()).toContain('<ui-number-stepper')
     expect(ColorPicker.render()).toContain('<ui-color-picker')
     expect(ColorPicker.render()).toContain('data-ui-part="channel"')
+  })
+
+  it('renders milestone 025 navigation anatomy as links in a labelled landmark', () => {
+    const breadcrumbHtml = Breadcrumb.render()
+    const paginationHtml = Pagination.render()
+
+    expect(breadcrumbHtml).toContain('<nav class="ui-breadcrumb" aria-label="Breadcrumb">')
+    expect(breadcrumbHtml).toContain('<ol>')
+    // The last crumb is not a link, and nothing sits between the crumbs: the separator is drawn.
+    expect(breadcrumbHtml).toContain('<span data-ui-part="current" aria-current="page">')
+    expect(breadcrumbHtml).not.toContain('aria-hidden="true">&rsaquo;')
+    expect(BreadcrumbTruncation.render()).toContain('data-ui-part="item"')
+    expect(BreadcrumbPageHeader.source()).toContain('aria-current="page"')
+
+    expect(paginationHtml).toContain('<nav class="ui-pagination" aria-label="Pagination">')
+    expect(paginationHtml).toContain('<a data-ui-part="previous"')
+    expect(paginationHtml).toContain('<span data-ui-part="link" aria-current="page">')
+    expect(paginationHtml).toContain('<span data-ui-part="ellipsis" aria-hidden="true">')
+    // A boundary is a span, never an `aria-disabled` link that still navigates. Asserted on the
+    // copyable source, because the demo page's prose names the attribute in order to reject it.
+    const boundaries = PaginationBoundaries.source()
+    expect(boundaries).toContain('<span data-ui-part="previous">Previous</span>')
+    expect(boundaries).toContain('<span data-ui-part="next">Next</span>')
+    expect(boundaries).not.toContain('aria-disabled')
+    // The joined strip is Group composed onto the list, not a Pagination attribute.
+    expect(PaginationJoinedStrip.render()).toContain('<ul class="ui-group" data-ui-attached>')
+  })
+
+  it('composes a navigation menu from Hover Card without reaching for role=menu', () => {
+    const navHtml = NavigationMenu.source()
+
+    expect(navHtml).toContain('<nav aria-label="Main">')
+    expect(navHtml).toContain('<ui-hover-card open-delay="120" close-delay="100"')
+    // Links in a region, never commands in a menu.
+    expect(navHtml).toContain('role="group"')
+    expect(navHtml).not.toContain('role="menu"')
+    expect(navHtml).not.toContain('menuitem')
+    expect(navHtml).toContain('aria-controls="nav-products"')
+    expect(navHtml).toContain('aria-expanded="false"')
+  })
+
+  it('keeps milestone 025 copyable source free of demo wrappers and private hooks', () => {
+    for (const source of [
+      Breadcrumb.source(),
+      BreadcrumbTruncation.source(),
+      BreadcrumbPageHeader.source(),
+      Pagination.source(),
+      PaginationBoundaries.source(),
+      PaginationJoinedStrip.source(),
+    ]) {
+      expect(source).not.toContain('ui-demo-page')
+      expect(source).not.toContain('-demo-')
+      expect(source).not.toContain('data-ui-internal-')
+    }
   })
 
   it('renders milestone 026 copy anatomy with a stable accessible name', () => {

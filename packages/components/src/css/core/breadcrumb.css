@@ -1,0 +1,37 @@
+/*
+ * Breadcrumb's boxes, and its truncation.
+ *
+ * The trail is one line that never wraps, so a deep hierarchy has to give somewhere: the crumbs in
+ * the middle clip to an ellipsis while the first and last stay whole. `overflow` and `text-overflow`
+ * are the behavior half of that and live here; the `min-inline-size: 0` that lets a flex item shrink
+ * below its content is sizing, so it is the theme's, and without a theme the trail simply overflows
+ * its container rather than eliding.
+ */
+
+@layer ui.components {
+  .ui-breadcrumb :where(ol, ul) {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .ui-breadcrumb :where([data-ui-part~='item']) {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  /* The two ends stay legible; everything between them is what gives way. */
+  .ui-breadcrumb :where([data-ui-part~='item']):first-child,
+  .ui-breadcrumb :where([data-ui-part~='item']):last-child {
+    flex-shrink: 0;
+  }
+
+  .ui-breadcrumb :where([data-ui-part~='link'], [data-ui-part~='current']) {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

@@ -148,6 +148,16 @@ export function createHoverCardElementClass(targetWindow?: Window): UIHoverCardE
       // is not interacting with it — so both variants keep the surface pointer-safe.
       this.on(content, 'pointerenter', this.cancelClose, { signal })
       this.on(content, 'pointerleave', this.scheduleClose, { signal })
+      /*
+       * And the keyboard half of the same rule, which is the one that was missing. Tabbing from the
+       * trigger into the surface fires `focusout` on the trigger, so the surface closed under the
+       * user and focus fell to the document — the content was pointer-reachable and keyboard-
+       * unreachable, which is WCAG 2.1.1 rather than a rough edge. `focusout` on the trigger still
+       * schedules the close; the `focusin` here arrives after it and cancels it, exactly as
+       * `pointerenter` does. Focus moving *within* the surface cancels itself the same way.
+       */
+      this.on(content, 'focusin', this.cancelClose, { signal })
+      this.on(content, 'focusout', this.scheduleClose, { signal })
 
       // The click toggle is the part a tooltip must not have. A tooltip describes its trigger, and a
       // trigger that is also a button has its own job on click; toggling a label instead makes it a

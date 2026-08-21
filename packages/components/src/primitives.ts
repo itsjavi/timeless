@@ -1,6 +1,7 @@
 import {
   alertVariants,
   avatarShapes,
+  breadcrumbSeparators,
   avatarStatuses,
   badgeVariants,
   cardVariants,
@@ -22,6 +23,7 @@ import type {
   AvatarShape,
   AvatarStatus,
   BadgeVariant,
+  BreadcrumbSeparator,
   CardVariant,
   CompactDensity,
   GroupOrientation,
@@ -42,6 +44,7 @@ export {
   avatarShapes,
   avatarStatuses,
   badgeVariants,
+  breadcrumbSeparators,
   cardVariants,
   compactDensities,
   groupOrientations,
@@ -59,6 +62,7 @@ export {
   type AvatarShape,
   type AvatarStatus,
   type BadgeVariant,
+  type BreadcrumbSeparator,
   type CardVariant,
   type CompactDensity,
   type GroupOrientation,
@@ -88,6 +92,10 @@ export function isAvatarStatus(value: string): value is AvatarStatus {
 
 export function isBadgeVariant(value: string): value is BadgeVariant {
   return badgeVariants.includes(value as BadgeVariant)
+}
+
+export function isBreadcrumbSeparator(value: string): value is BreadcrumbSeparator {
+  return breadcrumbSeparators.includes(value as BreadcrumbSeparator)
 }
 
 export function isPrimitiveSize(value: string): value is PrimitiveSize {
