@@ -4,6 +4,7 @@ import starlightDotMd from 'starlight-dot-md'
 import { examples } from '@timelessui/examples'
 import { defineConfig } from 'astro/config'
 import { GROUP_ORDER } from './src/lib/agent-surfaces.ts'
+import { SHARE_CARD_HEAD } from './src/lib/share-card.ts'
 
 /**
  * The sidebar is derived from the example catalog so the component list, the documentation groups,
@@ -37,6 +38,12 @@ export default defineConfig({
     starlight({
       title: 'Timeless',
       description: 'Framework-agnostic UI built on modern web standards.',
+      /*
+       * Starlight emits `twitter:card` as `summary_large_image` but never an image, so without this
+       * every documentation page would share a large card with an empty image well. A page can still
+       * override it from frontmatter: `head` entries merge by property, and the page's own win.
+       */
+      head: SHARE_CARD_HEAD,
       /*
        * Canonical markup is meant to be read and copied, and some of it is long. Wrapping keeps every
        * snippet fully visible and avoids a horizontally scrollable region that needs its own keyboard

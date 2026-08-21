@@ -1,19 +1,33 @@
 ---
 import '../styles/site.css'
+import {
+  SHARE_CARD_ALT,
+  SHARE_CARD_HEIGHT,
+  SHARE_CARD_IMAGES,
+  SHARE_CARD_WIDTH,
+  shareImageType,
+  shareImageUrl,
+} from '../lib/share-card.ts'
 
 type Props = {
   title: string
   description: string
   ogDescription?: string
-  /** Share image, relative to the site root. */
+  /**
+   * Share card override, relative to the site root. Author it at 1200x630 like the shared card,
+   * because those dimensions are declared for every page.
+   */
   image?: string
+  imageAlt?: string
 }
 
-const { title, description, ogDescription = description, image = '/assets/hero-art-01.png' } =
+const { title, description, ogDescription = description, image, imageAlt = SHARE_CARD_ALT } =
   Astro.props
 
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href
-const shareImage = new URL(image, Astro.site ?? Astro.url).href
+
+/** An override renders one card; otherwise the shared candidates render in preference order. */
+const shareImages = image ? [{ path: image, type: shareImageType(image) }] : SHARE_CARD_IMAGES
 
 /**
  * Analytics is for the deployed site only. A local `astro build` looks identical to a deploy, so this
@@ -36,13 +50,26 @@ const analytics = import.meta.env.PUBLIC_ENABLE_ANALYTICS === 'true'
     <meta property="og:title" content={title} />
     <meta property="og:description" content={ogDescription} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={shareImage} />
-    <meta property="og:image:width" content="1672" />
-    <meta property="og:image:height" content="941" />
+    {
+      /*
+       * Structured `og:image:*` properties attach to the `og:image` above them, so each candidate
+       * carries its own rather than sharing one hoisted block.
+       */
+      shareImages.map((shareImage) => (
+        <>
+          <meta property="og:image" content={shareImageUrl(shareImage.path)} />
+          <meta property="og:image:type" content={shareImage.type} />
+          <meta property="og:image:width" content={SHARE_CARD_WIDTH} />
+          <meta property="og:image:height" content={SHARE_CARD_HEIGHT} />
+          <meta property="og:image:alt" content={imageAlt} />
+        </>
+      ))
+    }
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={ogDescription} />
-    <meta name="twitter:image" content={shareImage} />
+    <meta name="twitter:image" content={shareImageUrl(shareImages[0]!.path)} />
+    <meta name="twitter:image:alt" content={imageAlt} />
 
     <title>{title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
