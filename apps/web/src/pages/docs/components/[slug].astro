@@ -36,6 +36,21 @@ const explicitRegistration = registrations
 
 const attributeContracts = contracts.filter(({ contract }) => contract.attributes.length > 0)
 const partContracts = contracts.filter(({ contract }) => contract.parts.length > 0)
+/**
+ * Per-item input authored on a part rather than on the root. Several contracts can share a part —
+ * `option` is the same declaration on all three collections — so present each distinct row once.
+ */
+const partAttributes = [
+  ...new Map(
+    contracts.flatMap(({ contract }) =>
+      contract.parts.flatMap((part) =>
+        part.attributes.map(
+          (attribute) => [`${part.name}:${attribute.name}`, { part, attribute }] as const,
+        ),
+      ),
+    ),
+  ).values(),
+]
 /** Several contracts can share a state, so present each distinct one once. */
 const publicStates = [
   ...new Map(
@@ -175,6 +190,28 @@ const valueList = (values: readonly string[] | undefined, fallbackType: string) 
             </table>
           </>
         ))}
+        {partAttributes.length > 0 ? (
+          <>
+            <p>
+              These parts also accept per-item input of their own. No stylesheet selects these
+              attributes — the component reads them.
+            </p>
+            <table>
+              <thead>
+                <tr><th>Part</th><th>Attribute</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                {partAttributes.map(({ part, attribute }) => (
+                  <tr>
+                    <td><code>{part.name}</code></td>
+                    <td><code>{attribute.name}</code></td>
+                    <td set:html={inlineCode(attribute.description)} />
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        ) : null}
       </>
     ) : null
   }

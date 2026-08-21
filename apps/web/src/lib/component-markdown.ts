@@ -98,6 +98,18 @@ async function renderComponentMarkdown(example: TimelessExample): Promise<string
   ].join('\n')
 
   const partContracts = contracts.filter(({ contract }) => contract.parts.length > 0)
+  /** Per-item input authored on a part. Several contracts share `option`, so present each row once. */
+  const partAttributes = [
+    ...new Map(
+      contracts.flatMap(({ contract }) =>
+        contract.parts.flatMap((part) =>
+          part.attributes.map(
+            (attribute) => [`${part.name}:${attribute.name}`, { part, attribute }] as const,
+          ),
+        ),
+      ),
+    ).values(),
+  ]
   const attributeContracts = contracts.filter(({ contract }) => contract.attributes.length > 0)
   const publicStates = [
     ...new Map(
@@ -177,6 +189,23 @@ async function renderComponentMarkdown(example: TimelessExample): Promise<string
             part.required ? 'Yes' : 'No',
             code(part.selector),
             cell(part.description),
+          ]),
+        ),
+      )
+    }
+    if (partAttributes.length > 0) {
+      lines.push(
+        'These parts also accept per-item input of their own. No stylesheet selects these',
+        'attributes — the component reads them.',
+        '',
+      )
+      lines.push(
+        ...table(
+          ['Part', 'Attribute', 'Description'],
+          partAttributes.map(({ part, attribute }) => [
+            code(part.name),
+            code(attribute.name),
+            cell(attribute.description),
           ]),
         ),
       )

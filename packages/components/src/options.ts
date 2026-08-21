@@ -36,12 +36,21 @@ export const OPTION_TYPEAHEAD_RESET_MS = COLLECTION_TYPEAHEAD_RESET_MS
 export const OPTION_SELECTOR = "[role='option']"
 export const OPTION_GROUP_SELECTOR = "[data-ui-part~='group']"
 
-/** Marks an option the pager hid, so a later page can un-hide it without clobbering the filter. */
-const PAGED_ATTRIBUTE = 'data-ui-internal-paged'
+/**
+ * The options the pager hid, so a later page can un-hide exactly those without clobbering a filter
+ * the consumer owns.
+ *
+ * Membership, not markup: this was `data-ui-internal-paged` until milestone 031, which cost a DOM
+ * write per option per keystroke on a paged Combobox and put a private hook in the inspector for
+ * every consumer to wonder about. The one thing the attribute did that this does not is survive a
+ * fresh module instance adopting live paged DOM — that instance then treats a consumer-hidden
+ * option and a pager-hidden one alike, which is what it already does on the first render of any
+ * paged collection.
+ */
+const hiddenByPager = new WeakSet<OptionLike>()
 
 export type OptionLike = CollectionItemLike & {
   hidden?: boolean | 'until-found'
-  removeAttribute(name: string): void
 }
 
 export type OptionWindowOptions = {
@@ -204,8 +213,8 @@ export function optionPageWindow<TOption>(
  * two-pass version would have each clobber the other.
  *
  * Under `filter="off"` the consumer owns `hidden`, so nothing is un-hidden except what the pager
- * itself hid — which is what `data-ui-internal-paged` records. That is what lets consumer-owned
- * filtering keep navigation, the empty state, group collapse, and paging working unchanged.
+ * itself hid — which is what `hiddenByPager` records. That is what lets consumer-owned filtering
+ * keep navigation, the empty state, group collapse, and paging working unchanged.
  */
 export function applyOptionWindow<TOption extends OptionLike>(
   options: readonly TOption[],
@@ -215,21 +224,19 @@ export function applyOptionWindow<TOption extends OptionLike>(
   // Under `off`, an option the pager hid is still part of the consumer's visible set.
   const matched =
     mode === 'off'
-      ? options.filter((option) => !option.hidden || option.hasAttribute(PAGED_ATTRIBUTE))
+      ? options.filter((option) => !option.hidden || hiddenByPager.has(option))
       : applyOptionFilter(options, windowOptions.query ?? '', mode, windowOptions.locale)
   const paged = optionPageWindow(matched, windowOptions.pageSize ?? 0, windowOptions.page ?? 0)
   const inWindow = new Set<TOption>(paged.visible)
 
   matched.forEach((option) => {
     if (inWindow.has(option)) {
-      if (option.hasAttribute(PAGED_ATTRIBUTE)) {
-        option.removeAttribute(PAGED_ATTRIBUTE)
-        option.hidden = false
-      }
+      /* `delete` reports whether the pager was the one that hid it, so nothing else is un-hidden. */
+      if (hiddenByPager.delete(option)) option.hidden = false
       return
     }
     if (option.hidden !== true) option.hidden = true
-    if (!option.hasAttribute(PAGED_ATTRIBUTE)) option.setAttribute(PAGED_ATTRIBUTE, '')
+    hiddenByPager.add(option)
   })
 
   return paged

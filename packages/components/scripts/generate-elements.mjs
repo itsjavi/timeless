@@ -217,6 +217,14 @@ function createManifest() {
                   selector: part.selector,
                   required: part.required,
                   description: part.description,
+                  ...(part.attributes.length > 0
+                    ? {
+                        attributes: part.attributes.map((attribute) => ({
+                          name: attribute.name,
+                          description: attribute.description,
+                        })),
+                      }
+                    : {}),
                 })),
               }
             : {}),
@@ -426,6 +434,12 @@ function createAggregateRegister() {
   return `import { defineTimelessElements } from './define'\nimport { registerInBrowser } from './register/browser'\n\nregisterInBrowser(defineTimelessElements)\n`
 }
 
+/** `property` describes the JS surface and belongs to the manifest, not the authoring contract. */
+function withoutProperty({ property, ...attribute }) {
+  void property
+  return attribute
+}
+
 function createComponentContracts() {
   const names = components.map((component) => `'${component.name}'`).join(' | ')
   const contracts = components
@@ -434,12 +448,11 @@ function createComponentContracts() {
         kind: component.kind,
         root: component.root,
         css: component.css,
-        // `property` describes the JS surface and belongs to the manifest, not the authoring contract.
-        attributes: component.attributes.map(({ property, ...attribute }) => {
-          void property
-          return attribute
-        }),
-        parts: component.parts,
+        attributes: component.attributes.map(withoutProperty),
+        parts: component.parts.map((part) => ({
+          ...part,
+          attributes: part.attributes.map(withoutProperty),
+        })),
         states: component.states,
         variables: component.variables,
         events: component.events,
@@ -483,6 +496,11 @@ export type ComponentPartContract = {
   readonly required: boolean
   readonly selector: string
   readonly description: string
+  /**
+   * Per-item input an author may write on the part itself, as distinct from the configuration on the
+   * component root. No stylesheet selects these; the behavior reads them.
+   */
+  readonly attributes: readonly ComponentAttributeContract[]
 }
 
 export type ComponentStateContract = {

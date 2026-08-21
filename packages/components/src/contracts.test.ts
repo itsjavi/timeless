@@ -49,7 +49,15 @@ describe('component contracts', () => {
       required: false,
       selector: "[data-ui-part~='title']",
       description: 'Card heading. Use a real heading element.',
+      attributes: [],
     })
+    /* Per-item input is declared on the part that accepts it, not on the component root. */
+    expect(attributesOf('listbox').map((item) => item.name)).not.toContain('data-ui-value')
+    expect(
+      componentContracts.listbox.parts
+        .find((item) => item.name === 'option')
+        ?.attributes.map((item) => item.name),
+    ).toEqual(['data-ui-value', 'data-ui-label'])
     expect(componentContracts.tabs.parts.map((item) => item.selector)).toEqual([
       "[role='tablist']",
       "[role='tab']",
@@ -81,6 +89,12 @@ describe('documented attribute values', () => {
       }
       for (const item of contract.parts) {
         expect(item.description, `${name} part ${item.name} description`).not.toBe('')
+        for (const attribute of item.attributes) {
+          expect(
+            attribute.description,
+            `${name} part ${item.name} attribute ${attribute.name} description`,
+          ).not.toBe('')
+        }
       }
       for (const item of contract.states) {
         expect(item.description, `${name} state ${item.name} description`).not.toBe('')

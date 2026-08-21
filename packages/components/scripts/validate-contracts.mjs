@@ -13,6 +13,17 @@ const publicConfiguration = new Set(
 const publicParts = new Set(
   components.flatMap((component) => component.parts.map((part) => part.name)),
 )
+/**
+ * Per-item input declared on a part rather than on a root. No stylesheet selects one, so these are
+ * tolerated in the uncatalogued-attribute sweep below without being treated as configuration: a
+ * value listed here still must not appear in a `valueSets` proof, because there is no CSS to prove
+ * it against.
+ */
+const publicPartAttributes = new Set(
+  components.flatMap((component) =>
+    component.parts.flatMap((part) => part.attributes.map((attribute) => attribute.name)),
+  ),
+)
 const publicClassRoots = new Set(
   components.flatMap((component) => (component.root.kind === 'class' ? [component.root.name] : [])),
 )
@@ -75,7 +86,7 @@ for (const stylesheet of stylesheets) {
       }
       continue
     }
-    if (name === 'data-ui-value' || publicConfiguration.has(name)) continue
+    if (publicConfiguration.has(name) || publicPartAttributes.has(name)) continue
     throw new Error(`${stylesheet} selects uncatalogued public attribute ${name}`)
   }
   if (/(^|[\s,>+~:(])ui-separator(?=[\s,>+~.:[#])/m.test(source)) {
@@ -220,6 +231,24 @@ function validateContractShape() {
     for (const part of component.parts) {
       if (typeof part?.name !== 'string' || typeof part?.required !== 'boolean') {
         throw new Error(`${component.name} has a malformed part`)
+      }
+      if (!Array.isArray(part.attributes)) {
+        throw new Error(`${component.name} part ${part.name} passed a bad value into attributes`)
+      }
+      for (const attribute of part.attributes) {
+        if (typeof attribute?.name !== 'string') {
+          throw new Error(`${component.name} part ${part.name} has an attribute with no name`)
+        }
+        /*
+         * A part attribute is per-item input, never configuration, so nothing selects it and the
+         * two-way proof cannot cover it. Declaring values on one would document a set no stylesheet
+         * implements — which is exactly the drift the rest of this file exists to prevent.
+         */
+        if (attribute.values !== undefined) {
+          throw new Error(
+            `${component.name} part ${part.name} declares permitted values on ${attribute.name}, which no stylesheet can prove`,
+          )
+        }
       }
     }
   }

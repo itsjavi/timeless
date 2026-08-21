@@ -15,6 +15,8 @@
 - Boolean attributes are presence-based. Author the attribute with no value, or omit it.
 - Component anatomy is authored by you and marked with a whitespace-separated `data-ui-part` token
   list, selected with `[data-ui-part~='name']`.
+- A few parts accept per-item input of their own, spelled `data-ui-*` on the part. Each component
+  page lists them.
 - Never author `data-ui-internal-*`. Those are private runtime hooks.
 - Native HTML semantics, ARIA, and platform pseudo-classes are authoritative for state. Do not add
   your own state classes, and do not use ARIA to replace behavior a real element provides.

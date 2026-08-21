@@ -28,6 +28,11 @@ export type ComponentPartContract = {
   readonly required: boolean
   readonly selector: string
   readonly description: string
+  /**
+   * Per-item input an author may write on the part itself, as distinct from the configuration on the
+   * component root. No stylesheet selects these; the behavior reads them.
+   */
+  readonly attributes: readonly ComponentAttributeContract[]
 }
 
 export type ComponentStateContract = {
@@ -312,30 +317,35 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='icon']",
         description: 'Decorative status icon. Mark it `aria-hidden="true"`.',
+        attributes: [],
       },
       {
         name: 'content',
         required: false,
         selector: "[data-ui-part~='content']",
         description: 'Wrapper for the title and description.',
+        attributes: [],
       },
       {
         name: 'title',
         required: false,
         selector: "[data-ui-part~='title']",
         description: 'Short summary line.',
+        attributes: [],
       },
       {
         name: 'description',
         required: false,
         selector: "[data-ui-part~='description']",
         description: 'Supporting detail.',
+        attributes: [],
       },
       {
         name: 'actions',
         required: false,
         selector: "[data-ui-part~='actions']",
         description: 'Container for one or two follow-up actions.',
+        attributes: [],
       },
     ],
     states: [],
@@ -388,18 +398,21 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='image']",
         description: 'The `<img>`. Give it an empty `alt` when a label follows.',
+        attributes: [],
       },
       {
         name: 'fallback',
         required: false,
         selector: "[data-ui-part~='fallback']",
         description: 'Initials or icon shown when no image loads.',
+        attributes: [],
       },
       {
         name: 'status',
         required: false,
         selector: "[data-ui-part~='status']",
         description: 'Presence dot. Decorative; keep it `aria-hidden="true"`.',
+        attributes: [],
       },
     ],
     states: [],
@@ -437,6 +450,7 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='dot']",
         description: 'Leading status dot. Decorative.',
+        attributes: [],
       },
     ],
     states: [],
@@ -476,6 +490,7 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='label']",
         description: 'Optional inline label rendered over the rule.',
+        attributes: [],
       },
     ],
     states: [],
@@ -513,42 +528,49 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='header']",
         description: 'Top region, usually the title and meta.',
+        attributes: [],
       },
       {
         name: 'body',
         required: false,
         selector: "[data-ui-part~='body']",
         description: 'Main content region.',
+        attributes: [],
       },
       {
         name: 'footer',
         required: false,
         selector: "[data-ui-part~='footer']",
         description: 'Bottom region, usually actions.',
+        attributes: [],
       },
       {
         name: 'title',
         required: false,
         selector: "[data-ui-part~='title']",
         description: 'Card heading. Use a real heading element.',
+        attributes: [],
       },
       {
         name: 'description',
         required: false,
         selector: "[data-ui-part~='description']",
         description: 'Supporting copy under the title.',
+        attributes: [],
       },
       {
         name: 'meta',
         required: false,
         selector: "[data-ui-part~='meta']",
         description: 'Secondary metadata such as a category or date.',
+        attributes: [],
       },
       {
         name: 'actions',
         required: false,
         selector: "[data-ui-part~='actions']",
         description: 'Container for card actions.',
+        attributes: [],
       },
     ],
     states: [],
@@ -624,18 +646,21 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='header']",
         description: 'Row holding the label and output.',
+        attributes: [],
       },
       {
         name: 'output',
         required: false,
         selector: "[data-ui-part~='output']",
         description: 'Live percentage or count. Use `<output>`.',
+        attributes: [],
       },
       {
         name: 'hint',
         required: false,
         selector: "[data-ui-part~='hint']",
         description: 'Supporting text under the track.',
+        attributes: [],
       },
     ],
     states: [],
@@ -763,18 +788,21 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='item']",
         description: 'One row. Use `<li>`.',
+        attributes: [],
       },
       {
         name: 'title',
         required: false,
         selector: "[data-ui-part~='title']",
         description: 'Primary row text.',
+        attributes: [],
       },
       {
         name: 'description',
         required: false,
         selector: "[data-ui-part~='description']",
         description: 'Secondary row text.',
+        attributes: [],
       },
     ],
     states: [],
@@ -826,18 +854,21 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='caption']",
         description: 'Table name. Use `<caption>`.',
+        attributes: [],
       },
       {
         name: 'description',
         required: false,
         selector: "[data-ui-part~='description']",
         description: 'Supporting copy inside the caption.',
+        attributes: [],
       },
       {
         name: 'empty',
         required: false,
         selector: "[data-ui-part~='empty']",
         description: 'Row shown in place of data when the table has none.',
+        attributes: [],
       },
     ],
     states: [],
@@ -877,12 +908,14 @@ export const componentContracts = {
         selector: "[data-ui-part~='item']",
         description:
           'One crumb. Use `<li>`; the separator is drawn before every crumb but the first, so nothing is authored between them.',
+        attributes: [],
       },
       {
         name: 'link',
         required: false,
         selector: "[data-ui-part~='link']",
         description: 'The link inside a crumb. Use `<a href>`.',
+        attributes: [],
       },
       {
         name: 'current',
@@ -890,6 +923,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='current']",
         description:
           'The final crumb, which names the page you are already on. Author it as a `<span>` rather than a link — a link to here goes nowhere — and put `aria-current="page"` on it.',
+        attributes: [],
       },
     ],
     states: [
@@ -944,6 +978,7 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='item']",
         description: 'One cell wrapper. Use `<li>`.',
+        attributes: [],
       },
       {
         name: 'link',
@@ -951,6 +986,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='link']",
         description:
           'A page cell. Use `<a href>` for every page but the one you are on, and a `<span aria-current="page">` for that one.',
+        attributes: [],
       },
       {
         name: 'previous',
@@ -958,12 +994,14 @@ export const componentContracts = {
         selector: "[data-ui-part~='previous']",
         description:
           'Steps back one page. Give it an accessible name that says so; `‹` alone names nothing. At the first page, render it as a `<span>` rather than a disabled link.',
+        attributes: [],
       },
       {
         name: 'next',
         required: false,
         selector: "[data-ui-part~='next']",
         description: 'Steps forward one page, with the same two rules.',
+        attributes: [],
       },
       {
         name: 'ellipsis',
@@ -971,6 +1009,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='ellipsis']",
         description:
           'Stands for the pages omitted from a long range. Mark it `aria-hidden="true"`: the gap between page 3 and page 40 is not a page.',
+        attributes: [],
       },
     ],
     states: [
@@ -1090,6 +1129,7 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='label']",
         description: 'Visible or screen-reader-only description of the wait.',
+        attributes: [],
       },
     ],
     states: [],
@@ -1119,12 +1159,14 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='art']",
         description: 'Decorative illustration or icon.',
+        attributes: [],
       },
       {
         name: 'actions',
         required: false,
         selector: "[data-ui-part~='actions']",
         description: 'Container for the one clear next action.',
+        attributes: [],
       },
     ],
     states: [],
@@ -1145,6 +1187,7 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='hint']",
         description: 'Supporting text under the meter.',
+        attributes: [],
       },
     ],
     states: [],
@@ -1165,24 +1208,28 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='chip']",
         description: 'The color area. Set the color through `--ui-swatch-color`.',
+        attributes: [],
       },
       {
         name: 'label',
         required: false,
         selector: "[data-ui-part~='label']",
         description: 'Human-readable color name.',
+        attributes: [],
       },
       {
         name: 'value',
         required: false,
         selector: "[data-ui-part~='value']",
         description: 'The raw CSS color value.',
+        attributes: [],
       },
       {
         name: 'warning',
         required: false,
         selector: "[data-ui-part~='warning']",
         description: 'Out-of-gamut or contrast warning.',
+        attributes: [],
       },
     ],
     states: [],
@@ -1220,6 +1267,7 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='control']",
         description: 'Wrapper around the native control when one is needed.',
+        attributes: [],
       },
     ],
     states: [
@@ -1258,18 +1306,21 @@ export const componentContracts = {
         selector: 'legend',
         description:
           'The native `<legend>`, which names the group. Keep it the first child, because that is what makes the browser treat it as the group label.',
+        attributes: [],
       },
       {
         name: 'description',
         required: false,
         selector: "[data-ui-part~='description']",
         description: 'Group-level help text under the legend.',
+        attributes: [],
       },
       {
         name: 'error',
         required: false,
         selector: "[data-ui-part~='error']",
         description: 'Group-level validation message.',
+        attributes: [],
       },
     ],
     states: [
@@ -1516,18 +1567,21 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='body']",
         description: 'Wrapper for the title and description beside the control.',
+        attributes: [],
       },
       {
         name: 'title',
         required: false,
         selector: "[data-ui-part~='title']",
         description: 'The choice label text.',
+        attributes: [],
       },
       {
         name: 'description',
         required: false,
         selector: "[data-ui-part~='description']",
         description: 'Supporting copy under the choice label.',
+        attributes: [],
       },
     ],
     states: [],
@@ -1565,12 +1619,14 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='description']",
         description: 'Group-level help text under the legend.',
+        attributes: [],
       },
       {
         name: 'error',
         required: false,
         selector: "[data-ui-part~='error']",
         description: 'Group-level validation message.',
+        attributes: [],
       },
     ],
     states: [
@@ -1640,6 +1696,7 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='hint']",
         description: 'Supporting text or the live `<output>` value.',
+        attributes: [],
       },
     ],
     states: [
@@ -1733,6 +1790,7 @@ export const componentContracts = {
         required: true,
         selector: "[role='tablist']",
         description: 'Container for the tabs.',
+        attributes: [],
       },
       {
         name: 'tab',
@@ -1740,6 +1798,14 @@ export const componentContracts = {
         selector: "[role='tab']",
         description:
           'One tab. Use `<button type="button">` and give it a `value`; Timeless wires `id`, `aria-controls`, `aria-selected`, and `tabindex`.',
+        attributes: [
+          {
+            name: 'data-ui-value',
+            type: 'string',
+            description:
+              'The value this tab selects, for a tab that cannot carry a bare `value` attribute. `value` wins over it, and the tab `id` is the last fallback.',
+          },
+        ],
       },
       {
         name: 'tabpanel',
@@ -1747,6 +1813,7 @@ export const componentContracts = {
         selector: "[role='tabpanel']",
         description:
           'One panel per tab, in the same order. Timeless wires `id`, `aria-labelledby`, and `hidden`.',
+        attributes: [],
       },
     ],
     states: [
@@ -1820,6 +1887,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='trigger']",
         description:
           'Native button that opens the dialog. Add `command="show-modal"` and `commandfor` naming the panel id to open it from markup, before any script runs. Timeless reads those attributes and stands down; it never writes them, because a generated attribute would only work once the bundle had loaded.',
+        attributes: [],
       },
       {
         name: 'panel',
@@ -1827,6 +1895,7 @@ export const componentContracts = {
         selector: 'dialog',
         description:
           'The native `<dialog>` element. Author it, do not generate it. Give it an explicit `id` when a trigger or close button invokes it, since an invoker can only name an id the author wrote.',
+        attributes: [],
       },
       {
         name: 'close',
@@ -1834,6 +1903,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='close']",
         description:
           'Optional explicit close button inside the panel. Add `command="close"` and `commandfor` to close it from markup; the platform then also copies the button `value` into `returnValue`.',
+        attributes: [],
       },
       {
         name: 'title',
@@ -1841,6 +1911,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='title'], header > :where(h1, h2, h3)",
         description:
           "Names the dialog. Timeless points the panel's `aria-labelledby` at it, generating an id only if you left one off. A heading in the panel `<header>` counts without the token. An `aria-labelledby` you author always wins.",
+        attributes: [],
       },
       {
         name: 'description',
@@ -1848,6 +1919,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='description'], header > p",
         description:
           'Supporting line under the title, wired with `aria-describedby` the same way. A `<p>` in the panel `<header>` counts without the token.',
+        attributes: [],
       },
     ],
     states: [],
@@ -1901,6 +1973,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='trigger']",
         description:
           'Native button that opens the sheet. On a `modal` sheet, add `command="show-modal"` and `commandfor` naming the panel id to open it from markup, before any script runs. A non-modal sheet has no declarative equivalent: the platform has no built-in command for `dialog.show()`, so its trigger stays on the click listener.',
+        attributes: [],
       },
       {
         name: 'panel',
@@ -1908,6 +1981,7 @@ export const componentContracts = {
         selector: 'dialog',
         description:
           'The native `<dialog>` element. Give it an explicit `id` when a trigger or close button invokes it, since an invoker can only name an id the author wrote.',
+        attributes: [],
       },
       {
         name: 'close',
@@ -1915,6 +1989,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='close']",
         description:
           'Optional explicit close button. Add `command="close"` and `commandfor` to close it from markup, on modal and non-modal sheets alike; the platform then also copies the button `value` into `returnValue`.',
+        attributes: [],
       },
       {
         name: 'drag-handle',
@@ -1922,6 +1997,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='drag-handle']",
         description:
           'Optional grab area for the swipe gesture. A swipe works anywhere on the panel that is not a scrollable region, so this is an affordance rather than a requirement — but it is the one place a drag always starts, which is what a bottom sheet over a scrolling body needs. Decorative: hide it from assistive technology and keep a real close control.',
+        attributes: [],
       },
       {
         name: 'title',
@@ -1929,6 +2005,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='title'], header > :where(h1, h2, h3)",
         description:
           "Names the sheet. Timeless points the panel's `aria-labelledby` at it, generating an id only if you left one off. A heading in the panel `<header>` counts without the token. An `aria-labelledby` you author always wins.",
+        attributes: [],
       },
       {
         name: 'description',
@@ -1936,6 +2013,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='description'], header > p",
         description:
           'Supporting line under the title, wired with `aria-describedby` the same way. A `<p>` in the panel `<header>` counts without the token.',
+        attributes: [],
       },
     ],
     states: [
@@ -2021,6 +2099,7 @@ export const componentContracts = {
         required: true,
         selector: "[data-ui-part~='trigger']",
         description: 'Native button that opens the surface.',
+        attributes: [],
       },
       {
         name: 'content',
@@ -2028,6 +2107,7 @@ export const componentContracts = {
         selector: '[popover]',
         description:
           'The surface. Author the `popover` attribute so it stays hidden before enhancement.',
+        attributes: [],
       },
     ],
     states: [],
@@ -2102,12 +2182,14 @@ export const componentContracts = {
         required: true,
         selector: "[data-ui-part~='trigger']",
         description: 'Element that receives hover and focus intent.',
+        attributes: [],
       },
       {
         name: 'content',
         required: true,
         selector: '[popover]',
         description: 'The surface.',
+        attributes: [],
       },
     ],
     states: [],
@@ -2145,12 +2227,14 @@ export const componentContracts = {
         required: true,
         selector: "[data-ui-part~='trigger']",
         description: 'Control the label describes. Point its `aria-describedby` at the surface.',
+        attributes: [],
       },
       {
         name: 'content',
         required: true,
         selector: '[popover]',
         description: 'The label. One short, non-interactive line; give it `role="tooltip"`.',
+        attributes: [],
       },
     ],
     states: [],
@@ -2203,6 +2287,7 @@ export const componentContracts = {
         selector: "[role='menu']",
         description:
           'The menu container. Use `role="menubar"` for a persistent horizontal menu bar.',
+        attributes: [],
       },
       {
         name: 'item',
@@ -2210,6 +2295,7 @@ export const componentContracts = {
         selector: "[role^='menuitem']",
         description:
           'One command. A menu-item role is what makes an element an item — a bare `<button>` inside the menu is not one. Use `role="menuitem"`, or `menuitemcheckbox` / `menuitemradio` for a checkable command. Timeless manages roving `tabindex`, typeahead, and `aria-checked`.',
+        attributes: [],
       },
       {
         name: 'group',
@@ -2217,12 +2303,14 @@ export const componentContracts = {
         selector: "[data-ui-part~='group']",
         description:
           'A `role="group"` wrapper around related items. Items inside it stay navigable, and a `menuitemradio` clears only the radios in its own group.',
+        attributes: [],
       },
       {
         name: 'group-label',
         required: false,
         selector: "[data-ui-part~='group-label']",
         description: 'The label for a `group`, wired to it with `aria-labelledby`.',
+        attributes: [],
       },
       {
         name: 'separator',
@@ -2230,6 +2318,7 @@ export const componentContracts = {
         selector: "[role='separator'], hr",
         description:
           'A divider between items or groups. Navigation and typeahead skip it, because it carries no menu-item role.',
+        attributes: [],
       },
       {
         name: 'submenu-trigger',
@@ -2237,6 +2326,7 @@ export const componentContracts = {
         selector: "[aria-haspopup='menu']",
         description:
           'An item that owns a submenu. You do not author this token: give the item `aria-controls` naming the submenu, or put the submenu immediately after it, and Timeless writes `aria-haspopup`, `aria-controls`, and `aria-expanded`.',
+        attributes: [],
       },
       {
         name: 'submenu',
@@ -2244,6 +2334,7 @@ export const componentContracts = {
         selector: "ui-menu[popover], [role='menu'][popover]",
         description:
           'A nested menu opened from a `submenu-trigger`. Author it as a popover so it stays hidden before enhancement; Timeless adds `popover="auto"` if you leave it off.',
+        attributes: [],
       },
     ],
     states: [],
@@ -2335,12 +2426,14 @@ export const componentContracts = {
         required: true,
         selector: "[data-ui-part~='trigger']",
         description: 'Native button that opens the menu.',
+        attributes: [],
       },
       {
         name: 'content',
         required: true,
         selector: '[popover]',
         description: 'The popover surface holding a `ui-menu`.',
+        attributes: [],
       },
     ],
     states: [],
@@ -2405,6 +2498,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='target']",
         description:
           'The region a secondary click opens the menu over. Give it a role that supports `aria-haspopup` and make it focusable — Timeless adds `tabindex="0"` when it has none, because the keyboard path cannot exist without a tab stop. It then wires `aria-haspopup`, `aria-controls`, and `aria-expanded`; the role and the accessible name stay yours.',
+        attributes: [],
       },
       {
         name: 'menu',
@@ -2412,6 +2506,7 @@ export const componentContracts = {
         selector: "ui-menu[popover], [role='menu'][popover]",
         description:
           'The menu surface, a `ui-menu` authored as a popover. Every item, group, separator, and submenu inside it is the [Menu](/docs/components/menu/) contract, unchanged — this element only decides when and where it opens.',
+        attributes: [],
       },
     ],
     states: [],
@@ -2493,6 +2588,7 @@ export const componentContracts = {
         selector: 'button, a, input, select, textarea',
         description:
           'Any focusable control in the toolbar. Timeless makes the group one tab stop and moves focus with the arrow keys.',
+        attributes: [],
       },
     ],
     states: [],
@@ -2551,6 +2647,7 @@ export const componentContracts = {
         selector: "input[type='radio']",
         description:
           'One native radio input, sharing a `name` with the rest. Native form submission and reset keep working.',
+        attributes: [],
       },
     ],
     states: [],
@@ -2617,6 +2714,7 @@ export const componentContracts = {
         selector: "input[type='checkbox']",
         description:
           'One native checkbox input. Author `checked` for the initial state; the group reports every checked value.',
+        attributes: [],
       },
     ],
     states: [],
@@ -2700,13 +2798,28 @@ export const componentContracts = {
         required: true,
         selector: "[role='listbox']",
         description: 'The option container, which is the host itself.',
+        attributes: [],
       },
       {
         name: 'option',
         required: true,
         selector: "[role='option']",
         description:
-          'One option. Its value comes from `value`, then `data-ui-value`, then its text. Its filterable label comes from `label`, then `data-ui-label`, then `aria-label`, then its text — none of which change the accessible name. Mark unavailable options `aria-disabled="true"`.',
+          'One option. Its value comes from `value`, then `data-ui-value`, then its text. Mark unavailable options `aria-disabled="true"`.',
+        attributes: [
+          {
+            name: 'data-ui-value',
+            type: 'string',
+            description:
+              'The value this option submits, when its text is not the value. `value` wins over it, and its own text is the fallback.',
+          },
+          {
+            name: 'data-ui-label',
+            type: 'string',
+            description:
+              'The text filtering and typeahead match against, when the visible content is not what a reader would type. `label` wins over it, then this, then `aria-label`, then the option text. None of the four change the accessible name.',
+          },
+        ],
       },
       {
         name: 'option-indicator',
@@ -2714,6 +2827,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='option-indicator']",
         description:
           'Decorative affordance inside an option showing that it is selected. Style it from `[aria-selected="true"]`; it is hidden from assistive technology.',
+        attributes: [],
       },
       {
         name: 'group',
@@ -2721,24 +2835,28 @@ export const componentContracts = {
         selector: "[data-ui-part~='group']",
         description:
           'A `role="group"` wrapper around related options. Options inside it stay navigable, and the group collapses when every option it holds is filtered out.',
+        attributes: [],
       },
       {
         name: 'group-label',
         required: false,
         selector: "[data-ui-part~='group-label']",
         description: 'The label for a `group`, wired to it with `aria-labelledby`.',
+        attributes: [],
       },
       {
         name: 'separator',
         required: false,
         selector: "[role='separator']",
         description: 'A visual divider between options. Navigation and typeahead skip it.',
+        attributes: [],
       },
       {
         name: 'empty',
         required: false,
         selector: "[data-ui-part~='empty']",
         description: 'Shown when no option is visible. Hidden again as soon as one is.',
+        attributes: [],
       },
       {
         name: 'status',
@@ -2746,6 +2864,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='status']",
         description:
           'A `role="status" aria-live="polite"` region for result counts, loading, and errors.',
+        attributes: [],
       },
       {
         name: 'header',
@@ -2753,6 +2872,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='header']",
         description:
           'Optional content at the top of the surface. Excluded from arrow navigation and reachable with `Tab`.',
+        attributes: [],
       },
       {
         name: 'footer',
@@ -2760,6 +2880,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='footer']",
         description:
           'Optional content at the bottom of the surface. Excluded from arrow navigation and reachable with `Tab`.',
+        attributes: [],
       },
       {
         name: 'pager',
@@ -2767,6 +2888,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='pager']",
         description:
           'Wraps the page controls. Hidden unless `page-size` is set and the options span more than one page.',
+        attributes: [],
       },
       {
         name: 'page-previous',
@@ -2774,18 +2896,21 @@ export const componentContracts = {
         selector: "[data-ui-part~='page-previous']",
         description:
           'Moves to the previous page. Stays focusable at the first page and takes `aria-disabled`, so the boundary is discoverable rather than gone.',
+        attributes: [],
       },
       {
         name: 'page-next',
         required: false,
         selector: "[data-ui-part~='page-next']",
         description: 'Moves to the next page, with the same boundary behavior.',
+        attributes: [],
       },
       {
         name: 'page-status',
         required: false,
         selector: "[data-ui-part~='page-status']",
         description: 'A `role="status" aria-live="polite"` region announcing the current page.',
+        attributes: [],
       },
     ],
     states: [
@@ -2944,6 +3069,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='trigger']",
         description:
           'Native button that opens the listbox. Timeless gives it `role="combobox"`, which the Select-Only Combobox pattern asks for; that role takes no name from its content, so give the trigger `aria-labelledby` or `aria-label` yourself.',
+        attributes: [],
       },
       {
         name: 'value',
@@ -2951,6 +3077,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='value']",
         description:
           'Element inside the trigger that shows the selected label. Timeless writes its text and nothing else.',
+        attributes: [],
       },
       {
         name: 'search',
@@ -2958,6 +3085,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='search']",
         description:
           'Text field inside the surface that filters the options under `searchable`. Left and Right move the caret rather than the highlight.',
+        attributes: [],
       },
       {
         name: 'surface',
@@ -2965,19 +3093,35 @@ export const componentContracts = {
         selector: "[data-ui-part~='surface']",
         description:
           'The popover the listbox sits in. Author it whenever the surface also holds a `search` field, a `header`, a `footer`, or a pager: a `role="listbox"` may own only options and groups, so those siblings belong beside the listbox rather than inside it. With none of them, the `listbox` is its own surface and this part is unnecessary.',
+        attributes: [],
       },
       {
         name: 'listbox',
         required: true,
         selector: "[role='listbox']",
         description: 'The option container.',
+        attributes: [],
       },
       {
         name: 'option',
         required: true,
         selector: "[role='option']",
         description:
-          'One option. Its value comes from `value`, then `data-ui-value`, then its text. Its filterable label comes from `label`, then `data-ui-label`, then `aria-label`, then its text — none of which change the accessible name. Mark unavailable options `aria-disabled="true"`.',
+          'One option. Its value comes from `value`, then `data-ui-value`, then its text. Mark unavailable options `aria-disabled="true"`.',
+        attributes: [
+          {
+            name: 'data-ui-value',
+            type: 'string',
+            description:
+              'The value this option submits, when its text is not the value. `value` wins over it, and its own text is the fallback.',
+          },
+          {
+            name: 'data-ui-label',
+            type: 'string',
+            description:
+              'The text filtering and typeahead match against, when the visible content is not what a reader would type. `label` wins over it, then this, then `aria-label`, then the option text. None of the four change the accessible name.',
+          },
+        ],
       },
       {
         name: 'option-indicator',
@@ -2985,6 +3129,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='option-indicator']",
         description:
           'Decorative affordance inside an option showing that it is selected. Style it from `[aria-selected="true"]`; it is hidden from assistive technology.',
+        attributes: [],
       },
       {
         name: 'group',
@@ -2992,24 +3137,28 @@ export const componentContracts = {
         selector: "[data-ui-part~='group']",
         description:
           'A `role="group"` wrapper around related options. Options inside it stay navigable, and the group collapses when every option it holds is filtered out.',
+        attributes: [],
       },
       {
         name: 'group-label',
         required: false,
         selector: "[data-ui-part~='group-label']",
         description: 'The label for a `group`, wired to it with `aria-labelledby`.',
+        attributes: [],
       },
       {
         name: 'separator',
         required: false,
         selector: "[role='separator']",
         description: 'A visual divider between options. Navigation and typeahead skip it.',
+        attributes: [],
       },
       {
         name: 'empty',
         required: false,
         selector: "[data-ui-part~='empty']",
         description: 'Shown when no option is visible. Hidden again as soon as one is.',
+        attributes: [],
       },
       {
         name: 'status',
@@ -3017,6 +3166,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='status']",
         description:
           'A `role="status" aria-live="polite"` region for result counts, loading, and errors.',
+        attributes: [],
       },
       {
         name: 'header',
@@ -3024,6 +3174,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='header']",
         description:
           'Optional content at the top of the surface. Excluded from arrow navigation and reachable with `Tab`.',
+        attributes: [],
       },
       {
         name: 'footer',
@@ -3031,6 +3182,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='footer']",
         description:
           'Optional content at the bottom of the surface. Excluded from arrow navigation and reachable with `Tab`.',
+        attributes: [],
       },
       {
         name: 'pager',
@@ -3038,6 +3190,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='pager']",
         description:
           'Wraps the page controls. Hidden unless `page-size` is set and the options span more than one page.',
+        attributes: [],
       },
       {
         name: 'page-previous',
@@ -3045,24 +3198,28 @@ export const componentContracts = {
         selector: "[data-ui-part~='page-previous']",
         description:
           'Moves to the previous page. Stays focusable at the first page and takes `aria-disabled`, so the boundary is discoverable rather than gone.',
+        attributes: [],
       },
       {
         name: 'page-next',
         required: false,
         selector: "[data-ui-part~='page-next']",
         description: 'Moves to the next page, with the same boundary behavior.',
+        attributes: [],
       },
       {
         name: 'page-status',
         required: false,
         selector: "[data-ui-part~='page-status']",
         description: 'A `role="status" aria-live="polite"` region announcing the current page.',
+        attributes: [],
       },
       {
         name: 'chips',
         required: false,
         selector: "[data-ui-part~='chips']",
         description: 'Container the selected values are rendered into under `multiple`.',
+        attributes: [],
       },
       {
         name: 'chip-template',
@@ -3070,12 +3227,14 @@ export const componentContracts = {
         selector: "template[data-ui-part~='chip-template']",
         description:
           'A `<template>` holding the markup for one chip. Timeless clones it per selected value and fills it in, so every element and class in a chip is yours. Without it a `chips` container receives a plain comma-separated summary instead.',
+        attributes: [],
       },
       {
         name: 'chip',
         required: false,
         selector: "[data-ui-part~='chip']",
         description: 'One selected value, authored inside `chip-template`.',
+        attributes: [],
       },
       {
         name: 'chip-label',
@@ -3083,13 +3242,15 @@ export const componentContracts = {
         selector: "[data-ui-part~='chip-label']",
         description:
           'Where the selected label is written inside a chip. Omit it only when the chip has no other content.',
+        attributes: [],
       },
       {
         name: 'chip-remove',
         required: false,
         selector: "[data-ui-part~='chip-remove']",
         description:
-          'Removes its chip. Author it as a real button; Timeless gives it the value it removes and an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins.',
+          'Removes its chip. Author it as a real button; Timeless writes the value it removes onto it as `data-ui-value` and gives it an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins.',
+        attributes: [],
       },
       {
         name: 'clear',
@@ -3097,6 +3258,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='clear']",
         description:
           'Empties the whole selection. Marked `aria-disabled="true"` while there is nothing to clear, rather than `disabled`, so activating it cannot disable the control that holds focus.',
+        attributes: [],
       },
     ],
     states: [],
@@ -3261,6 +3423,7 @@ export const componentContracts = {
         selector: "input[role='combobox']",
         description:
           'The native text input. It is both the trigger and the search field: Timeless wires `aria-expanded`, `aria-controls`, and `aria-activedescendant` onto it and leaves its editing behavior alone.',
+        attributes: [],
       },
       {
         name: 'surface',
@@ -3268,19 +3431,35 @@ export const componentContracts = {
         selector: "[data-ui-part~='surface']",
         description:
           'The popover the listbox sits in. Author it whenever the surface also holds a `header`, a `footer`, or a pager: a `role="listbox"` may own only options and groups. With none of them, the `listbox` is its own surface and this part is unnecessary.',
+        attributes: [],
       },
       {
         name: 'listbox',
         required: true,
         selector: "[role='listbox']",
         description: 'The option container.',
+        attributes: [],
       },
       {
         name: 'option',
         required: true,
         selector: "[role='option']",
         description:
-          'One option. Its value comes from `value`, then `data-ui-value`, then its text. Its filterable label comes from `label`, then `data-ui-label`, then `aria-label`, then its text — none of which change the accessible name. Mark unavailable options `aria-disabled="true"`.',
+          'One option. Its value comes from `value`, then `data-ui-value`, then its text. Mark unavailable options `aria-disabled="true"`.',
+        attributes: [
+          {
+            name: 'data-ui-value',
+            type: 'string',
+            description:
+              'The value this option submits, when its text is not the value. `value` wins over it, and its own text is the fallback.',
+          },
+          {
+            name: 'data-ui-label',
+            type: 'string',
+            description:
+              'The text filtering and typeahead match against, when the visible content is not what a reader would type. `label` wins over it, then this, then `aria-label`, then the option text. None of the four change the accessible name.',
+          },
+        ],
       },
       {
         name: 'option-indicator',
@@ -3288,6 +3467,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='option-indicator']",
         description:
           'Decorative affordance inside an option showing that it is selected. Style it from `[aria-selected="true"]`; it is hidden from assistive technology.',
+        attributes: [],
       },
       {
         name: 'group',
@@ -3295,24 +3475,28 @@ export const componentContracts = {
         selector: "[data-ui-part~='group']",
         description:
           'A `role="group"` wrapper around related options. Options inside it stay navigable, and the group collapses when every option it holds is filtered out.',
+        attributes: [],
       },
       {
         name: 'group-label',
         required: false,
         selector: "[data-ui-part~='group-label']",
         description: 'The label for a `group`, wired to it with `aria-labelledby`.',
+        attributes: [],
       },
       {
         name: 'separator',
         required: false,
         selector: "[role='separator']",
         description: 'A visual divider between options. Navigation and typeahead skip it.',
+        attributes: [],
       },
       {
         name: 'empty',
         required: false,
         selector: "[data-ui-part~='empty']",
         description: 'Shown when no option is visible. Hidden again as soon as one is.',
+        attributes: [],
       },
       {
         name: 'status',
@@ -3320,6 +3504,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='status']",
         description:
           'A `role="status" aria-live="polite"` region for result counts, loading, and errors.',
+        attributes: [],
       },
       {
         name: 'header',
@@ -3327,6 +3512,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='header']",
         description:
           'Optional content at the top of the surface. Excluded from arrow navigation and reachable with `Tab`.',
+        attributes: [],
       },
       {
         name: 'footer',
@@ -3334,6 +3520,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='footer']",
         description:
           'Optional content at the bottom of the surface. Excluded from arrow navigation and reachable with `Tab`.',
+        attributes: [],
       },
       {
         name: 'pager',
@@ -3341,6 +3528,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='pager']",
         description:
           'Wraps the page controls. Hidden unless `page-size` is set and the options span more than one page.',
+        attributes: [],
       },
       {
         name: 'page-previous',
@@ -3348,24 +3536,28 @@ export const componentContracts = {
         selector: "[data-ui-part~='page-previous']",
         description:
           'Moves to the previous page. Stays focusable at the first page and takes `aria-disabled`, so the boundary is discoverable rather than gone.',
+        attributes: [],
       },
       {
         name: 'page-next',
         required: false,
         selector: "[data-ui-part~='page-next']",
         description: 'Moves to the next page, with the same boundary behavior.',
+        attributes: [],
       },
       {
         name: 'page-status',
         required: false,
         selector: "[data-ui-part~='page-status']",
         description: 'A `role="status" aria-live="polite"` region announcing the current page.',
+        attributes: [],
       },
       {
         name: 'chips',
         required: false,
         selector: "[data-ui-part~='chips']",
         description: 'Container the selected values are rendered into under `multiple`.',
+        attributes: [],
       },
       {
         name: 'chip-template',
@@ -3373,12 +3565,14 @@ export const componentContracts = {
         selector: "template[data-ui-part~='chip-template']",
         description:
           'A `<template>` holding the markup for one chip. Timeless clones it per selected value and fills it in, so every element and class in a chip is yours. Without it a `chips` container receives a plain comma-separated summary instead.',
+        attributes: [],
       },
       {
         name: 'chip',
         required: false,
         selector: "[data-ui-part~='chip']",
         description: 'One selected value, authored inside `chip-template`.',
+        attributes: [],
       },
       {
         name: 'chip-label',
@@ -3386,13 +3580,15 @@ export const componentContracts = {
         selector: "[data-ui-part~='chip-label']",
         description:
           'Where the selected label is written inside a chip. Omit it only when the chip has no other content.',
+        attributes: [],
       },
       {
         name: 'chip-remove',
         required: false,
         selector: "[data-ui-part~='chip-remove']",
         description:
-          'Removes its chip. Author it as a real button; Timeless gives it the value it removes and an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins.',
+          'Removes its chip. Author it as a real button; Timeless writes the value it removes onto it as `data-ui-value` and gives it an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins.',
+        attributes: [],
       },
       {
         name: 'clear',
@@ -3400,6 +3596,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='clear']",
         description:
           'Empties the whole selection. Marked `aria-disabled="true"` while there is nothing to clear, rather than `disabled`, so activating it cannot disable the control that holds focus.',
+        attributes: [],
       },
     ],
     states: [],
@@ -3568,24 +3765,28 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='content']",
         description: 'Wrapper for the title and description.',
+        attributes: [],
       },
       {
         name: 'title',
         required: false,
         selector: "[data-ui-part~='title']",
         description: 'Short summary line.',
+        attributes: [],
       },
       {
         name: 'description',
         required: false,
         selector: "[data-ui-part~='description']",
         description: 'Supporting detail.',
+        attributes: [],
       },
       {
         name: 'close',
         required: false,
         selector: "[data-ui-part~='close']",
         description: 'Dismiss button. Give it an accessible name.',
+        attributes: [],
       },
     ],
     states: [
@@ -3653,6 +3854,7 @@ export const componentContracts = {
         selector: 'button[aria-pressed]',
         description:
           'One toggle button. Author `value` and `aria-pressed`; Timeless keeps the pressed set in sync.',
+        attributes: [],
       },
     ],
     states: [],
@@ -3705,18 +3907,21 @@ export const componentContracts = {
         selector: "input[type='number']",
         description:
           'The native number input. `min`, `max`, and `step` come from it, and native validation keeps working.',
+        attributes: [],
       },
       {
         name: 'decrement',
         required: true,
         selector: "[data-ui-part~='decrement']",
         description: 'Button that steps down. Give it an accessible name.',
+        attributes: [],
       },
       {
         name: 'increment',
         required: true,
         selector: "[data-ui-part~='increment']",
         description: 'Button that steps up. Give it an accessible name.',
+        attributes: [],
       },
     ],
     states: [],
@@ -3773,30 +3978,35 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='preview']",
         description: 'Region holding the format select, gamut controls, and readout.',
+        attributes: [],
       },
       {
         name: 'preview-bar',
         required: false,
         selector: "[data-ui-part~='preview-bar']",
         description: 'Row above the readout.',
+        attributes: [],
       },
       {
         name: 'format-field',
         required: false,
         selector: "[data-ui-part~='format-field']",
         description: 'Label wrapper around the format select.',
+        attributes: [],
       },
       {
         name: 'format',
         required: true,
         selector: 'select',
         description: 'Native `<select>` listing the supported color formats.',
+        attributes: [],
       },
       {
         name: 'gamut-bar',
         required: false,
         selector: "[data-ui-part~='gamut-bar']",
         description: 'Row holding the clamp buttons.',
+        attributes: [],
       },
       {
         name: 'clamp',
@@ -3804,54 +4014,63 @@ export const componentContracts = {
         selector: "[data-ui-part~='clamp']",
         description:
           'Button that clamps an out-of-gamut color into sRGB or P3. Shown only when needed.',
+        attributes: [],
       },
       {
         name: 'readout',
         required: false,
         selector: "[data-ui-part~='readout']",
         description: 'Row holding the swatch, raw input, and copy button.',
+        attributes: [],
       },
       {
         name: 'gamut',
         required: false,
         selector: "[data-ui-part~='gamut']",
         description: 'Current-color swatch. Decorative.',
+        attributes: [],
       },
       {
         name: 'input',
         required: true,
         selector: "input[type='text']",
         description: 'Raw CSS color value, editable as text.',
+        attributes: [],
       },
       {
         name: 'input-label',
         required: false,
         selector: "[data-ui-part~='input-label']",
         description: 'Screen-reader label for the raw input or format select.',
+        attributes: [],
       },
       {
         name: 'copy',
         required: false,
         selector: "[data-ui-part~='copy']",
         description: 'Copies the raw value to the clipboard.',
+        attributes: [],
       },
       {
         name: 'copy-icon',
         required: false,
         selector: "[data-ui-part~='copy-icon']",
         description: 'Idle state of the copy button. Decorative.',
+        attributes: [],
       },
       {
         name: 'copied-icon',
         required: false,
         selector: "[data-ui-part~='copied-icon']",
         description: 'Confirmed state of the copy button. Decorative.',
+        attributes: [],
       },
       {
         name: 'channels',
         required: false,
         selector: "[data-ui-part~='channels']",
         description: 'Container for the per-channel rows.',
+        attributes: [],
       },
       {
         name: 'channel',
@@ -3859,42 +4078,49 @@ export const componentContracts = {
         selector: "[data-ui-part~='channel']",
         description:
           'One channel row. The picker rewrites the rows when `format` changes, so author one row per channel of the widest format you support.',
+        attributes: [],
       },
       {
         name: 'channel-label',
         required: false,
         selector: "[data-ui-part~='channel-label']",
         description: 'Channel name. Written by the picker; decorative.',
+        attributes: [],
       },
       {
         name: 'channel-range',
         required: true,
         selector: "input[type='range']",
         description: 'Slider for one channel.',
+        attributes: [],
       },
       {
         name: 'channel-input',
         required: true,
         selector: "input[type='number']",
         description: 'Numeric entry for one channel.',
+        attributes: [],
       },
       {
         name: 'warning',
         required: false,
         selector: "[data-ui-part~='warning']",
         description: 'Out-of-gamut or unparsable-value message.',
+        attributes: [],
       },
       {
         name: 'trigger',
         required: false,
         selector: "[data-ui-part~='trigger']",
         description: 'Optional button when the picker lives inside a popover.',
+        attributes: [],
       },
       {
         name: 'content',
         required: false,
         selector: "[data-ui-part~='content']",
         description: 'Optional popover surface wrapping the picker.',
+        attributes: [],
       },
     ],
     states: [
@@ -3950,6 +4176,7 @@ export const componentContracts = {
         selector: 'form',
         description:
           'The native `<form>`. Submission, `method`, `action`, reset, and constraint validation are all still its job; `ui-form` only writes messages onto the fields inside it.',
+        attributes: [],
       },
       {
         name: 'error',
@@ -3957,6 +4184,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='error']",
         description:
           'The message element for one field, resolved as the single `error` part inside the nearest wrapper that holds no other named control. `.ui-field`, `.ui-choice-group`, and `.ui-fieldset` all produce that shape, so no pairing attribute is needed. `ui-form` writes its text and points the field’s `aria-describedby` at it.',
+        attributes: [],
       },
     ],
     states: [],
@@ -3993,6 +4221,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='track']",
         description:
           'Wrapper around the two thumbs. It is the shared track: both inputs stack inside it, and the fill between them is drawn on it from measured bounds.',
+        attributes: [],
       },
       {
         name: 'from',
@@ -4000,6 +4229,7 @@ export const componentContracts = {
         selector: "input[type='range']",
         description:
           'The lower thumb, a native range input. Give it its own `name`, `min`, `max`, `step`, and accessible name; it submits and resets on its own, with no JavaScript.',
+        attributes: [],
       },
       {
         name: 'to',
@@ -4007,6 +4237,7 @@ export const componentContracts = {
         selector: "input[type='range']",
         description:
           'The upper thumb. Same contract as `from`, with its own `name` so the pair submits as two entries.',
+        attributes: [],
       },
       {
         name: 'output',
@@ -4014,6 +4245,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='output']",
         description:
           'Live readout of the pair. Timeless writes the current values into it as text, so omit the part when you want to format them yourself.',
+        attributes: [],
       },
     ],
     states: [
@@ -4110,6 +4342,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='cell']",
         description:
           'One native input holding one character. Author `maxlength="1"`, `inputmode="numeric"`, an accessible name naming its position, and `autocomplete="one-time-code"` on the first cell only. Give it `class="ui-input"` to pick up the shared control styling.',
+        attributes: [],
       },
       {
         name: 'separator',
@@ -4117,6 +4350,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='separator']",
         description:
           'Decorative mark between groups of cells, as in `123-456`. Hide it from assistive technology with `aria-hidden="true"`.',
+        attributes: [],
       },
     ],
     states: [],
@@ -4219,6 +4453,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='trigger']",
         description:
           'Native button that copies. Author it as `<button type="button">` with an accessible name; the name must not change on copy, because a button renamed while it holds focus is announced inconsistently across screen readers.',
+        attributes: [],
       },
       {
         name: 'idle',
@@ -4226,6 +4461,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='idle']",
         description:
           'Shown while nothing has been copied. Decorative — hide it from assistive technology with `aria-hidden="true"`.',
+        attributes: [],
       },
       {
         name: 'copied',
@@ -4233,6 +4469,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='copied']",
         description:
           'Shown briefly after a successful copy. Decorative in the same way, and its text is the default announcement.',
+        attributes: [],
       },
       {
         name: 'status',
@@ -4240,6 +4477,7 @@ export const componentContracts = {
         selector: "[data-ui-part~='status']",
         description:
           'A `role="status"` region the confirmation is written into. Author it — Timeless writes text and never creates the element — and without it nothing is announced. It is clipped away by default, because the visible confirmation is the `copied` part; restyle it if you want it seen.',
+        attributes: [],
       },
     ],
     states: [

@@ -84,6 +84,34 @@ See `.agents/README.md` for the layout, the frontmatter contract, and how to add
   such as `id`, `hidden`, `popover`, `aria-*`, and `tabindex`, but visual styling must remain in
   CSS.
 
+## The four `data-ui-*` families
+
+Every `data-ui-*` name in the library belongs to exactly one of four families. The question that
+tells them apart is **does a stylesheet select this?** — answer it before adding a name, because it
+decides where the name is declared and what proves it.
+
+| Family        | Names | Example                           | Selected by CSS | Read by JS | Declared in                   |
+| ------------- | ----- | --------------------------------- | --------------- | ---------- | ----------------------------- |
+| Configuration | 12    | `data-ui-variant`, `data-ui-size` | always          | never      | `attributes` on the component |
+| Anatomy       | 1     | `data-ui-part`                    | yes             | yes        | `parts` on the component      |
+| Per-item      | 2     | `data-ui-value`, `data-ui-label`  | never           | yes        | `attributes` on the part      |
+| Private hook  | 4     | `data-ui-internal-floating`       | yes, privately  | yes        | nowhere; never public         |
+
+- **Configuration** is enumerated visual configuration on a `.ui-*` class root. It is never read or
+  written by component JS — if behavior needs to branch on it, it is the wrong family.
+  `validate-contracts.mjs` proves every declared value against the stylesheets in both directions,
+  which is why a value is only ever declared once, in `valueSets`.
+- **Anatomy** is the one name in both worlds: stylesheets select parts and behavior finds them
+  through the same `[data-ui-part~='name']` selector.
+- **Per-item** is input an author writes on a part rather than on a root — an option's value, a
+  tab's value. Nothing selects it; the behavior reads it. Declare it as the fifth argument to
+  `part()`, never on the component, and never with permitted values, because there is no CSS to
+  prove a value set against.
+- **Private hooks** are runtime-written and never authored, never documented, and never depended on
+  by a consumer. Add one only when a stylesheet has to select something the platform gives no state
+  for. A hook nothing selects and nothing reads is dead — prefer a `WeakSet` keyed by the element
+  over an attribute whose only reader is a test.
+
 ## Rules for authoring attributes
 
 - Native CSS components use a `.ui-*` root class. Contract-declared visual configuration uses
@@ -96,6 +124,8 @@ See `.agents/README.md` for the layout, the frontmatter contract, and how to add
   state should target the plain attributes, e.g. `ui-menu[orientation='horizontal']`.
 - Authored Light DOM anatomy uses a whitespace-separated `data-ui-part` token list. Select tokens
   with `[data-ui-part~='name']` and keep each part owned by its nearest component root.
+- Per-item input an author writes on a part is declared on that part, not on the component root, and
+  no stylesheet may select it. `check-markup.mjs` checks a part's attributes against the part.
 - Native attributes, ARIA, and platform pseudo-classes are authoritative for public state.
 - Custom-element host state with no public attribute equivalent uses `ElementInternals.states` and
   `:state()`. Unavoidable child runtime hooks use private `data-ui-internal-*` attributes.

@@ -72,6 +72,64 @@ describe('checkMarkup', () => {
   })
 
   /*
+   * Per-item attributes are declared on the part, and an option is neither a root nor a host, so
+   * before milestone 031 nothing checked them. A misspelling here costs a submitted form value.
+   */
+  describe('per-item attributes declared on a part', () => {
+    it('accepts the value and label an option declares', () => {
+      expect(
+        checkMarkup(
+          '<div data-ui-part="option" role="option" data-ui-value="a" data-ui-label="Alpha">A</div>',
+        ),
+      ).toEqual([])
+    })
+
+    it('accepts the value a tab declares', () => {
+      expect(checkMarkup('<button data-ui-part="tab" data-ui-value="one">T</button>')).toEqual([])
+    })
+
+    it('rejects a misspelled per-item attribute', () => {
+      expect(kinds('<div data-ui-part="option" data-ui-valeu="a">A</div>')).toEqual([
+        'undeclared-attribute',
+      ])
+    })
+
+    it('names the part when the attribute exists but not on this one', () => {
+      const findings = checkMarkup('<button data-ui-part="tab" data-ui-label="x">T</button>')
+      expect(findings.map((finding) => finding.kind)).toEqual(['undeclared-attribute'])
+      expect(findings[0]?.message).toContain('`tab`')
+    })
+
+    it('rejects root configuration on a part that is not a root', () => {
+      expect(kinds('<div data-ui-part="content" data-ui-density="compact">x</div>')).toEqual([
+        'undeclared-attribute',
+      ])
+    })
+
+    it('accepts root configuration when the part is also a root', () => {
+      expect(
+        checkMarkup('<div class="ui-card" data-ui-part="panel" data-ui-density="compact">x</div>'),
+      ).toEqual([])
+    })
+
+    /*
+     * An element can be a part and a root at once, and then each loop has to know what the other
+     * owns: the root does not declare `data-ui-value`, the part does, and the attribute is valid.
+     */
+    it('accepts a part attribute on an element that is also a root', () => {
+      expect(
+        checkMarkup('<div class="ui-card" data-ui-part="option" data-ui-value="x">y</div>'),
+      ).toEqual([])
+    })
+
+    it('reports a misspelling once when the element is both a part and a root', () => {
+      expect(kinds('<div class="ui-card" data-ui-part="option" data-ui-valeu="x">y</div>')).toEqual(
+        ['undeclared-attribute'],
+      )
+    })
+  })
+
+  /*
    * An authored role wins over the `combobox` the enhancement applies, and the runtime then declines
    * to write `aria-activedescendant` onto a role that forbids it. That is correct and silent, so this
    * is the only thing that tells the author their active option is never announced.

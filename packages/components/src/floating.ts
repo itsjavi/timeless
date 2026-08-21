@@ -117,7 +117,6 @@ export function applyFloatingPosition(options: FloatingPositionOptions): Floatin
   options.content.style.setProperty(FLOATING_LEFT_PROPERTY, `${x}px`)
   options.content.style.setProperty(FLOATING_TOP_PROPERTY, `${y}px`)
   options.content.setAttribute('data-ui-internal-floating', 'fallback')
-  options.content.setAttribute('data-ui-internal-placement', fittingCandidate.placement)
 
   return fittingCandidate.placement
 }
@@ -126,7 +125,6 @@ export function clearFloatingPosition(content: FloatingRuntimeElement): void {
   content.style.removeProperty(FLOATING_LEFT_PROPERTY)
   content.style.removeProperty(FLOATING_TOP_PROPERTY)
   content.removeAttribute('data-ui-internal-floating')
-  content.removeAttribute('data-ui-internal-placement')
 }
 
 function orderedFloatingPlacements(placement: FloatingPlacement): readonly FloatingPlacement[] {

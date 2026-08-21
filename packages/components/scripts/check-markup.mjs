@@ -29,7 +29,8 @@ import { components } from './component-registry.mjs'
  * - `configuration-on-host` — `data-ui-*` on a custom-element host, which configures with plain
  *   attributes.
  * - `missing-data-ui-prefix` — a bare attribute on a class root whose contract spells it `data-ui-*`.
- * - `undeclared-attribute` — a `data-ui-*` attribute the root's contract does not declare.
+ * - `undeclared-attribute` — a `data-ui-*` attribute neither the root's nor the part's contract
+ *   declares.
  * - `unpermitted-value` — a value the stylesheets do not implement.
  * - `boolean-with-value` — a presence-based attribute written with a value.
  * - `internal-attribute` — a private runtime hook written by hand.
@@ -78,6 +79,27 @@ const elementTags = new Map(
     .map((contract) => [contract.root.name, contract]),
 )
 
+/**
+ * Attributes declared on a part, keyed by part name. Two components declaring the same part name
+ * declare the same attributes on it — `option` is shared by all three collections through one
+ * registry helper — so a flat map is enough and a part token does not need its owning component
+ * resolved from the markup, which this tokeniser could not do anyway.
+ */
+const partAttributes = new Map()
+for (const contract of contracts) {
+  for (const part of contract.parts) {
+    if (part.attributes.length === 0) continue
+    const declared = partAttributes.get(part.name) ?? new Map()
+    for (const attribute of part.attributes) declared.set(attribute.name, attribute)
+    partAttributes.set(part.name, declared)
+  }
+}
+
+/** Every attribute name any part declares, for telling a misplaced one from an unknown one. */
+const allPartAttributeNames = new Set(
+  [...partAttributes.values()].flatMap((declared) => [...declared.keys()]),
+)
+
 const START_TAG = /<([a-zA-Z][\w-]*)((?:"[^"]*"|'[^']*'|[^>"'])*)\/?>/g
 const ATTRIBUTE = /([^\s=/]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g
 
@@ -100,6 +122,13 @@ const rootClasses = (attributes) => {
   const classAttribute = attributes.find((attribute) => attribute.name === 'class')
   if (!classAttribute?.value) return []
   return classAttribute.value.split(/\s+/).filter((token) => classRoots.has(token))
+}
+
+/** The `data-ui-part` tokens on an element, in author order. */
+const partTokens = (attributes) => {
+  const part = attributes.find((attribute) => attribute.name === 'data-ui-part')
+  if (!part?.value) return []
+  return part.value.split(/\s+/).filter(Boolean)
 }
 
 /**
@@ -159,6 +188,16 @@ export function checkMarkup(markup) {
       }
     }
 
+    /*
+     * Resolved before either loop below, because an element can be a part and a root at once —
+     * `<div class="ui-card" data-ui-part="option">` — and then each loop has to know what the other
+     * one owns, or a valid part attribute reads as undeclared configuration on the root.
+     */
+    const tokens = partTokens(attributes)
+    const declaredByPart = new Map(
+      tokens.flatMap((token) => [...(partAttributes.get(token) ?? [])]),
+    )
+
     const hostContract = elementTags.get(tag)
 
     if (tag.startsWith('ui-') && !hostContract) {
@@ -208,7 +247,7 @@ export function checkMarkup(markup) {
             const ownedElsewhere = rootClasses(attributes).some((other) =>
               classRoots.get(other)?.attributes.some((entry) => entry.name === attribute.name),
             )
-            if (!ownedElsewhere) {
+            if (!ownedElsewhere && !declaredByPart.has(attribute.name)) {
               findings.push({
                 kind: 'undeclared-attribute',
                 tag,
@@ -231,6 +270,39 @@ export function checkMarkup(markup) {
             message: `${rootClass} is configured with data-ui-${attribute.name}, not ${attribute.name}.`,
           })
         }
+      }
+    }
+
+    /*
+     * Per-item attributes are declared on the part, so neither loop above can reach them: an option
+     * carries no root class and is no host. Without this, `data-ui-valeu` on an option is silent
+     * while `data-ui-varaint` on a root is caught — and a silent one costs a submitted form value.
+     */
+    if (tokens.length > 0 && !hostContract) {
+      /* With a root class present, the loop above already reports whatever nothing declares. */
+      const rootReports = rootClasses(attributes).length > 0
+
+      for (const attribute of attributes) {
+        if (attribute.name === 'data-ui-part') continue
+        if (!attribute.name.startsWith('data-ui-')) continue
+        /* Already reported once, for every element, by the internal-hook sweep at the top. */
+        if (attribute.name.startsWith('data-ui-internal-')) continue
+
+        const match = declaredByPart.get(attribute.name)
+        if (match) {
+          findings.push(...checkDeclaredValue(tag, attribute, match))
+          continue
+        }
+        if (rootReports) continue
+
+        findings.push({
+          kind: 'undeclared-attribute',
+          tag,
+          attribute: attribute.name,
+          message: allPartAttributeNames.has(attribute.name)
+            ? `${attribute.name} is not declared on ${tokens.map((token) => `\`${token}\``).join(' or ')}.`
+            : `${attribute.name} is declared by no part or root on this element, so nothing reads it.`,
+        })
       }
     }
   }

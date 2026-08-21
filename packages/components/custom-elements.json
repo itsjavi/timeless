@@ -105,7 +105,13 @@
               "name": "tab",
               "selector": "[role='tab']",
               "required": true,
-              "description": "One tab. Use `<button type=\"button\">` and give it a `value`; Timeless wires `id`, `aria-controls`, `aria-selected`, and `tabindex`."
+              "description": "One tab. Use `<button type=\"button\">` and give it a `value`; Timeless wires `id`, `aria-controls`, `aria-selected`, and `tabindex`.",
+              "attributes": [
+                {
+                  "name": "data-ui-value",
+                  "description": "The value this tab selects, for a tab that cannot carry a bare `value` attribute. `value` wins over it, and the tab `id` is the last fallback."
+                }
+              ]
             },
             {
               "name": "tabpanel",
@@ -1256,7 +1262,17 @@
               "name": "option",
               "selector": "[role='option']",
               "required": true,
-              "description": "One option. Its value comes from `value`, then `data-ui-value`, then its text. Its filterable label comes from `label`, then `data-ui-label`, then `aria-label`, then its text — none of which change the accessible name. Mark unavailable options `aria-disabled=\"true\"`."
+              "description": "One option. Its value comes from `value`, then `data-ui-value`, then its text. Mark unavailable options `aria-disabled=\"true\"`.",
+              "attributes": [
+                {
+                  "name": "data-ui-value",
+                  "description": "The value this option submits, when its text is not the value. `value` wins over it, and its own text is the fallback."
+                },
+                {
+                  "name": "data-ui-label",
+                  "description": "The text filtering and typeahead match against, when the visible content is not what a reader would type. `label` wins over it, then this, then `aria-label`, then the option text. None of the four change the accessible name."
+                }
+              ]
             },
             {
               "name": "option-indicator",
@@ -1638,7 +1654,17 @@
               "name": "option",
               "selector": "[role='option']",
               "required": true,
-              "description": "One option. Its value comes from `value`, then `data-ui-value`, then its text. Its filterable label comes from `label`, then `data-ui-label`, then `aria-label`, then its text — none of which change the accessible name. Mark unavailable options `aria-disabled=\"true\"`."
+              "description": "One option. Its value comes from `value`, then `data-ui-value`, then its text. Mark unavailable options `aria-disabled=\"true\"`.",
+              "attributes": [
+                {
+                  "name": "data-ui-value",
+                  "description": "The value this option submits, when its text is not the value. `value` wins over it, and its own text is the fallback."
+                },
+                {
+                  "name": "data-ui-label",
+                  "description": "The text filtering and typeahead match against, when the visible content is not what a reader would type. `label` wins over it, then this, then `aria-label`, then the option text. None of the four change the accessible name."
+                }
+              ]
             },
             {
               "name": "option-indicator",
@@ -1740,7 +1766,7 @@
               "name": "chip-remove",
               "selector": "[data-ui-part~='chip-remove']",
               "required": false,
-              "description": "Removes its chip. Author it as a real button; Timeless gives it the value it removes and an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins."
+              "description": "Removes its chip. Author it as a real button; Timeless writes the value it removes onto it as `data-ui-value` and gives it an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins."
             },
             {
               "name": "clear",
@@ -1995,7 +2021,17 @@
               "name": "option",
               "selector": "[role='option']",
               "required": true,
-              "description": "One option. Its value comes from `value`, then `data-ui-value`, then its text. Its filterable label comes from `label`, then `data-ui-label`, then `aria-label`, then its text — none of which change the accessible name. Mark unavailable options `aria-disabled=\"true\"`."
+              "description": "One option. Its value comes from `value`, then `data-ui-value`, then its text. Mark unavailable options `aria-disabled=\"true\"`.",
+              "attributes": [
+                {
+                  "name": "data-ui-value",
+                  "description": "The value this option submits, when its text is not the value. `value` wins over it, and its own text is the fallback."
+                },
+                {
+                  "name": "data-ui-label",
+                  "description": "The text filtering and typeahead match against, when the visible content is not what a reader would type. `label` wins over it, then this, then `aria-label`, then the option text. None of the four change the accessible name."
+                }
+              ]
             },
             {
               "name": "option-indicator",
@@ -2097,7 +2133,7 @@
               "name": "chip-remove",
               "selector": "[data-ui-part~='chip-remove']",
               "required": false,
-              "description": "Removes its chip. Author it as a real button; Timeless gives it the value it removes and an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins."
+              "description": "Removes its chip. Author it as a real button; Timeless writes the value it removes onto it as `data-ui-value` and gives it an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins."
             },
             {
               "name": "clear",

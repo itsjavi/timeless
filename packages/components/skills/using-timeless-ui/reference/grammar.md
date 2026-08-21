@@ -50,6 +50,11 @@ So:
 - **Component anatomy is authored by you and marked with a whitespace-separated `data-ui-part` token
   list, selected with `[data-ui-part~='name']`.** Parts documented as required must be present for
   the component to work — a tab set with no `[role='tablist']` has nothing to coordinate.
+- **A few parts accept per-item input of their own, spelled `data-ui-*` on the part. Each component
+  page lists them.** An option carries `data-ui-value` when its text is not the value it submits,
+  and `data-ui-label` when its visible content is not what a reader would type to find it. A bare
+  `value` works only on an element where HTML already defines it, which a `<div role="option">` is
+  not.
 - **Never author `data-ui-internal-*`. Those are private runtime hooks.** They are written by the
   component, they are not styleable, and they change without notice.
 - **Native HTML semantics, ARIA, and platform pseudo-classes are authoritative for state. Do not add

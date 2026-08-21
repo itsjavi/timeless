@@ -48,17 +48,44 @@ const attribute = (name, type, options = {}) => {
 /** The authored-default plus live-value property pair used by every value-bearing collection. */
 const valueProperty = { name: 'defaultValue', type: 'string', live: 'value' }
 
+/**
+ * `attributes` declares what an author may write *on the part itself*, which is a different surface
+ * from the root configuration in `attributes` on the component. A part attribute is per-item input
+ * the behavior reads — an option's value, a tab's value — never something a stylesheet selects, so
+ * `validate-contracts.mjs` keeps the two sets apart and `check-markup.mjs` checks a part's
+ * attributes against the part rather than against the nearest root.
+ */
 const part = (
   name,
   required = false,
   selector = `[data-ui-part~='${name}']`,
   description = '',
+  attributes = [],
 ) => ({
   name,
   required,
   selector,
   description,
+  attributes,
 })
+
+/**
+ * The per-item value and label every collection option accepts. Declared once because all three
+ * collections resolve them through the same `options.ts` helpers, and because a consumer reading one
+ * component's reference page should see the same contract as the next.
+ */
+const OPTION_DATA_ATTRIBUTES = () => [
+  attribute('data-ui-value', 'string', {
+    property: false,
+    description:
+      'The value this option submits, when its text is not the value. `value` wins over it, and its own text is the fallback.',
+  }),
+  attribute('data-ui-label', 'string', {
+    property: false,
+    description:
+      'The text filtering and typeahead match against, when the visible content is not what a reader would type. `label` wins over it, then this, then `aria-label`, then the option text. None of the four change the accessible name.',
+  }),
+]
 
 const state = (name, source, isPublic = true, description = '') => ({
   name,
@@ -125,7 +152,8 @@ const COLLECTION_PARTS = () => [
     'option',
     true,
     "[role='option']",
-    'One option. Its value comes from `value`, then `data-ui-value`, then its text. Its filterable label comes from `label`, then `data-ui-label`, then `aria-label`, then its text — none of which change the accessible name. Mark unavailable options `aria-disabled="true"`.',
+    'One option. Its value comes from `value`, then `data-ui-value`, then its text. Mark unavailable options `aria-disabled="true"`.',
+    OPTION_DATA_ATTRIBUTES(),
   ),
   part(
     'option-indicator',
@@ -247,7 +275,7 @@ const COLLECTION_TRIGGER_PARTS = () => [
     'chip-remove',
     false,
     undefined,
-    'Removes its chip. Author it as a real button; Timeless gives it the value it removes and an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins.',
+    'Removes its chip. Author it as a real button; Timeless writes the value it removes onto it as `data-ui-value` and gives it an accessible name naming that value, since one shared template cannot. An `aria-label` you author wins.',
   ),
   part(
     'clear',
@@ -1278,6 +1306,13 @@ export const components = [
         true,
         "[role='tab']",
         'One tab. Use `<button type="button">` and give it a `value`; Timeless wires `id`, `aria-controls`, `aria-selected`, and `tabindex`.',
+        [
+          attribute('data-ui-value', 'string', {
+            property: false,
+            description:
+              'The value this tab selects, for a tab that cannot carry a bare `value` attribute. `value` wins over it, and the tab `id` is the last fallback.',
+          }),
+        ],
       ),
       part(
         'tabpanel',

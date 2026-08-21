@@ -90,7 +90,6 @@ describe('applyFloatingPosition', () => {
     expect(content.style.values.get('--ui-floating-left')).toBe('520px')
     expect(content.style.values.get('--ui-floating-top')).toBe('148px')
     expect(content.attributes.get('data-ui-internal-floating')).toBe('fallback')
-    expect(content.attributes.get('data-ui-internal-placement')).toBe('bottom')
   })
 
   it('tries other placements before clamping when the preferred side is constrained', () => {
@@ -120,14 +119,12 @@ describe('applyFloatingPosition', () => {
     expect(placement).toBe('left')
     expect(content.style.values.get('--ui-floating-left')).toBe('914px')
     expect(content.style.values.get('--ui-floating-top')).toBe('271px')
-    expect(content.attributes.get('data-ui-internal-placement')).toBe('left')
 
     clearFloatingPosition(content as unknown as FloatingRuntimeElement)
 
     expect(content.style.values.has('--ui-floating-left')).toBe(false)
     expect(content.style.values.has('--ui-floating-top')).toBe(false)
     expect(content.attributes.has('data-ui-internal-floating')).toBe(false)
-    expect(content.attributes.has('data-ui-internal-placement')).toBe(false)
   })
 })
 

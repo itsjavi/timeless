@@ -36,10 +36,22 @@ const table = (headers, rows) => [
 const attributeCell = (contract) =>
   contract.attributes.length === 0 ? 'none' : contract.attributes.map(attributeSummary).join(', ')
 
+/**
+ * A part that accepts per-item input names it inline. An agent reading this table is about to author
+ * an option, and `data-ui-value` is the attribute it would otherwise invent as a plain `value`.
+ */
 const partCell = (contract) =>
   contract.parts.length === 0
     ? 'none'
-    : contract.parts.map((part) => `\`${part.name}\`${part.required ? '*' : ''}`).join(', ')
+    : contract.parts
+        .map((part) => {
+          const own =
+            part.attributes.length === 0
+              ? ''
+              : ` (${part.attributes.map((attribute) => attribute.name).join(', ')})`
+          return `\`${part.name}\`${part.required ? '*' : ''}${own}`
+        })
+        .join(', ')
 
 export function createSkillContracts(components, valueSets) {
   const css = components.filter((contract) => contract.kind === 'css')
@@ -60,7 +72,9 @@ export function createSkillContracts(components, valueSets) {
     'those roots it is a 404. Take the real route from `https://timeless.build/llms.txt`, which lists',
     'every page, or browse `https://timeless.build/docs/components/`.',
     '',
-    'Parts marked `*` are required for the component to work.',
+    'Parts marked `*` are required for the component to work. A part followed by attributes in',
+    'parentheses accepts those as per-item input, authored on the part itself; no stylesheet selects',
+    'them.',
     '',
     '## CSS components',
     '',
