@@ -1,7 +1,7 @@
 # Timeless UI
 
-Timeless UI is a framework-agnostic UI library built on the modern web platform. It is not published
-yet, while the primitives settle.
+Timeless UI is a framework-agnostic UI library built on the modern web platform. It is published on
+npm as `@timelessui/components`, on a `0.x` line while the primitives settle.
 
 | Surface                                                        | Lives in              |
 | -------------------------------------------------------------- | --------------------- |
