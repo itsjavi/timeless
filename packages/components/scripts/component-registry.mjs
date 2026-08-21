@@ -91,14 +91,22 @@ const accessibility = (pattern, patternLabel, keys = [], notes = '') => ({
 
 const key = (name, action) => ({ key: name, action })
 
-/** Arrow, Home, End, and Page navigation shared by every roving-focus collection. */
+/**
+ * Arrow, Home, and End navigation shared by every roving-focus collection.
+ *
+ * A `Page Up / Page Down` row used to sit here, and `collectionNavigationTarget` never implemented
+ * it — five components documented a jump-ten shortcut that did nothing, in the reference pages, in
+ * `contracts.ts`, in `llms-full.txt`, and in the contract table shipped inside the package's agent
+ * skill. The APG asks for it in none of those patterns, so the row went rather than the behavior
+ * arriving — it also read "Jump ten checkboxs at a time", because the plural was `${subject}s`.
+ * `check-keyboard-contracts.mjs` is what stops the next one.
+ */
 const COLLECTION_KEYS = (subject, axis = 'orientation') => [
   key(
     'Arrow keys',
     `Move focus to the previous or next ${subject}, following the ${axis} and skipping disabled ones.`,
   ),
   key('Home / End', `Move focus to the first or last enabled ${subject}.`),
-  key('Page Up / Page Down', `Jump ten ${subject}s at a time.`),
 ]
 
 /**
@@ -245,7 +253,7 @@ const COLLECTION_TRIGGER_PARTS = () => [
     'clear',
     false,
     undefined,
-    'Empties the whole selection. Disabled while there is nothing to clear.',
+    'Empties the whole selection. Marked `aria-disabled="true"` while there is nothing to clear, rather than `disabled`, so activating it cannot disable the control that holds focus.',
   ),
 ]
 
@@ -683,6 +691,14 @@ export const components = [
       part('description', false, undefined, 'Supporting detail.'),
       part('actions', false, undefined, 'Container for one or two follow-up actions.'),
     ],
+    [],
+    [],
+    accessibility(
+      'alert',
+      'Alert',
+      [],
+      'The role is yours to choose, and it depends on when the alert appears. Something rendered with the page is not an alert at all — give it `role="status"`, or no role and a heading, because a live region announces *changes* and there is no change on first paint. Something inserted in response to what the user just did is a live region: `role="status"` to wait its turn, `role="alert"` to interrupt, and the latter only when the message cannot wait. The `icon` part is decorative and must be hidden from assistive technology; `data-ui-variant` carries no meaning on its own, so say in the text what the colour implies.',
+    ),
   ),
   css(
     'avatar',
@@ -1194,6 +1210,13 @@ export const components = [
       state('invalid', 'native', true, 'Native `:invalid`, or `aria-invalid="true"`.'),
       state('disabled', 'native', true, 'Native `disabled`.'),
     ],
+    [],
+    accessibility(
+      'switch',
+      'Switch',
+      [],
+      'A native `input[type="checkbox"]` with `role="switch"`, which is the whole component: Tab reaches it, Space toggles it, the checked state is `:checked`, and it submits and resets with the form. `role="switch"` changes only how it is announced — on or off rather than checked or unchecked — so use it when the control takes effect immediately and leave it off when the change needs saving. Label it as you would any checkbox, and do not add `aria-checked`; the native state is authoritative and the two can disagree.',
+    ),
   ),
   css(
     'range',
@@ -1617,7 +1640,7 @@ export const components = [
           'Typeahead: jump to the next item whose label starts with what you typed.',
         ),
       ],
-      'The menu is one tab stop. Disabled items stay reachable with the arrow keys, which is the APG treatment — a command you cannot use is easier to understand than one that is not there — but they never take the resting tab stop and never activate. Activating a `menuitemcheckbox` toggles its `aria-checked`; activating a `menuitemradio` sets it and clears the other radios in its group. Both dispatch a cancelable `ui-before-change` first, so a consumer that already owns `aria-checked` can keep owning it. Typeahead matching is locale-aware. Submenus open on the keyboard and on click; there is deliberately no hover-with-intent opening.',
+      'The menu is one tab stop. Mark an unavailable command `aria-disabled="true"` rather than `disabled`: it stays reachable with the arrow keys, which is the APG treatment — a command you cannot use is easier to understand than one that is not there — while never taking the resting tab stop and never activating. An authored `disabled` item is honoured as written and simply skipped, because the platform makes it unfocusable and Timeless does not rewrite your markup. Activating a `menuitemcheckbox` toggles its `aria-checked`; activating a `menuitemradio` sets it and clears the other radios in its group. Both dispatch a cancelable `ui-before-change` first, so a consumer that already owns `aria-checked` can keep owning it. Typeahead matching is locale-aware. Submenus open on the keyboard and on click; there is deliberately no hover-with-intent opening.',
     ),
   ),
   customElement(
@@ -1649,10 +1672,11 @@ export const components = [
       'menu-button',
       'Menu Button',
       [
-        key('Enter / Space / Arrow Down', 'Open the menu and focus its first item.'),
+        key('Arrow Down', 'Open the menu and focus its first item.'),
+        key('Arrow Up', 'Open the menu and focus its last item.'),
         key('Escape', 'Close the menu and return focus to the trigger.'),
       ],
-      'Escape and outside-click dismissal come from the Popover API rather than from Timeless. The trigger carries `aria-haspopup="menu"` and `aria-expanded`.',
+      'Enter and Space open the menu before any script runs, because the trigger carries `popovertarget` — they are the platform\'s, which is why they are not listed above. The two arrows have no declarative equivalent, so those are the keys Timeless implements. Escape and outside-click dismissal come from the Popover API. The trigger carries `aria-haspopup="menu"` and `aria-expanded`.',
     ),
   ),
   customElement(
@@ -1746,7 +1770,7 @@ export const components = [
       'toolbar',
       'Toolbar',
       COLLECTION_KEYS('control'),
-      'The whole toolbar is one tab stop. Timeless manages roving `tabindex` so Tab moves past the group rather than through every control.',
+      'The whole toolbar is one tab stop. Timeless manages roving `tabindex` so Tab moves past the group rather than through every control. A toolbar control is a real control rather than a command, so `disabled` is the right spelling here and the arrows skip it — unlike [Menu](/docs/components/menu/), where `aria-disabled` keeps an unavailable command discoverable. Give the host an accessible name; a toolbar without one is indistinguishable from any other.',
     ),
   ),
   customElement(
@@ -1826,8 +1850,8 @@ export const components = [
     accessibility(
       'checkbox',
       'Checkbox',
-      COLLECTION_KEYS('checkbox'),
-      'Space toggles the focused checkbox natively. Every box remains independently reachable and submits its own value.',
+      [],
+      'Every key comes from the native checkboxes: Tab reaches each one, Space toggles the focused box, and each box submits its own value. There is deliberately no roving `tabindex` and no arrow navigation — a checkbox group is a set of independent controls rather than one composite widget, so each being its own tab stop is the APG treatment. `ui-checkbox-group` adds only the group role, the orientation, and one change event for the set. A group that should be one tab stop is a [Listbox](/docs/components/listbox/) with `multiple`.',
     ),
   ),
   customElement(
@@ -2075,6 +2099,13 @@ export const components = [
       variable('--ui-toaster-gap', 'Gap between toasts in `list` mode.'),
       variable('--ui-toaster-overlap', 'Offset between stacked toasts in `overlap` mode.'),
     ],
+    [],
+    accessibility(
+      'alert',
+      'Alert',
+      [],
+      'The toaster is the live region, and it is yours to name — author `role="region"` with an `aria-label`, or `role="status"` when the whole surface should announce. Timeless supplies both as a default and neither as a replacement for your own. Nothing here traps focus or steals it: a toast appears without moving the user, and is reached with Tab like anything else. Choose the role by urgency, not by appearance: `role="status"` on a toast is polite and waits its turn, `role="alert"` interrupts and should be rare.',
+    ),
   ),
   customElement(
     'toast',
@@ -2117,6 +2148,12 @@ export const components = [
         'Dispatched when the toast is dismissed. The detail names the reason: a timeout, the close control, or the imperative API.',
       ),
     ],
+    accessibility(
+      'alert',
+      'Alert',
+      [],
+      'Give the toast the role its urgency deserves — `role="status"` for the ordinary case, `role="alert"` only when it must interrupt — and give the close control an accessible name. SC 2.2.1 is the criterion to hold in mind: `duration` defaults to 5000ms, and the timer stops while the toast is hovered or contains focus, so nobody loses the message they are reading or the control they are reaching for. `persistent`, or `duration="0"`, removes the limit outright, which is the right choice for anything the user must act on. Dismissing a toast that holds focus hands focus to a surviving toast, or back to wherever it came from, rather than dropping it on `<body>`.',
+    ),
   ),
   customElement(
     'toggleGroup',
@@ -2156,10 +2193,10 @@ export const components = [
     [],
     transitionEvents('the pressed set', 'ToggleGroupChangeDetail'),
     accessibility(
-      'button',
-      'Button',
+      'toolbar',
+      'Toolbar',
       COLLECTION_KEYS('button'),
-      'Each button keeps native activation, and `aria-pressed` carries the state. With `selection="single"` pressing one button releases the others.',
+      'The Toolbar pattern rather than the Button pattern, which is what the host renders: `role="toolbar"`, roving `tabindex`, and the whole group as one tab stop. Each button keeps native activation, and `aria-pressed` carries the state — so an individual control is still a button, which is why the pattern link used to point there. With `selection="single"` pressing one button releases the others. Give the host an accessible name; a toolbar without one is indistinguishable from any other.',
     ),
   ),
   customElement(
@@ -2191,6 +2228,12 @@ export const components = [
       ),
       event('change', 'Event', 'Native `change` event dispatched on the inner number input.'),
     ],
+    accessibility(
+      'spinbutton',
+      'Spinbutton',
+      [],
+      'Every key comes from the native `input[type="number"]`, which is already a spinbutton: Arrow Up and Arrow Down step by `step`, Page Up and Page Down step further where the platform provides it, and Home and End reach `min` and `max`. Timeless adds no keyboard handling and no ARIA on top, because there is nothing missing — it writes `role="group"` on the host so the two buttons and the field read as one control, which is why the host needs your accessible name. At a bound the corresponding button takes `aria-disabled="true"` rather than `disabled`: a button that goes inert while it is being pressed would otherwise take focus to `<body>` with it, so it stays focusable and does nothing.',
+    ),
   ),
   customElement(
     'colorPicker',
@@ -2274,6 +2317,12 @@ export const components = [
       event('input', 'Event', 'Native `input` event dispatched while the color is being edited.'),
       event('change', 'Event', 'Native `change` event dispatched when the edit is committed.'),
     ],
+    accessibility(
+      null,
+      'Colour channels',
+      [],
+      'The APG has no colour-picker pattern, and this deliberately does not invent one: every control here is a native `input[type="range"]` or `input[type="number"]`, so each channel is its own labelled, tabbable slider or field with its own value announcement, and arrow keys, Home, End, and typing all come from the platform. Timeless names each channel from its definition and keeps the two representations of one channel in step. There is no two-dimensional saturation-value area, because that has no accessible keyboard model that a set of named channels does not already provide better. The generated swatch is decorative and hidden from assistive technology; the value the user is editing is the text of the raw field, and an unparseable draft is marked `aria-invalid` rather than being silently discarded. The channel sliders are 10px tall, which relies on SC 2.5.8 spacing rather than target size — keep the gap between them if you restyle it.',
+    ),
   ),
   customElement(
     'form',

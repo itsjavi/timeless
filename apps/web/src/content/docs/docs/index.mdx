@@ -66,8 +66,8 @@ Every component page follows the same shape, so you can skip to what you need:
 
 ## What the contracts guarantee
 
-Every published import except the stylesheets and the `define/*` entrypoints is side-effect free, so
-class imports are safe during server rendering. Enhanced elements coordinate the markup you wrote
+Every published import except the stylesheets and the `register/*` entrypoints is side-effect free,
+so class imports are safe during server rendering. Enhanced elements coordinate the markup you wrote
 rather than replacing it, and they preserve native controls wherever those controls already provide
 submission, labelling, reset, and validation.
 

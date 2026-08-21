@@ -1,3 +1,6 @@
+import { readdirSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { expect, test } from '../../shared/fixtures'
 import { expectNoBlockingA11yViolations } from '../../shared/a11y'
 import { expectNoPageOverflow, expectRouteDocumentReady } from '../../shared/test-utils'
@@ -150,4 +153,42 @@ test('reaches the page sections through the disclosure on narrow viewports', asy
 
   await page.keyboard.press('Escape')
   await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+})
+
+/*
+ * The guide pages, in both themes.
+ *
+ * Website axe coverage reached `/`, `/404.html`, one component page, and — through
+ * `component-reference.spec.ts` — every component reference page. The nineteen guides were the gap
+ * milestone 030 recorded: they carry the prose, the code samples, and the tables a reader actually
+ * starts from, and nothing had ever scanned them.
+ *
+ * The list is derived from the content collection rather than typed out, so a new guide is covered
+ * the moment it exists.
+ */
+const guideRoot = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  '../../../../../apps/web/src/content/docs/docs',
+)
+const guideRoutes = readdirSync(resolve(guideRoot), { recursive: true, encoding: 'utf8' })
+  .filter((entry) => entry.endsWith('.mdx'))
+  .map((entry) => `/docs/${entry.replace(/index\.mdx$/, '').replace(/\.mdx$/, '/')}`)
+  .map((route) => route.replace(/\/{2,}/g, '/'))
+  .sort()
+
+test.describe('documentation guides', () => {
+  for (const route of guideRoutes) {
+    test(`${route} passes axe in both themes`, async ({ page }) => {
+      await page.goto(route)
+      await expectRouteDocumentReady(page)
+      await expectNoPageOverflow(page)
+
+      for (const docsTheme of ['light', 'dark']) {
+        await page.locator('html').evaluate((element, value) => {
+          element.dataset.theme = value
+        }, docsTheme)
+        await expectNoBlockingA11yViolations(page, `${route} (${docsTheme})`, 'main')
+      }
+    })
+  }
 })

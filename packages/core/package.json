@@ -15,7 +15,7 @@
   "author": "Javi Aguilar (https://github.com/itsjavi)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/itsjavi/timeless.git",
+    "url": "git+https://github.com/itsjavi/timeless.git",
     "directory": "packages/core"
   },
   "files": [

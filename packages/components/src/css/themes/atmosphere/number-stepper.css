@@ -52,12 +52,14 @@
     outline-offset: 1px;
   }
 
-  ui-number-stepper > button:hover:not(:disabled) {
+  ui-number-stepper > button:hover:not(:disabled, [aria-disabled='true']) {
     background: var(--ui-bg-control-hover);
     color: var(--ui-fg);
   }
 
+  /* A step button at its bound is `aria-disabled`, not `disabled`, so it keeps focus. */
   ui-number-stepper > :where(button, input):disabled,
+  ui-number-stepper > button[aria-disabled='true'],
   ui-number-stepper > input:read-only {
     opacity: var(--ui-disabled-opacity);
   }

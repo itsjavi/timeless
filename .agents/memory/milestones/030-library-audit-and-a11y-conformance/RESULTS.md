@@ -331,34 +331,62 @@ Confirmed by direct execution in Chromium 1.62.1 via Playwright, not from specif
   reports the surface as closed while it is open, which is worth knowing before writing an assertion
   about it.
 
-## Open decisions
+## Decisions taken on the open questions
 
-**Should `define/*` self-register, or should the docs teach the call?** Self-registering matches
-every piece of prose in the project and makes the bare import correct, but it needs
-`./dist/define/*` added to `sideEffects`, and it leaves `defineXElement(targetWindow)` as a second
-way to do the same thing — with the `targetWindow` parameter, the reason the function exists,
-unreachable from the documented path. Teaching the call keeps one mechanism and one story about
-server rendering, but it means editing 23 generated Install blocks, nine guides, the skill, and
-`context7.json`, and every consumer who already copied the bare import stays broken until they read
-the changelog. Self-registration plus a retained named export is the lower-risk answer for a pre-1.0
-library with published documentation already in the wild.
+The plan left four questions open. Each was decided before the work that depended on it.
 
-**What should the dark `--ui-accent` be?** A lighter blue fixes the six measured failures but
-changes the brand hue in dark mode, which is a design decision rather than a conformance one. The
-alternative is to keep `--ui-accent` for fills and introduce a separate foreground token, which is
-more tokens but leaves the fill colour untouched.
+**Registration: a new `register/*` tier, not either option the plan offered.** The plan framed it as
+self-registering `define/*` versus teaching the call. The answer was neither: `define/*` keeps its
+current contract exactly — a function, no side effect, safe to import while server rendering — and a
+sibling `register/*` tier carries the side effect.
+`import '@timelessui/components/register/ui-tabs'` registers; `@timelessui/components/register`
+registers everything.
 
-**Should `Page Up` / `Page Down` be implemented or deleted?** The APG defines it for none of the
-five patterns involved. Deleting five rows costs nothing and is honest; implementing it means
-routing the linear collections through page handling and giving `gridCollectionNavigationTarget` a
-caller.
+That is better than both. Self-registering `define/*` would have made the same module both a
+function and a side effect, and `targetWindow` — the reason the function exists — unreachable from
+the documented path. Teaching the call everywhere would have left every consumer who already copied
+a bare import silently broken, and it makes the common case wordier than it needs to be. Two tiers
+name the two things: `register/` is "make this work", `define/` is "I will decide when".
 
-**How should the docs stop promising unpublished components?** Gating the gh-pages deploy on a tag
-keeps the site and the package in lockstep but stops documentation fixes from shipping between
-releases. Marking a component as unpublished on its page and in its Install block keeps the deploy
-cadence and adds state to the registry. The second is more work and loses less.
+The cost is one more entry point per element, so `sideEffects` now lists `./dist/register.js` and
+`./dist/register/*.js`, and the tier is generated rather than written 23 times.
+`register/browser.ts` is the only hand-written file in it, and it holds the one decision worth
+stating: a `register/*` import is inert on the server. Which has a consequence the docs now say out
+loud — an import that only ever runs on the server registers nothing.
 
-## Decisions and constraints
+**The dark accent: `#66b0ff`, and the light one moved too.** The first attempt paired `--ui-accent`
+as `light-dark(#0064d8, #5aa9ff)`, checked against the four surface tokens and `--ui-accent-soft`
+over each. That was not enough, and the sweep said so: an accent link inside a _danger_ alert
+measured 4.35:1. A foreground has to clear every fill it can land on, not the fill named after it —
+a link is a link inside any alert variant, and so is a muted description.
+
+Re-derived against all four soft fills over all four surfaces, three tokens needed to move:
+`--ui-accent` to `light-dark(#0056bd, #66b0ff)`, `--ui-fg-muted` to `light-dark(#5c6069, #a5a7b0)`,
+and the dark `--ui-danger` to `#f98080`, which had been sitting on 4.498:1 against its own soft
+fill. The semantic foregrounds are held to the fills they can actually meet — plain surfaces and
+their own soft — because "danger text on a warning fill" is a combination no component produces and
+a consumer's own call.
+
+**`Page Up` / `Page Down`: deleted, all five rows.** The APG asks for it in none of the five
+patterns, `collectionNavigationTarget` never implemented it, and implementing it would have meant
+new keyboard behavior in five components to satisfy a row nobody had asked for.
+`gridCollectionNavigationTarget` keeps its export rather than being deleted with the claims: it is a
+legitimate helper on the public `./collection` path for a consumer building a grid, and its
+docstring now says that it is intentionally uncalled and that page keys belong in the linear helper
+if a component ever needs them.
+
+Checkbox Group's whole table went the same way, for the same reason in reverse: each checkbox being
+its own tab stop _is_ the APG treatment, so the implementation was right and the declaration was
+wrong. The note now says so, and points at Listbox with `multiple` for the case that wants one tab
+stop.
+
+**Docs versus npm: release 0.2.0.** The drift exists because the navigation set shipped to the site
+and never to npm, and this milestone's fixes need a release to reach anyone regardless. Gating the
+gh-pages deploy on a tag was rejected: it would hold every prose fix until the next release, which
+is a worse failure than the one being fixed. Marking unpublished components on their page was
+rejected as solving a problem that only exists between a merge and a release.
+
+## Constraints found during the audit
 
 - **The audit harness stays out of the repository.** It is 500 lines of scratch code whose value was
   in being written from the outside. What belongs in the repository is the four gates it justifies
@@ -374,16 +402,129 @@ cadence and adds state to the registry. The second is more work and loses less.
   documented markup. Anything auditing states has to exclude them or it reports noise.
 - **`--ui-bg-accent` must not be paired.** It is a fill behind a light foreground; pairing it would
   break the primary button in dark mode. Only tokens used as foreground need a dark branch, which is
-  the distinction `--ui-accent` currently fails to draw for itself.
+  the distinction `--ui-accent` did not draw for itself, and the token file now says so.
+
+## Constraints found during implementation
+
+**A comment in a shared module is shipped bytes.** `check-performance.mjs` failed on seven
+entrypoints at once after a ten-line docstring went into `collection.ts` — every collection imports
+it. The stylesheet comments were the same: four lines of prose in
+`themes/atmosphere/number-stepper.css` grew that component's gzipped CSS by 19%. Both were trimmed
+to a line, with the reasoning kept in the registry notes and here. Toast's remaining +18% is real
+code — five listeners, a focus-return path, and the sibling walk — and the baseline moved to record
+it, which is what the gate's own docstring asks for.
+
+**A shallow gate needs the right scope.** `check-keyboard-contracts.mjs` began by collecting every
+key pressed anywhere in the suite, which would have missed the Checkbox Group drift completely:
+arrows are pressed constantly, by Radio Group and Toolbar and Listbox. Scoping evidence to files
+that name the component fixed that but over-fired eleven times, because the e2e specs address
+components through story routes and `getByRole` rather than by tag. The version that shipped keeps
+the generous scope for the press check and adds a second, precise one: a component declaring
+navigation keys must have a `keydown` handler in its module. Two checks, one loose and one tight,
+catch what neither does alone.
+
+**Painting the surface is not optional for a colour-contrast sweep.** With
+`color-scheme: light dark` and nothing painted, Chromium draws a dark canvas and axe assumes white —
+119 dark-scheme routes failed identically at 1.09:1, all artifact. Painting `--ui-bg-page` before
+scanning removed all 119 and uncovered two real failures the artifact had been hiding, both in the
+light scheme, both composites over a tinted fill. So the artifact was not merely noisy; it was
+masking.
+
+**Not every accessibility number is core's to fix.** Seven components fall under SC 2.5.8's 24×24
+once the theme's sizing is gone. Putting a floor in core would fix the number and impose a layout
+decision on exactly the consumer core exists to serve — a dense tool that satisfies 2.5.8 through
+the spacing exemption instead. The set is recorded in `core-only.spec.ts` and the assertion is about
+the eighth component; the README and the CSS guide say plainly that target size leaves with the
+theme.
 
 ## Summary
 
-Pending implementation. The audit is complete and recorded above; no remediation has landed.
+Twenty-six findings, all closed, plus five more the new gates found while closing them.
+
+**Registration.** A third `register/*` entry-point tier, generated per element plus an aggregate,
+with the side effect and the server guard that `define/*` deliberately does not have. `define/*` is
+unchanged. `check-exports.mjs` now imports every module of both tiers under a fabricated window and
+asserts that one registers and the other does not — the gate that would have caught the original
+bug, and it fails against a `register/` module that registers nothing. The generated Install block,
+nine guides, `reference/packages.mdx`, the packaged skill, and `context7.json` all say the same
+thing, and `custom-elements.json` carries a `timeless:registration` block so the documentation
+renderer reads the export name rather than rebuilding it from a tag.
+
+**Colour.** Three foreground tokens re-derived against every fill they can land on: `--ui-accent`,
+`--ui-fg-muted`, and the dark `--ui-danger`. The axe sweep runs both colour schemes over a painted
+surface, which is what makes the numbers real, and the guide pages joined the website sweep — where
+they immediately found a 4.48:1 inline `code` inside a link and a horizontally scrolling table with
+no keyboard access, both live on the site and both fixed.
+
+**Focus.** Toast pauses its dismiss timer while hovered or focused and hands focus to a surviving
+toast or back where it came from; Number Stepper, Select, and Combobox mark their controls
+`aria-disabled` rather than disabling the element the user is pressing. Four e2e assertions cover
+the two shapes.
+
+**Contracts.** Five `Page Up / Page Down` rows and Checkbox Group's whole table deleted as fiction;
+Menu Button's two arrow keys implemented, because the APG asks for them and the platform does not
+provide them; Toggle Group's pattern corrected from Button to Toolbar; Menu no longer rewrites an
+author's `disabled`; six new `accessibility()` blocks, and a reference page with no block now says
+what its absence means instead of ending on three generic lines. `check-keyboard-contracts.mjs`
+proves all 49 declared rows against a test that presses them, and refuses a component that declares
+navigation keys with no `keydown` handler.
+
+**Documentation reach.** `ui-textarea` has a home on the Field page, and `validate-docs.mjs` fails
+on any public root no catalog entry claims. The skill's contract reference gained every value set —
+40 of them, 1.8 kB — so an agent reading it offline or through context7 can enumerate permitted
+values without fetching a URL, and it now says outright that a root name is not a page slug, which
+is what sent agents to `/docs/components/textarea.md`.
+
+The audit harness was re-run against the fixed tree, from the freshly built documentation with the
+Install blocks taken verbatim and nothing rewritten. Light and dark are both clean at zero
+violations across all 49 components, the markup validator no longer throws on the three pages whose
+own markup contains an SVG, and focus survives both the toast timeout and the stepper bound.
 
 ## Validation results
 
-Pending implementation. The baseline gate results this audit ran against are under "Baseline".
+`pnpm qa` green end to end, in one run:
+
+| Gate                          | Before (`705ea85`)       | After                                                      |
+| ----------------------------- | ------------------------ | ---------------------------------------------------------- |
+| `pnpm test:e2e`               | 422 passed               | **599** passed — 114 dark-scheme axe scans, 19 guide pages |
+| `pnpm test`                   | 362 passed               | **364** passed                                             |
+| `pnpm typecheck`              | 0 errors                 | 0 errors                                                   |
+| `pnpm format:check`           | pass, 583 files          | pass, 612 files                                            |
+| `pnpm contracts:check`        | 4 scripts                | 4 scripts, plus `keyboard:validate` in the package build   |
+| `pnpm -F @apps/web test:dist` | 49 component routes      | 49 component and 19 guide routes, 69 llms.txt links        |
+| `pnpm publint`                | 1 suggestion per package | **All good** on all three                                  |
+| `pnpm attw`                   | pass                     | pass                                                       |
+
+New gates, each confirmed to fail on `705ea85` before being accepted:
+
+| Gate                                                   | Catches                                                         | Proven by                                                            |
+| ------------------------------------------------------ | --------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `check-exports.mjs` registration probe                 | a `register/*` module that registers nothing, and the inverse   | emptying `dist/register/ui-tabs.js` — fails                          |
+| `check-keyboard-contracts.mjs`                         | a declared key no test presses; navigation keys with no handler | restoring both drifts — fails on all five Page rows                  |
+| `a11y.spec.ts` in both schemes, over a painted surface | a colour token with one value                                   | un-pairing `--ui-accent` — fails on 8 dark routes                    |
+| `validate-docs.mjs` unclaimed-root check               | a public root no page documents                                 | removing `textarea` from the Field entry — fails                     |
+| `website.spec.ts` guide sweep                          | the 19 guides, in both themes                                   | found 2 live failures on first run                                   |
+| `core-only.spec.ts` over every example                 | a component that stops being usable without the theme           | found Colour Picker and Number Stepper, which the 4-item list missed |
+
+Re-run of the audit harness against the fixed tree, generated from the freshly built documentation
+with the Install blocks taken verbatim:
+
+| Check                                   | Before                           | After                                                     |
+| --------------------------------------- | -------------------------------- | --------------------------------------------------------- |
+| Production `vite build` of every page   | failed to resolve 4 stylesheets  | builds, 49 pages                                          |
+| Custom elements upgraded                | 0 of 23 following the docs       | 23 of 23                                                  |
+| `validateTimelessMarkup()`              | threw on 3 pages                 | no throw                                                  |
+| axe, light scheme, painted surface      | 0 violations                     | 0 violations                                              |
+| axe, dark scheme, painted surface       | 6 violations across 5 components | 0 violations                                              |
+| Focus after Toast timeout with focus in | `<body>`                         | still on the dismiss control, and the toast is still open |
+| Focus after Number Stepper hits `min`   | `<body>`                         | still on the step button                                  |
+
+One number moved the wrong way and was accepted: `performance-baselines.json` records Toast at +18%
+gzipped, for the timer pause and the focus return. The comment-driven growth that came with it was
+trimmed rather than baselined — see the constraints above.
 
 ---
 
 Generated by Claude Opus 5 (High)
+
+Implemented by Claude Opus 5 (High)

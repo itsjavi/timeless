@@ -635,6 +635,37 @@ test.describe('stories menu groups, checkable items, and submenus', () => {
     await expect(items.first()).toHaveAttribute('aria-disabled', 'true')
     await expect(items.nth(1)).toBeFocused()
   })
+
+  /*
+   * The APG Menu Button pattern asks for both vertical arrows, and neither has a declarative
+   * equivalent — Enter and Space open the surface through `popovertarget` before any script runs, so
+   * these two are the whole of what Timeless implements for this pattern.
+   */
+  test('opens a menu-button menu from either vertical arrow', async ({ page }) => {
+    await page.goto('/stories/library-navigation-menu-button--default/')
+    await expectRouteDocumentReady(page)
+
+    const trigger = page.getByRole('button', { name: 'Actions' })
+    const menu = page.locator('ui-menu-button ui-menu')
+    const items = menu.locator("[role^='menuitem']")
+
+    await trigger.focus()
+    await page.keyboard.press('ArrowDown')
+    await expect(menu).toBeVisible()
+    await expect(items.first()).toBeFocused()
+
+    await page.keyboard.press('Escape')
+    await expect(menu).toBeHidden()
+    await expect(trigger).toBeFocused()
+
+    // Arrow Up is the other end of the same menu, which is the only reason to have both keys. The
+    // story's last item is `aria-disabled`, so the landing place is the last *enabled* one.
+    await page.keyboard.press('ArrowUp')
+    await expect(menu).toBeVisible()
+    await expect(
+      menu.locator("[role^='menuitem']:not([aria-disabled='true'])").last(),
+    ).toBeFocused()
+  })
 })
 
 /**

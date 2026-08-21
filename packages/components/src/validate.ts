@@ -28,7 +28,8 @@ import {
  */
 export type ValidatableElement = {
   readonly tagName: string
-  readonly className: string
+  /** A string on HTML elements, an `SVGAnimatedString` on SVG ones. Real DOM satisfies both. */
+  readonly className: string | { readonly baseVal: string }
   readonly attributes: {
     readonly length: number
     item(index: number): { readonly name: string; readonly value: string } | null
@@ -158,11 +159,26 @@ function resolveComponent(element: ValidatableElement): ComponentName | null {
   if (asElement) return asElement
 
   let resolved: ComponentName | null = null
-  for (const className of element.className.split(/\s+/)) {
+  for (const className of classNames(element)) {
     const component = classRoots.get(className)
     if (component) resolved = component
   }
   return resolved
+}
+
+/**
+ * The element's classes, from an `SVGElement` as readily as an `HTMLElement`.
+ *
+ * `className` is a string on HTML and an `SVGAnimatedString` on SVG, so calling `.split` on it threw
+ * a `TypeError` on any page with an inline icon — including the documented markup for Color Picker,
+ * Sheet, and Toast. The unit tests could not see it, because the `ValidatableElement` stand-in they
+ * walk has a real string there.
+ */
+function classNames(element: ValidatableElement): readonly string[] {
+  const value = element.className
+  if (typeof value === 'string') return value.split(/\s+/)
+  const animated = value as { baseVal?: unknown } | null
+  return typeof animated?.baseVal === 'string' ? animated.baseVal.split(/\s+/) : []
 }
 
 function list(values: readonly string[]): string {

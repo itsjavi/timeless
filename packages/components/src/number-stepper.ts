@@ -20,6 +20,19 @@ export function findNumberStepperParts(host: HTMLElement): NumberStepperParts {
   }
 }
 
+/**
+ * `aria-disabled` rather than `disabled`: a step button reaches its bound while it is being pressed,
+ * and a real `disabled` on the focused element sends focus to `<body>`.
+ */
+function markUnavailable(button: HTMLButtonElement, unavailable: boolean): void {
+  if (unavailable) button.setAttribute('aria-disabled', 'true')
+  else button.removeAttribute('aria-disabled')
+}
+
+export function isNumberStepperButtonUnavailable(button: HTMLButtonElement): boolean {
+  return button.disabled || button.getAttribute('aria-disabled') === 'true'
+}
+
 export function syncNumberStepper(parts: NumberStepperParts): boolean {
   const { host, input, decrement, increment } = parts
   if (!input || !decrement || !increment) {
@@ -32,8 +45,8 @@ export function syncNumberStepper(parts: NumberStepperParts): boolean {
   const parsedMax = Number(input.max)
   const min = input.min === '' || Number.isNaN(parsedMin) ? -Infinity : parsedMin
   const max = input.max === '' || Number.isNaN(parsedMax) ? Infinity : parsedMax
-  decrement.disabled = unavailable || Number.isNaN(value) || value <= min
-  increment.disabled = unavailable || Number.isNaN(value) || value >= max
+  markUnavailable(decrement, unavailable || Number.isNaN(value) || value <= min)
+  markUnavailable(increment, unavailable || Number.isNaN(value) || value >= max)
   return true
 }
 
@@ -72,11 +85,16 @@ export function createNumberStepperElementClass(
       const target = event.target
       if (!(target instanceof Element)) return
 
-      const decrement = target.closest("button[data-ui-part~='decrement']")
-      const increment = target.closest("button[data-ui-part~='increment']")
-      if (decrement?.parentElement === this) stepNumberInput(parts.input, -1)
-      else if (increment?.parentElement === this) stepNumberInput(parts.input, 1)
-      else return
+      const decrement = target.closest<HTMLButtonElement>("button[data-ui-part~='decrement']")
+      const increment = target.closest<HTMLButtonElement>("button[data-ui-part~='increment']")
+      // An `aria-disabled` button still activates, so the no-op has to live here.
+      if (decrement?.parentElement === this) {
+        if (isNumberStepperButtonUnavailable(decrement)) return
+        stepNumberInput(parts.input, -1)
+      } else if (increment?.parentElement === this) {
+        if (isNumberStepperButtonUnavailable(increment)) return
+        stepNumberInput(parts.input, 1)
+      } else return
 
       syncNumberStepper(parts)
     }

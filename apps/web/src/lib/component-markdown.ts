@@ -16,6 +16,7 @@ import { getExample, renderExample } from '@timelessui/examples'
 import {
   declarationsFor,
   documentedContracts,
+  registrationFor,
   stylingFor,
   type DocumentedContract,
 } from './component-docs.ts'
@@ -90,9 +91,10 @@ async function renderComponentMarkdown(example: TimelessExample): Promise<string
   const styling = await stylingFor(example.styles, contracts)
   const enhanced = example.definitions.length > 0
 
+  const registrations = example.definitions.map((tag) => registrationFor(tag))
   const imports = [
     ...example.styles.map((style) => `import '@timelessui/components/css/${style}'`),
-    ...example.definitions.map((tag) => `import '@timelessui/components/define/${tag}'`),
+    ...registrations.map((registration) => `import '${registration.sideEffect}'`),
   ].join('\n')
 
   const partContracts = contracts.filter(({ contract }) => contract.parts.length > 0)
@@ -126,6 +128,27 @@ async function renderComponentMarkdown(example: TimelessExample): Promise<string
 
   lines.push('## Install', '')
   lines.push(...fence('js', imports))
+
+  if (enhanced) {
+    lines.push(
+      'A `register/` import is a side effect: it defines the element as the module evaluates, so it',
+      'has to run in code the browser loads. To register explicitly instead — to control the timing,',
+      'or to define into another window — call the function from the matching `define/` entry point,',
+      'which registers nothing on its own:',
+      '',
+    )
+    lines.push(
+      ...fence(
+        'js',
+        registrations
+          .map(
+            (registration) =>
+              `import { ${registration.export} } from '${registration.module}'\n${registration.export}()`,
+          )
+          .join('\n'),
+      ),
+    )
+  }
 
   if (example.script) {
     lines.push('## Consumer wiring', '')
@@ -276,6 +299,22 @@ async function renderComponentMarkdown(example: TimelessExample): Promise<string
     'your accessible names — those depend on your content.',
     '',
   )
+  /*
+   * A component with no `accessibility()` block used to end the page here, on three generic lines
+   * that told the reader nothing about *this* component. Saying what the absence means is more
+   * useful than saying nothing, and it is also falsifiable: if a component grows a keyboard contract,
+   * this paragraph stops being true and the block has to appear.
+   */
+  if (!accessibility.some(({ contract }) => contract.accessibility)) {
+    lines.push(
+      'This component declares no keyboard contract, because it has none of its own: the markup above',
+      'is native elements and native ARIA, and everything a keyboard or a screen reader does with it',
+      'comes from the platform. Nothing here manages focus, and nothing here adds a role you did not',
+      'author. So the accessibility of this component is the accessibility of the markup — which is why',
+      'the markup is the part worth copying exactly.',
+      '',
+    )
+  }
   for (const { label, contract } of accessibility) {
     const a11y = contract.accessibility
     if (!a11y) continue

@@ -38,12 +38,16 @@ destructive actions, and most surfaces are grayscale with small changes in light
 - **Surface:** `--ui-bg-surface`, light `#ffffff`, dark `#19191d`.
 - **Raised surface:** `--ui-bg-surface-raised`, light `#f1f2f4`, dark `#24242a`.
 - **Text:** `--ui-fg`, light `#17171a`, dark `#f4f4f5`.
-- **Muted text:** `--ui-fg-muted`, light `#666a73`, dark `#a5a7b0`.
+- **Muted text:** `--ui-fg-muted`, light `#5c6069`, dark `#a5a7b0`. Chosen to clear 4.5:1 on every
+  surface _and_ on every soft variant fill over it, not only on a plain page.
 - **Subtle line:** `--ui-line`, light `#d7d9de`, dark `#343641`.
 - **Strong line:** `--ui-line-strong`, light `#b8bcc5`, dark `#505360`.
-- **Accent:** `#0064d8`.
-- **Accent hover:** `--ui-accent-hover`, `#0045b7`.
-- **Accent active:** `--ui-accent-active`, `#005cd7`.
+- **Accent:** `--ui-accent`, light `#0056bd`, dark `#66b0ff`.
+- **Accent hover:** `--ui-accent-hover`, light `#004299`, dark `#8ec5ff`.
+- **Accent active:** `--ui-accent-active`, light `#004ea9`, dark `#7db9ff`.
+- The three accent **foreground** tokens are paired because accent text and accent borders sit on
+  the page. The dark branches move away from the surface where the light ones move toward it. Accent
+  **fills** stay scheme-independent: they sit behind a fixed light foreground.
 - **Accent fills:** `--ui-bg-accent-hover` and `--ui-bg-accent-active` mix `#0045b7` and `#0050ad`
   subtly into `#0064d8` with `color-mix()` in OKLab, rather than swapping to a flat darker blue.
 

@@ -1,5 +1,5 @@
 ---
-status: Proposed
+status: Implemented
 ---
 
 # Milestone 030 Plan: End-to-End Audit and WCAG 2.2 AA Conformance

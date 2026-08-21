@@ -8,6 +8,7 @@ import {
   documentedContracts,
   inlineCode,
   inlineMarkdown,
+  registrationFor,
   stylingFor,
 } from '../../../lib/component-docs'
 import { storyUrl } from '../../../lib/stories'
@@ -24,10 +25,14 @@ const declarations = declarationsFor(example.definitions)
 const styling = await stylingFor(example.styles, contracts)
 const enhanced = example.definitions.length > 0
 
+const registrations = example.definitions.map((tag) => registrationFor(tag))
 const imports = [
   ...example.styles.map((style) => `import '@timelessui/components/css/${style}'`),
-  ...example.definitions.map((tag) => `import '@timelessui/components/define/${tag}'`),
+  ...registrations.map((registration) => `import '${registration.sideEffect}'`),
 ].join('\n')
+const explicitRegistration = registrations
+  .map((registration) => `import { ${registration.export} } from '${registration.module}'\n${registration.export}()`)
+  .join('\n')
 
 const attributeContracts = contracts.filter(({ contract }) => contract.attributes.length > 0)
 const partContracts = contracts.filter(({ contract }) => contract.parts.length > 0)
@@ -115,6 +120,20 @@ const valueList = (values: readonly string[] | undefined, fallbackType: string) 
 
   <h2 id="install">Install</h2>
   <Code code={imports} lang="js" title="Styles and registration" />
+
+  {
+    enhanced ? (
+      <>
+        <p>
+          A <code>register/</code> import is a side effect: it defines the element as the module
+          evaluates, so it has to run in code the browser loads. To register explicitly instead — to
+          control the timing, or to define into another window — call the function from the matching{' '}
+          <code>define/</code> entry point, which registers nothing on its own:
+        </p>
+        <Code code={explicitRegistration} lang="js" title="Explicit registration" />
+      </>
+    ) : null
+  }
 
   {
     example.script ? (
@@ -349,6 +368,17 @@ const valueList = (values: readonly string[] | undefined, fallbackType: string) 
     state and keyboard coordination the platform does not already provide, and it never supplies your
     accessible names — those depend on your content.
   </p>
+  {
+    accessibility.length === 0 ? (
+      <p>
+        This component declares no keyboard contract, because it has none of its own: the markup above
+        is native elements and native ARIA, and everything a keyboard or a screen reader does with it
+        comes from the platform. Nothing here manages focus, and nothing here adds a role you did not
+        author. So the accessibility of this component is the accessibility of the markup — which is
+        why the markup is the part worth copying exactly.
+      </p>
+    ) : null
+  }
   {
     accessibility.map(({ label, contract }) => (
       <>

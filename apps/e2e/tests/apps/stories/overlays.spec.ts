@@ -289,6 +289,41 @@ test.describe('stories progressive overlays', () => {
     await expect(trigger).toBeFocused()
   })
 
+  /*
+   * `activation="manual"` is the only reason the `Enter / Space` row exists on Tabs, and nothing
+   * pressed either key until `check-keyboard-contracts.mjs` said so.
+   */
+  test('moves focus without selecting until Enter or Space under manual activation', async ({
+    page,
+  }) => {
+    await page.goto('/stories/library-overlays-tabs--product-settings/')
+    await expectRouteDocumentReady(page)
+
+    // The story opens on Usage, vertical, with a disabled Billing tab after the set.
+    const overview = page.getByRole('tab', { name: 'Overview' })
+    const usage = page.getByRole('tab', { name: 'Usage' })
+
+    await usage.focus()
+    await expect(usage).toHaveAttribute('aria-selected', 'true')
+
+    // Arrow moves focus and leaves selection where it was: that is what manual means.
+    await page.keyboard.press('ArrowUp')
+    await expect(overview).toBeFocused()
+    await expect(overview).toHaveAttribute('aria-selected', 'false')
+    await expect(usage).toHaveAttribute('aria-selected', 'true')
+
+    await page.keyboard.press('Enter')
+    await expect(overview).toHaveAttribute('aria-selected', 'true')
+    await expect(usage).toHaveAttribute('aria-selected', 'false')
+
+    await page.keyboard.press('ArrowDown')
+    await expect(usage).toBeFocused()
+    await expect(usage).toHaveAttribute('aria-selected', 'false')
+
+    await page.keyboard.press(' ')
+    await expect(usage).toHaveAttribute('aria-selected', 'true')
+  })
+
   test('switches tabs and hides inactive panels', async ({ page }) => {
     await page.goto('/stories/library-overlays-tabs--default/')
     await expectRouteDocumentReady(page)
@@ -457,6 +492,55 @@ test.describe('stories progressive overlays', () => {
 
     await toasts.nth(2).getByRole('button', { name: 'Dismiss notification' }).click()
     await expect(toasts.nth(2)).toBeHidden()
+  })
+
+  /*
+   * SC 2.2.1. The default limit is 5000 ms and the timer has to stop while someone is reading the
+   * toast or reaching for its dismiss control — otherwise the control disappears mid-reach, which is
+   * also how focus ended up on `<body>`.
+   */
+  test('suspends the dismiss timer while a toast is hovered or holds focus @slow', async ({
+    page,
+  }) => {
+    await page.goto('/#/canvas/library-feedback-toast--toast-api')
+    await expectRouteDocumentReady(page)
+
+    const trigger = page.locator('[data-demo-toast]')
+    await trigger.click()
+    const toast = page.locator('ui-toast').first()
+    const dismiss = toast.getByRole('button', { name: 'Dismiss notification' })
+    await expect(toast).toBeVisible()
+
+    await toast.hover()
+    await page.waitForTimeout(6000)
+    await expect(toast).toBeVisible()
+
+    await dismiss.focus()
+    await page.mouse.move(0, 0)
+    await page.waitForTimeout(6000)
+    await expect(toast).toBeVisible()
+    await expect(dismiss).toBeFocused()
+  })
+
+  test('keeps focus somewhere deliberate when a focused toast is dismissed', async ({ page }) => {
+    await page.goto('/#/canvas/library-feedback-toast--toast-api')
+    await expectRouteDocumentReady(page)
+
+    const trigger = page.locator('[data-demo-toast]')
+    await trigger.click()
+    await trigger.click()
+    const toasts = page.locator('ui-toast')
+    await expect(toasts).toHaveCount(2)
+
+    // Dismissing a toast that holds focus hands focus to a surviving toast, not to `<body>`.
+    await toasts.nth(0).getByRole('button', { name: 'Dismiss notification' }).click()
+    await expect(toasts.nth(0)).toBeHidden()
+    await expect(toasts.nth(1).getByRole('button', { name: 'Dismiss notification' })).toBeFocused()
+
+    // Dismissing the last one returns focus to whatever the user came from.
+    await toasts.nth(1).getByRole('button', { name: 'Dismiss notification' }).click()
+    await expect(toasts.nth(1)).toBeHidden()
+    await expect(page.locator('body')).not.toBeFocused()
   })
 })
 

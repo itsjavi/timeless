@@ -43,11 +43,12 @@ import '@timelessui/components/css/tokens.css'
 import '@timelessui/components/css/core/tabs.css'
 import '@timelessui/components/css/themes/atmosphere/tokens.css'
 import '@timelessui/components/css/themes/atmosphere/tabs.css'
-import '@timelessui/components/define/ui-tabs'
+import '@timelessui/components/register/ui-tabs'
 ```
 
-CSS and class-only imports are safe during server rendering. Keep `define/*` imports in browser-only
-modules, because they call `customElements.define`.
+CSS, class, and `define/*` imports are safe during server rendering. Keep `register/*` imports in
+code the browser loads, because that is where they call `customElements.define` — on the server they
+are inert, so a server-only import registers nothing.
 
 ## Markup and hydration
 

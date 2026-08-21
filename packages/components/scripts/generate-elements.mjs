@@ -56,8 +56,13 @@ for (const item of elements) {
     resolve(packageRoot, `src/define/${item.tag}.ts`),
     `import { ${item.factory} } from '../${item.module}'\nimport { defineRegisteredElement } from './registry'\n\n${declaration} {\n  return defineRegisteredElement('${item.tag}', ${item.factory}, targetWindow)\n}\n`,
   )
+  outputs.set(
+    resolve(packageRoot, `src/register/${item.tag}.ts`),
+    `import { ${item.defineExport} } from '../define/${item.tag}'\nimport { registerInBrowser } from './browser'\n\nregisterInBrowser(${item.defineExport})\n`,
+  )
 }
 outputs.set(resolve(packageRoot, 'src/define.ts'), createAggregateDefine())
+outputs.set(resolve(packageRoot, 'src/register.ts'), createAggregateRegister())
 for (const [module, source] of createValues()) {
   outputs.set(
     resolve(packageRoot, `src/values/${module}.ts`),
@@ -89,7 +94,7 @@ for (const [path, source] of [
 
 outputs.set(
   resolve(packageRoot, 'skills/using-timeless-ui/reference/contracts.md'),
-  await formatted('contracts.md', createSkillContracts(components)),
+  await formatted('contracts.md', createSkillContracts(components, valueSets)),
 )
 outputs.set(
   resolve(packageRoot, 'skills/using-timeless-ui/reference/grammar.md'),
@@ -171,6 +176,13 @@ function createManifest() {
           name: item.classExport,
           customElement: true,
           tagName: item.tag,
+          // The two registration entry points, so a consumer of the manifest — the documentation
+          // renderer included — never has to rebuild an export name from a tag by hand.
+          'timeless:registration': {
+            sideEffect: `@timelessui/components/register/${item.tag}`,
+            module: `@timelessui/components/define/${item.tag}`,
+            export: item.defineExport,
+          },
           attributes: item.attributes.map((attribute) => manifestAttribute(attribute)),
           members: item.attributes.flatMap((attribute) => manifestMembers(attribute)),
           events: item.events.map((event) => ({
@@ -408,6 +420,10 @@ function createAggregateDefine() {
   const exports = elements.map((item) => `  ${item.defineExport},`).join('\n')
   const calls = elements.map((item) => `  ${item.defineExport}(targetWindow)`).join('\n')
   return `${imports}\n\nexport {\n${exports}\n}\n\nexport function defineTimelessElements(targetWindow: Window = window): void {\n${calls}\n}\n`
+}
+
+function createAggregateRegister() {
+  return `import { defineTimelessElements } from './define'\nimport { registerInBrowser } from './register/browser'\n\nregisterInBrowser(defineTimelessElements)\n`
 }
 
 function createComponentContracts() {

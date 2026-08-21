@@ -585,14 +585,22 @@ function enhanceMenuGroups(groups: readonly MenuGroupLike[], generatedIdPrefix: 
   })
 }
 
+/*
+ * `disabled` is left exactly as authored.
+ *
+ * This used to delete it and write `aria-disabled="true"` in its place, which produced the treatment
+ * the APG asks for — a disabled command stays arrow-reachable, because a command you cannot use is
+ * easier to understand than one that is not there. It also meant the markup that shipped was not the
+ * markup the author wrote: the pre-JavaScript state was a genuinely unfocusable item, and consumer
+ * CSS keyed on `:disabled` stopped matching the moment the element upgraded.
+ *
+ * So the treatment is documented instead of imposed. `aria-disabled="true"` is what the Menu page and
+ * the example factories author, `isMenuItemDisabled` honours both spellings, and an authored
+ * `disabled` item is skipped rather than silently rewritten.
+ */
 function syncMenuItemSemantics(item: MenuItemLike): void {
   if (!menuCheckableRole(item)) {
     item.setAttribute('role', 'menuitem')
-  }
-
-  if (item.hasAttribute('disabled')) {
-    item.removeAttribute('disabled')
-    item.setAttribute('aria-disabled', 'true')
   }
 }
 

@@ -434,7 +434,13 @@ export function createListbox(props: ListboxProps): string {
 }
 
 function createMenuItem(item: MenuItem, indent = ''): string {
-  const disabled = item.disabled ? ' disabled' : ''
+  /*
+   * `aria-disabled`, not `disabled`. The APG keeps an unavailable command arrow-reachable — a command
+   * you cannot run is easier to understand than one that is not there — and a real `disabled` button
+   * is not focusable, so the arrows would skip it. Timeless used to rewrite the attribute to get this
+   * behavior; authoring it is the honest version, and it survives with scripting off.
+   */
+  const disabled = item.disabled ? ' aria-disabled="true"' : ''
   const role = ` role="${menuItemRole(item)}"`
   const checked = item.checkable || item.checked ? ` aria-checked="${item.checked === true}"` : ''
   const separator = item.separatorBefore

@@ -111,4 +111,35 @@ describe('validateTimelessMarkup', () => {
     expect(problem?.component).toBe('button')
     expect(problem?.value).toBe('xl')
   })
+
+  /*
+   * An `SVGElement` reports `className` as an `SVGAnimatedString`, and calling `.split` on it threw a
+   * `TypeError` that took down the whole walk — on Color Picker, Sheet, and Toast, whose own documented
+   * markup contains an inline icon. The stand-in above cannot reproduce it, because its `className` is
+   * a real string, so this case models the SVG shape explicitly.
+   */
+  it('walks past an SVG element rather than throwing on its className', () => {
+    const svg = {
+      tagName: 'svg',
+      className: { baseVal: 'decoration' },
+      attributes: {
+        length: 1,
+        item: (index: number) => (index === 0 ? { name: 'aria-hidden', value: 'true' } : null),
+      },
+    }
+    const target = element('button', 'ui-button', { 'data-ui-size': 'xl' })
+
+    const problems = validateTimelessMarkup({
+      root: {
+        querySelectorAll: () => ({
+          length: 2,
+          item: (index: number) => [svg, target][index] ?? null,
+        }),
+      },
+      log: false,
+    })
+
+    expect(problems).toHaveLength(1)
+    expect(problems[0]?.component).toBe('button')
+  })
 })

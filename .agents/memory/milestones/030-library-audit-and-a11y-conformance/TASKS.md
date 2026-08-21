@@ -36,124 +36,146 @@
 
 ## 1. Registration, and the prose that describes it
 
-- [ ] Decide between self-registering `define/*` modules and a named-import-plus-call contract;
+- [x] Decide between self-registering `define/*` modules and a named-import-plus-call contract;
       record the decision and the rejected option in RESULTS.md.
-- [ ] Apply the decision to `src/define/*.ts` (and `sideEffects` in
+- [x] Apply the decision to `src/define/*.ts` (and `sideEffects` in
       `packages/components/package.json` if the modules become side-effectful).
-- [ ] Update the generated Install block in `apps/web/src/lib/component-markdown.ts` so all
+- [x] Update the generated Install block in `apps/web/src/lib/component-markdown.ts` so all
       twenty-three custom-element pages emit working registration.
-- [ ] Update `getting-started/installation.mdx`, `getting-started/quick-start.mdx`, and
+- [x] Update `getting-started/installation.mdx`, `getting-started/quick-start.mdx`, and
       `concepts/index.mdx`.
-- [ ] Update the six framework guides: `react`, `preact`, `vue`, `svelte`, `solid`, `vanilla`, and
+- [x] Update the six framework guides: `react`, `preact`, `vue`, `svelte`, `solid`, `vanilla`, and
       the `astro` guide's inline script.
-- [ ] Correct `reference/packages.mdx`, which claims `define/ui-{element}` "Calls
+- [x] Correct `reference/packages.mdx`, which claims `define/ui-{element}` "Calls
       `customElements.define`".
-- [ ] Update the packaged skill's registration rule and `context7.json` rule 10 to state that
+- [x] Update the packaged skill's registration rule and `context7.json` rule 10 to state that
       registration is a call, not an import, if that is the decision.
-- [ ] Add an e2e or unit gate that consumes the packed package, follows the documented registration
+- [x] Add an e2e or unit gate that consumes the packed package, follows the documented registration
       instructions verbatim, and asserts every element upgrades. Confirm it fails against today's
       `main`.
 
 ## 2. The dark scheme
 
-- [ ] Give `--ui-accent` a `light-dark()` pair whose dark branch clears 4.5:1 on `--ui-bg-surface`,
+- [x] Give `--ui-accent` a `light-dark()` pair whose dark branch clears 4.5:1 on `--ui-bg-surface`,
       `--ui-bg-surface-raised`, and `--ui-accent-soft` over each of them.
-- [ ] Pair `--ui-accent-hover` and `--ui-accent-active`, and confirm the dark branches move away
+- [x] Pair `--ui-accent-hover` and `--ui-accent-active`, and confirm the dark branches move away
       from the surface rather than toward it.
-- [ ] Re-measure `--ui-focus` against SC 1.4.11's 3:1 in the dark scheme on all three surface
+- [x] Re-measure `--ui-focus` against SC 1.4.11's 3:1 in the dark scheme on all three surface
       tokens, and pair it independently of `--ui-accent` if the derivation cannot clear it.
-- [ ] Confirm `--ui-bg-accent`, `--ui-bg-accent-hover`, `--ui-bg-accent-active`, and
+- [x] Confirm `--ui-bg-accent`, `--ui-bg-accent-hover`, `--ui-bg-accent-active`, and
       `--ui-bg-danger` stay scheme-independent, and say why in the token file.
-- [ ] Extend `apps/e2e/tests/apps/stories/a11y.spec.ts` to run every route in both `light` and
+- [x] Extend `apps/e2e/tests/apps/stories/a11y.spec.ts` to run every route in both `light` and
       `dark`.
-- [ ] Paint a surface in the sweep, or assert `body` has a token background, so axe stops blending
+- [x] Paint a surface in the sweep, or assert `body` has a token background, so axe stops blending
       dark text over the white it assumes.
-- [ ] Confirm the extended sweep fails on today's `main` for Tabs, Listbox, Menu, Card, and Text and
+- [x] Confirm the extended sweep fails on today's `main` for Tabs, Listbox, Menu, Card, and Text and
       code, and passes after the token change.
-- [ ] Add the guide pages under `/docs/` to the website axe sweep.
+- [x] Add the guide pages under `/docs/` to the website axe sweep.
 
 ## 3. Focus preservation and timing
 
-- [ ] Pause the Toast dismiss timer while the toast is hovered or contains focus, and restart it
+- [x] Pause the Toast dismiss timer while the toast is hovered or contains focus, and restart it
       when both end.
-- [ ] Move focus deliberately when a toast holding focus is dismissed, rather than letting it fall
+- [x] Move focus deliberately when a toast holding focus is dismissed, rather than letting it fall
       to `<body>`.
-- [ ] Decide whether 5000 ms remains the default, and document the SC 2.2.1 position on the Toast
+- [x] Decide whether 5000 ms remains the default, and document the SC 2.2.1 position on the Toast
       page either way.
-- [ ] Replace `decrement.disabled` / `increment.disabled` in `syncNumberStepper` with
+- [x] Replace `decrement.disabled` / `increment.disabled` in `syncNumberStepper` with
       `aria-disabled="true"` plus a no-op activation, so the button keeps focus at the bounds.
-- [ ] Check every other place a public component sets `disabled`, `hidden`, or `popover` closed on
+- [x] Check every other place a public component sets `disabled`, `hidden`, or `popover` closed on
       an element that may hold focus.
-- [ ] Add e2e assertions: focus survives Toast dismissal, and survives Number Stepper reaching `min`
+- [x] Add e2e assertions: focus survives Toast dismissal, and survives Number Stepper reaching `min`
       and `max`.
 
 ## 4. Declared keyboard contracts
 
-- [ ] Decide per collection whether `Page Up` / `Page Down` is implemented or the row is deleted:
+- [x] Decide per collection whether `Page Up` / `Page Down` is implemented or the row is deleted:
       Toolbar, Radio Group, Checkbox Group, Listbox, Toggle Group.
-- [ ] If implemented, route the linear collections through page handling in
+- [x] If implemented, route the linear collections through page handling in
       `collectionNavigationTarget`; if deleted, remove the row from `COLLECTION_KEYS`.
-- [ ] Resolve `gridCollectionNavigationTarget`: give it a caller or stop exporting it from
+- [x] Resolve `gridCollectionNavigationTarget`: give it a caller or stop exporting it from
       `index.ts`.
-- [ ] Decide Checkbox Group's contract. Deleting the arrow, `Home`/`End`, and Page rows and stating
+- [x] Decide Checkbox Group's contract. Deleting the arrow, `Home`/`End`, and Page rows and stating
       in `notes` that each checkbox is its own tab stop is the likely answer.
-- [ ] Add `packages/components/scripts/check-keyboard-contracts.mjs`, or an equivalent e2e sweep,
+- [x] Add `packages/components/scripts/check-keyboard-contracts.mjs`, or an equivalent e2e sweep,
       that fails when a key declared in `accessibility().keys` is not exercised by a test.
-- [ ] Confirm the new gate fails on today's `main` for the Page rows and for Checkbox Group.
+- [x] Confirm the new gate fails on today's `main` for the Page rows and for Checkbox Group.
 
 ## 5. Contracts that describe the wrong thing
 
-- [ ] Change Toggle Group's declared pattern from `button` to `toolbar`, and reconcile the note with
+- [x] Change Toggle Group's declared pattern from `button` to `toolbar`, and reconcile the note with
       the `role="toolbar"` host it actually renders.
-- [ ] Stop Menu mutating an author's `disabled` into `aria-disabled`. Document
+- [x] Stop Menu mutating an author's `disabled` into `aria-disabled`. Document
       `aria-disabled="true"` as the authored form, update the Menu markup fence and the example
       factory, and decide what the component does when it meets a real `disabled` item.
-- [ ] Reconcile Toolbar with Menu: either Toolbar keeps disabled items reachable too, or both notes
+- [x] Reconcile Toolbar with Menu: either Toolbar keeps disabled items reachable too, or both notes
       explain why they differ.
-- [ ] Add `accessibility()` blocks for Number Stepper (Spinbutton), Color Picker, Toast, Toaster,
+- [x] Add `accessibility()` blocks for Number Stepper (Spinbutton), Color Picker, Toast, Toaster,
       Switch, and Alert.
-- [ ] Decide whether the remaining native-semantics roots get a short block or an honest "the
+- [x] Decide whether the remaining native-semantics roots get a short block or an honest "the
       platform owns all of this" line, so a reference page never renders the generic paragraph
       alone.
-- [ ] Fix the plural in `COLLECTION_KEYS` so the published contract stops reading "checkboxs".
-- [ ] Regenerate and confirm `contracts.ts`, `custom-elements.json`, `web-types.json`, the editor
+- [x] Fix the plural in `COLLECTION_KEYS` so the published contract stops reading "checkboxs".
+- [x] Regenerate and confirm `contracts.ts`, `custom-elements.json`, `web-types.json`, the editor
       data, `llms-full.txt`, and the packaged skill all carry the corrections.
 
 ## 6. Documentation reach and release coupling
 
-- [ ] Give `ui-textarea` a documented home: its own catalog entry, or a Field page section that
+- [x] Give `ui-textarea` a documented home: its own catalog entry, or a Field page section that
       names the root and its `data-ui-size`.
-- [ ] Extend `validate-agent-surfaces.mjs` (or `validate-docs.mjs`) to fail when a registry root is
+- [x] Extend `validate-agent-surfaces.mjs` (or `validate-docs.mjs`) to fail when a registry root is
       named on no documentation page. Confirm it fails on today's `main` for `ui-textarea`.
-- [ ] Add the documentation page slug to every row of the skill's `reference/contracts.md`, so an
+- [x] Add the documentation page slug to every row of the skill's `reference/contracts.md`, so an
       agent reading a root name can reach its contract without guessing a URL.
-- [ ] Make the component contract pages reachable by context7: add the generated Markdown to a
+- [x] Make the component contract pages reachable by context7: add the generated Markdown to a
       committed path inside an indexed folder, or point `context7.json` at whatever path it lands
       in.
-- [ ] Decide how to stop the deployed docs promising unpublished components — gate the gh-pages
+- [x] Decide how to stop the deployed docs promising unpublished components — gate the gh-pages
       deploy on a tag, or mark unpublished components on the page and in the Install block. Record
       the choice in RESULTS.md.
-- [ ] Fix `validateTimelessMarkup()` so an `SVGElement`'s `className` no longer throws, and add a
+- [x] Fix `validateTimelessMarkup()` so an `SVGElement`'s `className` no longer throws, and add a
       unit test that walks real DOM containing an inline `<svg>`.
-- [ ] Rewrite `repository.url` as `git+https://github.com/itsjavi/timeless.git` in the three
+- [x] Rewrite `repository.url` as `git+https://github.com/itsjavi/timeless.git` in the three
       publishable manifests.
 
 ## 7. Precision fixes in prose
 
-- [ ] Correct the README's theme-free claim for the anchored option surfaces, or add a named
+- [x] Correct the README's theme-free claim for the anchored option surfaces, or add a named
       `core-exempt:` for `min-inline-size: anchor-size(width)` so the promise holds as written.
-- [ ] Document the SC 2.5.8 spacing exemption the checkbox, radio, and colour-picker slider targets
+- [x] Document the SC 2.5.8 spacing exemption the checkbox, radio, and colour-picker slider targets
       depend on, so a consumer tightening the gap knows the cost.
-- [ ] Extend `core-only.spec.ts` beyond `select`, `listbox`, `menu-button`, and `dialog` — Color
+- [x] Extend `core-only.spec.ts` beyond `select`, `listbox`, `menu-button`, and `dialog` — Color
       Picker and Number Stepper are the two where dropping the theme introduces a `target-size`
       violation.
 
+## 7b. Found during implementation
+
+Work the plan did not anticipate, all of it surfaced by the gates this milestone added.
+
+- [x] Implement `Arrow Down` and `Arrow Up` on Menu Button. `check-keyboard-contracts.mjs` reported
+      the declared `Enter / Space / Arrow Down` row against a module with no `keydown` handler, and
+      driving it confirmed Arrow Down did nothing — Enter and Space came from `popovertarget` all
+      along. The APG pattern asks for both arrows, so both are implemented and the row is split.
+- [x] Add the two keyboard tests the new gate found missing: Tabs under `activation="manual"`, and
+      Home/End on Toggle Group.
+- [x] Fix `--sl-color-accent` on the documentation site. The new guide sweep found inline `code`
+      inside a link at 4.48:1 against `--sl-color-bg-inline-code` — two hundredths under SC 1.4.3.
+- [x] Fix the Entrypoints table on `/docs/reference/packages/`, which was an unfocusable horizontal
+      scroll container (SC 2.1.1). Starlight's `code { overflow-wrap: break-word }` was overriding
+      the cell's `anywhere`, so one long specifier pinned the column at 498px. Pre-existing, and
+      live.
+- [x] Use `aria-disabled` for the Select and Combobox clear controls, which had the same shape as
+      the Number Stepper bound: activating the control is what makes it unavailable.
+- [x] Re-baseline `performance-baselines.json`. Toast grew 18% gzipped for the timer pause and focus
+      return, which is real behavior; a long comment in the shared `collection.ts` had inflated
+      seven unrelated entrypoints, and was trimmed rather than baselined.
+
 ## 8. Close out
 
-- [ ] Re-run the audit harness against the fixed tree and confirm every finding is closed.
-- [ ] Run `pnpm qa` and record what it said in RESULTS.md.
-- [ ] Set `status: Implemented` in PLAN.md and add the `Implemented by` footer to RESULTS.md.
-- [ ] Record decisions, trade-offs, and results in RESULTS.md.
+- [x] Re-run the audit harness against the fixed tree and confirm every finding is closed.
+- [x] Run `pnpm qa` and record what it said in RESULTS.md.
+- [x] Set `status: Implemented` in PLAN.md and add the `Implemented by` footer to RESULTS.md.
+- [x] Record decisions, trade-offs, and results in RESULTS.md.
 
 ---
 

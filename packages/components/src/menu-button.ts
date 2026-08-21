@@ -15,7 +15,7 @@ import {
   syncFloatingAnchor,
   type FloatingPlacement,
 } from './floating'
-import { findMenuItems, firstEnabledMenuItemIndex } from './menu'
+import { findMenuItems, firstEnabledMenuItemIndex, lastEnabledMenuItemIndex } from './menu'
 import { isPopoverOpen } from './popover'
 import { queryOwnedPart } from './parts'
 
@@ -94,6 +94,8 @@ export function createMenuButtonElementClass(
 
     #syncingOpen = false
     #toggleSource: 'api' | 'trigger' = 'api'
+    /** Which end of the menu the next open lands on. Arrow Up asks for the last item. */
+    #openEdge: 'first' | 'last' = 'first'
 
     private handleFloatingEnvironmentChange = (): void => {
       this.updateFloatingPosition()
@@ -167,6 +169,24 @@ export function createMenuButtonElementClass(
       this.openMenu('trigger')
     }
 
+    /*
+     * The vertical arrows, which the APG Menu Button pattern asks for and the platform does not
+     * provide. Enter and Space open the menu through `popovertarget` before any script runs; Arrow
+     * Down and Arrow Up have no declarative equivalent, so they are the one part of this pattern's
+     * keyboard contract Timeless has to implement. Arrow Up lands on the last item, which is the
+     * difference between the two — otherwise there would be no reason to have both.
+     */
+    @listen('keydown')
+    handleKeyDown(event: KeyboardEvent): void {
+      const trigger = this.closestTarget<HTMLElement>(event, TRIGGER_SELECTOR)
+      if (trigger !== this.trigger || this.open) return
+      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+
+      event.preventDefault()
+      this.#openEdge = event.key === 'ArrowDown' ? 'first' : 'last'
+      this.openMenu('trigger')
+    }
+
     private handleToggle = (event: Event): void => {
       if (event.target !== this.content || !this.content) return
 
@@ -213,7 +233,11 @@ export function createMenuButtonElementClass(
       const items = menu ? findMenuItems(menu) : findMenuItems(content)
       // A disabled first item is still reachable with the arrow keys; it is just not where opening
       // the menu should land, because focus would arrive on a command that cannot be run.
-      const index = firstEnabledMenuItemIndex(items)
+      const index =
+        this.#openEdge === 'last'
+          ? lastEnabledMenuItemIndex(items)
+          : firstEnabledMenuItemIndex(items)
+      this.#openEdge = 'first'
       if (index === null) return
       items[index]?.focus()
     }

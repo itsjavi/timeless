@@ -139,12 +139,10 @@ ARIA state remain authoritative. `data-ui-internal-*` is private and must not ap
 markup.
 
 Progressive custom elements are registered from an explicit entrypoint so the package root remains
-side-effect free:
+side-effect free. `register/*` registers as it is imported:
 
 ```ts
-import { defineTimelessElements } from '@timelessui/components/define'
-
-defineTimelessElements()
+import '@timelessui/components/register'
 ```
 
 Importing a class does not register it. Register only the element that an application needs when a
@@ -152,9 +150,17 @@ smaller dependency boundary matters:
 
 ```ts
 import { UIComboboxElement } from '@timelessui/components/combobox'
-import { defineComboboxElement } from '@timelessui/components/define/ui-combobox'
 import '@timelessui/components/css/core/combobox.css'
 import '@timelessui/components/css/themes/atmosphere/combobox.css'
+import '@timelessui/components/register/ui-combobox'
+```
+
+`register/*` is inert on the server, so it belongs in code the browser loads. To register explicitly
+instead — to control the timing, or to define into another window — call the function from the
+matching `define/*` entrypoint, which has no side effect of its own:
+
+```ts
+import { defineComboboxElement } from '@timelessui/components/define/ui-combobox'
 
 defineComboboxElement()
 ```

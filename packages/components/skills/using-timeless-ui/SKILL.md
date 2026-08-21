@@ -72,10 +72,14 @@ So:
   Never gate authored markup behind a loaded state, and never expect a component to generate visual
   anatomy for you.
 - **Import stylesheets from `@timelessui/components/css/<file>` and register custom elements from
-  `@timelessui/components/define/<tag>`. `tokens.css` and `core/<component>.css` are required — core
-  is behavior, not appearance — while `themes/atmosphere/<component>.css` is the optional look.
-  Registration is per-element and explicit.** A CSS component has nothing to register. A custom
-  element that never upgrades is almost always a missing `define/` import.
+  `@timelessui/components/register/<tag>`, which registers as it is imported. `tokens.css` and
+  `core/<component>.css` are required — core is behavior, not appearance — while
+  `themes/atmosphere/<component>.css` is the optional look. Registration is per-element and
+  explicit.** A CSS component has nothing to register. `register/<tag>` is a side-effect import and
+  needs no call; `define/<tag>` is the same registration as a function you call yourself,
+  `define<Name>Element()`, for when you need to control the timing or target another window.
+  Importing `define/<tag>` and calling nothing registers nothing, which is the usual reason a custom
+  element never upgrades.
 
 ### Finding the exact contract
 

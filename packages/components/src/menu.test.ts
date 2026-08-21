@@ -104,10 +104,10 @@ describe('enhanceMenuParts', () => {
     expect(items.map((item) => item.getAttribute('tabindex'))).toEqual(['0', '-1', '-1'])
   })
 
-  it('preserves checkbox/radio roles and keeps the resting tab stop off a disabled item', () => {
+  it('preserves checkbox/radio roles and keeps the resting tab stop off an unavailable item', () => {
     const host = new FakeMenuItem('', { role: 'menubar' })
     const items = [
-      new FakeMenuItem('Preview', { disabled: '' }),
+      new FakeMenuItem('Preview', { 'aria-disabled': 'true' }),
       new FakeMenuItem('Grid overlay', { role: 'menuitemcheckbox', 'aria-checked': 'true' }),
       new FakeMenuItem('Compact density'),
     ]
@@ -116,12 +116,24 @@ describe('enhanceMenuParts', () => {
 
     expect(result).toEqual({ status: 'enhanced', activeIndex: 1, role: 'menubar' })
     expect(host.getAttribute('role')).toBe('menubar')
-    expect(items[0]!.hasAttribute('disabled')).toBe(false)
-    expect(items[0]!.getAttribute('aria-disabled')).toBe('true')
     // Disabled items stay arrow-reachable, so the item keeps a tabindex — just not the tab stop.
     expect(items[0]!.getAttribute('tabindex')).toBe('-1')
     expect(items[1]!.getAttribute('tabindex')).toBe('0')
     expect(items[1]!.getAttribute('role')).toBe('menuitemcheckbox')
+  })
+
+  it('leaves an authored `disabled` item exactly as authored, and still skips the tab stop', () => {
+    const host = new FakeMenuItem('', { role: 'menu' })
+    const items = [new FakeMenuItem('Delete', { disabled: '' }), new FakeMenuItem('Duplicate')]
+
+    enhanceMenuParts({ host, items }, { orientation: 'vertical' })
+
+    // Rewriting `disabled` into `aria-disabled` produced better keyboard behavior and a different
+    // DOM than the author wrote. `aria-disabled` is documented instead; this stays untouched.
+    expect(items[0]!.hasAttribute('disabled')).toBe(true)
+    expect(items[0]!.getAttribute('aria-disabled')).toBeNull()
+    expect(items[0]!.getAttribute('tabindex')).toBe('-1')
+    expect(items[1]!.getAttribute('tabindex')).toBe('0')
   })
 
   it('names a group from its label part without overwriting an authored relationship', () => {

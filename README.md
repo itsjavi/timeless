@@ -53,6 +53,14 @@ carries the look, and is the tier you replace: import the first two and nothing 
 component is positioned, structurally intact, and operable while looking like nothing in particular,
 which is what a Tailwind or design-system-of-your-own consumer wants.
 
+Size is the one thing that leaves with the theme, deliberately. A theme-free control is as large as
+its content, and an anchored surface is as wide as its widest option rather than as wide as its
+trigger — `min-inline-size: anchor-size(width)` is a design decision and lives in the theme with
+every other dimension. That is worth knowing before you drop it: seven components land under the
+24×24 CSS pixels WCAG 2.2 SC 2.5.8 asks for once their sizing is gone, so a replacement theme owns
+target size along with everything else it owns. `apps/e2e` records exactly which seven, and fails on
+an eighth.
+
 The boundary is proven rather than reviewed. `check-core-boundary.mjs` fails the build when a core
 stylesheet declares a colour, radius, shadow, type property, or size, and when a theme stylesheet
 keeps a property core owns. So a consumer's own colour never loses to ours — there is nowhere for

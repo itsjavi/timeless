@@ -11,6 +11,11 @@
           "name": "UITabsElement",
           "customElement": true,
           "tagName": "ui-tabs",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-tabs",
+            "module": "@timelessui/components/define/ui-tabs",
+            "export": "defineTabsElement"
+          },
           "attributes": [
             {
               "name": "activation",
@@ -131,6 +136,11 @@
           "name": "UIDialogElement",
           "customElement": true,
           "tagName": "ui-dialog",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-dialog",
+            "module": "@timelessui/components/define/ui-dialog",
+            "export": "defineDialogElement"
+          },
           "attributes": [
             {
               "name": "kind",
@@ -207,6 +217,11 @@
           "name": "UISheetElement",
           "customElement": true,
           "tagName": "ui-sheet",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-sheet",
+            "module": "@timelessui/components/define/ui-sheet",
+            "export": "defineSheetElement"
+          },
           "attributes": [
             {
               "name": "modal",
@@ -355,6 +370,11 @@
           "name": "UIPopoverElement",
           "customElement": true,
           "tagName": "ui-popover",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-popover",
+            "module": "@timelessui/components/define/ui-popover",
+            "export": "definePopoverElement"
+          },
           "attributes": [
             {
               "name": "placement",
@@ -436,6 +456,11 @@
           "name": "UIHoverCardElement",
           "customElement": true,
           "tagName": "ui-hover-card",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-hover-card",
+            "module": "@timelessui/components/define/ui-hover-card",
+            "export": "defineHoverCardElement"
+          },
           "attributes": [
             {
               "name": "anchor",
@@ -566,6 +591,11 @@
           "name": "UIMenuElement",
           "customElement": true,
           "tagName": "ui-menu",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-menu",
+            "module": "@timelessui/components/define/ui-menu",
+            "export": "defineMenuElement"
+          },
           "attributes": [
             {
               "name": "orientation",
@@ -675,6 +705,11 @@
           "name": "UIMenuButtonElement",
           "customElement": true,
           "tagName": "ui-menu-button",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-menu-button",
+            "module": "@timelessui/components/define/ui-menu-button",
+            "export": "defineMenuButtonElement"
+          },
           "attributes": [
             {
               "name": "open",
@@ -770,6 +805,11 @@
           "name": "UIContextMenuElement",
           "customElement": true,
           "tagName": "ui-context-menu",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-context-menu",
+            "module": "@timelessui/components/define/ui-context-menu",
+            "export": "defineContextMenuElement"
+          },
           "attributes": [],
           "members": [],
           "events": [
@@ -838,6 +878,11 @@
           "name": "UIToolbarElement",
           "customElement": true,
           "tagName": "ui-toolbar",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-toolbar",
+            "module": "@timelessui/components/define/ui-toolbar",
+            "export": "defineToolbarElement"
+          },
           "attributes": [
             {
               "name": "orientation",
@@ -890,6 +935,11 @@
           "name": "UIRadioGroupElement",
           "customElement": true,
           "tagName": "ui-radio-group",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-radio-group",
+            "module": "@timelessui/components/define/ui-radio-group",
+            "export": "defineRadioGroupElement"
+          },
           "attributes": [
             {
               "name": "orientation",
@@ -981,6 +1031,11 @@
           "name": "UICheckboxGroupElement",
           "customElement": true,
           "tagName": "ui-checkbox-group",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-checkbox-group",
+            "module": "@timelessui/components/define/ui-checkbox-group",
+            "export": "defineCheckboxGroupElement"
+          },
           "attributes": [
             {
               "name": "orientation",
@@ -1048,6 +1103,11 @@
           "name": "UIListboxElement",
           "customElement": true,
           "tagName": "ui-listbox",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-listbox",
+            "module": "@timelessui/components/define/ui-listbox",
+            "export": "defineListboxElement"
+          },
           "attributes": [
             {
               "name": "multiple",
@@ -1293,6 +1353,11 @@
           "name": "UISelectElement",
           "customElement": true,
           "tagName": "ui-select",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-select",
+            "module": "@timelessui/components/define/ui-select",
+            "export": "defineSelectElement"
+          },
           "attributes": [
             {
               "name": "open",
@@ -1681,7 +1746,7 @@
               "name": "clear",
               "selector": "[data-ui-part~='clear']",
               "required": false,
-              "description": "Empties the whole selection. Disabled while there is nothing to clear."
+              "description": "Empties the whole selection. Marked `aria-disabled=\"true\"` while there is nothing to clear, rather than `disabled`, so activating it cannot disable the control that holds focus."
             }
           ]
         }
@@ -1706,6 +1771,11 @@
           "name": "UIComboboxElement",
           "customElement": true,
           "tagName": "ui-combobox",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-combobox",
+            "module": "@timelessui/components/define/ui-combobox",
+            "export": "defineComboboxElement"
+          },
           "attributes": [
             {
               "name": "value",
@@ -2033,7 +2103,7 @@
               "name": "clear",
               "selector": "[data-ui-part~='clear']",
               "required": false,
-              "description": "Empties the whole selection. Disabled while there is nothing to clear."
+              "description": "Empties the whole selection. Marked `aria-disabled=\"true\"` while there is nothing to clear, rather than `disabled`, so activating it cannot disable the control that holds focus."
             }
           ]
         }
@@ -2058,6 +2128,11 @@
           "name": "UIToasterElement",
           "customElement": true,
           "tagName": "ui-toaster",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-toaster",
+            "module": "@timelessui/components/define/ui-toaster",
+            "export": "defineToasterElement"
+          },
           "attributes": [
             {
               "name": "placement",
@@ -2129,6 +2204,11 @@
           "name": "UIToastElement",
           "customElement": true,
           "tagName": "ui-toast",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-toast",
+            "module": "@timelessui/components/define/ui-toast",
+            "export": "defineToastElement"
+          },
           "attributes": [
             {
               "name": "duration",
@@ -2229,6 +2309,11 @@
           "name": "UIToggleGroupElement",
           "customElement": true,
           "tagName": "ui-toggle-group",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-toggle-group",
+            "module": "@timelessui/components/define/ui-toggle-group",
+            "export": "defineToggleGroupElement"
+          },
           "attributes": [
             {
               "name": "attached",
@@ -2320,6 +2405,11 @@
           "name": "UINumberStepperElement",
           "customElement": true,
           "tagName": "ui-number-stepper",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-number-stepper",
+            "module": "@timelessui/components/define/ui-number-stepper",
+            "export": "defineNumberStepperElement"
+          },
           "attributes": [],
           "members": [],
           "events": [
@@ -2380,6 +2470,11 @@
           "name": "UIColorPickerElement",
           "customElement": true,
           "tagName": "ui-color-picker",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-color-picker",
+            "module": "@timelessui/components/define/ui-color-picker",
+            "export": "defineColorPickerElement"
+          },
           "attributes": [
             {
               "name": "format",
@@ -2593,6 +2688,11 @@
           "name": "UIFormElement",
           "customElement": true,
           "tagName": "ui-form",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-form",
+            "module": "@timelessui/components/define/ui-form",
+            "export": "defineFormElement"
+          },
           "attributes": [],
           "members": [],
           "events": [
@@ -2640,6 +2740,11 @@
           "name": "UIRangeFieldElement",
           "customElement": true,
           "tagName": "ui-range-field",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-range-field",
+            "module": "@timelessui/components/define/ui-range-field",
+            "export": "defineRangeFieldElement"
+          },
           "attributes": [],
           "members": [],
           "events": [
@@ -2713,6 +2818,11 @@
           "name": "UIOtpFieldElement",
           "customElement": true,
           "tagName": "ui-otp-field",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-otp-field",
+            "module": "@timelessui/components/define/ui-otp-field",
+            "export": "defineOtpFieldElement"
+          },
           "attributes": [
             {
               "name": "name",
@@ -2870,6 +2980,11 @@
           "name": "UICopyButtonElement",
           "customElement": true,
           "tagName": "ui-copy-button",
+          "timeless:registration": {
+            "sideEffect": "@timelessui/components/register/ui-copy-button",
+            "module": "@timelessui/components/define/ui-copy-button",
+            "export": "defineCopyButtonElement"
+          },
           "attributes": [
             {
               "name": "value",

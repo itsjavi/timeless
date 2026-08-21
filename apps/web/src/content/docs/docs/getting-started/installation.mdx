@@ -34,15 +34,35 @@ everything in one request. See [Loading CSS](/docs/styling/css/) for the trade-o
 ## Register the elements you use
 
 CSS-only primitives such as Button, Alert, and Card need no JavaScript at all. Enhanced components
-are custom elements, and registration is explicit:
+are custom elements, and registration is explicit — per element, never automatic:
 
 ```js
-import '@timelessui/components/define/ui-popover'
+import '@timelessui/components/register/ui-popover'
 ```
 
-Importing `@timelessui/components/popover` gives you the class and helpers **without** registering
-anything, which keeps the import safe during server rendering. Your framework's guide covers when
-the upgrade happens relative to hydration — see [React](/docs/frameworks/react/),
+`register/<tag>` is a side-effect import. It defines the element as the module evaluates, so it has
+to run in code the browser actually loads — an import that only ever executes on the server
+registers nothing, and the element never upgrades. `@timelessui/components/register` registers every
+element in one import, which is convenient in a prototype and ships every component's behavior.
+
+### Registering it yourself
+
+The same registration is also a function, on the matching `define/` path:
+
+```js
+import { definePopoverElement } from '@timelessui/components/define/ui-popover'
+
+definePopoverElement()
+```
+
+Reach for this when you need to control _when_ registration happens — after a feature check, inside
+an `onMount`, behind a dynamic import — or to define into a window other than the current one, which
+the optional `targetWindow` argument is for. `define/<tag>` has no side effect of its own: importing
+it and calling nothing registers nothing.
+
+Importing `@timelessui/components/popover` gives you the class and helpers without registering
+anything either, which keeps that import safe during server rendering. Your framework's guide covers
+when the upgrade happens relative to hydration — see [React](/docs/frameworks/react/),
 [Vue](/docs/frameworks/vue/), [Svelte](/docs/frameworks/svelte/), or
 [Solid](/docs/frameworks/solid/) — and [Packages and entrypoints](/docs/reference/packages/) lists
 every import.

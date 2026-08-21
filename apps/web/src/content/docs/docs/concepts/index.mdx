@@ -64,14 +64,14 @@ component's own connection logic, so the element never observes a stale value:
 const select = document.createElement('ui-select')
 select.value = 'published' // no definition yet — a plain own property
 
-await import('@timelessui/components/define/ui-select')
+await import('@timelessui/components/register/ui-select')
 document.body.append(select) // upgrade, then replay, then connect
 
 select.value // 'published'
 ```
 
-This is why `define/*` imports are safe to load late, and why a server-rendered page can hydrate and
-assign state without ordering the definition import first. See
+This is why registration is safe to load late, and why a server-rendered page can hydrate and assign
+state without ordering the registration import first. See
 [Packages and entrypoints](/docs/reference/packages/#server-rendering) for the import-safety rules
 and your framework's guide under [Frameworks](/docs/frameworks/vanilla/) for where the assignment
 usually lives.

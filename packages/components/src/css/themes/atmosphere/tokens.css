@@ -30,19 +30,44 @@
     --ui-bg-danger-hover: color-mix(in oklab, #cf2034 82%, #a91427);
     --ui-bg-danger-active: color-mix(in oklab, #cf2034 74%, #93101f);
     --ui-fg: light-dark(#17171a, #f4f4f5);
-    --ui-fg-muted: light-dark(#666a73, #a5a7b0);
+    /*
+     * `#5c6069` rather than `#666a73`, which reached only 4.08:1 where muted text sits on a soft
+     * variant fill — the Alert description on `--ui-warning-soft` over `--ui-bg-surface-raised`. It
+     * cleared 4.5:1 against a plain white page, which is why it survived: nothing painted a surface
+     * before scanning, so axe measured every composite against white. `#5c6069` clears 4.5:1 on all
+     * four surfaces and on all four soft fills over each of them, at 4.74:1 worst case. The dark
+     * branch already clears at 4.59:1.
+     */
+    --ui-fg-muted: light-dark(#5c6069, #a5a7b0);
     --ui-fg-subtle: light-dark(#80848d, #8e9099);
     --ui-line: light-dark(#d7d9de, #343641);
     --ui-line-strong: light-dark(#b8bcc5, #505360);
-    --ui-accent: #0064d8;
-    --ui-accent-hover: #0045b7;
-    --ui-accent-active: #005cd7;
+    /*
+     * Paired, because these three are read as *foreground* — accent text, an accent border, an icon,
+     * the focus ring below. A single `#0064d8` reached only 2.3-3.4:1 on the dark surfaces, so it
+     * could not serve both schemes.
+     *
+     * Both branches clear 4.5:1 against every surface token *and* against all four soft variant fills
+     * composited over each of them, because a link is a link inside a danger alert too — 5.15:1 and
+     * 4.83:1 at their worst, both on `--ui-warning-soft` over `--ui-bg-surface-raised`. Checking only
+     * against the plain surfaces is what let an accent link on a danger alert ship at 4.35:1.
+     *
+     * The dark hover and active steps move *away* from the surface where the light ones move toward
+     * it, preserving the light relationship — base, then hover strongest, then active between the two.
+     *
+     * `--ui-bg-accent` above is deliberately unpaired: it is a fill behind a fixed light foreground,
+     * and giving it a dark branch would lighten the primary button out from under its own label.
+     */
+    --ui-accent: light-dark(#0056bd, #66b0ff);
+    --ui-accent-hover: light-dark(#004299, #8ec5ff);
+    --ui-accent-active: light-dark(#004ea9, #7db9ff);
     --ui-accent-soft: light-dark(rgb(0 122 255 / 10%), rgb(0 122 255 / 18%));
     --ui-success: light-dark(#0f7134, #4ade80);
     --ui-success-soft: light-dark(rgb(15 113 52 / 10%), rgb(74 222 128 / 14%));
     --ui-warning: light-dark(#805500, #facc15);
     --ui-warning-soft: light-dark(rgb(128 85 0 / 12%), rgb(250 204 21 / 14%));
-    --ui-danger: light-dark(#b91c1c, #f87171);
+    /* `#f98080` in dark, because `#f87171` landed on 4.498:1 against `--ui-danger-soft` over a raised surface. */
+    --ui-danger: light-dark(#b91c1c, #f98080);
     --ui-danger-soft: light-dark(rgb(185 28 28 / 10%), rgb(248 113 113 / 14%));
     --ui-focus: color-mix(in oklab, var(--ui-accent), transparent 25%);
     --ui-disabled-opacity: 0.56;

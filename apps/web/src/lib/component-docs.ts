@@ -16,6 +16,7 @@ type ManifestMember = {
   type?: { text?: string }
   description?: string
 }
+type ManifestRegistration = { sideEffect: string; module: string; export: string }
 type ManifestDeclaration = {
   name: string
   tagName?: string
@@ -23,6 +24,7 @@ type ManifestDeclaration = {
   members?: ManifestMember[]
   events?: ManifestEvent[]
   description?: string
+  'timeless:registration'?: ManifestRegistration
 }
 type Manifest = { modules: { declarations?: ManifestDeclaration[] }[] }
 
@@ -36,6 +38,22 @@ export function declarationsFor(tags: readonly string[]): ManifestDeclaration[] 
   return tags.flatMap(
     (tag) => declarations.find((declaration) => declaration.tagName === tag) ?? [],
   )
+}
+
+/**
+ * The two registration entry points for a tag, as the generated manifest declares them.
+ *
+ * Read rather than derived: `defineOtpFieldElement` is a public export name, and rebuilding it from
+ * `ui-otp-field` here would be a second declaration of it that nothing proves.
+ */
+export function registrationFor(tag: string): ManifestRegistration {
+  const registration = declarations.find((declaration) => declaration.tagName === tag)?.[
+    'timeless:registration'
+  ]
+  if (!registration) {
+    throw new Error(`No registration entry points declared for ${tag} in custom-elements.json`)
+  }
+  return registration
 }
 
 export type DocumentedContract = {
