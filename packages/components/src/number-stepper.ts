@@ -21,11 +21,17 @@ export function findNumberStepperParts(host: HTMLElement): NumberStepperParts {
 }
 
 /**
- * `aria-disabled` rather than `disabled`: a step button reaches its bound while it is being pressed,
- * and a real `disabled` on the focused element sends focus to `<body>`.
+ * At a bound it is `aria-disabled`, because the button goes inert while being pressed and a real
+ * `disabled` on the focused element sends focus to `<body>`. A disabled or read-only control is
+ * native `disabled`: that state comes from the author, not from under the user's finger, and two
+ * inert buttons should leave the tab order.
  */
-function markUnavailable(button: HTMLButtonElement, unavailable: boolean): void {
-  if (unavailable) button.setAttribute('aria-disabled', 'true')
+function markUnavailable(
+  button: HTMLButtonElement,
+  reason: 'available' | 'at-bound' | 'control-disabled',
+): void {
+  button.disabled = reason === 'control-disabled'
+  if (reason === 'at-bound') button.setAttribute('aria-disabled', 'true')
   else button.removeAttribute('aria-disabled')
 }
 
@@ -39,14 +45,16 @@ export function syncNumberStepper(parts: NumberStepperParts): boolean {
     return false
   }
   host.setAttribute('role', 'group')
-  const unavailable = input.disabled || input.readOnly
+  const controlDisabled = input.disabled || input.readOnly
   const value = input.valueAsNumber
   const parsedMin = Number(input.min)
   const parsedMax = Number(input.max)
   const min = input.min === '' || Number.isNaN(parsedMin) ? -Infinity : parsedMin
   const max = input.max === '' || Number.isNaN(parsedMax) ? Infinity : parsedMax
-  markUnavailable(decrement, unavailable || Number.isNaN(value) || value <= min)
-  markUnavailable(increment, unavailable || Number.isNaN(value) || value >= max)
+  const reason = (atBound: boolean): 'available' | 'at-bound' | 'control-disabled' =>
+    controlDisabled ? 'control-disabled' : atBound ? 'at-bound' : 'available'
+  markUnavailable(decrement, reason(Number.isNaN(value) || value <= min))
+  markUnavailable(increment, reason(Number.isNaN(value) || value >= max))
   return true
 }
 

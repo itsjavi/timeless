@@ -45,9 +45,16 @@ destructive actions, and most surfaces are grayscale with small changes in light
 - **Accent:** `--ui-accent`, light `#0056bd`, dark `#66b0ff`.
 - **Accent hover:** `--ui-accent-hover`, light `#004299`, dark `#8ec5ff`.
 - **Accent active:** `--ui-accent-active`, light `#004ea9`, dark `#7db9ff`.
+- **Danger text:** `--ui-danger`, light `#b91c1c`, dark `#fb8f8f`. Success and warning keep their
+  values; danger's dark branch is lighter than the obvious choice because it has to clear 4.5:1 over
+  a warning fill as well as its own.
 - The three accent **foreground** tokens are paired because accent text and accent borders sit on
   the page. The dark branches move away from the surface where the light ones move toward it. Accent
   **fills** stay scheme-independent: they sit behind a fixed light foreground.
+- **Every foreground token is measured against every fill it can land on**, not only against the
+  plain surfaces and not only against the fill named after it. A link sits inside a danger alert;
+  danger validation text sits inside a warning one. Checking a token against its own soft fill alone
+  is what let an accent link ship at 4.35:1.
 - **Accent fills:** `--ui-bg-accent-hover` and `--ui-bg-accent-active` mix `#0045b7` and `#0050ad`
   subtly into `#0064d8` with `color-mix()` in OKLab, rather than swapping to a flat darker blue.
 

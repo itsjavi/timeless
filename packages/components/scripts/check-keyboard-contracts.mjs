@@ -109,6 +109,21 @@ function pressedKeys(text) {
  * while the element had no `keydown` handler at all. A file counts as evidence for a component when
  * it names that component's root, its element class, or its factory.
  */
+/**
+ * One file, split into its test blocks.
+ *
+ * Each block carries the file's `describe` titles prepended, because a component is often named
+ * there rather than inside the block — and a block that mentions no component at all would otherwise
+ * vouch for nothing.
+ */
+function blocksOf(source) {
+  const describes = [...source.text.matchAll(/^\s*(?:test|describe)\.?[a-z]*\(\s*['"`]([^'"`]+)/gm)]
+    .map((match) => match[1])
+    .join('\n')
+  const parts = source.text.split(/\n(?=\s*(?:test|it)[.(])/)
+  return parts.map((part) => `${describes}\n${part}`)
+}
+
 function evidenceFor(component) {
   /*
    * Files that name the component's root, class, factory, or plain name.
@@ -126,9 +141,17 @@ function evidenceFor(component) {
     component.name,
   ].filter(Boolean)
   const scoped = sources.filter((source) => needles.some((needle) => source.text.includes(needle)))
+  /*
+   * Per test block, not per file. A single spec file covering two related collections would otherwise
+   * let a press meant for Toolbar prove a declared key for Menu — the same false-pass shape at file
+   * granularity that the corpus-wide version had at repository granularity.
+   */
   const pressed = new Set()
   for (const source of scoped) {
-    for (const key of pressedKeys(source.text)) pressed.add(key)
+    for (const block of blocksOf(source)) {
+      if (!needles.some((needle) => block.includes(needle))) continue
+      for (const key of pressedKeys(block)) pressed.add(key)
+    }
   }
   return { pressed, files: scoped.length }
 }
@@ -226,6 +249,6 @@ if (unrecognised.length > 0 || unproven.length > 0 || unhandled.length > 0) {
     0,
   )
   console.log(
-    `Proved ${rows} declared keyboard rows against ${sources.length} test files, scoped per component.`,
+    `Proved ${rows} declared keyboard rows against ${sources.length} test files, scoped per test block.`,
   )
 }

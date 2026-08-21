@@ -11,6 +11,7 @@ import {
   mirrorInlineKey,
   resolveMenuOrientation,
   resolveMenuRole,
+  syncMenuRovingTabIndex,
   type MenuGroupLike,
   type MenuItemLike,
 } from './menu'
@@ -224,10 +225,43 @@ describe('checkable menu items', () => {
 })
 
 describe('menu navigation helpers', () => {
-  it('uses orientation-aware movement and includes disabled menu items', () => {
+  /*
+   * `aria-disabled` is reachable and native `disabled` is not, and conflating them is what made arrow
+   * navigation stick: the roving `tabindex` moved onto a `<button disabled>`, `.focus()` was a no-op,
+   * and because the next key computes its origin from the *focused* item, every further press
+   * recomputed the same unreachable target. Focus could not get past it.
+   */
+  it('skips a native disabled item, which the platform will not focus', () => {
     const items = [
       new FakeMenuItem('Open'),
-      new FakeMenuItem('Duplicate', { disabled: '' }),
+      new FakeMenuItem('Delete', { disabled: '' }),
+      new FakeMenuItem('Rename'),
+    ]
+
+    expect(menuNavigationTarget(items, 0, 'ArrowDown', 'vertical')).toBe(2)
+    expect(menuNavigationTarget(items, 2, 'ArrowUp', 'vertical')).toBe(0)
+    expect(menuNavigationTarget(items, 0, 'End', 'vertical')).toBe(2)
+
+    // And the resting tab stop never lands on it either.
+    expect(syncMenuRovingTabIndex(items, 1)).toBe(0)
+    expect(items[1]!.getAttribute('tabindex')).toBe('-1')
+  })
+
+  it('lands Home and End on the first and last focusable item', () => {
+    const items = [
+      new FakeMenuItem('Open', { disabled: '' }),
+      new FakeMenuItem('Duplicate'),
+      new FakeMenuItem('Delete', { disabled: '' }),
+    ]
+
+    expect(menuNavigationTarget(items, 1, 'Home', 'vertical')).toBe(1)
+    expect(menuNavigationTarget(items, 1, 'End', 'vertical')).toBe(1)
+  })
+
+  it('uses orientation-aware movement and includes aria-disabled menu items', () => {
+    const items = [
+      new FakeMenuItem('Open'),
+      new FakeMenuItem('Duplicate', { 'aria-disabled': 'true' }),
       new FakeMenuItem('Rename'),
     ]
 
@@ -252,10 +286,10 @@ describe('menu navigation helpers', () => {
     expect(mirrorInlineKey('Home')).toBe('Home')
   })
 
-  it('finds menu items by text prefix, including disabled items', () => {
+  it('finds menu items by text prefix, including aria-disabled items', () => {
     const items = [
       new FakeMenuItem('Open'),
-      new FakeMenuItem('Delete', { disabled: '' }),
+      new FakeMenuItem('Delete', { 'aria-disabled': 'true' }),
       new FakeMenuItem('Duplicate'),
       new FakeMenuItem('Rename'),
     ]
@@ -263,6 +297,18 @@ describe('menu navigation helpers', () => {
     expect(menuTypeaheadTarget(items, 0, 'd')).toBe(1)
     expect(menuTypeaheadTarget(items, 0, 're')).toBe(3)
     expect(menuTypeaheadTarget(items, 0, 'x')).toBeNull()
+  })
+
+  it('types past a native disabled item to the next match that can take focus', () => {
+    const items = [
+      new FakeMenuItem('Open'),
+      new FakeMenuItem('Delete', { disabled: '' }),
+      new FakeMenuItem('Duplicate'),
+      new FakeMenuItem('Rename'),
+    ]
+
+    // Typeahead moves focus, so a match the platform refuses to focus is not a match.
+    expect(menuTypeaheadTarget(items, 0, 'd')).toBe(2)
   })
 
   it('resolves menu role and orientation defaults from APG semantics', () => {

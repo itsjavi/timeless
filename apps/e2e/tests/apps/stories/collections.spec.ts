@@ -51,6 +51,18 @@ test.describe('stories collection navigation', () => {
     await expect(monthly).toBeChecked()
 
     await expect(page.locator('label').filter({ hasText: 'Paused' })).toHaveCSS('opacity', '0.56')
+
+    /*
+     * Home and End are declared on Radio Group and are Timeless's own — native radios give arrows
+     * for free and neither of these. Nothing pressed them here until `check-keyboard-contracts.mjs`
+     * moved from per-file to per-block evidence and stopped letting a sibling collection in the same
+     * spec file vouch for them.
+     */
+    await page.keyboard.press('Home')
+    await expect(page.getByLabel('Daily')).toBeFocused()
+    // End lands on the last *enabled* radio: Paused is disabled and is skipped.
+    await page.keyboard.press('End')
+    await expect(monthly).toBeFocused()
   })
 
   test('keeps checkbox group inputs native and checkable', async ({ page }) => {
@@ -656,6 +668,9 @@ test.describe('stories menu groups, checkable items, and submenus', () => {
 
     await page.keyboard.press('Escape')
     await expect(menu).toBeHidden()
+    // `aria-expanded` rather than visibility alone: it is the state the component syncs, so waiting
+    // on it is what makes the next key press deterministic.
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
     await expect(trigger).toBeFocused()
 
     // Arrow Up is the other end of the same menu, which is the only reason to have both keys. The

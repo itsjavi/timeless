@@ -66,8 +66,14 @@
     --ui-success-soft: light-dark(rgb(15 113 52 / 10%), rgb(74 222 128 / 14%));
     --ui-warning: light-dark(#805500, #facc15);
     --ui-warning-soft: light-dark(rgb(128 85 0 / 12%), rgb(250 204 21 / 14%));
-    /* `#f98080` in dark, because `#f87171` landed on 4.498:1 against `--ui-danger-soft` over a raised surface. */
-    --ui-danger: light-dark(#b91c1c, #f98080);
+    /*
+     * Held to the same full-matrix standard as `--ui-accent`, not just to its own soft fill. `#f87171`
+     * reached 3.98:1 and `#f98080` 4.42:1 against `--ui-warning-soft` over a raised surface — danger
+     * validation text inside a warning alert is a composition a consumer can build, and the argument
+     * that a link is a link inside a danger alert applies to danger text inside a warning one.
+     * `#fb8f8f` clears 4.94:1 at its worst.
+     */
+    --ui-danger: light-dark(#b91c1c, #fb8f8f);
     --ui-danger-soft: light-dark(rgb(185 28 28 / 10%), rgb(248 113 113 / 14%));
     --ui-focus: color-mix(in oklab, var(--ui-accent), transparent 25%);
     --ui-disabled-opacity: 0.56;

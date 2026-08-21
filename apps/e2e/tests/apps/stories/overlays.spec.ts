@@ -537,10 +537,15 @@ test.describe('stories progressive overlays', () => {
     await expect(toasts.nth(0)).toBeHidden()
     await expect(toasts.nth(1).getByRole('button', { name: 'Dismiss notification' })).toBeFocused()
 
-    // Dismissing the last one returns focus to whatever the user came from.
+    /*
+     * Dismissing the last one returns focus to the trigger by name, not merely "not `<body>`".
+     * The weaker assertion would pass on any surviving focus at all, including a `body` recorded as
+     * the return target by a transient blur — which is the failure mode the `focusin` guard exists
+     * for, so the test has to be able to see it.
+     */
     await toasts.nth(1).getByRole('button', { name: 'Dismiss notification' }).click()
     await expect(toasts.nth(1)).toBeHidden()
-    await expect(page.locator('body')).not.toBeFocused()
+    await expect(trigger).toBeFocused()
   })
 })
 

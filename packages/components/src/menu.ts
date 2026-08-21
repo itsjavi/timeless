@@ -440,8 +440,8 @@ export function menuNavigationTarget(
   orientation: MenuOrientation,
 ): number | null {
   if (items.length === 0) return null
-  if (key === 'Home') return 0
-  if (key === 'End') return items.length - 1
+  if (key === 'Home') return edgeFocusableMenuItemIndex(items, 'first')
+  if (key === 'End') return edgeFocusableMenuItemIndex(items, 'last')
   if (orientation === 'vertical' && key === 'ArrowDown')
     return adjacentMenuItemIndex(items, currentIndex, 1)
   if (orientation === 'vertical' && key === 'ArrowUp')
@@ -486,6 +486,7 @@ export function menuTypeaheadTarget(
 
   for (let offset = 1; offset <= items.length; offset += 1) {
     const index = (currentIndex + offset + items.length) % items.length
+    if (isMenuItemUnfocusable(items[index]!)) continue
     if (collectionItemText(items[index]!).startsWith(normalizedSearch)) {
       return index
     }
@@ -497,9 +498,13 @@ export function syncMenuRovingTabIndex(
   items: readonly MenuItemLike[],
   activeIndex: number | null,
 ): number | null {
-  const resolvedIndex =
-    activeIndex !== null && activeIndex >= 0 && activeIndex < items.length ? activeIndex : 0
   if (items.length === 0) return null
+  const requested =
+    activeIndex !== null && activeIndex >= 0 && activeIndex < items.length ? activeIndex : 0
+  // The tab stop has to be somewhere Tab can actually land.
+  const resolvedIndex = isMenuItemUnfocusable(items[requested]!)
+    ? (edgeFocusableMenuItemIndex(items, 'first') ?? requested)
+    : requested
 
   items.forEach((item, index) => {
     item.setAttribute('tabindex', index === resolvedIndex ? '0' : '-1')
@@ -513,6 +518,22 @@ export function isMenuItemDisabled(item: MenuItemLike): boolean {
     item.getAttribute('aria-disabled') === 'true' ||
     itemMatches(item, ':disabled')
   )
+}
+
+/**
+ * Whether the platform will refuse to focus this item — a real `disabled`, not `aria-disabled`.
+ *
+ * The two are not interchangeable for navigation, which is the whole reason Menu asks authors for
+ * `aria-disabled`. An `aria-disabled` item is focusable, so the arrows reach it and the APG treatment
+ * holds: an unavailable command is easier to understand than an absent one. A native `disabled`
+ * button cannot take focus at all, so targeting it moves the roving `tabindex` onto an element that
+ * then refuses `.focus()` — the resting tab stop and real focus disagree, and because the next key
+ * computes its origin from the *focused* item, the arrows stop advancing entirely.
+ *
+ * So navigation skips these, which is what the component's own contract has always said it does.
+ */
+export function isMenuItemUnfocusable(item: MenuItemLike): boolean {
+  return item.hasAttribute('disabled') || itemMatches(item, ':disabled')
 }
 
 /** The checkable role an item carries, or `null` when it is a plain command. */
@@ -637,7 +658,25 @@ function adjacentMenuItemIndex(
   direction: 1 | -1,
 ): number | null {
   if (items.length === 0) return null
-  return (currentIndex + direction + items.length) % items.length
+  let index = currentIndex
+  for (let offset = 0; offset < items.length; offset += 1) {
+    index = (index + direction + items.length) % items.length
+    if (!isMenuItemUnfocusable(items[index]!)) return index
+  }
+  return null
+}
+
+/** The first or last item the platform will actually focus. */
+function edgeFocusableMenuItemIndex(
+  items: readonly MenuItemLike[],
+  from: 'first' | 'last',
+): number | null {
+  const order =
+    from === 'first' ? items.map((_, index) => index) : items.map((_, index) => index).reverse()
+  for (const index of order) {
+    if (!isMenuItemUnfocusable(items[index]!)) return index
+  }
+  return null
 }
 
 function isRightToLeft(element: HTMLElement): boolean {

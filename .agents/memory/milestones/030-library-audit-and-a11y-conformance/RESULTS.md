@@ -386,6 +386,78 @@ gh-pages deploy on a tag was rejected: it would hold every prose fix until the n
 is a worse failure than the one being fixed. Marking unpublished components on their page was
 rejected as solving a problem that only exists between a merge and a release.
 
+## What the review of PR #15 changed
+
+Five threads, all implemented. Two of the five reports were wrong in a way worth recording, because
+both were wrong in the same direction — the reasoning was sound and the conclusion did not follow.
+
+**The toast focus hand-off does not lose the return target.** The report was that hiding a focused
+toast blurs to `<body>` for a tick, so the next toast's `focusin` fires with
+`relatedTarget === document.body`, and `handleFocusIn` records `body` as the toaster's return target
+— clobbering the real trigger. Every premise is true except the middle one. Instrumenting `focusin`
+across the whole sequence gives:
+
+```
+{target: BUTTON,              relatedTarget: null}                  // clicking the trigger
+{target: Dismiss notification, relatedTarget: BUTTON}               // focus enters the toaster
+{target: Dismiss notification, relatedTarget: Dismiss notification} // the hand-off
+```
+
+`relatedTarget` on the hand-off is the _previous dismiss button_, not `body` — Chromium reports the
+element that lost focus, and `dismiss()` is synchronous, so the blur and the focus are one operation
+rather than two. And that previous button is inside the toaster, so `region.contains()` already
+rejects it. Focus lands on the trigger; `activeElement` after dismissing both toasts is the trigger.
+
+The guard was added anyway, for a different reason: `focusReturnTarget` accepts anything with a
+`.focus()` method, `body` qualifies, and Dialog and Sheet already exclude `body` and the root
+element explicitly. Toast not doing so was an inconsistency, and relying on Chromium's
+`relatedTarget` timing is a weaker invariant than stating it. The e2e assertion was strengthened
+from "not `<body>`" to "the trigger, by name", which is what makes the guard observable at all.
+
+**The menu desync is worse than a desync.** The report was that arrow navigation targets a native
+`disabled` item, `.focus()` no-ops, and the roving `tabindex` disagrees with real focus. True, and
+then it stops being cosmetic: the next key computes its origin from the _focused_ item, which never
+moved, so it recomputes the same unreachable target forever. Driving three ArrowDowns past a
+`disabled` item:
+
+```
+start        active=Duplicate  tabstop=Duplicate
+ArrowDown 1  active=Archive    tabstop=Archive
+ArrowDown 2  active=Archive    tabstop=Delete    <-- stuck
+ArrowDown 3  active=Archive    tabstop=Delete    <-- stuck
+```
+
+Focus cannot reach anything after a native-`disabled` item. `isMenuItemUnfocusable` now separates
+the two spellings — `aria-disabled` stays reachable because that is the APG treatment and the
+platform allows it; native `disabled` is skipped because the platform does not — and the
+implementation finally matches the registry note this milestone wrote.
+
+**One improvement was a real gap, and tightening the gate found another.**
+`check-keyboard-contracts.mjs` scoped evidence per file, which the reviewer flagged as able to let a
+sibling collection vouch for a component's keys. Moving to per-test-block scoping immediately failed
+on Radio Group's `Home / End` — proven, until then, by Toolbar's and Toggle Group's presses in the
+same spec file. That behavior does exist; nothing had ever pressed the keys. The test is now
+written.
+
+**And one number was mine to have caught.** Dark `--ui-danger` at `#f98080` measures 4.42:1 over
+`--ui-warning-soft` on a raised surface. The milestone had applied the full-fill-matrix rule to
+`--ui-accent` on the reasoning that "a link is a link inside a danger alert too", and then held the
+semantic foregrounds to their own fill only — an exception argued from the composition being unusual
+rather than impossible. The reviewer was right that the rule should be the rule. `#fb8f8f` clears
+4.94:1, and DESIGN.md now states the standard rather than leaving it implicit.
+
+**One flake was mine and one was not.** The menu-button arrow test added earlier in this milestone
+failed under parallel load: `handleKeyDown` gated on the mirrored `open` property, which is synced
+from the `toggle` event, so straight after an Escape it could still read `true` and swallow the next
+arrow press. Reading `isPopoverOpen(this.content)` removes the race rather than waiting it out.
+
+`select types to select while closed and to highlight while open` also flakes under load, at roughly
+one full run in two. It is untouched by this milestone, present unchanged on `main`, and the
+component is correct — six consecutive isolated runs give the same state every time, with the
+surface open, all four options present, and the value unchanged. Its two 900ms waits are the 700ms
+typeahead debounce, which genuinely needs wall time, so making it deterministic is its own piece of
+work rather than a speculative edit to a passing test. Left flagged; CI retries twice.
+
 ## Constraints found during the audit
 
 - **The audit harness stays out of the repository.** It is 500 lines of scratch code whose value was

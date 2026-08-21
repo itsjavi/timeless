@@ -145,7 +145,16 @@ export function createToastElementClass(targetWindow?: Window): UIToastElementCo
     handleFocusIn(event: FocusEvent): void {
       const region = this.focusRegion
       const from = focusReturnTarget(event.relatedTarget)
-      if (from && !region.contains(event.relatedTarget as Node | null)) {
+      /*
+       * `body` and the root element are not somewhere to return focus *to*. `focusReturnTarget`
+       * accepts anything with a `.focus()` method and both qualify, so the exclusion is explicit —
+       * the same one `resolveDialogReturnTarget` and its Sheet counterpart already make.
+       */
+      const isPlace =
+        from !== null &&
+        event.relatedTarget !== this.ownerDocument.body &&
+        event.relatedTarget !== this.ownerDocument.documentElement
+      if (isPlace && !region.contains(event.relatedTarget as Node | null)) {
         returnTargets.set(region, from)
       }
       this.#focusWithin = true

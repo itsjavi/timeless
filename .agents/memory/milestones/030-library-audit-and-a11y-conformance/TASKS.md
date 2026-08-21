@@ -170,6 +170,29 @@ Work the plan did not anticipate, all of it surfaced by the gates this milestone
       return, which is real behavior; a long comment in the shared `collection.ts` had inflated
       seven unrelated entrypoints, and was trimmed rather than baselined.
 
+## 7c. Review of PR #15
+
+Five threads. All five implemented; two of the five reports needed correcting on the way.
+
+- [x] Menu navigation skips a native `disabled` item. Reported as a roving-`tabindex` desync;
+      driving it showed worse — focus could never advance _past_ such an item, because the next key
+      computes its origin from the focused element and kept recomputing the same unreachable target.
+      `isMenuItemUnfocusable` now separates "the platform refuses to focus this" from "the APG wants
+      this reachable", and arrows, `Home`/`End`, typeahead, and the resting tab stop all honour it.
+- [x] Number Stepper uses native `disabled` when the whole control is disabled or read-only, and
+      `aria-disabled` only at a bound. Using `aria-disabled` for both left two inert buttons in the
+      tab order — worse than before the milestone for the common case.
+- [x] Dark `--ui-danger` re-derived against the full fill matrix: `#f98080` measured 4.42:1 over
+      `--ui-warning-soft` on a raised surface. `#fb8f8f` clears 4.94:1. The reviewer was right that
+      the cross-fill rule applied to accent should apply here too.
+- [x] `check-keyboard-contracts.mjs` scopes evidence per test block rather than per file. Tightening
+      it immediately caught a real false pass the reviewer predicted: Radio Group's `Home / End` was
+      being proven by a sibling collection's presses in the same spec file. The missing test is now
+      written.
+- [x] Toast rejects `body` and the root element as a focus-return target — but the reported repro
+      does **not** reproduce. See RESULTS.md; the guard was added for consistency with the Dialog
+      and Sheet idiom, not because the bug was live.
+
 ## 8. Close out
 
 - [x] Re-run the audit harness against the fixed tree and confirm every finding is closed.

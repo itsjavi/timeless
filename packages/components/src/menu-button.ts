@@ -179,8 +179,14 @@ export function createMenuButtonElementClass(
     @listen('keydown')
     handleKeyDown(event: KeyboardEvent): void {
       const trigger = this.closestTarget<HTMLElement>(event, TRIGGER_SELECTOR)
-      if (trigger !== this.trigger || this.open) return
+      if (trigger !== this.trigger) return
       if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+      /*
+       * The platform's state, not the mirrored `open` property. `open` is synced from the `toggle`
+       * event, so straight after an Escape it can still read `true` for a tick — long enough for this
+       * handler to swallow the very next arrow press and leave the menu closed.
+       */
+      if (this.content && isPopoverOpen(this.content)) return
 
       event.preventDefault()
       this.#openEdge = event.key === 'ArrowDown' ? 'first' : 'last'
