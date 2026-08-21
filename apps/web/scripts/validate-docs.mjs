@@ -97,6 +97,39 @@ for (const file of contentFiles) {
 }
 
 /**
+ * Every documented component's "Open in StoryLite" link has to reach a story that exists.
+ *
+ * Two independent things build that id. `apps/web/src/lib/stories.ts` composes
+ * `library-${domain}-${id}--default` from the catalog; `resolveStoryId` in
+ * `apps/stories/.storylite/config.ts` derives the real route from the story *filename*, through a
+ * table kept in sync by hand. Nothing compared them, so a story whose filename is missing from that
+ * table produced a silent 404 on a documentation page — which is exactly what milestone 026 hit, and
+ * only noticed because the route it wanted appeared under a different name.
+ *
+ * Reads the committed `story-routes.json`, which `pnpm -F @apps/stories build` writes.
+ */
+const storyRoutes = new Set(
+  JSON.parse(await readFile(resolve(root, 'apps/stories/story-routes.json'), 'utf8')),
+)
+const unreachable = examples
+  .filter((example) => example.domain !== 'recipes')
+  .map((example) => ({
+    id: example.id,
+    route: `/stories/library-${example.domain}-${example.id}--default/`,
+  }))
+  .filter((entry) => !storyRoutes.has(entry.route))
+if (unreachable.length > 0) {
+  throw new Error(
+    `These documented components link to a StoryLite route that does not exist:\n${unreachable
+      .map((entry) => `  ${entry.id} links to ${entry.route}`)
+      .join(
+        '\n',
+      )}\nAdd the story filename to storyDomains in apps/stories/.storylite/config.ts, then ` +
+      'run pnpm build:stories and commit the regenerated apps/stories/story-routes.json.',
+  )
+}
+
+/**
  * `reference/packages.mdx` names every exported value array by hand, and it had drifted to 37 of 39 —
  * `collectionAlignments` and `optionFilterModes` were added to the registry and never to the prose. The
  * list is worth keeping by hand, because the sentence reads better than a generated table, but not
