@@ -1,0 +1,88 @@
+name: Publish npm Packages
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # Required for `--provenance`, and for npm trusted publishing if that is configured instead of a token.
+  id-token: write
+
+concurrency:
+  group: npm-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          show-progress: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false # never use cache for publishing
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Before anything is built, because a published version cannot be recalled. The three packages
+      # ship in lockstep, so one tag has to match all three manifests.
+      - name: Check the tag matches the versions it would publish
+        if: github.ref_type == 'tag'
+        run: node scripts/check-release-version.mjs "${GITHUB_REF_NAME}"
+
+      - name: Format
+        run: pnpm format:check
+
+      # Packages only. The apps are private, are not published, and `apps/web` is the slowest build in
+      # the repo; `gh-pages.yml` owns the site.
+      - name: Build
+        run: pnpm build:packages
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      # The gates that read the built output: `contracts:check` proves the generated surface and the
+      # size budgets, `publint` and `attw` prove what a consumer resolves. All three cover every
+      # workspace package, so a new one is covered the day it lands.
+      #
+      # Browser gates are deliberately absent — `pr-quality.yml` runs the Playwright suite on the
+      # commit this tag points at, and reinstalling three engines here would double the job for no new
+      # information about the tarballs.
+      - name: Validate published packages
+        run: |
+          pnpm contracts:check
+          pnpm publint
+          pnpm attw
+
+      # `-r` publishes every workspace package that is not `private`, which today is
+      # `@timelessui/color`, `@timelessui/components`, and `@timelessui/core`, and skips
+      # `@timelessui/examples` and the three apps. It also skips a version the registry already has,
+      # so re-running a failed release is safe. Each package declares
+      # `publishConfig.access: "public"`, so the scope publishes publicly without a flag here.
+      #
+      # `NODE_AUTH_TOKEN` is what the .npmrc written by setup-node reads. Swap it for npm trusted
+      # publishing by configuring a trusted publisher per package on npmjs.com and removing the `env`
+      # block; `id-token: write` above is already what that needs.
+      - name: Publish packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm publish -r --provenance --no-git-checks

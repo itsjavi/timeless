@@ -141,6 +141,24 @@ The website links to the catalog at `/stories/`, which only exists after `pnpm b
 development those links resolve to the catalog dev server instead; override the base with
 `PUBLIC_STORIES_BASE_URL`.
 
+### Releasing
+
+Three packages are published — `@timelessui/components`, `@timelessui/color`, and `@timelessui/core`
+— and they ship in lockstep, because `components` depends on the other two through `workspace:*`.
+`@timelessui/examples` and the three apps are `private` and are never published.
+
+Pushing a `*.*.*` tag runs `.github/workflows/npm-publish.yml`, which validates the tag against the
+manifests, builds the packages, and publishes every workspace package that is not private. Bump the
+three versions first, in one commit, then tag:
+
+```bash
+pnpm release:check 0.1.0   # fails if any manifest disagrees with the tag
+```
+
+The workflow needs an `NPM_TOKEN` repository secret with publish rights to the `@timelessui` scope,
+or a trusted publisher configured per package on npmjs.com — see the comments in the workflow for
+which lines to change.
+
 ## Planning
 
 This README describes project intent and current behavior. Implementation order, pending work, and
