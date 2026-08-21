@@ -3,6 +3,7 @@ import type {
   AvatarShape,
   AvatarStatus,
   BadgeVariant,
+  BreadcrumbSeparator,
   CardVariant,
   CompactDensity,
   GroupOrientation,
@@ -112,6 +113,16 @@ export type UIAttributeConfig = {
     density?: CompactDensity
     /** Cell text alignment. Set it on a `<th>` or `<td>`, not on the table. `end` also enables tabular numerals. */
     align?: TableAlignment
+  }
+  breadcrumb: {
+    /** Which glyph is drawn between crumbs. Both are generated content rather than markup, so neither reaches the accessibility tree and neither is yours to author. For any other glyph, set `--ui-breadcrumb-separator` instead of asking for a new value here. */
+    separator?: BreadcrumbSeparator
+    /** Gap between a crumb and its separator. */
+    density?: CompactDensity
+  }
+  pagination: {
+    /** Cell height, padding, and font size. */
+    size?: PrimitiveSize
   }
   collapsible: {
     /** Summary and content padding. */
@@ -224,6 +235,11 @@ const roots: Readonly<
   },
   list: { class: 'ui-list', defaults: { 'data-ui-variant': 'plain', 'data-ui-density': 'normal' } },
   table: { class: 'ui-table', defaults: { 'data-ui-density': 'normal', 'data-ui-align': 'start' } },
+  breadcrumb: {
+    class: 'ui-breadcrumb',
+    defaults: { 'data-ui-separator': 'chevron', 'data-ui-density': 'normal' },
+  },
+  pagination: { class: 'ui-pagination', defaults: { 'data-ui-size': 'md' } },
   collapsible: { class: 'ui-collapsible', defaults: { 'data-ui-density': 'normal' } },
   spinner: {
     class: 'ui-spinner',

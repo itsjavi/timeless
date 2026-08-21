@@ -7,6 +7,7 @@ function resolveStoryId(path: string, suggestedId: string): string {
     alert: 'feedback',
     avatar: 'content',
     badge: 'feedback',
+    breadcrumb: 'navigation',
     button: 'actions',
     card: 'content',
     'copy-button': 'actions',
@@ -14,6 +15,7 @@ function resolveStoryId(path: string, suggestedId: string): string {
     group: 'content',
     list: 'content',
     meter: 'feedback',
+    pagination: 'navigation',
     progress: 'feedback',
     separator: 'foundations',
     skeleton: 'feedback',
@@ -33,6 +35,7 @@ function resolveStoryId(path: string, suggestedId: string): string {
     const recipeCategories: Record<string, string> = {
       'account-form': 'forms',
       'command-palette': 'composition',
+      'navigation-menu': 'composition',
       'popover-color-picker': 'color',
       'team-presence': 'identity',
     }

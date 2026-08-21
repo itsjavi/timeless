@@ -39,6 +39,8 @@
 @import './core/group.css';
 @import './core/list.css';
 @import './core/table.css';
+@import './core/breadcrumb.css';
+@import './core/pagination.css';
 @import './core/spinner.css';
 @import './core/forms.css';
 @import './core/form.css';

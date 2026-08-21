@@ -1,0 +1,148 @@
+@layer ui.components {
+  .ui-pagination {
+    --ui-pagination-gap: var(--ui-space-1);
+    --ui-pagination-cell-size: 2.25rem;
+    color: var(--ui-fg);
+    font-size: 0.875rem;
+  }
+
+  .ui-pagination:where([data-ui-size='sm']) {
+    --ui-pagination-cell-size: 1.875rem;
+    font-size: 0.8125rem;
+  }
+
+  .ui-pagination:where([data-ui-size='lg']) {
+    --ui-pagination-cell-size: 2.75rem;
+    font-size: 0.9375rem;
+  }
+
+  /* Group owns the gap whenever one is composed onto the strip; this is the ungrouped default. */
+  .ui-pagination :where(ol, ul):not(:where(.ui-group)) {
+    gap: var(--ui-pagination-gap);
+  }
+
+  .ui-pagination :where(ol, ul) {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ui-pagination
+    :where(
+      [data-ui-part~='link'],
+      [data-ui-part~='previous'],
+      [data-ui-part~='next'],
+      [data-ui-part~='ellipsis']
+    ) {
+    align-items: center;
+    justify-content: center;
+    min-block-size: var(--ui-pagination-cell-size);
+    min-inline-size: var(--ui-pagination-cell-size);
+    border: 1px solid transparent;
+    border-radius: var(--ui-radius-control);
+    padding-inline: var(--ui-space-3);
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    text-decoration-line: none;
+    transition:
+      background-color var(--ui-duration-fast) var(--ui-ease-standard),
+      border-color var(--ui-duration-fast) var(--ui-ease-standard),
+      color var(--ui-duration-fast) var(--ui-ease-standard);
+  }
+
+  .ui-pagination :where(a[data-ui-part]) {
+    border-color: var(--ui-line);
+    background: var(--ui-bg-surface);
+    box-shadow: var(--ui-shadow-outline-control);
+    color: var(--ui-fg-muted);
+  }
+
+  .ui-pagination :where(a[data-ui-part]):hover {
+    background: var(--ui-bg-control-hover);
+    color: var(--ui-fg);
+  }
+
+  .ui-pagination :where(a[data-ui-part]):active {
+    background: var(--ui-bg-control-active);
+    box-shadow: var(--ui-shadow-control-active);
+  }
+
+  .ui-pagination :where(a[data-ui-part]):focus-visible {
+    outline: 2px solid var(--ui-focus);
+    outline-offset: 2px;
+  }
+
+  /* The page you are on: emphasised, and authored as a `<span>`, so none of the link rules reach it. */
+  .ui-pagination :where([aria-current='page']) {
+    border-color: var(--ui-accent);
+    background: var(--ui-bg-accent);
+    color: #ffffff;
+    font-weight: 650;
+  }
+
+  /*
+   * A `<span>` where a link would be is a boundary that has been reached, not a control that has been
+   * switched off — so it reads as inert rather than as a link waiting to be clicked. It keeps
+   * `--ui-fg-muted` rather than dropping to `--ui-fg-subtle`, because it is real text and not a
+   * disabled control, so WCAG 1.4.3 applies to it in full.
+   */
+  .ui-pagination
+    :where(span[data-ui-part~='previous'], span[data-ui-part~='next'], [data-ui-part~='ellipsis']) {
+    color: var(--ui-fg-muted);
+  }
+
+  .ui-pagination :where([data-ui-part~='ellipsis']) {
+    min-inline-size: auto;
+    padding-inline: var(--ui-space-1);
+  }
+
+  /*
+   * Composing `<ul class="ui-group" data-ui-attached>` collapses the gap and stretches the rows; the
+   * radii are what is left, because Group joins the control classes it knows by name and cannot see a
+   * `data-ui-part` one level further down.
+   */
+  .ui-pagination :where([data-ui-attached]) :where([data-ui-part~='item']) > :where(a, span) {
+    border-radius: 0;
+  }
+
+  /*
+   * A joined strip has to be continuous, so inside one every cell takes the chrome, not only the
+   * links — otherwise the ellipsis and a boundary `<span>` punch holes in it and the strip reads as
+   * broken rather than as joined. The current page keeps its accent, hence the exclusion: this rule
+   * sits after that one and would otherwise win at the same specificity.
+   */
+  .ui-pagination
+    :where([data-ui-attached])
+    :where([data-ui-part~='item'])
+    > :where(a, span):not(:where([aria-current='page'])) {
+    border-color: var(--ui-line);
+    background: var(--ui-bg-surface);
+  }
+
+  .ui-pagination :where([data-ui-attached]) :where([data-ui-part~='ellipsis']) {
+    min-inline-size: var(--ui-pagination-cell-size);
+  }
+
+  .ui-pagination
+    :where([data-ui-attached])
+    > :where([data-ui-part~='item']):first-child
+    > :where(a, span) {
+    border-start-start-radius: var(--ui-radius-control);
+    border-end-start-radius: var(--ui-radius-control);
+  }
+
+  .ui-pagination
+    :where([data-ui-attached])
+    > :where([data-ui-part~='item']):last-child
+    > :where(a, span) {
+    border-start-end-radius: var(--ui-radius-control);
+    border-end-end-radius: var(--ui-radius-control);
+  }
+
+  .ui-pagination
+    :where([data-ui-attached])
+    > :where([data-ui-part~='item'] + [data-ui-part~='item']) {
+    margin-inline-start: -1px;
+  }
+}

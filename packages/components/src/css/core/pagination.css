@@ -1,0 +1,29 @@
+/*
+ * Pagination's boxes.
+ *
+ * Every cell is an inline-flex box so a digit can be centred in it, and the strip wraps rather than
+ * scrolls, because a pager that runs off the side of a narrow screen has taken the one job it had and
+ * failed at it.
+ */
+
+@layer ui.components {
+  .ui-pagination :where(ol, ul) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .ui-pagination :where([data-ui-part~='item']) {
+    display: flex;
+  }
+
+  .ui-pagination
+    :where(
+      [data-ui-part~='link'],
+      [data-ui-part~='previous'],
+      [data-ui-part~='next'],
+      [data-ui-part~='ellipsis']
+    ) {
+    display: inline-flex;
+  }
+}

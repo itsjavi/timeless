@@ -742,6 +742,46 @@
       ]
     },
     {
+      "name": "--ui-breadcrumb-gap",
+      "description": "Gap between a crumb and its separator. Set on `ui-breadcrumb`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-breadcrumb-separator",
+      "description": "The separator glyph, as a CSS string. Comes from `data-ui-separator`; set it directly for a glyph the attribute does not offer. Keep the `/ \"\"` alternative text if you redeclare `content` yourself, or the glyph starts being announced. Set on `ui-breadcrumb`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-pagination-gap",
+      "description": "Gap between cells. Set on `ui-pagination`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
+      "name": "--ui-pagination-cell-size",
+      "description": "Minimum height and width of a cell. Set on `ui-pagination`.",
+      "references": [
+        {
+          "name": "Component reference",
+          "url": "https://timeless.build/docs/components/"
+        }
+      ]
+    },
+    {
       "name": "--ui-collapsible-line",
       "description": "Divider color between rows. Set on `ui-collapsible`.",
       "references": [

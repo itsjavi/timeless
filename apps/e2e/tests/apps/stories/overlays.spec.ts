@@ -839,6 +839,38 @@ test.describe('stories sheet gestures and overlay naming', () => {
     await trigger.click()
     await expect(card).toBeHidden()
   })
+
+  /**
+   * The keyboard half of SC 1.4.13, and the half that was missing until milestone 025 composed a
+   * navigation menu out of Hover Card and found it. Tabbing from the trigger into the surface fires
+   * `focusout` on the trigger, which used to schedule the close with nothing to cancel it: the
+   * surface shut and focus fell to the document, so its content was pointer-reachable and
+   * keyboard-unreachable. Focus entering the surface now cancels the close, and focus leaving it
+   * schedules one, mirroring the pointer exactly.
+   */
+  test('keeps a hover card open while focus is inside it', async ({ page }) => {
+    await page.goto('/stories/library-overlays-hover-card--default/')
+    await expectRouteDocumentReady(page)
+
+    const trigger = page.locator("ui-hover-card [data-ui-part~='trigger']").first()
+    const card = page.locator('ui-hover-card [popover]').first()
+
+    await trigger.focus()
+    await expect(card).toBeVisible()
+    // Focus moved off the trigger and into the surface. The close delay is 100ms by default, so a
+    // dwell longer than that is what makes this an assertion rather than a race.
+    await card.evaluate((element) => {
+      const focusable = element.querySelector<HTMLElement>('a[href], button, [tabindex="0"]')
+      ;(focusable ?? element).setAttribute('tabindex', '0')
+      ;(focusable ?? element).focus()
+    })
+    await page.waitForTimeout(400)
+    await expect(card).toBeVisible()
+
+    // And leaving it for good still closes it.
+    await page.locator('h1').first().click()
+    await expect(card).toBeHidden()
+  })
 })
 
 async function idOf(locator: Locator): Promise<string> {

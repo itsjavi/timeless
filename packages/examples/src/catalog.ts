@@ -32,6 +32,7 @@ import {
   createTextField,
 } from './forms.html.ts'
 import { createMeter } from './meter.html.ts'
+import { createBreadcrumb, createNavigationMenu, createPagination } from './navigation.html.ts'
 import { createNumberStepper } from './number-stepper.html.ts'
 import {
   createCollapsible,
@@ -922,9 +923,61 @@ export const examples = [
       }),
   }),
   example({
+    id: 'breadcrumb',
+    domain: 'navigation',
+    group: 'Navigation',
+    contracts: ['breadcrumb'],
+    component: 'Breadcrumb',
+    title: 'Breadcrumb',
+    description: 'A trail of links to the pages above this one. CSS only.',
+    guidance:
+      'A breadcrumb says where the current page sits in a hierarchy. For moving between siblings at the same level use [Tabs](/docs/components/tabs/), and for a list of pages in a sequence use [Pagination](/docs/components/pagination/).',
+    authoring:
+      'Give the `<nav>` an `aria-label` — a page can hold several landmarks of the same type, and an unnamed one is indistinguishable from the rest. Author the final crumb as a `<span data-ui-part="current" aria-current="page">` rather than a link: a link to the page you are already on goes nowhere. Author nothing between the crumbs; the separator is drawn.',
+    definitions: [],
+    styles: [
+      'tokens.css',
+      'core/breadcrumb.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/breadcrumb.css',
+    ],
+    render: () =>
+      createBreadcrumb({
+        trail: [
+          { label: 'Documentation', href: '/docs/' },
+          { label: 'Components', href: '/docs/components/' },
+          { label: 'Breadcrumb' },
+        ],
+      }),
+  }),
+  example({
+    id: 'pagination',
+    domain: 'navigation',
+    group: 'Navigation',
+    contracts: ['pagination'],
+    component: 'Pagination',
+    title: 'Pagination',
+    description: 'Page navigation as real links. CSS only.',
+    guidance:
+      'This paginates *pages* — one URL each. To page through the options inside a [Listbox](/docs/components/listbox/), [Select](/docs/components/select/), or [Combobox](/docs/components/combobox/), set `page-size` on that element and author its `pager` parts instead; nothing navigates there, so links would be wrong.',
+    authoring:
+      'Give the `<nav>` an `aria-label`. Author every page but the current one as an `<a href>`, the current one as a `<span aria-current="page">`, and the ellipsis as `aria-hidden="true"`. Previous and Next need accessible names that say what they do, and at the first or last page they become `<span>` elements — an `<a aria-disabled="true">` still navigates, so it is a lie. Compose `<ul class="ui-group" data-ui-attached>` for a joined strip.',
+    definitions: [],
+    styles: [
+      'tokens.css',
+      'core/pagination.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/pagination.css',
+    ],
+    render: () => createPagination({ page: 4, pageCount: 12 }),
+  }),
+  example({
     id: 'menu',
     domain: 'navigation',
     group: 'Navigation',
+    related: ['navigation-menu'],
+    guidance:
+      'A Menu is a set of **commands** — `role="menu"` means roving focus, where the whole set is one Tab stop and the arrow keys move inside it. A site navigation of **links** is not that: links are individually tabbable, and `Tab` is the traversal a reader expects. Timeless ships no navigation-menu element because none is needed; the composition below is the whole recipe. Use [Breadcrumb](/docs/components/breadcrumb/) for where the current page sits in a hierarchy, and [Toolbar](/docs/components/toolbar/) for a row of controls rather than a surface of commands.',
     authoring:
       'Wrap related items in a `group` with a `group-label` and Timeless writes the `role="group"` and the `aria-labelledby` between them. Checkable items need only the role and a starting `aria-checked`: activating a `menuitemcheckbox` toggles it, and activating a `menuitemradio` clears the other radios in its group. Both dispatch a cancelable `ui-before-change` first, so a consumer already writing `aria-checked` from its own state can keep doing exactly that.',
     contracts: ['menu'],
@@ -1405,6 +1458,52 @@ export const examples = [
           { label: 'Run build task' },
           { label: 'Reload window' },
         ],
+      }),
+  }),
+  example({
+    id: 'navigation-menu',
+    domain: 'recipes',
+    contracts: ['hoverCard'],
+    component: 'Navigation Menu',
+    title: 'Navigation Menu',
+    description:
+      'A bar of links with panels, composed from Hover Card. No navigation-menu element, and no menu role.',
+    definitions: ['ui-hover-card'],
+    styles: [
+      'tokens.css',
+      'core/floating.css',
+      'core/popover.css',
+      'core/button.css',
+      'core/group.css',
+      'core/list.css',
+      'themes/atmosphere/tokens.css',
+      'themes/atmosphere/popover.css',
+      'themes/atmosphere/button.css',
+      'themes/atmosphere/group.css',
+      'themes/atmosphere/list.css',
+      'themes/atmosphere/link.css',
+    ],
+    render: () =>
+      createNavigationMenu({
+        sections: [
+          {
+            id: 'nav-products',
+            label: 'Products',
+            links: [
+              { label: 'Components', href: '/docs/components/' },
+              { label: 'Styling', href: '/docs/styling/theming/' },
+            ],
+          },
+          {
+            id: 'nav-resources',
+            label: 'Resources',
+            links: [
+              { label: 'Getting started', href: '/docs/getting-started/installation/' },
+              { label: 'Coding agents', href: '/docs/getting-started/agents/' },
+            ],
+          },
+        ],
+        links: [{ label: 'Scope', href: '/docs/reference/scope/' }],
       }),
   }),
   example({

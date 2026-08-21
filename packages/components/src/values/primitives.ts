@@ -57,7 +57,7 @@ export type SkeletonWidth = (typeof skeletonWidths)[number]
 export const groupOrientations = ['horizontal', 'vertical'] as const
 export type GroupOrientation = (typeof groupOrientations)[number]
 
-/** Permitted values for `ui-avatar` `data-ui-size`, `ui-badge` `data-ui-size`, `ui-skeleton` `data-ui-size`, `ui-progress` `data-ui-size` and `ui-spinner` `data-ui-size`. */
+/** Permitted values for `ui-avatar` `data-ui-size`, `ui-badge` `data-ui-size`, `ui-skeleton` `data-ui-size`, `ui-progress` `data-ui-size`, `ui-pagination` `data-ui-size` and `ui-spinner` `data-ui-size`. */
 export const primitiveSizes = ['sm', 'md', 'lg'] as const
 export type PrimitiveSize = (typeof primitiveSizes)[number]
 
@@ -65,10 +65,14 @@ export type PrimitiveSize = (typeof primitiveSizes)[number]
 export const primitiveDensities = ['compact', 'normal', 'spacious'] as const
 export type PrimitiveDensity = (typeof primitiveDensities)[number]
 
-/** Permitted values for `ui-alert` `data-ui-density`, `ui-card` `data-ui-density`, `ui-progress` `data-ui-density`, `ui-list` `data-ui-density`, `ui-table` `data-ui-density` and `ui-collapsible` `data-ui-density`. */
+/** Permitted values for `ui-alert` `data-ui-density`, `ui-card` `data-ui-density`, `ui-progress` `data-ui-density`, `ui-list` `data-ui-density`, `ui-table` `data-ui-density`, `ui-breadcrumb` `data-ui-density` and `ui-collapsible` `data-ui-density`. */
 export const compactDensities = ['compact', 'normal'] as const
 export type CompactDensity = (typeof compactDensities)[number]
 
 /** Permitted values for `ui-table` `data-ui-align`. */
 export const tableAlignments = ['start', 'end'] as const
 export type TableAlignment = (typeof tableAlignments)[number]
+
+/** Permitted values for `ui-breadcrumb` `data-ui-separator`. */
+export const breadcrumbSeparators = ['chevron', 'slash'] as const
+export type BreadcrumbSeparator = (typeof breadcrumbSeparators)[number]

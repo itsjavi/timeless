@@ -16,6 +16,7 @@
     "./copy-button": "./src/copy-button.html.ts",
     "./empty": "./src/empty.html.ts",
     "./meter": "./src/meter.html.ts",
+    "./navigation": "./src/navigation.html.ts",
     "./number-stepper": "./src/number-stepper.html.ts",
     "./toggle": "./src/toggle.html.ts"
   },

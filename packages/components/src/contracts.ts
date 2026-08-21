@@ -96,6 +96,8 @@ export type ComponentName =
   | 'group'
   | 'list'
   | 'table'
+  | 'breadcrumb'
+  | 'pagination'
   | 'collapsible'
   | 'spinner'
   | 'empty'
@@ -833,6 +835,163 @@ export const componentContracts = {
     states: [],
     variables: [],
     events: [],
+  },
+  breadcrumb: {
+    kind: 'css',
+    root: {
+      kind: 'class',
+      name: 'ui-breadcrumb',
+    },
+    css: ['core/breadcrumb.css', 'themes/atmosphere/breadcrumb.css'],
+    attributes: [
+      {
+        name: 'data-ui-separator',
+        type: 'string',
+        set: 'breadcrumbSeparators',
+        values: ['chevron', 'slash'],
+        default: 'chevron',
+        description:
+          'Which glyph is drawn between crumbs. Both are generated content rather than markup, so neither reaches the accessibility tree and neither is yours to author. For any other glyph, set `--ui-breadcrumb-separator` instead of asking for a new value here.',
+      },
+      {
+        name: 'data-ui-density',
+        type: 'string',
+        set: 'compactDensities',
+        values: ['compact', 'normal'],
+        default: 'normal',
+        description: 'Gap between a crumb and its separator.',
+      },
+    ],
+    parts: [
+      {
+        name: 'item',
+        required: false,
+        selector: "[data-ui-part~='item']",
+        description:
+          'One crumb. Use `<li>`; the separator is drawn before every crumb but the first, so nothing is authored between them.',
+      },
+      {
+        name: 'link',
+        required: false,
+        selector: "[data-ui-part~='link']",
+        description: 'The link inside a crumb. Use `<a href>`.',
+      },
+      {
+        name: 'current',
+        required: false,
+        selector: "[data-ui-part~='current']",
+        description:
+          'The final crumb, which names the page you are already on. Author it as a `<span>` rather than a link — a link to here goes nowhere — and put `aria-current="page"` on it.',
+      },
+    ],
+    states: [
+      {
+        name: 'current',
+        source: 'aria',
+        public: true,
+        description:
+          'Author `aria-current="page"` on the final crumb. Timeless never writes it: which page you are on is not something a stylesheet can know.',
+      },
+    ],
+    variables: [
+      {
+        name: '--ui-breadcrumb-gap',
+        description: 'Gap between a crumb and its separator.',
+      },
+      {
+        name: '--ui-breadcrumb-separator',
+        description:
+          'The separator glyph, as a CSS string. Comes from `data-ui-separator`; set it directly for a glyph the attribute does not offer. Keep the `/ ""` alternative text if you redeclare `content` yourself, or the glyph starts being announced.',
+      },
+    ],
+    events: [],
+    accessibility: {
+      pattern: 'breadcrumb',
+      patternLabel: 'Breadcrumb',
+      keys: [],
+      notes:
+        'No keyboard behavior of its own, and the APG says so too: a breadcrumb is links in a labelled landmark, and `Tab` is the traversal. Author `<nav>` with an `aria-label`, an `<ol>` inside it, and the final crumb as an unlinked `<span aria-current="page">`. The separator is a `::before` pseudo-element with empty alternative text, so it is drawn but never announced — which is why there is no separator part to author and no `aria-hidden` to remember.',
+    },
+  },
+  pagination: {
+    kind: 'css',
+    root: {
+      kind: 'class',
+      name: 'ui-pagination',
+    },
+    css: ['core/pagination.css', 'themes/atmosphere/pagination.css'],
+    attributes: [
+      {
+        name: 'data-ui-size',
+        type: 'string',
+        set: 'primitiveSizes',
+        values: ['sm', 'md', 'lg'],
+        default: 'md',
+        description: 'Cell height, padding, and font size.',
+      },
+    ],
+    parts: [
+      {
+        name: 'item',
+        required: false,
+        selector: "[data-ui-part~='item']",
+        description: 'One cell wrapper. Use `<li>`.',
+      },
+      {
+        name: 'link',
+        required: false,
+        selector: "[data-ui-part~='link']",
+        description:
+          'A page cell. Use `<a href>` for every page but the one you are on, and a `<span aria-current="page">` for that one.',
+      },
+      {
+        name: 'previous',
+        required: false,
+        selector: "[data-ui-part~='previous']",
+        description:
+          'Steps back one page. Give it an accessible name that says so; `‹` alone names nothing. At the first page, render it as a `<span>` rather than a disabled link.',
+      },
+      {
+        name: 'next',
+        required: false,
+        selector: "[data-ui-part~='next']",
+        description: 'Steps forward one page, with the same two rules.',
+      },
+      {
+        name: 'ellipsis',
+        required: false,
+        selector: "[data-ui-part~='ellipsis']",
+        description:
+          'Stands for the pages omitted from a long range. Mark it `aria-hidden="true"`: the gap between page 3 and page 40 is not a page.',
+      },
+    ],
+    states: [
+      {
+        name: 'current',
+        source: 'aria',
+        public: true,
+        description:
+          'Author `aria-current="page"` on the cell for the page being shown. Timeless never writes it.',
+      },
+    ],
+    variables: [
+      {
+        name: '--ui-pagination-gap',
+        description: 'Gap between cells.',
+      },
+      {
+        name: '--ui-pagination-cell-size',
+        description: 'Minimum height and width of a cell.',
+      },
+    ],
+    events: [],
+    accessibility: {
+      pattern: null,
+      patternLabel: 'Pagination',
+      keys: [],
+      notes:
+        'The APG has no pagination pattern, so this documents a composition: a `<nav>` with an `aria-label`, a list, and one link per page. They are links rather than buttons on purpose — a page is a URL, so it is shareable, middle-clickable, and in the back button’s history, none of which a click handler gives you. That has one consequence worth stating: **a disabled link is not a thing.** At the first or last page, render Previous or Next as a `<span>`, not an `<a aria-disabled="true">` that still navigates. Compose `<ul class="ui-group" data-ui-attached>` for a joined strip.',
+    },
   },
   collapsible: {
     kind: 'css',
@@ -1954,7 +2113,7 @@ export const componentContracts = {
         },
       ],
       notes:
-        'The card opens on both pointer hover and keyboard focus, so it is reachable without a mouse, and clicking the trigger toggles it. `close-delay` keeps it open while the pointer crosses the gap into the surface, so the content inside is reachable. Under `variant="tooltip"` the click toggle is dropped — a tooltip describes its trigger rather than disclosing a surface — while the gap-crossing behavior stays, because WCAG 2.2 SC 1.4.13 requires it. See [Tooltip](/docs/components/tooltip/). Never put the only copy of important content here.',
+        'The card opens on both pointer hover and keyboard focus, so it is reachable without a mouse, and clicking the trigger toggles it. `close-delay` keeps it open while the pointer crosses the gap into the surface, and focus moving into the surface cancels the close outright — so a link or a button inside it is reachable with `Tab`, not only with a pointer. Under `variant="tooltip"` the click toggle is dropped — a tooltip describes its trigger rather than disclosing a surface — while the gap-crossing behavior stays, because WCAG 2.2 SC 1.4.13 requires it. See [Tooltip](/docs/components/tooltip/). Never put the only copy of important content here.',
     },
   },
   tooltip: {

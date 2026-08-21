@@ -199,3 +199,46 @@ test('the context menu surface stays hidden without JavaScript', async ({ page }
   await target.click({ button: 'right' })
   await expect(menu).toBeHidden()
 })
+
+/**
+ * Milestone 025's primary test, not a footnote. Breadcrumb and Pagination are CSS over native markup
+ * with no element, no define entrypoint, and no script, so with scripting off they must be *fully*
+ * functional rather than merely present: every link navigable, the current page marked, the separator
+ * drawn. If any of that needed JavaScript, the component was built wrong.
+ */
+test('a breadcrumb is complete and navigable without JavaScript', async ({ page }) => {
+  await page.goto('/stories/library-navigation-breadcrumb--default/')
+  const trail = page.getByRole('navigation', { name: 'Breadcrumb' })
+
+  await expect(trail).toBeVisible()
+  await expect(trail.getByRole('link', { name: 'Documentation' })).toHaveAttribute('href', '/docs/')
+  await expect(trail.getByRole('link', { name: 'Components' })).toHaveAttribute(
+    'href',
+    '/docs/components/',
+  )
+  // The final crumb is marked and is not a link, both of which the author wrote.
+  const current = trail.locator("[aria-current='page']")
+  await expect(current).toHaveText('Breadcrumb')
+  await expect(trail.getByRole('link', { name: 'Breadcrumb' })).toHaveCount(0)
+
+  // The separator is drawn by CSS, so it is there before any script would have run.
+  const separator = await trail
+    .locator("[data-ui-part~='item']")
+    .nth(1)
+    .evaluate((element) => window.getComputedStyle(element, '::before').content)
+  expect(separator).toContain('›')
+})
+
+test('pagination is complete and navigable without JavaScript', async ({ page }) => {
+  await page.goto('/stories/library-navigation-pagination--default/')
+  const pager = page.getByRole('navigation', { name: 'Pagination' })
+
+  await expect(pager).toBeVisible()
+  await expect(pager.getByRole('link', { name: 'Previous' })).toHaveAttribute('href', '?page=3')
+  await expect(pager.getByRole('link', { name: 'Next' })).toHaveAttribute('href', '?page=5')
+  await expect(pager.locator("[aria-current='page']")).toHaveText('4')
+
+  // A real link, so the browser navigates it with nothing loaded and no handler attached.
+  await pager.getByRole('link', { name: 'Page 5' }).click()
+  await expect.poll(() => new URL(page.url()).searchParams.get('page')).toBe('5')
+})

@@ -121,11 +121,35 @@ const HTML_ESCAPES: Record<string, string> = {
 /**
  * Contract descriptions are authored with backtick code spans so they read well in the registry, in
  * editor tooling, and in the manifest. Tables render them as HTML, so escape first, then convert.
+ *
+ * Emphasis is converted for the same reason: the registry prose is Markdown, the `.md` routes serve
+ * it verbatim, and this is the surface that has to catch up. Without it the HTML page printed the
+ * asterisks — Context Menu's note has said `**This is the one Timeless component with no
+ * no-JavaScript fallback**`, literally, since it was written.
  */
 export function inlineCode(text: string): string {
-  return text
-    .replace(/[&<>"]/g, (character) => HTML_ESCAPES[character] ?? character)
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
+  return withEmphasis(
+    text
+      .replace(/[&<>"]/g, (character) => HTML_ESCAPES[character] ?? character)
+      .replace(/`([^`]+)`/g, '<code>$1</code>'),
+  )
+}
+
+/**
+ * `**strong**` and `*em*`, applied only to the text between tags, so an asterisk inside a code span
+ * or an already-built `<a>` label is left as the author wrote it.
+ */
+function withEmphasis(html: string): string {
+  return html
+    .split(/(<[^>]+>[^<]*<\/(?:code|a)>|<[^>]+>)/)
+    .map((segment) =>
+      segment.startsWith('<')
+        ? segment
+        : segment
+            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+            .replace(/(^|[\s(])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>'),
+    )
+    .join('')
 }
 
 /** `inlineCode` plus Markdown links, for the short guidance notes authored in the catalog. */

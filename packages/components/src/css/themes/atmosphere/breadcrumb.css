@@ -1,0 +1,76 @@
+@layer ui.components {
+  .ui-breadcrumb {
+    --ui-breadcrumb-gap: var(--ui-space-3);
+    /* U+203A, a single right-pointing angle quote: a chevron that scales with the type. */
+    --ui-breadcrumb-separator: '\203A';
+    /*
+     * A flex or grid item defaults to `min-width: auto`, so without this the trail widens its own
+     * column instead of eliding inside it and the truncation in `core/breadcrumb.css` never fires.
+     */
+    min-inline-size: 0;
+    color: var(--ui-fg-muted);
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+
+  .ui-breadcrumb:where([data-ui-density='compact']) {
+    --ui-breadcrumb-gap: var(--ui-space-1);
+    font-size: 0.8125rem;
+  }
+
+  .ui-breadcrumb:where([data-ui-separator='slash']) {
+    --ui-breadcrumb-separator: '/';
+  }
+
+  .ui-breadcrumb :where(ol, ul) {
+    gap: var(--ui-breadcrumb-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ui-breadcrumb :where([data-ui-part~='item']) {
+    gap: var(--ui-breadcrumb-gap);
+    min-inline-size: 0;
+  }
+
+  /*
+   * The separator is drawn, never authored. The `/ ''` half is the `content` property's alternative
+   * text: it makes the glyph decorative to assistive technology, which is what an authored
+   * `<span aria-hidden="true">` between every pair of crumbs would otherwise be for.
+   */
+  .ui-breadcrumb :where([data-ui-part~='item'] + [data-ui-part~='item'])::before {
+    content: var(--ui-breadcrumb-separator) / '';
+    flex: 0 0 auto;
+    color: var(--ui-fg-subtle);
+  }
+
+  .ui-breadcrumb :where([data-ui-part~='link'], [data-ui-part~='current']) {
+    min-inline-size: 0;
+  }
+
+  .ui-breadcrumb :where([data-ui-part~='link']) {
+    border-radius: var(--ui-radius-xs);
+    color: var(--ui-fg-muted);
+    font: inherit;
+    text-decoration-line: none;
+    transition: color var(--ui-duration-fast) var(--ui-ease-standard);
+  }
+
+  .ui-breadcrumb :where([data-ui-part~='link']):hover {
+    color: var(--ui-fg);
+    text-decoration-line: underline;
+    text-decoration-thickness: 0.065em;
+    text-underline-offset: 0.18em;
+  }
+
+  .ui-breadcrumb :where([data-ui-part~='link']):focus-visible {
+    outline: 2px solid var(--ui-focus);
+    outline-offset: 3px;
+  }
+
+  .ui-breadcrumb :where([aria-current='page']) {
+    color: var(--ui-fg);
+    font-weight: 650;
+  }
+}
