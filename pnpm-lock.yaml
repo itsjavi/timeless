@@ -59,14 +59,14 @@ importers:
         version: link:../../packages/examples
     devDependencies:
       satteri:
-        specifier: ^0.10.2
-        version: 0.10.2
+        specifier: ^0.10.4
+        version: 0.10.4
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
       vite-plugin-satteri:
-        specifier: ^0.3.2
-        version: 0.3.2(satteri@0.10.2)(vite@8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(yaml@2.9.0))
+        specifier: ^0.3.4
+        version: 0.3.4(satteri@0.10.4)(vite@8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(yaml@2.9.0))
       vitest:
         specifier: ^4.1.11
         version: 4.1.11(@types/node@26.2.0)(@vitest/browser-playwright@4.1.11)(vite@8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(yaml@2.9.0))
@@ -80,8 +80,8 @@ importers:
         specifier: ^0.41.7
         version: 0.41.7(@astrojs/markdown-remark@7.2.3(supports-color@7.2.0))(astro@7.2.3(@astrojs/markdown-remark@7.2.3(supports-color@7.2.0))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.2.0)(yaml@2.9.0))(supports-color@7.2.0)(typescript@6.0.3)
       '@lucide/astro':
-        specifier: ^1.32.0
-        version: 1.32.0(astro@7.2.3(@astrojs/markdown-remark@7.2.3(supports-color@7.2.0))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.2.0)(yaml@2.9.0))
+        specifier: ^1.33.0
+        version: 1.33.0(astro@7.2.3(@astrojs/markdown-remark@7.2.3(supports-color@7.2.0))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.2.0)(yaml@2.9.0))
       '@timelessui/components':
         specifier: workspace:*
         version: link:../../packages/components
@@ -111,11 +111,11 @@ importers:
         specifier: ^0.18.5
         version: 0.18.5
       publint:
-        specifier: ^0.3.23
-        version: 0.3.23
+        specifier: ^0.3.24
+        version: 0.3.24
       tsdown:
         specifier: ^0.22.14
-        version: 0.22.14(@arethetypeswrong/core@0.18.5)(@tsdown/css@0.22.14)(@volar/typescript@2.4.28(typescript@6.0.3))(publint@0.3.23)(typescript@6.0.3)
+        version: 0.22.14(@arethetypeswrong/core@0.18.5)(@tsdown/css@0.22.14)(@volar/typescript@2.4.28(typescript@6.0.3))(publint@0.3.24)(typescript@6.0.3)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -136,11 +136,11 @@ importers:
         specifier: ^0.18.5
         version: 0.18.5
       publint:
-        specifier: ^0.3.23
-        version: 0.3.23
+        specifier: ^0.3.24
+        version: 0.3.24
       tsdown:
         specifier: ^0.22.14
-        version: 0.22.14(@arethetypeswrong/core@0.18.5)(@tsdown/css@0.22.14)(@volar/typescript@2.4.28(typescript@6.0.3))(publint@0.3.23)(typescript@6.0.3)
+        version: 0.22.14(@arethetypeswrong/core@0.18.5)(@tsdown/css@0.22.14)(@volar/typescript@2.4.28(typescript@6.0.3))(publint@0.3.24)(typescript@6.0.3)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -154,11 +154,11 @@ importers:
         specifier: ^0.18.5
         version: 0.18.5
       publint:
-        specifier: ^0.3.23
-        version: 0.3.23
+        specifier: ^0.3.24
+        version: 0.3.24
       tsdown:
         specifier: ^0.22.14
-        version: 0.22.14(@arethetypeswrong/core@0.18.5)(@tsdown/css@0.22.14)(@volar/typescript@2.4.28(typescript@6.0.3))(publint@0.3.23)(typescript@6.0.3)
+        version: 0.22.14(@arethetypeswrong/core@0.18.5)(@tsdown/css@0.22.14)(@volar/typescript@2.4.28(typescript@6.0.3))(publint@0.3.24)(typescript@6.0.3)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -346,18 +346,13 @@ packages:
   '@braidai/lang@1.1.2':
     resolution: {integrity: sha512-qBcknbBufNHlui137Hft8xauQMTZDKdophmLFv05r2eNmdIv/MlPuP4TdUknHG68UdWLgVZwgxVe735HzJNIwA==}
 
-  '@bruits/satteri-darwin-arm64@0.10.2':
-    resolution: {integrity: sha512-C2drl3UUXSiBI6KB/8/wsasabXHsMznuiWKMUilwjayngGXKT7jfOKgF/5SCq4+lSyFlmaJ4A4PkRXhDgywHjg==}
-    cpu: [arm64]
-    os: [darwin]
-
   '@bruits/satteri-darwin-arm64@0.9.5':
     resolution: {integrity: sha512-iw4nZgx9v30lWo/MTngQqi1pI78KI0DnkSm+lVJGYdmPLgAyDNJigVhpG42/Iq55A6c1Ll8q66ljyyRiQUxwow==}
     cpu: [arm64]
     os: [darwin]
 
-  '@bruits/satteri-darwin-x64@0.10.2':
-    resolution: {integrity: sha512-kHOEqZpBNqW+l3V3AV2yn3+vLMmO2QWVkW9Nj5crXoixh6mOcbH8/hzLRidday1jzE8Lf7WAif3+gbDzMhOxdA==}
+  '@bruits/satteri-darwin-x64@0.10.4':
+    resolution: {integrity: sha512-pe8jABpoGekJIDT5VoGdVGSo949MJEVMOqKSTNe3/CxvTe/ii92FUBsx8MSbhiBgXZAZdpdgIs7hMOHe7qj9tQ==}
     cpu: [x64]
     os: [darwin]
 
@@ -366,8 +361,8 @@ packages:
     cpu: [x64]
     os: [darwin]
 
-  '@bruits/satteri-linux-arm64-gnu@0.10.2':
-    resolution: {integrity: sha512-HfUbYW1+c7b9yBKUVxJ6vqWM2VIU74eJl+jhrjgvtbrdN8BOk3vTFLUwdNZ1nw8WZD/blJ+TZwQsIC31tqZClw==}
+  '@bruits/satteri-linux-arm64-gnu@0.10.4':
+    resolution: {integrity: sha512-XG1D35zCxklN400MPDYZAilX7ZLYLlh++pD8QL9aRXTGm6qINI5k9AFy2L6O/Se0epw07M9Zgtq1Ab3urTkL9g==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
@@ -378,8 +373,8 @@ packages:
     os: [linux]
     libc: [glibc]
 
-  '@bruits/satteri-linux-arm64-musl@0.10.2':
-    resolution: {integrity: sha512-vGOuAbXpSZTuatMRMrF6l/JDTM6iVPIsTSHDD2jEWKAnVNy8qACSiOHqLJb6AbwI1MZL2l2ClawojcUQAIabFw==}
+  '@bruits/satteri-linux-arm64-musl@0.10.4':
+    resolution: {integrity: sha512-jeB81UUbbAWXJkSMd5Xd6cK1J/NRaSWICsks3RzV5eQZQoYcX7/heeSBd07Y8p0uFsLL6aMWLOglLx86ydarFA==}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
@@ -390,8 +385,8 @@ packages:
     os: [linux]
     libc: [musl]
 
-  '@bruits/satteri-linux-x64-gnu@0.10.2':
-    resolution: {integrity: sha512-G5hLDfUUzzpm6fV62tqXLuiuytjTrAgySxawK7K2zVmtGgfzjOkf9a30C5MYyjp0lWy3Z50QPQyCgT/jMvLb9Q==}
+  '@bruits/satteri-linux-x64-gnu@0.10.4':
+    resolution: {integrity: sha512-X8M5JU3uui8KHPSZpvKESH1e3QLCt8JMgXg5oqzSKQxMmsebraQvImiKtFeBzVqJvinjKk86pwVRNFysgmItVw==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
@@ -402,20 +397,14 @@ packages:
     os: [linux]
     libc: [glibc]
 
-  '@bruits/satteri-linux-x64-musl@0.10.2':
-    resolution: {integrity: sha512-XroyRAIQYMDiPBQZveCbL1zNRBC8FKk+bdgiJyB9kICDQBtbDcm5x3SXQN0hTCX4G5eNMXGhddITHKoATOSfBQ==}
-    cpu: [x64]
-    os: [linux]
-    libc: [musl]
-
   '@bruits/satteri-linux-x64-musl@0.9.5':
     resolution: {integrity: sha512-bicEqglLlz++mWyADaZoP0JY20s4vDfLjaPYgQqC+NI4zZLTOOg1T4GB8aqtc822Pqji8SQBmSrTb7CrP8i08Q==}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@bruits/satteri-wasm32-wasi@0.10.2':
-    resolution: {integrity: sha512-ZDDG658oIj8q/BkmL//5DBiX4mNEy6GOR574R39BBzI2XxYbFUDVTcENmPr234bsTJIFht68aFrhGy42AxCmSQ==}
+  '@bruits/satteri-wasm32-wasi@0.10.4':
+    resolution: {integrity: sha512-Upo3tIdX6haC89VEcSISc2wcuq7jtoL1CiHITUK6jKgloQSBBebfQXZ0XvyKIDVcq3EkCxcMN3FcFgQ2e+APdQ==}
     engines: {node: '>=14.0.0'}
     cpu: [wasm32]
 
@@ -424,8 +413,8 @@ packages:
     engines: {node: '>=14.0.0'}
     cpu: [wasm32]
 
-  '@bruits/satteri-win32-arm64-msvc@0.10.2':
-    resolution: {integrity: sha512-GnHPrrJ2kG9jvoUU0N6/iENClxl5DflDhdnVPjGHM/C43SMcJZSClFikGw0qIrg3pzlxeep0kculb0FwhkWQZw==}
+  '@bruits/satteri-win32-arm64-msvc@0.10.4':
+    resolution: {integrity: sha512-2VKmGOBnqS0QrEnpzv0Od1dc26qG/01M+s8Rr5/SuNZEUkenWwLZPVzXstI4hhyg1r/OekG485xSIT6Vslovug==}
     cpu: [arm64]
     os: [win32]
 
@@ -434,8 +423,8 @@ packages:
     cpu: [arm64]
     os: [win32]
 
-  '@bruits/satteri-win32-x64-msvc@0.10.2':
-    resolution: {integrity: sha512-p4St0EI69aL8ZEgmXKLRj5Hl9QaA7/m7aQelcQNaFpnR5ij6xaGknMYKHeSJhLum8plnOGvrCLyFMAM/JwFgyw==}
+  '@bruits/satteri-win32-x64-msvc@0.10.4':
+    resolution: {integrity: sha512-xYWFT0DCjNEgaHWzR8UOF4QgMKDpZtLnXzF+VS4Umg17pP1I8YuJZLfFtXdEWRxruWd+x7O7R5ZYAH7khuJ+hw==}
     cpu: [x64]
     os: [win32]
 
@@ -846,8 +835,8 @@ packages:
   '@loaderkit/resolve@1.0.6':
     resolution: {integrity: sha512-G8FdIoF5CypfwmD9rl8BXod5HDn8JqB0CCNBXDTaRZ+yRYhARrrSToX1zg1zy9jX3zLqigsELwhT4gNtkdQAUg==}
 
-  '@lucide/astro@1.32.0':
-    resolution: {integrity: sha512-I6AWNxPHoF7PdcHXvfgVzWjeFfDdITic932T4yyNi2H4Mk9P8QNS1VzXN8Qrr3wsZ4VvctM0oTm/Q6hAHJ7xcg==}
+  '@lucide/astro@1.33.0':
+    resolution: {integrity: sha512-vhqvQKoPIW3vsOoCb+ZUDgWCP2zfiwhwRqwrnIkNxvtrm4pbaaO0qUlfPK+RvIdn9AlUmyouXFM+9w9AuUbrFA==}
     peerDependencies:
       astro: ^4 || ^5 || ^6 || ^7
 
@@ -1047,8 +1036,8 @@ packages:
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
 
-  '@publint/pack@0.1.6':
-    resolution: {integrity: sha512-3uVNyGcVplhPZSLVyeIpL7+cIRn1YCSNHLG/rUIlBQMVH8YuN9++YF+5+UDIIO9RW98dujiUoTltO7RDB5bFJA==}
+  '@publint/pack@0.1.7':
+    resolution: {integrity: sha512-4EDEmvxWtgsCnnVeBvtFIFZtUhPPt1+bA9JrSwU4Sa//6oKtzCSlGGXYJr44OD9aGISymbieJ4mCKHUygUDU+g==}
     engines: {node: '>=18'}
 
   '@quansync/fs@1.0.0':
@@ -2286,8 +2275,8 @@ packages:
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
-  magic-string@1.2.0:
-    resolution: {integrity: sha512-ptco+HFxTLgjafSLim2LojBSwfg5feBjd+SqyiwdGkzC38UPdZy3zgrHMI2CoTf5fJL38tbHMYWVzIH8BxGqJw==}
+  magic-string@1.2.1:
+    resolution: {integrity: sha512-vCfXkt3lIJha02CjPT1igeysyHVfCsEpIeD20O+X9aJ2hML3/kKx8E9Iv1FB+aMSAlDOEAtpRWzuooQCrYwdUg==}
 
   magicast@0.5.4:
     resolution: {integrity: sha512-llBEhWm1SacoRwgHUoQJYtwp4PBLF4faQi5TCpIGyGs9n4y5+juI0tDgyKIfpqxckRHaHzouUEph3THklWh03w==}
@@ -2693,8 +2682,8 @@ packages:
   property-information@7.2.0:
     resolution: {integrity: sha512-IAtzIB6sUiWaJYrX9smp3V46pBGbBeLFRGdh25kg1334VcBlD8HzhPeNIWQH9zhGmo2itIe25EHt9dQP7G5hmg==}
 
-  publint@0.3.23:
-    resolution: {integrity: sha512-5MQipUPcB7MWw84zLUkHrg/H/UBtk3LL+A0GngTTBSsiNJLQurMUaSIRG3edlOrRz4UFe0AOKK9TZdIWviV+jQ==}
+  publint@0.3.24:
+    resolution: {integrity: sha512-9zS56KrKBoqi5Qt8h92uMP8TTM9AYZSgnmCo4u2priMqkOZvQnTsziZ2p5LJ2ywbYkAjoCDp2jda9u4cgFefIw==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -2841,8 +2830,8 @@ packages:
     resolution: {integrity: sha512-xal3CZX1Xlo/k4ApwCFrHVACi9fBqJ7V+mwhBsuf/1IOKbBy098Fex+Wa/5QMubw09pSZ/u8EY8PWgevJsXp1A==}
     engines: {node: '>=6'}
 
-  satteri@0.10.2:
-    resolution: {integrity: sha512-Jhdw5lbv/7H6prAYzlxQ9FOnHRdFNkCtvSEQriRVGDrjhPCa3UjTCkVz000F8J9li7I5a5Swk+t3+mVtHKK7uw==}
+  satteri@0.10.4:
+    resolution: {integrity: sha512-EFgJouHlS3aV9/ATS73J9h4/pgW8Q+ZBLP0TpUUTfbZxh/cZ47ewuhYDR3LYQ9WbTPPAon5sDfLdBebrr16qeA==}
 
   satteri@0.9.5:
     resolution: {integrity: sha512-ZuWVl+vnM64y+/TtX8Kosv2c00W+hLQiiwnEL6H0UKVVrxFqMw4D2CJHHQaouVd89OAhtBBfjWLqhKi3TVUV4w==}
@@ -3221,8 +3210,8 @@ packages:
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
 
-  vite-plugin-satteri@0.3.2:
-    resolution: {integrity: sha512-6/pLNIBNUuD9LW1LmOg8tp3UzW+RX5OEnbQjQfiTaMyoKqif5MKqUn5V6F8Q4caJtHSCVe0NUffuSmVmloLR5g==}
+  vite-plugin-satteri@0.3.4:
+    resolution: {integrity: sha512-iPBCaZOdFRyX1z1jizNjj9gqU1ZespCr8sc+8NkgfanijgPc1jpVA5K+BjUiowFVbjguMUQJyUqskaPvFjsvOw==}
     peerDependencies:
       satteri: '>=0.10.0'
       vite: ^5 || ^6 || ^7 || ^8
@@ -3775,43 +3764,37 @@ snapshots:
 
   '@braidai/lang@1.1.2': {}
 
-  '@bruits/satteri-darwin-arm64@0.10.2':
-    optional: true
-
   '@bruits/satteri-darwin-arm64@0.9.5':
     optional: true
 
-  '@bruits/satteri-darwin-x64@0.10.2':
+  '@bruits/satteri-darwin-x64@0.10.4':
     optional: true
 
   '@bruits/satteri-darwin-x64@0.9.5':
     optional: true
 
-  '@bruits/satteri-linux-arm64-gnu@0.10.2':
+  '@bruits/satteri-linux-arm64-gnu@0.10.4':
     optional: true
 
   '@bruits/satteri-linux-arm64-gnu@0.9.5':
     optional: true
 
-  '@bruits/satteri-linux-arm64-musl@0.10.2':
+  '@bruits/satteri-linux-arm64-musl@0.10.4':
     optional: true
 
   '@bruits/satteri-linux-arm64-musl@0.9.5':
     optional: true
 
-  '@bruits/satteri-linux-x64-gnu@0.10.2':
+  '@bruits/satteri-linux-x64-gnu@0.10.4':
     optional: true
 
   '@bruits/satteri-linux-x64-gnu@0.9.5':
     optional: true
 
-  '@bruits/satteri-linux-x64-musl@0.10.2':
-    optional: true
-
   '@bruits/satteri-linux-x64-musl@0.9.5':
     optional: true
 
-  '@bruits/satteri-wasm32-wasi@0.10.2':
+  '@bruits/satteri-wasm32-wasi@0.10.4':
     dependencies:
       '@emnapi/core': 1.11.1
       '@emnapi/runtime': 1.11.1
@@ -3825,13 +3808,13 @@ snapshots:
       '@napi-rs/wasm-runtime': 1.2.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)
     optional: true
 
-  '@bruits/satteri-win32-arm64-msvc@0.10.2':
+  '@bruits/satteri-win32-arm64-msvc@0.10.4':
     optional: true
 
   '@bruits/satteri-win32-arm64-msvc@0.9.5':
     optional: true
 
-  '@bruits/satteri-win32-x64-msvc@0.10.2':
+  '@bruits/satteri-win32-x64-msvc@0.10.4':
     optional: true
 
   '@bruits/satteri-win32-x64-msvc@0.9.5':
@@ -4139,7 +4122,7 @@ snapshots:
     dependencies:
       '@braidai/lang': 1.1.2
 
-  '@lucide/astro@1.32.0(astro@7.2.3(@astrojs/markdown-remark@7.2.3(supports-color@7.2.0))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.2.0)(yaml@2.9.0))':
+  '@lucide/astro@1.33.0(astro@7.2.3(@astrojs/markdown-remark@7.2.3(supports-color@7.2.0))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.2.0)(yaml@2.9.0))':
     dependencies:
       astro: 7.2.3(@astrojs/markdown-remark@7.2.3(supports-color@7.2.0))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.2.0)(yaml@2.9.0)
 
@@ -4289,7 +4272,7 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
-  '@publint/pack@0.1.6':
+  '@publint/pack@0.1.7':
     dependencies:
       tinyexec: 1.3.0
 
@@ -4419,7 +4402,7 @@ snapshots:
       lightningcss: 1.33.0
       postcss-load-config: 6.0.1(postcss@8.5.26)(yaml@2.9.0)
       rolldown: 1.2.4
-      tsdown: 0.22.14(@arethetypeswrong/core@0.18.5)(@tsdown/css@0.22.14)(@volar/typescript@2.4.28(typescript@6.0.3))(publint@0.3.23)(typescript@6.0.3)
+      tsdown: 0.22.14(@arethetypeswrong/core@0.18.5)(@tsdown/css@0.22.14)(@volar/typescript@2.4.28(typescript@6.0.3))(publint@0.3.24)(typescript@6.0.3)
     optionalDependencies:
       postcss: 8.5.26
     transitivePeerDependencies:
@@ -4793,7 +4776,7 @@ snapshots:
       http-cache-semantics: 4.2.0
       js-yaml: 4.3.1
       jsonc-parser: 3.3.1
-      magic-string: 1.2.0
+      magic-string: 1.2.1
       magicast: 0.5.4
       mrmime: 2.0.1
       neotraverse: 1.0.1
@@ -5595,7 +5578,7 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  magic-string@1.2.0:
+  magic-string@1.2.1:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
@@ -6286,9 +6269,9 @@ snapshots:
 
   property-information@7.2.0: {}
 
-  publint@0.3.23:
+  publint@0.3.24:
     dependencies:
-      '@publint/pack': 0.1.6
+      '@publint/pack': 0.1.7
       package-manager-detector: 1.8.0
       picocolors: 1.1.1
       sade: 1.8.1
@@ -6519,22 +6502,20 @@ snapshots:
     dependencies:
       mri: 1.2.0
 
-  satteri@0.10.2:
+  satteri@0.10.4:
     dependencies:
       '@types/estree-jsx': 1.0.5
       '@types/hast': 3.0.5
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
     optionalDependencies:
-      '@bruits/satteri-darwin-arm64': 0.10.2
-      '@bruits/satteri-darwin-x64': 0.10.2
-      '@bruits/satteri-linux-arm64-gnu': 0.10.2
-      '@bruits/satteri-linux-arm64-musl': 0.10.2
-      '@bruits/satteri-linux-x64-gnu': 0.10.2
-      '@bruits/satteri-linux-x64-musl': 0.10.2
-      '@bruits/satteri-wasm32-wasi': 0.10.2
-      '@bruits/satteri-win32-arm64-msvc': 0.10.2
-      '@bruits/satteri-win32-x64-msvc': 0.10.2
+      '@bruits/satteri-darwin-x64': 0.10.4
+      '@bruits/satteri-linux-arm64-gnu': 0.10.4
+      '@bruits/satteri-linux-arm64-musl': 0.10.4
+      '@bruits/satteri-linux-x64-gnu': 0.10.4
+      '@bruits/satteri-wasm32-wasi': 0.10.4
+      '@bruits/satteri-win32-arm64-msvc': 0.10.4
+      '@bruits/satteri-win32-x64-msvc': 0.10.4
 
   satteri@0.9.5:
     dependencies:
@@ -6768,7 +6749,7 @@ snapshots:
 
   trough@2.2.0: {}
 
-  tsdown@0.22.14(@arethetypeswrong/core@0.18.5)(@tsdown/css@0.22.14)(@volar/typescript@2.4.28(typescript@6.0.3))(publint@0.3.23)(typescript@6.0.3):
+  tsdown@0.22.14(@arethetypeswrong/core@0.18.5)(@tsdown/css@0.22.14)(@volar/typescript@2.4.28(typescript@6.0.3))(publint@0.3.24)(typescript@6.0.3):
     dependencies:
       ansis: 4.3.1
       cac: 7.0.0
@@ -6788,7 +6769,7 @@ snapshots:
     optionalDependencies:
       '@arethetypeswrong/core': 0.18.5
       '@tsdown/css': 0.22.14(postcss@8.5.26)(tsdown@0.22.14)(yaml@2.9.0)
-      publint: 0.3.23
+      publint: 0.3.24
       typescript: 6.0.3
     transitivePeerDependencies:
       - '@typescript/native-preview'
@@ -6922,9 +6903,9 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vite-plugin-satteri@0.3.2(satteri@0.10.2)(vite@8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(yaml@2.9.0)):
+  vite-plugin-satteri@0.3.4(satteri@0.10.4)(vite@8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(yaml@2.9.0)):
     dependencies:
-      satteri: 0.10.2
+      satteri: 0.10.4
       smol-toml: 1.8.0
       vite: 8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(yaml@2.9.0)
       yaml: 2.9.0

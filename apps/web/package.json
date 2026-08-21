@@ -15,7 +15,7 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
     "@astrojs/starlight": "^0.41.7",
-    "@lucide/astro": "^1.32.0",
+    "@lucide/astro": "^1.33.0",
     "@timelessui/components": "workspace:*",
     "@timelessui/examples": "workspace:*",
     "astro": "^7.2.3"
