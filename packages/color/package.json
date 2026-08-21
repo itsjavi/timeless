@@ -1,6 +1,6 @@
 {
   "name": "@timelessui/color",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Dependency-free CSS color parsing, conversion, gamut, and contrast utilities.",
   "keywords": [
     "color",

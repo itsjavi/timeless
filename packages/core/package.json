@@ -1,6 +1,6 @@
 {
   "name": "@timelessui/core",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Thin Web Components authoring layer for Timeless UI.",
   "keywords": [
     "custom-elements",
