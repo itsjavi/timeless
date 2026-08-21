@@ -199,7 +199,7 @@ mention of `core:validate`, the two aggregates, or the two hand-written entries 
 before `exports:validate` and `performance:check` can pass; and both skills plus `validators.md`
 attributed StoryLite route ids to the story title.
 
-**Files.** 55 changed. New: `src/copy-button.ts` and its test, `src/css/core/copy-button.css`,
+**Files.** 52 changed. New: `src/copy-button.ts` and its test, `src/css/core/copy-button.css`,
 `src/css/themes/atmosphere/copy-button.css`, `src/define/ui-copy-button.ts` (generated),
 `packages/examples/src/copy-button.html.ts`, and the story with its factory re-export.
 
