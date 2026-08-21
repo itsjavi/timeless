@@ -1,0 +1,139 @@
+---
+title: The post-framework era
+description:
+  Why UI primitives outlive the frameworks they were written for, which browser features made that
+  possible, and how Timeless differs from the other framework-agnostic libraries.
+sidebar:
+  order: 1
+---
+
+import { Aside } from '@astrojs/starlight/components'
+
+The frontend ecosystem rearranges itself every few years. Your buttons, dialogs, and dropdowns do
+not need to. The problem is that most component libraries make them, because the primitives are
+coupled to a framework rather than to the platform underneath it.
+
+This page is the reasoning behind the library. It is not required reading before
+[Installation](/docs/getting-started/installation/) — but it explains why the markup on every
+component page looks the way it does.
+
+## The cost is transferability, not bundle size
+
+A component library written for one framework is only reusable inside that framework. shadcn/ui is
+React; using the same primitives in Vue or Svelte meant the community re-implementing them as
+separate projects rather than importing them. That is the coupling made visible: the design work
+transferred, the code could not.
+
+So the cost of switching frameworks is not only the application. It is the layer underneath it — the
+layer that had nothing framework-specific about it in the first place. A dialog needs a top layer, a
+focus trap, Escape handling, and an accessible name. None of those are React opinions.
+
+Timeless keeps that layer in the two languages every framework already renders: HTML and CSS. A
+custom element is an HTML tag, so there is no adapter to write and no boundary to cross. The
+[framework guides](/docs/frameworks/vanilla/) are about where the imports go, not about a different
+implementation per framework.
+
+## Why this became possible
+
+Frameworks did not invent overlays and dark mode for fun. They shipped those features because the
+platform had no version of them. Each row below was a genuine gap, and each has since closed:
+
+| Once needed framework or library code            | Now a platform feature                    |
+| ------------------------------------------------ | ----------------------------------------- |
+| Positioning a surface next to its trigger        | CSS anchor positioning                    |
+| Top layer, light dismiss, Escape, focus trapping | Popover API and `<dialog>`                |
+| Dark mode through a theme provider and a class   | `light-dark()` and `color-scheme`         |
+| Winning a specificity fight with library CSS     | Cascade layers                            |
+| Component state a stylesheet can read            | `ElementInternals` states and `:state()`  |
+| A click handler to open a dialog                 | Invoker Commands (`command`/`commandfor`) |
+| A reusable tag that carries its own behavior     | Custom elements                           |
+
+These were not framework ideas. They were framework workarounds, and a workaround outlives its
+reason quietly. The exact versions each feature landed in, and what happens in a browser missing
+one, are in [Browser support](/docs/reference/browser-support/).
+
+## How the library uses that
+
+There are 49 documented components, and they divide by whether the platform can express them
+declaratively.
+
+**26 are CSS over native HTML, with no JavaScript at all.** A class on real markup. There is no
+runtime to boot and no hydration step, because there is nothing to hydrate — it is a stylesheet.
+
+**23 are custom elements**, used where keyboard coordination, focus management, or ARIA
+relationships genuinely cannot be expressed in CSS. Those elements enhance markup you already wrote;
+they do not render it. Popover is the pattern all of them follow:
+
+```html
+<ui-popover>
+  <button type="button" data-ui-part="trigger" popovertarget="menu">Menu</button>
+  <div id="menu" popover="auto">The content</div>
+</ui-popover>
+```
+
+That opens, closes, light-dismisses, and handles Escape with JavaScript disabled, because
+`popovertarget` and `popover` are platform attributes. Registration then adds only what the platform
+does not: `aria-controls`, `aria-expanded`, a default `aria-haspopup`, a surface `role`, and
+anchored positioning. Nothing is created, so nothing can arrive late and rearrange the page.
+
+The markup you author is the markup that ships. That is what removes the unstyled flash and the
+shell that shifts once a bundle lands — there was never a moment when the DOM was wrong.
+
+<Aside type="caution" title="Two components have no declarative shell">
+  [Context Menu](/docs/components/context-menu/) needs pointer coordinates and [Copy
+  Button](/docs/components/copy-button/) needs the clipboard. The platform offers no markup for
+  either, so both require JavaScript to do anything. Each says so on its own page rather than
+  leaving it to be discovered.
+</Aside>
+
+## What is different from the other framework-agnostic libraries
+
+Framework-agnostic UI is not a new idea, and pretending otherwise would be dishonest — open-wc keeps
+[a list of component libraries](https://open-wc.org/guides/community/component-libraries/) built on
+the same standards. Several are excellent. Timeless makes three different trades.
+
+**CSS-first rather than JavaScript-first.** In most web-component libraries the component renders
+from JavaScript, so the element is empty until its bundle executes. Here more than half the library
+has no JavaScript to execute, and the rest enhances existing markup instead of producing it.
+
+**Light DOM rather than Shadow DOM.** Shadow DOM gives real style encapsulation, which is a
+legitimate thing to want. It also means your stylesheet cannot reach inside, so styling happens
+through whatever custom properties and `::part()` hooks the author remembered to expose. Timeless
+keeps anatomy in the Light DOM as a `data-ui-part` token list, so your CSS — or your utility classes
+— select it directly. Cascade layers put your rules above ours without a specificity fight.
+
+**Server-rendered output that is already correct.** Declarative Shadow DOM has made SSR workable for
+shadow-based libraries, so this is a narrowing gap rather than an absent capability. The distinction
+that remains is what the first paint is worth: Timeless emits plain HTML and CSS that is styled and
+operable before any script runs, rather than markup awaiting an upgrade.
+
+The trade is deliberate. You give up style encapsulation, and you get markup you can inspect,
+override, and server-render with no framework in the request path.
+
+## What post-framework does not mean
+
+It does not mean less rigor. It means the rigor moves out of a runtime and into the build.
+
+Nothing here re-implements what the browser already does, so the discipline is in keeping the
+boundaries honest. Every public attribute, part, state, and permitted value is declared once in a
+component registry, and the build proves those values against the stylesheets in both directions — a
+documented value is a value the CSS implements. The CSS ships in three tiers, and a script fails the
+build if a `core/` stylesheet declares a colour or a theme stylesheet keeps a property core owns.
+[Styling](/docs/styling/css/) covers what that split means when you replace the theme.
+
+You still own accessibility, and so do we: the conformance target is WCAG 2.2 Level AA, every
+interactive component declares its keyboard contract, and the end-to-end suite asserts each
+component still reads correctly with the theme removed.
+
+Frameworks were a loan taken against an unfinished platform. The platform shipped. This is what it
+looks like to stop making payments — not less engineering, just less of it spent in your users'
+browsers.
+
+## Next
+
+- [Installation](/docs/getting-started/installation/) — add the package, load the CSS, register an
+  element.
+- [Quick start](/docs/getting-started/quick-start/) — build an interface from native HTML and
+  explicit enhancement.
+- [What Timeless does not ship](/docs/reference/scope/) — where the boundary of "primitive" sits,
+  per component.

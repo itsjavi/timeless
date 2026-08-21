@@ -414,6 +414,24 @@ input {
     -3px 3px 0 var(--chrome-bg);
 }
 
+/*
+ * The tagline is display type wearing a six-layer text-shadow outline, so a default underline sits
+ * inside that outline and is eaten by it. The offset clears the outline and the thickness keeps the
+ * rule legible at 45px. The ink colour is unchanged, so the underline — not colour — is what marks
+ * this as a link, which is what SC 1.4.1 asks for.
+ */
+.hero__why {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 6px;
+}
+
+.hero__why:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--chrome-accent);
+}
+
 .hero__actions {
   display: flex;
   flex-wrap: wrap;

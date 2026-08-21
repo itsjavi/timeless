@@ -51,6 +51,7 @@ investigation someone already finished. Verify anything you intend to act on aga
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | [`research/library-comparison.md`](research/library-comparison.md) | Does Timeless ship too much, too little, or the wrong things, measured against Base UI and shadcn/ui? Produced milestones 021 to 025      |
 | [`research/llm-support.md`](research/llm-support.md)               | How should a component library make itself usable by coding agents, and which mechanisms suit Astro and Starlight? Produced milestone 027 |
+| [`research/programmatic-api.md`](research/programmatic-api.md)     | How usable is Timeless from JavaScript — events, imperative methods, dismissal, and animated presence? Not yet acted on                   |
 
 Every document carries `model` and `date` frontmatter naming what produced it and when, and ends
 with a section recording what it led to — `What this produced` in `llm-support.md`,

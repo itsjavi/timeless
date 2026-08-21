@@ -14,6 +14,7 @@
  */
 import { readFile, readdir } from 'node:fs/promises'
 import { extname, resolve } from 'node:path'
+import { examples } from '@timelessui/examples'
 
 const root = resolve(import.meta.dirname, '../../..')
 
@@ -149,8 +150,51 @@ if (!new RegExp(`\\b${numberWord(anchored.length)}\\b`, 'i').test(anchorClaim)) 
   )
 }
 
+/**
+ * The post-framework page splits the library into the components that need no JavaScript and the
+ * ones that do, and the split is its whole argument — a stale number there is not a typo, it is the
+ * page arguing from a library that no longer exists.
+ *
+ * The numbers are literals rather than a build-time `examples` expression on purpose. Every
+ * documentation page is also served as raw Markdown for coding agents, and that route does not
+ * evaluate MDX, so an interpolated count reaches an agent as `{cssOnly}`. Literals read correctly in
+ * both places, and this check is what keeps them true. A component's `definitions` is empty exactly
+ * when it registers no custom element, which is the same thing as needing no JavaScript.
+ */
+const catalogued = examples.filter((example) => example.domain !== 'recipes')
+const cssOnlyCount = catalogued.filter((example) => example.definitions.length === 0).length
+const expectedCounts = [
+  ['documented components', catalogued.length],
+  ['CSS-only components', cssOnlyCount],
+  ['enhanced components', catalogued.length - cssOnlyCount],
+]
+const postFramework = await readFile(
+  resolve(root, 'apps/web/src/content/docs/docs/getting-started/post-framework.mdx'),
+  'utf8',
+)
+const claimedCounts = [
+  [/There are (\d+) documented components/, 'documented components'],
+  [/\*\*(\d+) are CSS over native HTML/, 'CSS-only components'],
+  [/\*\*(\d+) are custom elements\*\*/, 'enhanced components'],
+]
+const countFailures = []
+for (const [pattern, label] of claimedCounts) {
+  const match = postFramework.match(pattern)
+  if (!match) {
+    countFailures.push(`the ${label} sentence no longer matches ${pattern}`)
+    continue
+  }
+  const expected = expectedCounts.find(([name]) => name === label)[1]
+  if (Number(match[1]) !== expected) {
+    countFailures.push(`it says ${match[1]} ${label}, but the catalog has ${expected}`)
+  }
+}
+if (countFailures.length > 0) {
+  throw new Error(`The post-framework page misstates the library:\n- ${countFailures.join('\n- ')}`)
+}
+
 console.log(
-  `Verified ${claims.length} platform claims against the library source, ${principles.length} house rules, and ${anchored.length} anchored surfaces.`,
+  `Verified ${claims.length} platform claims against the library source, ${principles.length} house rules, ${anchored.length} anchored surfaces, and ${expectedCounts.length} component counts.`,
 )
 
 function numberWord(count) {
