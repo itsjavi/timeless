@@ -165,6 +165,9 @@
     },
     "./css/*.css": "./dist/css/*.css"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "pnpm generate:check && pnpm contracts:validate && pnpm core:validate && pnpm manifest:validate && tsdown --copy src/css",
     "contracts:validate": "node scripts/validate-contracts.mjs",

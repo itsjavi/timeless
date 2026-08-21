@@ -32,6 +32,7 @@
     "preview:site": "pnpm -F @apps/web exec vite preview --host 0.0.0.0 --port ${PORT:-6339} --outDir ../../dist-site",
     "preview:ui": "pnpm build && pnpm -F @apps/stories run preview",
     "preview:web": "pnpm -F @apps/web run build && pnpm -F @apps/web run preview",
+    "release:check": "node scripts/check-release-version.mjs",
     "publint": "pnpm -r --if-present --stream run publint",
     "qa": "pnpm test:full-qa",
     "test": "pnpm -r --if-present --parallel --stream run test",
