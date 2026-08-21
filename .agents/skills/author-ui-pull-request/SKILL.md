@@ -116,7 +116,12 @@ state; anything else that moves reads as part of the change.
 - **Theme is not a toggle.** `tokens.css` declares `color-scheme: light dark` and the palette is
   `light-dark()`, so the theme is whatever `colorScheme` the page is created with. There is no theme
   attribute to set. Shoot `light` unless the change is dark-only, and shoot both when it touches a
-  `light-dark()` pair.
+  `light-dark()` pair — or a token that _lacks_ one, since a single-value colour is exactly the
+  change whose dark-mode result nobody looked at.
+- **Paint a surface for any dark shot outside StoryLite.** The library leaves `html` and `body`
+  unpainted on purpose, so a bare page in the dark scheme renders dark text over whatever the UA
+  canvas is. StoryLite paints one; a scratch page does not, and neither does axe, which blends over
+  white and then reports contrast failures that are not real.
 - **`deviceScaleFactor: 2`.** A 1x shot of 13px type looks like a rendering bug on a retina screen.
 - **Open the overlay before shooting.** In `#/canvas/` there is no iframe, so the trigger is
   directly reachable. Wait for the surface rather than sleeping:

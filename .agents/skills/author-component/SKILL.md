@@ -207,6 +207,17 @@ caveats belong.
 
 - Story: use the `author-component-story` skill.
 - Accessibility: use the `verify-apg-conformance` skill for anything with semantics or interaction.
+  Anything a keyboard drives needs an `accessibility()` block, not just a catalog entry — without
+  one the reference page renders a generic paragraph and no pattern link, no keyboard table, and no
+  notes. When the APG has no pattern for the composition, pass `null` and let `patternLabel` and
+  `notes` carry it, as Context Menu, Form, and OTP Field do.
+- Every key you declare in that block must be pressed by a test. A declared row with no `keydown`
+  handler behind it reaches consumers through the reference page, `contracts.ts`, `llms-full.txt`,
+  and the packaged skill, and nothing in the build catches it. If the platform provides the key, say
+  so in `notes` instead of claiming it in `keys`.
+- Never take focus away from the user. If the component sets `disabled`, `hidden`, or closes a
+  `popover` on an element that might hold focus, Chromium drops focus to `<body>` and restores
+  nothing. Prefer `aria-disabled="true"` with a no-op activation, or move focus deliberately.
 - E2E: extend the closest spec in `apps/e2e/tests`. Add a `no-javascript.spec.ts` case when the
   component is meant to work before hydration, and a `platform.spec.ts` case when engine behavior
   differs.

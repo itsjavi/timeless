@@ -6,9 +6,11 @@ description:
   package README, the MDX documentation, catalog guidance, registry descriptions, milestone records,
   DESIGN.md, and the agent-facing surface of context7.json, the llms.txt routes, the packaged
   using-timeless-ui skill, and the .agents tree of skills, subagents, Codex metadata, reference
-  files, and launch configuration — and report claims the code no longer supports. Read-only. Use
-  for requests like "check the docs", "are the docs still accurate", "is the README stale", or "do
-  the agent files and skills still match the repo", when preparing a release, when closing a
+  files, and launch configuration — and report claims the code no longer supports, including install
+  and registration snippets that resolve but do nothing, documented files the published tarball does
+  not carry, and public roots documented nowhere. Read-only. Use for requests like "check the docs",
+  "are the docs still accurate", "is the README stale", "do the install instructions still work", or
+  "do the agent files and skills still match the repo", when preparing a release, when closing a
   milestone, and after a change to the public API, the generated pipeline, or a skill. Reports
   drift; it does not write new documentation.
 ---
@@ -150,6 +152,56 @@ Compare the `exports` map in `packages/components/package.json` against what the
 to import — especially `apps/web/src/content/docs/docs/reference/packages.mdx`, the framework
 guides, and `packages/components/README.md`. A public export must never change name or module, so a
 doc naming a moved export is either stale prose or an unannounced break.
+
+Three failures live here that resolving a specifier does not catch, all three found by milestone
+030:
+
+**An import that resolves but does nothing.** A bare `import '@timelessui/components/define/ui-x'`
+is only registration if that module has a module-level side effect. Read the module, do not trust
+the sentence around it:
+
+```bash
+grep -rn "customElements.define\|defineRegisteredElement(" packages/components/src/define/
+grep -rn "^import '@timelessui/components/define/" apps/web/src/content/docs packages/components/skills context7.json
+```
+
+Every hit in the second command is a claim that the first command has to support. The same question
+applies to any snippet whose only job is a side effect.
+
+**A documented file the published package does not carry.** The site deploys on every push to `main`
+and npm publishes only on a tag, so documentation can promise a component that no released version
+contains. Check the docs against the tarball, not against `dist/`:
+
+```bash
+npm pack @timelessui/components --pack-destination /tmp >/dev/null && tar tzf /tmp/timelessui-components-*.tgz | sed 's|^package/||' | sort > /tmp/published.txt
+grep -rhoE "@timelessui/components/(css|define)/[a-z0-9/.-]+" apps/web/src/content/docs | sort -u
+```
+
+A `css/` specifier maps to `dist/<path>`, a `define/` specifier to `dist/<path>.js`. Anything
+missing is a documented install that fails at build time for a consumer on the latest release.
+
+**A public root documented nowhere.** `validate-docs.mjs` proves that documented things have routes,
+not that every root is documented, so a root can ship styled and unmentioned:
+
+```bash
+node --input-type=module -e '
+import { readFileSync } from "node:fs"
+const { components } = await import("./packages/components/scripts/component-registry.mjs")
+const catalog = readFileSync("packages/examples/src/catalog.ts", "utf8")
+const claimed = new Set(
+  [...catalog.matchAll(/contracts:\s*\[([^\]]*)\]/g)]
+    .flatMap((m) => m[1].split(",").map((s) => s.trim().replace(/[^a-zA-Z]/g, ""))),
+)
+for (const c of Object.values(components)) {
+  if (c.root?.name && !claimed.has(c.name)) console.log("unclaimed root:", c.root.name)
+}
+'
+```
+
+Then check the inverse of the URL convention. The skill and `context7.json` both tell an agent to
+fetch `/docs/components/<component>.md`, but that route is keyed by catalog id rather than by root,
+so a root name lifted out of `reference/contracts.md` can 404. Every row of that table needs a
+reachable page.
 
 ### 6. Milestone record integrity
 

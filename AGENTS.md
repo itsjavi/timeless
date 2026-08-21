@@ -45,12 +45,24 @@ See `.agents/README.md` for the layout, the frontmatter contract, and how to add
 - Prioritize CSS-only components that don't require JS, unless we need to support A11Y features
 - Prefer anchor-positioning, native popover and dialogs, over fake ones or JS-based positioning
   (unless there is no other choice)
-- Follow WCAG and the WAI-ARIA Authoring Practices Guide patterns for every component with semantics
-  or interaction: https://www.w3.org/WAI/ARIA/apg/patterns/
+- The conformance target is **WCAG 2.2 Level AA**, which is the tag set `apps/e2e` scans (`wcag2a`,
+  `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22a`, `wcag22aa`). Follow the WAI-ARIA Authoring Practices
+  Guide patterns for every component with semantics or interaction:
+  https://www.w3.org/WAI/ARIA/apg/patterns/
+- Use the `verify-apg-conformance` skill for anything with semantics or interaction. It carries the
+  criteria the axe sweep cannot see — contrast in both colour schemes, focus-indicator contrast,
+  timing limits, focus survival, and target size.
 - Prefer native HTML semantics before ARIA. Add ARIA only when it completes a native contract, and
   never use ARIA to replace missing DOM behavior.
 - Interactive components must implement the keyboard behavior, focus handling, accessible names,
-  descriptions, roles, states, and relationships expected by the relevant APG pattern.
+  descriptions, roles, states, and relationships expected by the relevant APG pattern, and must
+  declare that contract in `accessibility()` in the component registry. Every key declared there
+  must be pressed by a test; a key the platform provides belongs in `notes`, not in `keys`.
+- Never remove the element that holds focus. Setting `disabled`, `hidden`, or closing a `popover` on
+  a focused element drops focus to `<body>` and restores nothing. Prefer `aria-disabled="true"` with
+  a no-op activation, or move focus deliberately.
+- Every colour token used as a foreground needs a `light-dark()` pair. A token used as a fill behind
+  a fixed foreground must not have one.
 - Decorative anatomy and generated behavior hooks must be hidden from assistive technology when
   appropriate, and stories must show copyable markup with proper labels and relationships.
 - When CSS is not enough, prefer Light DOM over Shadow DOM.
