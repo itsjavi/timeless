@@ -6,10 +6,12 @@ description:
   script enforces — visual styling written from component JS, data-ui-* used as configuration on
   custom-element hosts, boolean attributes carrying string values, hand-copied value lists, private
   runtime hooks in copyable source, ARIA substituting for native behavior, Shadow DOM, diagnostics
-  exposed through public data-ui-*, and components that stop reading correctly without the
-  Atmosphere theme. Read-only. Use for requests like "check the conventions", "does this follow
-  AGENTS.md", or "review this before I open the PR", on a diff or repo-wide. Not for correctness
-  bugs, and not for anything a validator already proves.
+  exposed through public data-ui-*, declared keyboard rows with no handler behind them, interactive
+  roots with no accessibility() block, code that disables or hides the element holding focus, and
+  components that stop reading correctly without the Atmosphere theme. Read-only. Use for requests
+  like "check the conventions", "does this follow AGENTS.md", or "review this before I open the PR",
+  on a diff or repo-wide. Not for correctness bugs, not for judging a keyboard or WCAG contract —
+  that is verify-apg-conformance — and not for anything a validator already proves.
 ---
 
 # Audit component contracts
@@ -143,7 +145,36 @@ replace missing DOM behavior. Prefer Light DOM over Shadow DOM. Prefer anchor po
 `popover`, and native `<dialog>` over JS equivalents.
 
 For anything with semantics or interaction, hand the component to `verify-apg-conformance` rather
-than judging its keyboard contract here.
+than judging its keyboard contract here. Two things belong in this audit even so, because both are
+grep-shaped contract violations rather than accessibility judgements:
+
+**A declared key with no handler behind it.** `accessibility().keys` is part of the public contract,
+and it reaches consumers through the reference page, `contracts.ts`, `llms-full.txt`, and the
+packaged skill. Cross-check what the registry declares against what the module handles:
+
+```bash
+grep -rn "COLLECTION_KEYS\|key(" packages/components/scripts/component-registry.mjs
+grep -rn "@listen('keydown')" -A 12 packages/components/src
+```
+
+A component that declares a row and has no `keydown` handler, or whose handler routes through a
+helper that returns `null` for that key, is reporting behavior it does not have.
+
+**An interactive root with no `accessibility()` block.** Its reference page then renders a generic
+paragraph and nothing else — no pattern link, no keyboard table. Fine for Separator, not for
+anything a keyboard drives:
+
+```bash
+grep -c "accessibility(" packages/components/scripts/component-registry.mjs
+```
+
+**Removing the focused element.** A component that sets `disabled`, `hidden`, or closes a `popover`
+on something the user may have focused drops focus to `<body>`. Flag the write; leave the WCAG
+verdict to `verify-apg-conformance`:
+
+```bash
+grep -rn "\.disabled = \|removeAttribute('popover')\|\.hidden = true" packages/components/src --include='*.ts' | grep -v "\.test\."
+```
 
 ### 7. Diagnostics leaking into the public surface
 

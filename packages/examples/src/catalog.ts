@@ -30,6 +30,7 @@ import {
   createSelectField,
   createSwitchField,
   createTextField,
+  createTextareaField,
 } from './forms.html.ts'
 import { createMeter } from './meter.html.ts'
 import { createBreadcrumb, createNavigationMenu, createPagination } from './navigation.html.ts'
@@ -551,10 +552,12 @@ export const examples = [
     id: 'field',
     domain: 'forms',
     group: 'Forms',
-    contracts: ['field', 'label', 'input', 'description', 'error'],
+    contracts: ['field', 'label', 'input', 'textarea', 'description', 'error'],
     component: 'Field',
     title: 'Field',
     description: 'Connect labels, descriptions, errors, and native controls.',
+    authoring:
+      'One field is one label, one control, and whatever description or error belongs to it. `ui-input` and `ui-textarea` are the same field with a different control — both take `data-ui-size`, and the `<textarea>` keeps its own native resize handle.',
     definitions: [],
     styles: [
       'tokens.css',
@@ -563,14 +566,23 @@ export const examples = [
       'themes/atmosphere/forms.css',
     ],
     render: () =>
-      createTextField({
-        id: 'email',
-        name: 'email',
-        label: 'Email',
-        type: 'email',
-        placeholder: 'you@example.com',
-        description: 'Used for release notifications.',
-      }),
+      [
+        createTextField({
+          id: 'email',
+          name: 'email',
+          label: 'Email',
+          type: 'email',
+          placeholder: 'you@example.com',
+          description: 'Used for release notifications.',
+        }),
+        createTextareaField({
+          id: 'release-notes',
+          name: 'notes',
+          label: 'Release notes',
+          placeholder: 'What changed in this release?',
+          description: 'Shown on the release page.',
+        }),
+      ].join('\n'),
   }),
   example({
     id: 'fieldset',

@@ -4,11 +4,13 @@ import { elements } from './scripts/element-registry.mjs'
 
 const elementEntries = [...new Set(elements.map((item) => `src/${item.module}.ts`))]
 const defineEntries = elements.map((item) => `src/define/${item.tag}.ts`)
+const registerEntries = elements.map((item) => `src/register/${item.tag}.ts`)
 
 export default defineConfig({
   entry: [
     'src/index.ts',
     'src/define.ts',
+    'src/register.ts',
     'src/collection.ts',
     'src/events.ts',
     'src/value-state.ts',
@@ -21,6 +23,7 @@ export default defineConfig({
     'src/svelte.ts',
     ...elementEntries,
     ...defineEntries,
+    ...registerEntries,
   ],
   format: ['esm'],
   dts: true,

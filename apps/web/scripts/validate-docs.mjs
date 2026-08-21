@@ -1,7 +1,7 @@
 import { access, readFile, readdir } from 'node:fs/promises'
 import { extname, resolve, sep } from 'node:path'
 import { examples } from '@timelessui/examples'
-import { valueSets } from '../../../packages/components/scripts/component-registry.mjs'
+import { components, valueSets } from '../../../packages/components/scripts/component-registry.mjs'
 import {
   incompleteTiers,
   readStylesheetNames,
@@ -26,6 +26,26 @@ const documentedTags = new Set(examples.flatMap((example) => example.definitions
 const missingTags = [...manifestTags].filter((tag) => !documentedTags.has(tag))
 if (missingTags.length > 0)
   throw new Error(`Undocumented custom elements: ${missingTags.join(', ')}`)
+
+/*
+ * Every public root, not only every custom element.
+ *
+ * The check above covers the 23 registered tags; the CSS check below covers stylesheets. Between them
+ * sat a hole the size of one component: `ui-textarea` shipped styled, with `data-ui-size`, listed in
+ * the agent skill's contract table, and named on no page — its stylesheet was documented because
+ * `forms.css` carries a dozen other roots, and it has no tag to be missing. A root nothing claims has
+ * no reference page, which also means the `/docs/components/<component>.md` route an agent is told to
+ * fetch for it does not exist.
+ */
+const claimedContracts = new Set(examples.flatMap((example) => example.contracts))
+const unclaimedRoots = components
+  .filter((component) => component.root?.name && !claimedContracts.has(component.name))
+  .map((component) => component.root.name)
+if (unclaimedRoots.length > 0) {
+  throw new Error(
+    `Public roots claimed by no catalog entry, so no page documents them: ${unclaimedRoots.join(', ')}`,
+  )
+}
 
 /**
  * Recursive, and relative to `src/css`, so `core/<component>.css` and

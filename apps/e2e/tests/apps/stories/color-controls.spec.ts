@@ -14,6 +14,12 @@ test('selects one toggle and moves focus with arrow keys', async ({ page }) => {
   await center.focus()
   await page.keyboard.press('ArrowRight')
   await expect(page.getByRole('button', { name: 'Right' })).toBeFocused()
+
+  // Home and End are declared on Toggle Group and were pressed by nothing until this line.
+  await page.keyboard.press('Home')
+  await expect(left).toBeFocused()
+  await page.keyboard.press('End')
+  await expect(page.getByRole('button', { name: 'Right' })).toBeFocused()
   await expectNoBlockingA11yViolations(
     page,
     '/stories/library-actions-toggle-group--default/',
@@ -25,15 +31,42 @@ test('steps a native number input and respects its maximum', async ({ page }) =>
   await page.goto('/stories/library-forms-number-stepper--default/')
   await expectRouteDocumentReady(page)
   const input = page.getByRole('spinbutton', { name: 'Quantity' })
-  await page.getByRole('button', { name: 'Increase Quantity' }).click()
+  const increase = page.getByRole('button', { name: 'Increase Quantity' })
+  await increase.click()
   await expect(input).toHaveValue('3')
   await input.fill('10')
-  await expect(page.getByRole('button', { name: 'Increase Quantity' })).toBeDisabled()
+  await expect(increase).toHaveAttribute('aria-disabled', 'true')
   await expectNoBlockingA11yViolations(
     page,
     '/stories/library-forms-number-stepper--default/',
     '#ss-canvas',
   )
+})
+
+/*
+ * SC 2.4.3. A step button reaches its bound while it is being pressed, so marking it `disabled` there
+ * removes the element holding focus and Chromium answers with `<body>`. `aria-disabled` keeps it
+ * focusable and inert, and this is the assertion that says so.
+ */
+test('keeps focus on a step button that reaches its bound', async ({ page }) => {
+  await page.goto('/stories/library-forms-number-stepper--default/')
+  await expectRouteDocumentReady(page)
+  const decrease = page.getByRole('button', { name: 'Decrease Quantity' })
+  const input = page.getByRole('spinbutton', { name: 'Quantity' })
+
+  // The story starts at 2 with a minimum of 0, so two presses land exactly on the bound.
+  await decrease.focus()
+  await page.keyboard.press('Enter')
+  await page.keyboard.press('Enter')
+
+  await expect(input).toHaveValue('0')
+  await expect(decrease).toHaveAttribute('aria-disabled', 'true')
+  await expect(decrease).toBeFocused()
+
+  // Inert, not merely styled: pressing it again neither steps below the minimum nor moves focus.
+  await page.keyboard.press('Enter')
+  await expect(input).toHaveValue('0')
+  await expect(decrease).toBeFocused()
 })
 
 test('edits color formats and preserves an invalid raw draft', async ({ page }) => {

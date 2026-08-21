@@ -617,7 +617,7 @@
         },
         {
           "name": "ui-toaster",
-          "description": "Timeless `ui-toaster`. Enhances the Light DOM you author; the markup stays yours.",
+          "description": "Timeless `ui-toaster`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Alert pattern.",
           "doc-url": "https://timeless.build/docs/components/",
           "attributes": [
             {
@@ -648,7 +648,7 @@
         },
         {
           "name": "ui-toast",
-          "description": "Timeless `ui-toast`. Enhances the Light DOM you author; the markup stays yours. Dispatches `ui-dismiss`.",
+          "description": "Timeless `ui-toast`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Alert pattern. Dispatches `ui-dismiss`.",
           "doc-url": "https://timeless.build/docs/components/",
           "attributes": [
             {
@@ -677,7 +677,7 @@
         },
         {
           "name": "ui-toggle-group",
-          "description": "Timeless `ui-toggle-group`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Button pattern. Dispatches `ui-before-change`, `ui-change`.",
+          "description": "Timeless `ui-toggle-group`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Toolbar pattern. Dispatches `ui-before-change`, `ui-change`.",
           "doc-url": "https://timeless.build/docs/components/",
           "attributes": [
             {
@@ -718,7 +718,7 @@
         },
         {
           "name": "ui-number-stepper",
-          "description": "Timeless `ui-number-stepper`. Enhances the Light DOM you author; the markup stays yours. Dispatches `input`, `change`.",
+          "description": "Timeless `ui-number-stepper`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Spinbutton pattern. Dispatches `input`, `change`.",
           "doc-url": "https://timeless.build/docs/components/",
           "attributes": [],
           "events": [
@@ -734,7 +734,7 @@
         },
         {
           "name": "ui-color-picker",
-          "description": "Timeless `ui-color-picker`. Enhances the Light DOM you author; the markup stays yours. Dispatches `input`, `change`.",
+          "description": "Timeless `ui-color-picker`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Colour channels pattern. Dispatches `input`, `change`.",
           "doc-url": "https://timeless.build/docs/components/",
           "attributes": [
             {

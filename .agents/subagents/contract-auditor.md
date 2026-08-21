@@ -5,11 +5,13 @@ description:
   validator script enforces — visual styling written from component JS, data-ui-* used as
   configuration on custom-element hosts, boolean attributes carrying string values, hand-copied
   value lists, private runtime hooks in copyable source, ARIA replacing native behavior, Shadow DOM,
-  diagnostics exposed through public data-ui-*, and components that stop reading correctly without
-  the Atmosphere theme. Use for "check conventions", "review my component changes", "does this
-  follow AGENTS.md", "audit the contracts", "check before I open the PR", or before any PR touching
-  packages/components, packages/core, packages/examples, or apps/stories. Specify the scope — "the
-  current diff" or "repo-wide".
+  diagnostics exposed through public data-ui-*, declared keyboard rows with no handler behind them,
+  interactive roots with no accessibility() block, code that disables or hides the element holding
+  focus, and components that stop reading correctly without the Atmosphere theme. Use for "check
+  conventions", "review my component changes", "does this follow AGENTS.md", "audit the contracts",
+  "check before I open the PR", or before any PR touching packages/components, packages/core,
+  packages/examples, or apps/stories. Specify the scope — "the current diff" or "repo-wide". For
+  judging a keyboard or WCAG contract itself, use the verify-apg-conformance skill instead.
 tools: Bash, Read, Grep, Glob
 ---
 

@@ -23,8 +23,10 @@ pnpm add @timelessui/components
 | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------- |
 | `@timelessui/components`                                       | Contracts, design-token names, permitted attribute values, event types, and every element class. | None                          |
 | `@timelessui/components/{element}`                             | One enhanced element's class and helpers, for example `@timelessui/components/dialog`.           | None                          |
-| `@timelessui/components/define/ui-{element}`                   | Registers one custom element.                                                                    | Calls `customElements.define` |
-| `@timelessui/components/define`                                | Registers every public custom element.                                                           | Calls `customElements.define` |
+| `@timelessui/components/register/ui-{element}`                 | Registers one custom element as it is imported.                                                  | Calls `customElements.define` |
+| `@timelessui/components/register`                              | Registers every public custom element as it is imported.                                         | Calls `customElements.define` |
+| `@timelessui/components/define/ui-{element}`                   | One `define{Element}Element()` function. Registers nothing until you call it.                    | None                          |
+| `@timelessui/components/define`                                | Every define function, plus `defineTimelessElements()`. Registers nothing until you call it.     | None                          |
 | `@timelessui/components/css/tokens.css`                        | The cascade-layer order and `color-scheme`. Required, and imported first.                        | Stylesheet                    |
 | `@timelessui/components/css/core/{component}.css`              | One component's behavior: anchoring, box participation, scrolling, native resets. Required.      | Stylesheet                    |
 | `@timelessui/components/css/core.css`                          | Every `core/` file. Required, and the tier you keep when you replace the theme.                  | Stylesheet                    |
@@ -167,7 +169,15 @@ gap exists, worked examples, and the development-time validator.
 
 ## Server rendering
 
-Every import above is side-effect free except the stylesheets and the `define/*` entrypoints. Class
-imports never call `customElements.define`, so they are safe in server code and test utilities. Keep
-`define/*` imports in browser-only modules. See [Core concepts](/docs/concepts/) for what
-registration does in a browser realm.
+Every import above is side-effect free except the stylesheets and the `register/*` entrypoints.
+Class imports and `define/*` imports never call `customElements.define`, so they are safe in server
+code and test utilities — `define/*` hands you the function and leaves the calling to you.
+
+`register/*` is the one that registers on import, and it is inert on the server, where there is no
+`customElements` to define into. That is deliberate: a universal module can import it without
+crashing the render, and the client bundle re-imports the same module and registers for real. The
+consequence is worth stating plainly — a `register/*` import that only ever executes on the server
+registers nothing at all, so it belongs in code the browser loads. When you would rather be explicit
+about the timing, import `define/*` and call the function yourself.
+
+See [Core concepts](/docs/concepts/) for what registration does in a browser realm.

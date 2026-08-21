@@ -491,8 +491,11 @@ export function createComboboxElementClass(targetWindow?: Window): UIComboboxEle
     handleClick(event: MouseEvent): void {
       if (this.isDisabled) return
 
-      if (this.closestTarget<HTMLElement>(event, CLEAR_SELECTOR)) {
+      const clearControl = this.closestTarget<HTMLElement>(event, CLEAR_SELECTOR)
+      if (clearControl) {
         event.preventDefault()
+        // An `aria-disabled` control still activates, so the no-op lives here.
+        if (clearControl.getAttribute('aria-disabled') === 'true') return
         this.commitSelection([], 'clear', event)
         return
       }
@@ -687,11 +690,13 @@ export function createComboboxElementClass(targetWindow?: Window): UIComboboxEle
       if (!clear) return
 
       const empty = this.values.length === 0 && !this.input?.value
-      if (clear instanceof this.ownerWindow.HTMLButtonElement) {
-        clear.disabled = empty
-      } else {
-        clear.setAttribute('aria-disabled', String(empty))
-      }
+      /*
+       * `aria-disabled`, never `disabled`: clearing the selection is what empties it, so the control
+       * would be disabled at the instant it was activated — and a disabled element that holds focus
+       * sends focus to `<body>`. Marked and inert keeps the user where they are.
+       */
+      if (empty) clear.setAttribute('aria-disabled', 'true')
+      else clear.removeAttribute('aria-disabled')
       if (!clear.hasAttribute('aria-label') && !clear.textContent?.trim()) {
         clear.setAttribute('aria-label', 'Clear selection')
       }

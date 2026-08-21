@@ -8,7 +8,13 @@
 
 :root[data-theme='light'] {
   --sl-color-accent-low: hsl(43deg 82% 86%);
-  --sl-color-accent: hsl(8deg 70% 46%);
+  /*
+   * 45% rather than 46%, because the accent is also the colour of a link, and an inline `code` span
+   * inside a link paints it on `--sl-color-bg-inline-code` (#edeef3) rather than on the page. At 46%
+   * that lands on 4.48:1 — two hundredths under SC 1.4.3 — and at 45% on 4.64:1. On the page itself
+   * either clears comfortably, which is why the guide pages went unscanned for so long.
+   */
+  --sl-color-accent: hsl(8deg 70% 45%);
   --sl-color-accent-high: hsl(8deg 70% 30%);
 }
 
@@ -21,7 +27,15 @@
  * Reference tables are dense with identifiers. Let long values wrap rather than making the table a
  * scroll container: a scrollable region needs its own keyboard access, and wrapped cells read fine.
  */
-.sl-markdown-content :where(table) :where(td) {
+.sl-markdown-content :where(table) :where(td),
+/*
+ * Including the inline `code` inside the cell, which is where the identifiers actually live. Starlight
+ * gives `code` its own `overflow-wrap: break-word`, and that wins over the cell — `break-word` will
+ * not break inside a token with no spaces, so one long specifier such as
+ * `@timelessui/components/css/themes/atmosphere/{component}.css` pinned the Entrypoints column at
+ * 498px and turned the table into exactly the scroll container this rule exists to avoid.
+ */
+.sl-markdown-content :where(table) :where(td) :where(code) {
   overflow-wrap: anywhere;
 }
 

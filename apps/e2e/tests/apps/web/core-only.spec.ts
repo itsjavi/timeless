@@ -323,15 +323,41 @@ test('dropping core as well degrades without erroring or hanging', async ({ page
 })
 
 /**
+ * Target size is the one thing dropping the theme does cost, and it is a consequence of the boundary
+ * rather than a bug.
+ *
+ * `check-core-boundary.mjs` rule 2 keeps every size in the theme, so a theme-free control is as large
+ * as its content and no larger — and for these seven that lands under the 24×24 CSS pixels SC 2.5.8
+ * asks for. Putting a floor in core would fix the number and impose a layout decision on exactly the
+ * consumer core exists to serve: a dense tool that deliberately uses small targets and satisfies
+ * 2.5.8 through the spacing exemption instead. So the set is recorded rather than emptied, and this
+ * assertion is about the *eighth* component — a new one falling below the floor is a regression, and
+ * one of these climbing above it should delete a line here.
+ */
+const UNDERSIZED_WITHOUT_THEME: Readonly<Record<string, readonly string[]>> = {
+  'account-form': ['target-size'],
+  'color-picker': ['target-size'],
+  'command-palette': ['target-size'],
+  'navigation-menu': ['target-size'],
+  'number-stepper': ['target-size'],
+  pagination: ['target-size'],
+  'popover-color-picker': ['target-size'],
+}
+const UNDERSIZED_WITHOUT_THEME_REASON =
+  'core-only introduced an accessibility violation outside the recorded target-size set. A new entry means a component became unusable without the theme; a missing one means a component improved and this list should shrink.'
+
+/**
  * The claim is that dropping the theme costs nothing in accessibility, so the assertion is relative:
  * core-only must introduce no violation the themed rendering does not already have. An absolute
  * assertion would fail on pre-existing issues and say nothing about this milestone — and it did: the
  * Select trigger carries `aria-activedescendant`, which no button role permits, with or without the
  * theme. That is filed separately rather than masked here.
  */
-test('core-only introduces no accessibility violation the theme does not have', async ({
+test('core-only introduces no accessibility violation the theme does not have @slow', async ({
   page,
 }) => {
+  test.slow()
+
   const violationsFor = async (id: string, css: string | null) => {
     await page.goto(`/docs/_preview/${id}/`)
     if (css !== null) {
@@ -352,10 +378,23 @@ test('core-only introduces no accessibility violation the theme does not have', 
     return new Set(results.violations.map((violation) => violation.id))
   }
 
-  for (const id of ['select', 'listbox', 'menu-button', 'dialog']) {
-    const themed = await violationsFor(id, null)
-    const core = await violationsFor(id, CORE_ONLY)
+  /*
+   * Every documented example, not a hand-picked four.
+   *
+   * It was `['select', 'listbox', 'menu-button', 'dialog']`, and the two components where dropping
+   * the theme actually introduces a violation were not among them: Colour Picker and Number Stepper
+   * both fall under 24px without the theme's sizing, which axe reports as `target-size`. A list of
+   * four chosen while writing the milestone cannot know where the next one will be.
+   */
+  const introducedBy = new Map<string, string[]>()
+  for (const example of examples) {
+    const themed = await violationsFor(example.id, null)
+    const core = await violationsFor(example.id, CORE_ONLY)
     const introduced = [...core].filter((violation) => !themed.has(violation))
-    expect(introduced, `core-only adds accessibility violations on ${id}`).toEqual([])
+    if (introduced.length > 0) introducedBy.set(example.id, introduced)
   }
+
+  expect(Object.fromEntries(introducedBy), UNDERSIZED_WITHOUT_THEME_REASON).toEqual(
+    UNDERSIZED_WITHOUT_THEME,
+  )
 })

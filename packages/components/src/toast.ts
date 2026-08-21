@@ -1,4 +1,14 @@
-import { attr, boolAttr, createUIElementClass, element, listen, watch } from '@timelessui/core'
+import {
+  attr,
+  boolAttr,
+  createUIElementClass,
+  element,
+  focusReturnTarget,
+  listen,
+  returnFocus,
+  watch,
+  type FocusTarget,
+} from '@timelessui/core'
 
 import { toasterPlacements, toasterStacks } from './values/toast'
 import type { ToasterPlacement, ToasterStack } from './values/toast'
@@ -65,6 +75,9 @@ export type UIToastElementConstructor = CustomElementConstructor & {
   }
 }
 
+/** Where focus was before it entered a toaster, keyed by that toaster. */
+const returnTargets = new WeakMap<Element, FocusTarget>()
+
 export function createToasterElementClass(targetWindow?: Window): UIToasterElementConstructor {
   const UIElementBase = createUIElementClass(targetWindow)
 
@@ -83,6 +96,8 @@ export function createToastElementClass(targetWindow?: Window): UIToastElementCo
     @boolAttr accessor persistent = false
 
     #dismissTimer: number | null = null
+    #hovered = false
+    #focusWithin = false
 
     protected override connected(): void {
       this.setCustomState('--closed', false)
@@ -94,9 +109,16 @@ export function createToastElementClass(targetWindow?: Window): UIToastElementCo
 
     dismiss(reason: ToastDismissReason = 'programmatic'): boolean {
       this.clearDismissTimer()
+      // Read before hiding: hiding the element that holds focus is what sends focus to `<body>`.
+      const holdsFocus = this.contains(this.ownerDocument.activeElement)
       const dismissed = dismissToast(this, reason)
-      if (dismissed) this.setCustomState('--closed', true)
-      return dismissed
+      if (!dismissed) return false
+
+      this.setCustomState('--closed', true)
+      if (holdsFocus) {
+        returnFocus(this.nextDismissControl(), { fallback: returnTargets.get(this.focusRegion) })
+      }
+      return true
     }
 
     @listen('click')
@@ -106,16 +128,76 @@ export function createToastElementClass(targetWindow?: Window): UIToastElementCo
       this.dismiss('user')
     }
 
+    /* SC 2.2.1: the clock stops while the toast is being read or reached for. */
+    @listen('pointerenter')
+    handlePointerEnter(): void {
+      this.#hovered = true
+      this.clearDismissTimer()
+    }
+
+    @listen('pointerleave')
+    handlePointerLeave(): void {
+      this.#hovered = false
+      this.restartDismissTimer()
+    }
+
+    @listen('focusin')
+    handleFocusIn(event: FocusEvent): void {
+      const region = this.focusRegion
+      const from = focusReturnTarget(event.relatedTarget)
+      /*
+       * `body` and the root element are not somewhere to return focus *to*. `focusReturnTarget`
+       * accepts anything with a `.focus()` method and both qualify, so the exclusion is explicit —
+       * the same one `resolveDialogReturnTarget` and its Sheet counterpart already make.
+       */
+      const isPlace =
+        from !== null &&
+        event.relatedTarget !== this.ownerDocument.body &&
+        event.relatedTarget !== this.ownerDocument.documentElement
+      if (isPlace && !region.contains(event.relatedTarget as Node | null)) {
+        returnTargets.set(region, from)
+      }
+      this.#focusWithin = true
+      this.clearDismissTimer()
+    }
+
+    @listen('focusout')
+    handleFocusOut(event: FocusEvent): void {
+      if (this.contains(event.relatedTarget as Node | null)) return
+      this.#focusWithin = false
+      this.restartDismissTimer()
+    }
+
     @watch(['duration', 'persistent'], { immediate: true })
     restartDismissTimer(): void {
       this.clearDismissTimer()
 
       const duration = readToastDuration(this.duration)
-      if (duration <= 0 || this.persistent) {
+      if (duration <= 0 || this.persistent || this.#hovered || this.#focusWithin) {
         return
       }
 
       this.#dismissTimer = this.ownerWindow.setTimeout(() => this.dismiss('timeout'), duration)
+    }
+
+    /** A stack of toasts is one region, so the toaster remembers where focus came from. */
+    private get focusRegion(): Element {
+      return this.closest('ui-toaster') ?? this
+    }
+
+    /** The dismiss control of the nearest toast that outlives this one, forwards then backwards. */
+    private nextDismissControl(): FocusTarget | null {
+      for (const direction of ['nextElementSibling', 'previousElementSibling'] as const) {
+        let sibling = this[direction]
+        while (sibling) {
+          if (sibling instanceof HTMLElement && !sibling.hidden) {
+            const control = sibling.querySelector<HTMLElement>(DISMISS_SELECTOR)
+            if (control) return control
+          }
+          sibling = sibling[direction]
+        }
+      }
+      return null
     }
 
     private clearDismissTimer(): void {

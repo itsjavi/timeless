@@ -4,8 +4,13 @@
 
 Every public root in the library: 38 CSS components and 23 custom elements. Attribute values are
 named by their exported value set rather than listed — import the set to enumerate it, or fetch the
-component page for the full contract: `https://timeless.build/docs/components/<component>.md`. The
-index of those pages is at `https://timeless.build/llms.txt`.
+component page for the full contract.
+
+**A root name is not a page slug.** One page often documents several roots — `ui-input`,
+`ui-textarea`, `ui-label`, and `ui-error` are all on the Field page — so
+`https://timeless.build/docs/components/<root-without-the-ui-prefix>.md` is a guess, and for those
+roots it is a 404. Take the real route from `https://timeless.build/llms.txt`, which lists every
+page, or browse `https://timeless.build/docs/components/`.
 
 Parts marked `*` are required for the component to work.
 
@@ -57,7 +62,8 @@ A native element with the root class. Configure with `data-ui-*` attributes. Not
 ## Custom elements
 
 A registered host wrapping your own markup. Configure with plain attributes, never `data-ui-*`.
-Register each element you use from `@timelessui/components/define/<tag>`.
+Register each element you use by importing `@timelessui/components/register/<tag>`, which registers
+as it is imported, or by calling the function that `@timelessui/components/define/<tag>` exports.
 
 | Element               | Attributes                                                                                                                                                                                                                                                                                 | Parts                                                                                                                                                                                                                                                                                         |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -84,6 +90,54 @@ Register each element you use from `@timelessui/components/define/<tag>`.
 | `<ui-range-field>`    | none                                                                                                                                                                                                                                                                                       | `track`_, `from`_, `to`*, `output`                                                                                                                                                                                                                                                            |
 | `<ui-otp-field>`      | `name` (any string), `length` (any number), `value` (any string), `required` (presence), `disabled` (presence)                                                                                                                                                                             | `cell`*, `separator`                                                                                                                                                                                                                                                                          |
 | `<ui-copy-button>`    | `value` (any string), `from` (any string), `feedback-duration` (any number), `copied-message` (any string)                                                                                                                                                                                 | `trigger`*, `idle`, `copied`, `status`                                                                                                                                                                                                                                                        |
+
+## Value sets
+
+The permitted values behind every `set` named above. Each is also exported from the package root as
+an `as const` array — import the array rather than retyping a list.
+
+| Set                       | Values                                                                                   |
+| ------------------------- | ---------------------------------------------------------------------------------------- |
+| `buttonVariants`          | `primary` · `secondary` · `outline` · `ghost` · `danger` · `danger-outline` · `link`     |
+| `buttonSizes`             | `sm` · `md` · `lg`                                                                       |
+| `alertVariants`           | `neutral` · `accent` · `success` · `warning` · `danger`                                  |
+| `spinnerVariants`         | `neutral` · `accent` · `success` · `warning` · `danger`                                  |
+| `badgeVariants`           | `neutral` · `accent` · `success` · `warning` · `danger` · `outline`                      |
+| `avatarShapes`            | `circle` · `rounded` · `square`                                                          |
+| `avatarStatuses`          | `online` · `away` · `busy` · `offline`                                                   |
+| `cardVariants`            | `surface` · `filled` · `ghost`                                                           |
+| `linkVariants`            | `default` · `muted` · `danger`                                                           |
+| `listVariants`            | `plain` · `divided` · `inset`                                                            |
+| `separatorVariants`       | `default` · `strong` · `centered`                                                        |
+| `separatorOrientations`   | `horizontal` · `vertical`                                                                |
+| `skeletonShapes`          | `text` · `circle` · `media`                                                              |
+| `skeletonWidths`          | `full` · `medium` · `short`                                                              |
+| `groupOrientations`       | `horizontal` · `vertical`                                                                |
+| `primitiveSizes`          | `sm` · `md` · `lg`                                                                       |
+| `primitiveDensities`      | `compact` · `normal` · `spacious`                                                        |
+| `compactDensities`        | `compact` · `normal`                                                                     |
+| `tableAlignments`         | `start` · `end`                                                                          |
+| `breadcrumbSeparators`    | `chevron` · `slash`                                                                      |
+| `formControlSizes`        | `sm` · `md` · `lg`                                                                       |
+| `fieldLayouts`            | `stacked` · `inline`                                                                     |
+| `formDensities`           | `compact` · `normal` · `spacious`                                                        |
+| `choiceGroupOrientations` | `vertical` · `horizontal`                                                                |
+| `floatingPlacements`      | `bottom` · `top` · `right` · `left`                                                      |
+| `collectionAlignments`    | `start` · `end`                                                                          |
+| `optionFilterModes`       | `contains` · `starts-with` · `off`                                                       |
+| `tabsOrientations`        | `horizontal` · `vertical`                                                                |
+| `tabsActivations`         | `automatic` · `manual`                                                                   |
+| `dialogKinds`             | `dialog` · `alert`                                                                       |
+| `sheetPositions`          | `top` · `right` · `bottom` · `left`                                                      |
+| `popoverRoles`            | `dialog` · `menu` · `listbox` · `tooltip`                                                |
+| `hoverCardVariants`       | `tooltip`                                                                                |
+| `menuOrientations`        | `horizontal` · `vertical`                                                                |
+| `toolbarOrientations`     | `horizontal` · `vertical`                                                                |
+| `toasterPlacements`       | `top-start` · `top-center` · `top-end` · `bottom-start` · `bottom-center` · `bottom-end` |
+| `toasterStacks`           | `overlap` · `list`                                                                       |
+| `toggleGroupOrientations` | `horizontal` · `vertical`                                                                |
+| `toggleGroupSelections`   | `single` · `multiple`                                                                    |
+| `colorPickerFormats`      | `oklch` · `oklab` · `lch` · `lab` · `hex` · `rgb` · `hsl` · `hwb` · `p3` · `rec2020`     |
 
 ## Stylesheets
 

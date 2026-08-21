@@ -104,5 +104,16 @@ are conflicts you would be picking deliberately.
 
 Two things to expect on this path. Sizing stays in the theme, so a few components sit at their
 content size rather than a designed one — a Sheet panel is content-height instead of full-height
-until you give it a size. And core carries no affordances, so there is no hover highlight and no
-focus ring until you add them.
+until you give it a size, and a Select surface is as wide as its widest option instead of as wide as
+its trigger, because `min-inline-size: anchor-size(width)` is a design decision. And core carries no
+affordances, so there is no hover highlight and no focus ring until you add them.
+
+Target size comes with the sizing, which makes it yours. Without the theme, seven components fall
+under the 24×24 CSS pixels
+[WCAG 2.2 SC 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html) asks for —
+the colour picker's channel sliders, the number stepper's step buttons, pagination's page links, and
+the recipes built from them. A control can still conform by being spaced rather than large, which is
+why core does not force a floor on you: a dense tool that wants small targets is a legitimate
+design, and picking between the two is exactly the kind of decision the theme tier holds. Whichever
+you pick, decide it rather than inheriting it. `apps/e2e` records the seven and fails on an eighth,
+so this list stays honest.

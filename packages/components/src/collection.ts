@@ -243,6 +243,11 @@ export function collectionTextMatches(
   return false
 }
 
+/**
+ * Grid navigation for a consumer building one; no Timeless component is a grid. It is also the only
+ * place `PageUp` and `PageDown` are implemented — the linear helper above does arrows, `Home`, and
+ * `End`, which is why five components once documented page keys they never had.
+ */
 export function gridCollectionNavigationTarget(
   items: readonly CollectionItemLike[],
   currentIndex: number,

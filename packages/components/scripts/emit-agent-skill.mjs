@@ -41,7 +41,7 @@ const partCell = (contract) =>
     ? 'none'
     : contract.parts.map((part) => `\`${part.name}\`${part.required ? '*' : ''}`).join(', ')
 
-export function createSkillContracts(components) {
+export function createSkillContracts(components, valueSets) {
   const css = components.filter((contract) => contract.kind === 'css')
   const elements = components.filter((contract) => contract.kind === 'custom-element')
 
@@ -52,9 +52,13 @@ export function createSkillContracts(components) {
     '',
     `Every public root in the library: ${css.length} CSS components and ${elements.length} custom`,
     'elements. Attribute values are named by their exported value set rather than listed — import the',
-    'set to enumerate it, or fetch the component page for the full contract:',
-    '`https://timeless.build/docs/components/<component>.md`. The index of those pages is at',
-    '`https://timeless.build/llms.txt`.',
+    'set to enumerate it, or fetch the component page for the full contract.',
+    '',
+    '**A root name is not a page slug.** One page often documents several roots — `ui-input`,',
+    '`ui-textarea`, `ui-label`, and `ui-error` are all on the Field page — so',
+    '`https://timeless.build/docs/components/<root-without-the-ui-prefix>.md` is a guess, and for',
+    'those roots it is a 404. Take the real route from `https://timeless.build/llms.txt`, which lists',
+    'every page, or browse `https://timeless.build/docs/components/`.',
     '',
     'Parts marked `*` are required for the component to work.',
     '',
@@ -73,7 +77,9 @@ export function createSkillContracts(components) {
     '## Custom elements',
     '',
     'A registered host wrapping your own markup. Configure with plain attributes, never `data-ui-*`.',
-    'Register each element you use from `@timelessui/components/define/<tag>`.',
+    'Register each element you use by importing `@timelessui/components/register/<tag>`, which',
+    'registers as it is imported, or by calling the function that',
+    '`@timelessui/components/define/<tag>` exports.',
     '',
     ...table(
       ['Element', 'Attributes', 'Parts'],
@@ -81,6 +87,18 @@ export function createSkillContracts(components) {
         `\`<${contract.root.name}>\``,
         attributeCell(contract),
         partCell(contract),
+      ]),
+    ),
+    '## Value sets',
+    '',
+    'The permitted values behind every `set` named above. Each is also exported from the package root',
+    'as an `as const` array — import the array rather than retyping a list.',
+    '',
+    ...table(
+      ['Set', 'Values'],
+      Object.entries(valueSets).map(([name, set]) => [
+        `\`${name}\``,
+        set.values.map((value) => `\`${value}\``).join(' · '),
       ]),
     ),
     '## Stylesheets',

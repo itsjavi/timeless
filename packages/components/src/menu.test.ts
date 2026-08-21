@@ -11,6 +11,7 @@ import {
   mirrorInlineKey,
   resolveMenuOrientation,
   resolveMenuRole,
+  syncMenuRovingTabIndex,
   type MenuGroupLike,
   type MenuItemLike,
 } from './menu'
@@ -104,10 +105,10 @@ describe('enhanceMenuParts', () => {
     expect(items.map((item) => item.getAttribute('tabindex'))).toEqual(['0', '-1', '-1'])
   })
 
-  it('preserves checkbox/radio roles and keeps the resting tab stop off a disabled item', () => {
+  it('preserves checkbox/radio roles and keeps the resting tab stop off an unavailable item', () => {
     const host = new FakeMenuItem('', { role: 'menubar' })
     const items = [
-      new FakeMenuItem('Preview', { disabled: '' }),
+      new FakeMenuItem('Preview', { 'aria-disabled': 'true' }),
       new FakeMenuItem('Grid overlay', { role: 'menuitemcheckbox', 'aria-checked': 'true' }),
       new FakeMenuItem('Compact density'),
     ]
@@ -116,12 +117,24 @@ describe('enhanceMenuParts', () => {
 
     expect(result).toEqual({ status: 'enhanced', activeIndex: 1, role: 'menubar' })
     expect(host.getAttribute('role')).toBe('menubar')
-    expect(items[0]!.hasAttribute('disabled')).toBe(false)
-    expect(items[0]!.getAttribute('aria-disabled')).toBe('true')
     // Disabled items stay arrow-reachable, so the item keeps a tabindex — just not the tab stop.
     expect(items[0]!.getAttribute('tabindex')).toBe('-1')
     expect(items[1]!.getAttribute('tabindex')).toBe('0')
     expect(items[1]!.getAttribute('role')).toBe('menuitemcheckbox')
+  })
+
+  it('leaves an authored `disabled` item exactly as authored, and still skips the tab stop', () => {
+    const host = new FakeMenuItem('', { role: 'menu' })
+    const items = [new FakeMenuItem('Delete', { disabled: '' }), new FakeMenuItem('Duplicate')]
+
+    enhanceMenuParts({ host, items }, { orientation: 'vertical' })
+
+    // Rewriting `disabled` into `aria-disabled` produced better keyboard behavior and a different
+    // DOM than the author wrote. `aria-disabled` is documented instead; this stays untouched.
+    expect(items[0]!.hasAttribute('disabled')).toBe(true)
+    expect(items[0]!.getAttribute('aria-disabled')).toBeNull()
+    expect(items[0]!.getAttribute('tabindex')).toBe('-1')
+    expect(items[1]!.getAttribute('tabindex')).toBe('0')
   })
 
   it('names a group from its label part without overwriting an authored relationship', () => {
@@ -212,10 +225,43 @@ describe('checkable menu items', () => {
 })
 
 describe('menu navigation helpers', () => {
-  it('uses orientation-aware movement and includes disabled menu items', () => {
+  /*
+   * `aria-disabled` is reachable and native `disabled` is not, and conflating them is what made arrow
+   * navigation stick: the roving `tabindex` moved onto a `<button disabled>`, `.focus()` was a no-op,
+   * and because the next key computes its origin from the *focused* item, every further press
+   * recomputed the same unreachable target. Focus could not get past it.
+   */
+  it('skips a native disabled item, which the platform will not focus', () => {
     const items = [
       new FakeMenuItem('Open'),
-      new FakeMenuItem('Duplicate', { disabled: '' }),
+      new FakeMenuItem('Delete', { disabled: '' }),
+      new FakeMenuItem('Rename'),
+    ]
+
+    expect(menuNavigationTarget(items, 0, 'ArrowDown', 'vertical')).toBe(2)
+    expect(menuNavigationTarget(items, 2, 'ArrowUp', 'vertical')).toBe(0)
+    expect(menuNavigationTarget(items, 0, 'End', 'vertical')).toBe(2)
+
+    // And the resting tab stop never lands on it either.
+    expect(syncMenuRovingTabIndex(items, 1)).toBe(0)
+    expect(items[1]!.getAttribute('tabindex')).toBe('-1')
+  })
+
+  it('lands Home and End on the first and last focusable item', () => {
+    const items = [
+      new FakeMenuItem('Open', { disabled: '' }),
+      new FakeMenuItem('Duplicate'),
+      new FakeMenuItem('Delete', { disabled: '' }),
+    ]
+
+    expect(menuNavigationTarget(items, 1, 'Home', 'vertical')).toBe(1)
+    expect(menuNavigationTarget(items, 1, 'End', 'vertical')).toBe(1)
+  })
+
+  it('uses orientation-aware movement and includes aria-disabled menu items', () => {
+    const items = [
+      new FakeMenuItem('Open'),
+      new FakeMenuItem('Duplicate', { 'aria-disabled': 'true' }),
       new FakeMenuItem('Rename'),
     ]
 
@@ -240,10 +286,10 @@ describe('menu navigation helpers', () => {
     expect(mirrorInlineKey('Home')).toBe('Home')
   })
 
-  it('finds menu items by text prefix, including disabled items', () => {
+  it('finds menu items by text prefix, including aria-disabled items', () => {
     const items = [
       new FakeMenuItem('Open'),
-      new FakeMenuItem('Delete', { disabled: '' }),
+      new FakeMenuItem('Delete', { 'aria-disabled': 'true' }),
       new FakeMenuItem('Duplicate'),
       new FakeMenuItem('Rename'),
     ]
@@ -251,6 +297,18 @@ describe('menu navigation helpers', () => {
     expect(menuTypeaheadTarget(items, 0, 'd')).toBe(1)
     expect(menuTypeaheadTarget(items, 0, 're')).toBe(3)
     expect(menuTypeaheadTarget(items, 0, 'x')).toBeNull()
+  })
+
+  it('types past a native disabled item to the next match that can take focus', () => {
+    const items = [
+      new FakeMenuItem('Open'),
+      new FakeMenuItem('Delete', { disabled: '' }),
+      new FakeMenuItem('Duplicate'),
+      new FakeMenuItem('Rename'),
+    ]
+
+    // Typeahead moves focus, so a match the platform refuses to focus is not a match.
+    expect(menuTypeaheadTarget(items, 0, 'd')).toBe(2)
   })
 
   it('resolves menu role and orientation defaults from APG semantics', () => {
