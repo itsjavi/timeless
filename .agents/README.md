@@ -21,7 +21,7 @@ Agent-facing context for Timeless UI. One canonical tree, shared by every coding
 | `author-ui-pull-request`    | Opening a PR for a change with a visual delta               |
 | `verify-apg-conformance`    | Checking a component against its APG pattern                |
 | `audit-component-contracts` | Sweeping for authoring rules no validator enforces          |
-| `audit-docs-drift`          | Sweeping prose against the source it describes              |
+| `audit-docs-drift`          | Sweeping prose, and this tree, against their source         |
 
 Each is a directory holding `SKILL.md` with `name` and `description` frontmatter — the format Claude
 Code and Codex both read.
@@ -108,6 +108,11 @@ Paraphrases of one intent add nothing and dilute the routing signal against ever
 
 `tools:` is a different field, valid only in a Claude Code subagent under `subagents/`. Codex would
 reject it in a `SKILL.md`.
+
+Nothing in the build enforces any of this. `audit-docs-drift` check 9 does, mechanically — the
+allowlist, the name-to-directory match, the angle brackets, the symlinks, and the tables above — so
+run it after editing this tree rather than trusting a review. What it cannot check is whether
+Codex's own allowlist still reads as quoted here; that lives outside the repository.
 
 Codex-only configuration goes in `agents/openai.yaml`, whose own allowlist is `display_name`,
 `short_description`, `icon_small`, `icon_large`, `brand_color`, `default_prompt`, plus

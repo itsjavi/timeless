@@ -3,27 +3,43 @@ name: audit-docs-drift
 allowed-tools: Bash, Read, Grep, Glob
 description:
   Sweep Timeless UI prose against the source it describes — README.md, AGENTS.md, the MDX
-  documentation, catalog guidance, registry descriptions, milestone records, and DESIGN.md — and
-  report claims the code no longer supports. Read-only. Use for requests like "check the docs", "are
-  the docs still accurate", or "is the README stale", when preparing a release, when closing a
-  milestone, and after a change to the public API or the generated pipeline. Reports drift; it does
-  not write new documentation.
+  documentation, catalog guidance, registry descriptions, milestone records, DESIGN.md, and the
+  agent-facing surface of context7.json, the llms.txt routes, the packaged using-timeless-ui skill,
+  and the .agents tree of skills, subagents, and reference files — and report claims the code no
+  longer supports. Read-only. Use for requests like "check the docs", "are the docs still accurate",
+  "is the README stale", or "do the agent files and skills still match the repo", when preparing a
+  release, when closing a milestone, and after a change to the public API, the generated pipeline,
+  or a skill. Reports drift; it does not write new documentation.
 ---
 
 # Audit documentation drift
 
 Read-only. Report findings; do not fix them unless asked.
 
-Two scripts already cover part of this and should be run first rather than reproduced:
+Four gates already cover part of this and should be run first rather than reproduced:
 
 ```bash
-node apps/web/scripts/validate-claims.mjs   # landing-page tin shelf vs library source
-node apps/web/scripts/validate-docs.mjs     # element/CSS coverage, routes, framework guides
+node apps/web/scripts/validate-claims.mjs              # landing-page tin shelf vs library source
+node apps/web/scripts/validate-docs.mjs                # element/CSS coverage, routes, framework guides
+pnpm -F @timelessui/components run generate:check      # every generated agent artifact vs the registry
+pnpm -F @apps/web test:dist                            # the built agent routes — needs a site build first
 ```
 
-`validate-claims.mjs` proves only the landing page's platform claims. `validate-docs.mjs` proves
-only that every element and stylesheet is documented somewhere and that routes are unique.
-Everything below is prose neither one reads.
+What each one settles, so you do not re-read it:
+
+- `validate-claims.mjs` proves only the landing page's platform claims.
+- `validate-docs.mjs` proves only that every element and stylesheet is documented somewhere and that
+  routes are unique.
+- `generate:check` proves the four projections of the authoring grammar are current —
+  `context7.json` `rules`, the packaged skill, the `AGENTS.md` block on the agents page, and the
+  `/llms.txt` preamble. The grammar is declared once in
+  `packages/components/scripts/authoring-grammar.mjs`, so **do not compare those copies to each
+  other**; a disagreement is a stale generate, not drift to report.
+- `test:dist` reads `apps/web/dist` and proves the agent routes shipped: one `.md` per documented
+  component, every `llms.txt` link resolving, the `llms.txt` token budget, the agents page rendering
+  the generated block, and the skill being carried in the package `files`.
+
+Everything below is prose or configuration none of the four reads.
 
 ## Surfaces
 
@@ -37,6 +53,27 @@ Everything below is prose neither one reads.
 | `packages/components/README.md`                      | The published package's own documentation                                    |
 | `.agents/memory/milestones/*/`                       | Plans, task lists, and results                                               |
 | `.agents/memory/DESIGN.md`                           | The Atmosphere design language                                               |
+
+And the agent-facing surface, which describes the repository to other models rather than to a
+reader. It is split by who proves it:
+
+| Surface                                         | Describes                                                          | Proven by                     |
+| ----------------------------------------------- | ------------------------------------------------------------------ | ----------------------------- |
+| `context7.json` `rules`                         | The authoring grammar, imperative                                  | `generate:check`              |
+| `context7.json` `folders`, `excludeFolders`     | Which trees Context7 indexes                                       | nothing                       |
+| `packages/components/skills/using-timeless-ui/` | The packaged consumer skill and its contract reference             | `generate:check`, `test:dist` |
+| `apps/web/src/lib/llms.ts`, `agent-surfaces.ts` | Section order, group order, the site origin, the token budget      | partly `test:dist`            |
+| `docs/getting-started/agents.mdx`               | Every agent surface above, in prose, around a generated block      | one spot-check in `test:dist` |
+| `AGENTS.md`, `CLAUDE.md`                        | The authoring rules, and where the skills live                     | nothing                       |
+| `.agents/README.md`                             | The tree, the skills table, the symlinks, the frontmatter contract | nothing                       |
+| `.agents/skills/*/SKILL.md`                     | Each procedure, and every path and command it names                | nothing                       |
+| `.agents/skills/*/agents/openai.yaml`           | Codex display metadata and invocation policy                       | nothing                       |
+| `.agents/subagents/*.md`                        | The Claude Code auditors, restating their skill's description      | nothing                       |
+| `.agents/reference/*.md`                        | Generated files, and validator failure messages                    | nothing                       |
+| `.claude/launch.json`                           | The dev servers an agent may start, and their ports                | nothing                       |
+
+The "nothing" rows are the reason this section exists. A model reads them as fact and has no way to
+notice they are wrong.
 
 ## The checks
 
@@ -54,6 +91,23 @@ Resolve each against the filesystem and against the `scripts` blocks in the root
 `package.json` files. Pay particular attention to anything under `packages/components/src` — that
 tree is largely generated, and `.agents/reference/generated-files.md` is the authority on what is
 emitted where.
+
+Three shapes are not findings, and the tree is currently full of all three. Filter them before
+reporting, or the real hits drown:
+
+- **A relative path under a stated base.** `.agents/reference/` tables name `src/contracts.ts` and
+  `scripts/authoring-grammar.mjs` against a package root the surrounding heading gives. Resolve from
+  that base, not the repository root.
+- **An illustrative example.** AGENTS.md's `stories/accordion.html.ts` and
+  `stories/accordion.stories.css` teach a naming pattern; no such files exist and none should.
+  Anything introduced by "e.g." or "for example" is a pattern, not a claim.
+- **A negated mention.** `generated-files.md` says there is no `src/values.ts`, and a milestone
+  records that one used to exist. A path named in order to deny it is correct precisely because it
+  is absent.
+
+The same three apply to commands: `pnpm install`, `pnpm add`, and `pnpm dlx` are package-manager
+builtins rather than repository scripts, and `pnpm run format:check` is the same script as
+`pnpm format:check`.
 
 ### 2. Milestones described as upcoming
 
@@ -121,6 +175,103 @@ explicitly grandfathered.
 Token names, color values, and rules quoted in `.agents/memory/DESIGN.md` against
 `packages/components/src/tokens.ts` and `src/css/tokens.css`. `validate-contracts.mjs` proves
 `uiTokenGroups` against `tokens.css`, so check DESIGN.md's prose values, not the token list itself.
+
+### 8. The generated agent surface, minus what generation proves
+
+`generate:check` proves the grammar's four projections match
+`packages/components/scripts/authoring-grammar.mjs`. It says nothing about the configuration sitting
+beside them in the same generators, which is hand-written and unproven.
+
+```bash
+node -e 'const c=require("./context7.json"),fs=require("fs");
+  for (const k of ["folders","excludeFolders"]) for (const p of c[k]) console.log((fs.existsSync(p)?"ok  ":"MISS")+"  "+k+": "+p)'
+```
+
+A missing `folders` entry means Context7 indexes nothing from it; a stale `excludeFolders` entry
+means it indexes a tree meant to be hidden. Both are silent. `createContext7Config()` in
+`packages/components/scripts/emit-agent-skill.mjs` is where they are declared.
+
+Then read, rather than grep:
+
+- `SITE` and `GROUP_ORDER` in `apps/web/src/lib/agent-surfaces.ts`. `GROUP_ORDER` is thrown against
+  by `astro.config.mjs`, so it cannot go stale — `SITE` can, and every `.md` link an agent follows
+  is built from it.
+- The grammar's illustrative markup in `authoring-grammar.mjs` names real attributes and values.
+  Nothing checks them against the registry — see check 4 of `audit-component-contracts`, which owns
+  that gap.
+- The prose in `docs/getting-started/agents.mdx` **around** the generated block. `test:dist`
+  spot-checks one rendered rule; the sections describing editor tooling, MCP, and the `.md` routes
+  are ordinary prose and drift like any other.
+
+### 9. The `.agents` tree against itself
+
+`.agents/README.md` documents the tree in four tables and a frontmatter contract, and nothing reads
+any of it. These checks are cheap and mechanical — run them whole.
+
+```bash
+diff <(grep -oE '^\| `[a-z-]+`' .agents/README.md | tr -d '|` ' | sort -u) <(ls .agents/skills | sort) \
+  && echo 'skills table: in sync'
+
+for l in .claude/skills .claude/agents .codex/skills; do
+  printf '%-16s -> %-24s %s\n' "$l" "$(readlink "$l")" "$([ -e "$l" ] && echo ok || echo BROKEN)"
+done
+
+for d in .agents/skills/*/; do
+  n=$(basename "$d"); nm=$(sed -n 's/^name: *//p' "$d/SKILL.md" | head -1)
+  [ "$n" = "$nm" ] || echo "name/dirname mismatch: $n vs $nm"
+  awk '/^---$/{c++;next} c==1 && /^[a-z-]+:/{sub(/:.*/,"");print}' "$d/SKILL.md" \
+    | grep -vE '^(name|description|license|allowed-tools|metadata)$' \
+    | sed "s|^|unportable key in $n: |"
+  awk '/^---$/{c++;next} c==1' "$d/SKILL.md" | grep -q '[<>]' && echo "angle bracket in $n frontmatter"
+done
+```
+
+The frontmatter allowlist is Codex's, quoted in `.agents/README.md`: `name`, `description`,
+`license`, `allowed-tools`, `metadata`, and nothing else. `name` must equal the directory name and
+stay under 64 characters; `description` must stay under 1024 and contain no angle brackets. A
+violation is a skill Codex refuses to load, so report it as broken rather than stale. That the
+allowlist itself still matches Codex's validator is not checkable from this repository — say so
+rather than asserting it.
+
+Also confirm by reading:
+
+- The `reference/` and `research/` tables list exactly the files present, and each research document
+  still carries its `model` and `date` frontmatter and its record of what it produced.
+- Each `.agents/subagents/*.md` names a `SKILL.md` that exists, and its `tools:` line still matches
+  the `allowed-tools` of the skill it delegates to. The README's read-only claim for both auditors
+  depends on that line, not on the prose.
+- Each `agents/openai.yaml` uses only its own allowlist — `display_name`, `short_description`,
+  `icon_small`, `icon_large`, `brand_color`, `default_prompt`, `dependencies.tools[]`, and
+  `policy.allow_implicit_invocation` — and its `default_prompt` names a skill that exists.
+- Server names and ports in `.claude/launch.json` still resolve to real scripts, and match the ports
+  `README.md` advertises for `pnpm dev`.
+
+### 10. Rule enumerations that exist twice
+
+The drift vector unique to this surface: a description that lists rules, kept beside the rules it
+lists.
+
+Each subagent restates its skill's `description` in its own words, so an edit to one leaves the
+other behind. Print the pairs and read them — they are deliberate paraphrases, so a `diff` between
+them is noise and always fails:
+
+```bash
+for a in .agents/subagents/*.md; do
+  n=$(sed -n 's/^name: *//p' "$a" | head -1)
+  echo "=== $n"
+  awk '/^description:/{f=1} f&&!/^(tools|allowed-tools):/{print} /^(tools|allowed-tools):/{if(f)exit}' "$a"
+done
+grep -A9 '^description:' .agents/skills/audit-*/SKILL.md
+```
+
+Compare the enumerations, not the wording. `docs-drift-auditor` must name the same surfaces as
+`audit-docs-drift`, and `contract-auditor` the same rules as `audit-component-contracts` — which in
+turn enumerates AGENTS.md's unenforced rules, so **adding a rule to AGENTS.md silently makes two
+descriptions incomplete**. That is the highest-value finding in this check, because an incomplete
+description is a skill the model stops routing to.
+
+This is a deduplication candidate rather than a correction: a subagent that carried only a pointer
+would have nothing to drift. Report it that way.
 
 ## Reporting
 

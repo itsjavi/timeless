@@ -28,7 +28,8 @@ git diff --stat HEAD && git status --short
 ```
 
 For a repo-wide sweep, cover `packages/components/src`, `packages/core/src`,
-`packages/examples/src`, and `apps/stories/src`.
+`packages/examples/src`, `apps/stories/src`, and `packages/components/scripts/authoring-grammar.mjs`
+— the last because it hand-writes markup that check 4 has to resolve against the registry.
 
 ## The checks
 
@@ -94,6 +95,22 @@ grep -rnE "\[\s*'(sm|md|lg)'\s*,|\[\s*'(primary|secondary|outline|ghost)'" packa
 Every permitted value list is declared once in `valueSets` and exported. `argTypes.options`, example
 factories, and tests import the array — `options: [...buttonVariants]`. A retyped list drifts
 silently, and no script catches it.
+
+The same rule reaches one file outside the library, and this is the only place that checks it.
+`packages/components/scripts/authoring-grammar.mjs` is the single declaration of the authoring
+grammar, projected into `context7.json`, the packaged skill, the agents page, and `/llms.txt`. Its
+illustrative snippets are hand-written and name real attributes and values:
+
+```bash
+grep -noE '(data-ui-[a-z-]+|orientation|activation|variant|size|invalid)="[a-z-]+"' packages/components/scripts/authoring-grammar.mjs | sort -u
+```
+
+Resolve each against `valueSets` in `component-registry.mjs`. `generate:check` proves the four
+copies match this file, and `validate-contracts.mjs` proves the registry matches the stylesheets —
+but nothing joins the two, so a value removed from a set leaves this file teaching it to every agent
+that reads `context7.json`. Deliberate counter-examples are the exception: the file states the two
+confusions as wrong markup on purpose, so `<ui-button variant="primary">` is the lesson, not a bug.
+Judge each snippet by whether it is presented as correct.
 
 ### 5. Private runtime hooks in copyable source
 
