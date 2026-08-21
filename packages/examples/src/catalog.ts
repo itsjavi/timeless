@@ -104,6 +104,14 @@ export type ExampleDefinition<TArgs extends object = Record<string, never>> = {
    * cannot write it for them. Kept apart from `guidance`, which compares sibling components.
    */
   readonly authoring?: string
+  /**
+   * What the authored markup does before registration, for the components the generic claim is wrong
+   * about. Most enhanced components are complete and usable before any script runs, and the reference
+   * page says so on its own. Context Menu and Copy Button are not: the platform has no declarative way
+   * to open a surface at pointer coordinates, and none to reach the clipboard. Declaring it here keeps
+   * that fact next to the component instead of in prose three files apart.
+   */
+  readonly beforeJavaScript?: string
   readonly title: string
   readonly description: string
   readonly defaultArgs: TArgs
@@ -218,6 +226,8 @@ export const examples = [
       'Use Copy Button whenever a value on the page is meant to be taken somewhere else \u2014 an install command, a token, an id. The alternative is a plain button and a click handler, which is the same three lines every time and usually skips the announcement.',
     authoring:
       'Give the trigger an `aria-label` and mark the `idle` and `copied` labels `aria-hidden="true"`. A button whose accessible name changes while it holds focus is announced inconsistently across screen readers, so the visible confirmation and the name are deliberately separate. Author the `status` region too: it is where the confirmation is announced, and without it the copy is silent.',
+    beforeJavaScript:
+      'Copying needs `navigator.clipboard`, and the platform offers no declarative equivalent \u2014 so unlike most enhanced components, the markup above is not usable on its own. Author the trigger `hidden` and registration reveals it once the API is there, which is the only way to guarantee no dead control renders. A trigger you leave visible renders before registration and does nothing.',
     contracts: ['copyButton'],
     component: 'Copy Button',
     title: 'Copy Button',
@@ -950,7 +960,9 @@ export const examples = [
     guidance:
       'A context menu is the same surface as [Menu](/docs/components/menu/), opened by a secondary click over a region instead of by a control. Reach for [Menu Button](/docs/components/menu-button/) when the commands should have a visible trigger — a context menu is discoverable only by trying it, so it belongs to shortcuts for things reachable another way.',
     authoring:
-      'This is the one Timeless component with no markup-only path: the platform cannot open a surface at pointer coordinates without script, so with JavaScript off the browser shows its own context menu and the authored `ui-menu` stays hidden. Never put a command here that is not also reachable elsewhere. Give the `target` a role that supports `aria-haspopup` and an accessible name — in real markup it is usually something that already has both, like a table row or a treeitem — and Timeless adds the tab stop, the relationships, and the `Shift+F10` and Context Menu key routes in.',
+      'Never put a command here that is not also reachable elsewhere. Give the `target` a role that supports `aria-haspopup` and an accessible name — in real markup it is usually something that already has both, like a table row or a treeitem — and Timeless adds the tab stop, the relationships, and the `Shift+F10` and Context Menu key routes in.',
+    beforeJavaScript:
+      'The platform cannot open a surface at pointer coordinates without script, so the markup above is not usable on its own. With JavaScript off the browser shows its own context menu and the authored `ui-menu` stays hidden \u2014 which is why every command here has to be reachable somewhere else too.',
     contracts: ['contextMenu', 'menu'],
     component: 'Context Menu',
     title: 'Context Menu',

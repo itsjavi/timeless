@@ -9,13 +9,16 @@ decides it — and if one does, run the script instead of arguing from the sourc
 pnpm qa
 ```
 
-That is `typecheck` → `format:check` → `build` → `test` → `contracts:check` → `publint` → `attw` →
-`test:e2e`. `build` in `packages/components` runs `generate:check`, `contracts:validate`, and
-`manifest:validate` before `tsdown`, so a registry mistake fails the build rather than shipping.
-`contracts:check` is `boundaries:check`, `exports:validate`, `generated-dom:check`, and
-`performance:check`, and the CI job runs that same aggregate — so a green `pnpm qa` means a green
-job. It did not always: those four ran only in CI, which is how a `createElement` in a component
-reached a pull request past a green local gate.
+That is `typecheck` → `format:check` → `build` → `test` → `pnpm -F @apps/web test:dist` →
+`contracts:check` → `publint` → `attw` → `test:e2e`. `build` in `packages/components` runs
+`generate:check`, `contracts:validate`, `core:validate`, and `manifest:validate` before `tsdown`, so
+a registry mistake fails the build rather than shipping. `test:dist` is
+`validate-agent-surfaces.mjs`, which reads the emitted site: one Markdown route per documented
+component, the `llms.txt` token budget, and the packaged agent skill. `contracts:check` is
+`boundaries:check`, `exports:validate`, `generated-dom:check`, and `performance:check`, and the CI
+job runs that same aggregate — so a green `pnpm qa` means a green job. It did not always: those four
+ran only in CI, which is how a `createElement` in a component reached a pull request past a green
+local gate.
 
 ## Failure → remedy
 
@@ -32,9 +35,9 @@ reached a pull request past a green local gate.
 | `"<claim>" is advertised but <pattern> matches nothing`        | Landing-page copy outran the library                                                                                    | Remove the tin, or implement the feature                                                                          |
 | `Undocumented custom elements: <tags>`                         | An element with no catalog entry                                                                                        | Add it to `packages/examples/src/catalog.ts`                                                                      |
 | `Undocumented CSS exports: <files>`                            | A stylesheet no example references                                                                                      | Add it to an example's `styles`                                                                                   |
-| `Implementation-oriented StoryLite routes remain`              | A story title still uses an implementation group                                                                        | Retitle to `Library/<Group>/<Component>`                                                                          |
-| `The StoryLite catalog has no Library routes.`                 | Titles are wrong, or the build produced no stories                                                                      | Check `title` on the affected `meta`                                                                              |
-| `published packages cannot depend on @timelessui/examples`     | `packages/core` or `packages/components` imported the examples package                                                  | Invert the dependency                                                                                             |
+| `Implementation-oriented StoryLite routes remain`              | A story filename is missing from `storyDomains`, so `resolveStoryId` fell back to a directory-derived id                | Add the filename to `storyDomains` in `apps/stories/.storylite/config.ts`. The story `title` does not decide this |
+| `The StoryLite catalog has no Library routes.`                 | The same table, or the build produced no stories at all                                                                 | Check `storyDomains` first, then that the story files built                                                       |
+| `published packages cannot depend on @timelessui/examples`     | `packages/color`, `packages/core`, or `packages/components` imported the examples package                               | Invert the dependency                                                                                             |
 | `@timelessui/color cannot depend on components or core`        | `packages/color` imported a sibling package; the colour model is a leaf                                                 | Invert the dependency, or move the code into `components`                                                         |
 | `source cannot import from the ignored .local directory`       | An import reaches into `.local/`                                                                                        | Remove it                                                                                                         |
 | `<id> uses unknown part <token>`                               | An example authored a `data-ui-part` token no contract declares                                                         | Declare the part in the registry and regenerate, **before** the example emits it                                  |
@@ -45,6 +48,10 @@ reached a pull request past a green local gate.
 | `<id> documents <name> but does not import its stylesheet <f>` | A contract's `css` array grew and the example's `styles` did not                                                        | Add the stylesheet to the example's `styles`                                                                      |
 | `<id> uses uncatalogued public class <name>`                   | An example uses a `.ui-*` class no contract declares                                                                    | Declare the component, or add it to `demoOnlyClasses`                                                             |
 | `<entry> <metric> grew from <a> to <b>`                        | A size budget moved by more than 10%                                                                                    | Justify the growth and re-baseline with `--measure`, recording before and after                                   |
+| `Missing performance baseline for <entry>`                     | A new element module has no entry in `scripts/performance-baselines.json`, which is hand-written                        | Add one from `performance:check -- --measure`                                                                     |
+| `Missing class entrypoint ./<tag>`                             | A new element has no `exports` subpath in `packages/components/package.json`                                            | Add `./<tag-without-the-ui-prefix>` beside its siblings                                                           |
+| `Core stylesheets crossed the theme boundary`                  | A core file declared a colour, radius, shadow, type property, or size, or a theme file kept a property core owns        | Move the declaration to the other tier, or mark it `core-exempt:` with a reason                                   |
+| `core/<file> parsed to zero declarations`                      | `check-core-boundary.mjs` could not parse a core stylesheet, and fails loudly rather than passing an unchecked file     | Fix the stylesheet, or the parser in that script                                                                  |
 
 `packages/examples/scripts/validate.mjs` is the strictest gate in the repository and the one most
 likely to reject a change: it imports the registry, renders every canonical example, and throws on
@@ -66,6 +73,7 @@ satisfy an artifact.
 pnpm -F @timelessui/components run generate          # regenerate from the registry
 pnpm -F @timelessui/components run generate:check    # fail if generated files are stale
 pnpm -F @timelessui/components run contracts:validate
+pnpm -F @timelessui/components run core:validate      # the core/theme boundary, both directions
 pnpm -F @timelessui/components run manifest:validate
 pnpm -F @timelessui/components run exports:validate
 pnpm -F @timelessui/components run generated-dom:check

@@ -18,9 +18,10 @@ Most Timeless components are plain CSS over native HTML and need no JavaScript a
 custom elements, used only where keyboard coordination, focus management, or state synchronisation
 cannot be expressed accessibly in CSS. Either way the markup you author is the markup that ships:
 the initial shell is useful before JavaScript runs, so pages avoid layout shifts, unstyled flashes,
-and framework-specific boot requirements. Context Menu is the one component with no such shell — the
-platform has no declarative way to open a surface at pointer coordinates — and its page says so
-rather than leaving it to be discovered.
+and framework-specific boot requirements. Two components have no such shell, because the platform
+offers no declarative equivalent: Context Menu, which would need to open a surface at pointer
+coordinates, and Copy Button, which would need to reach the clipboard. Each declares that in the
+catalog and its page says so, rather than leaving it to be discovered.
 
 The library targets Baseline 2025 browsers and builds on these platform features today:
 
@@ -64,8 +65,10 @@ theme you get is whichever path you imported. `/docs/styling/css/` has the detai
 
 Components are grouped as Foundations, Actions, Forms, Navigation, Content, Feedback, Overlays, and
 Color. The catalog is declared once in `packages/examples/src/catalog.ts`, which drives the
-documentation sidebar, the component index at `/docs/components/`, the live previews, and the
-StoryLite route ids — so the count and the grouping are never restated by hand.
+documentation sidebar, the component index at `/docs/components/`, and the live previews — so the
+count is never restated by hand. StoryLite route ids are the exception: `resolveStoryId` in
+`apps/stories/.storylite/config.ts` derives them from the story filename through a table kept in
+sync by hand, and nothing yet compares the two.
 
 Each component's reference page is generated from
 `packages/components/scripts/component-registry.mjs` — the single declaration of every public root,

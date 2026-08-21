@@ -183,17 +183,32 @@ while it holds focus.
 three published manifests. `@timelessui/core` has an `attw` script and the devDependency, and CI
 runs the root sweep. `packages/components/README.md` opens with the install command.
 
-**Files.** 40 changed. New: `src/copy-button.ts` and its test, `src/css/core/copy-button.css`,
+**Prose the new component made wrong.** Two claims said Context Menu was the only component with no
+pre-registration shell — `README.md` and `reference/browser-support.mdx` — and Context Menu's own
+catalog `authoring` said the same. Copy Button is the second, so the fact moved out of prose and
+into a declared `beforeJavaScript` field on the catalog entry, which the reference page now renders
+in place of its generic "the markup above is complete and usable on its own" paragraph. That
+paragraph was a binary on whether the component had a custom element, and it was already wrong for
+Context Menu. `DESIGN.md` called `:state()` private-state-only, which `--copied` is the first
+exception to; the `:state()` row in `browser-support.mdx` named three components and now names four;
+and `docs/index.mdx` counted the catalog by hand, which now interpolates.
+
+**Two agent-facing references this milestone proved stale**, both by following them and hitting the
+gap: `author-component/SKILL.md` still described one stylesheet at `src/css/<name>.css` with no
+mention of `core:validate`, the two aggregates, or the two hand-written entries a new element needs
+before `exports:validate` and `performance:check` can pass; and both skills plus `validators.md`
+attributed StoryLite route ids to the story title.
+
+**Files.** 55 changed. New: `src/copy-button.ts` and its test, `src/css/core/copy-button.css`,
 `src/css/themes/atmosphere/copy-button.css`, `src/define/ui-copy-button.ts` (generated),
-`packages/examples/src/copy-button.html.ts`, and the story with its factory re-export. Six commits,
-one per thread.
+`packages/examples/src/copy-button.html.ts`, and the story with its factory re-export.
 
 ## Validation results
 
-`pnpm qa` passes, exit 0: typecheck, `format:check`, build, 357 unit tests across four workspaces, 52
-canonical examples, 6 platform claims and 8 house rules, 47 component and 19 guide Markdown routes,
-`contracts:check`, `publint` for three packages, `attw` for three packages, and 415 end-to-end
-tests.
+`pnpm qa` passes, exit 0: typecheck, `format:check`, build, 357 unit tests across four workspaces,
+52 canonical examples, 6 platform claims and 8 house rules, 47 component and 19 guide Markdown
+routes, `contracts:check`, `publint` for three packages, `attw` for three packages, and 415
+end-to-end tests.
 
 Verified along the way rather than only at the end:
 
@@ -209,10 +224,14 @@ Verified along the way rather than only at the end:
 - Screenshots of the swap in light and dark, and with the theme stripped to `tokens.css` plus every
   `core/*.css`, which is where the `clip-path` decision was confirmed rather than argued.
 
-**The performance baseline was re-measured once.** The first figures were taken from a stylesheet
-still missing the `[hidden]` rule: `cssGzipBytes` 1304 → 1483 and `cssRawBytes` 2617 → 3102, with
-the JS figures unchanged. The growth is one CSS rule and its comment, in a component whose baseline
-was introduced in this same milestone.
+**The performance baseline was re-measured twice**, both times for a correctness fix, in a component
+whose baseline was introduced in this same milestone:
+
+- The first figures came from a stylesheet still missing the `[hidden]` rule — `cssGzipBytes` 1304 →
+  1483, `cssRawBytes` 2617 → 3102, JS unchanged. One rule and its comment.
+- Scoping the part lookups pulled `parts.js` into the closure — `gzipBytes` 3748 → 4484, `rawBytes`
+  12211 → 13966, CSS unchanged. It is the shared module every other multi-part element already
+  loads, so a page that renders any of them pays nothing for this.
 
 ## Follow-ups, recorded rather than done
 
@@ -223,9 +242,38 @@ was introduced in this same milestone.
 - **Teach `validate.ts` about parts.** It walks attributes only, so a copy button with no `status`
   region — announcing nothing — cannot be reported. Extending it changes a shared module for one
   component's benefit.
-- **`.agents/skills/author-component-story/SKILL.md` on route ids.** It says the route derives from
-  the story title. It derives from the filename table in `.storylite/config.ts`, and a missing entry
-  fails no check.
+- **Rich clipboard content — a blob, an image, `text/html`.** Raised while the work was in review,
+  and genuinely out of reach here: `writeText` carries a string, and anything else needs
+  `navigator.clipboard.write([new ClipboardItem(...)])`, whose format support is asked per type
+  through `ClipboardItem.supports()` rather than being a version floor. Measured in Chromium during
+  this milestone: `write`, `ClipboardItem`, and `supports('image/png')` are all present, so the
+  platform is there. What it would cost is a public surface with no attribute representation — a
+  blob has no serialisation an author can write in HTML — plus a `CopyDetail.value` that is no
+  longer a string and at least one more failure reason. That is a contract change, not an addition,
+  and belongs in its own milestone. Long or dynamic **text** needs none of it: `from` is read at
+  activation, so a 50,000-character source resolves with nothing duplicated into an attribute.
+  Verified in the browser; the `from` description now says so.
+- **Nothing compares the StoryLite route ids to the catalog.** `apps/web/src/lib/stories.ts` builds
+  the documentation's "Open in StoryLite" link as `library-${domain}-${id}--${story}` from the
+  catalog, while `resolveStoryId` builds the real ids from filenames. A missing `storyDomains` entry
+  is a silent 404 on a documentation page. Asserting every non-recipe example's `storyUrl` against
+  `apps/stories/story-routes.json` in `validate-docs.mjs` would replace three prose claims with a
+  build failure. The prose is corrected here; the check is not written.
+- **The preview definition loader is hand-maintained.** `apps/web/src/scripts/preview-runtime.ts`
+  maps each tag to a dynamic import and nothing compares it to the manifest, so a new element throws
+  `Missing preview definition loader` in the browser after passing every validator. The map needs
+  literal specifiers for the bundler, so the fix is to generate the file from the registry rather
+  than to check it.
+- **Pre-existing drift the docs audit surfaced, deliberately left alone.** Not caused by this work
+  and too large to fold in: ten getting-started and framework MDX snippets import a component's
+  theme stylesheet without `themes/atmosphere/tokens.css` or its `core/` sibling, so every token in
+  them resolves to nothing — milestone 028 fallout, and the highest-value item;
+  `reference/packages.mdx` omits `core.css` and `core/<component>.css` from the entrypoints table
+  and lists 37 of 39 value arrays; `AGENTS.md` still gives `CSS Primitives/Button` as a story title
+  and names a `pnpm test:coverage` that exists nowhere; `generated-files.md` omits
+  `scripts/performance-baselines.json` and `apps/stories/story-routes.json`; `browser-support.mdx`
+  attributes the Safari floor to `:state()` at 17.5 where its own table says 17.4; and three shipped
+  CSS comments still name the deleted `theme-atmosphere.css`.
 
 ---
 

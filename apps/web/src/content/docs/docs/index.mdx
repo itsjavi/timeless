@@ -4,7 +4,10 @@ description: Framework-agnostic UI built on modern web standards.
 ---
 
 import { CardGrid, LinkCard } from '@astrojs/starlight/components'
+import { examples } from '@timelessui/examples'
 import StoriesLink from '../../../components/docs/StoriesLink.astro'
+
+export const componentCount = examples.filter((example) => example.domain !== 'recipes').length
 
 Timeless is a UI library of plain CSS and custom elements. You author the markup, your CSS can
 override anything, and JavaScript only runs where the platform cannot do the job alone. There is no
@@ -24,7 +27,7 @@ Preact, Vue, Svelte, Solid, and Astro.
   />
   <LinkCard
     title="Browse all components"
-    description="46 components, grouped by what they are for."
+    description={`${componentCount} components, grouped by what they are for.`}
     href="/docs/components/"
   />
   <LinkCard

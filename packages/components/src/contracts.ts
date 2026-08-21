@@ -4018,14 +4018,14 @@ export const componentContracts = {
         name: 'from',
         type: 'string',
         description:
-          'Id of the element to read instead of `value`. An `input`, `textarea`, or `select` gives its current `value`; anything else gives its text.',
+          'Id of the element to read instead of `value`. An `input`, `textarea`, or `select` gives its current `value`; anything else gives its text. Read at activation rather than cached, so this is the one to reach for when the text is long or changes: it stays current on its own, and nothing is duplicated into an attribute. Assigning the `value` property works too, but a long string then reflects into the DOM.',
       },
       {
         name: 'feedback-duration',
         type: 'number',
         default: '1800',
         description:
-          'Milliseconds the `--copied` state persists after a successful copy. `0` clears it immediately.',
+          'Milliseconds the `--copied` state persists after a successful copy, and with it the text in the `status` region — the two clear together, so copying the same value twice is announced twice. `0` clears both on the next task, which is short enough that a screen reader may miss the announcement.',
       },
       {
         name: 'copied-message',
