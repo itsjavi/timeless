@@ -58,13 +58,13 @@ above.
 
 ## How each tool discovers this
 
-| Tool          | Path                                      | Mechanism                   |
-| ------------- | ----------------------------------------- | --------------------------- |
-| Codex         | `.agents/skills/`                         | Read natively               |
-| Codex         | `.codex/skills` → `../.agents/skills`     | Relative symlink            |
-| Claude Code   | `.claude/skills` → `../.agents/skills`    | Relative symlink            |
-| Claude Code   | `.claude/agents` → `../.agents/subagents` | Relative symlink            |
-| Anything else | `AGENTS.md`                               | The skill table points here |
+| Tool          | Path                                      | Mechanism                      |
+| ------------- | ----------------------------------------- | ------------------------------ |
+| Codex         | `.agents/skills/`                         | Read natively                  |
+| Codex         | `.codex/skills` → `../.agents/skills`     | Relative symlink               |
+| Claude Code   | `.claude/skills` → `../.agents/skills`    | Relative symlink               |
+| Claude Code   | `.claude/agents` → `../.agents/subagents` | Relative symlink               |
+| Anything else | `AGENTS.md`                               | The skills section points here |
 
 The symlinks are relative and committed, so a clone wires itself up with no install step. Nothing is
 duplicated: editing `.agents/skills/<name>/SKILL.md` changes what every tool reads.
@@ -120,7 +120,8 @@ limits what it _may use_.
 1. Create `.agents/skills/<verb-phrase-name>/SKILL.md`, observing the frontmatter rules above. Spend
    the description on distinct intents and a boundary, not on synonyms.
 2. Link shared facts from `reference/` instead of restating them.
-3. Add a row to the table above and to the skill table in `AGENTS.md`.
+3. Add a row to the table above. `AGENTS.md` needs no edit: both Claude Code and Codex list the
+   skills automatically, which is why it describes the directory rather than enumerating it.
 4. To expose it as a Codex agent, add `agents/openai.yaml`. To expose it as a Claude Code subagent,
    add `.agents/subagents/<name>.md`.
 

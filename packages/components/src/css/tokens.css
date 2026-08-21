@@ -10,12 +10,12 @@
  * `!important`.
  *
  * `color-scheme: light dark` is what makes `light-dark()` resolve to the branch the user asked for.
- * With it absent in a browser preferring dark, every `light-dark()` token in `theme-atmosphere.css`
+ * With it absent in a browser preferring dark, every `light-dark()` token in `themes/atmosphere/tokens.css`
  * silently returns its light branch — dark text on a dark page. It also lets native controls,
  * scrollbars, and form widgets follow the platform. Platform integration, not a look.
  *
  * Everything else that used to be in this file — the 26 `light-dark()` values and every other token
- * value — is Atmosphere's, and now lives in `theme-atmosphere.css`. Replacing that file replaces the
+ * value — is Atmosphere's, and now lives in `themes/atmosphere/tokens.css`. Replacing that file replaces the
  * look. Dropping this one breaks colour-scheme resolution and layer ordering for every component at
  * once.
  */

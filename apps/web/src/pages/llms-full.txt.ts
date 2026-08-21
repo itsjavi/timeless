@@ -4,7 +4,7 @@
  * `/llms.txt` is the default; this is for models with the context to hold it, and the agents
  * reference page publishes both measured token counts so the choice is informed. Astro removed its
  * own `llms.txt` partly over a 44-second CI cost, so this route leans on the memo in
- * `component-markdown.ts`: the 45 component renders are shared with `[slug].md.ts` and happen once
+ * `component-markdown.ts`: the component renders are shared with `[slug].md.ts` and happen once
  * per build rather than twice.
  */
 import type { APIRoute } from 'astro'

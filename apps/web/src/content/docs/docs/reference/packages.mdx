@@ -25,9 +25,12 @@ pnpm add @timelessui/components
 | `@timelessui/components/{element}`                             | One enhanced element's class and helpers, for example `@timelessui/components/dialog`.           | None                          |
 | `@timelessui/components/define/ui-{element}`                   | Registers one custom element.                                                                    | Calls `customElements.define` |
 | `@timelessui/components/define`                                | Registers every public custom element.                                                           | Calls `customElements.define` |
-| `@timelessui/components/css/themes/atmosphere/{component}.css` | One component's styles.                                                                          | Stylesheet                    |
-| `@timelessui/components/css/themes/atmosphere.css`             | The Atmosphere theme complete: layer order, behavior, and every component's look.                | Stylesheet                    |
-| `@timelessui/components/css/tokens.css`                        | Design tokens and the cascade-layer order.                                                       | Stylesheet                    |
+| `@timelessui/components/css/tokens.css`                        | The cascade-layer order and `color-scheme`. Required, and imported first.                        | Stylesheet                    |
+| `@timelessui/components/css/core/{component}.css`              | One component's behavior: anchoring, box participation, scrolling, native resets. Required.      | Stylesheet                    |
+| `@timelessui/components/css/core.css`                          | Every `core/` file. Required, and the tier you keep when you replace the theme.                  | Stylesheet                    |
+| `@timelessui/components/css/themes/atmosphere/tokens.css`      | Every `--ui-*` value. Required by any Atmosphere component file, which carries no fallbacks.     | Stylesheet                    |
+| `@timelessui/components/css/themes/atmosphere/{component}.css` | One component's look. Optional — this is the tier you replace.                                   | Stylesheet                    |
+| `@timelessui/components/css/themes/atmosphere.css`             | The required tiers plus every Atmosphere stylesheet. The one import a prototype needs.           | Stylesheet                    |
 | `@timelessui/components/collection`                            | Locale-aware matching and disabled-aware keyboard navigation.                                    | None                          |
 | `@timelessui/color`                                            | Color parsing, serialization, conversion, gamut, and WCAG contrast. Its own package.             | None                          |
 | `@timelessui/components/events`                                | Transition event and detail types.                                                               | None                          |
@@ -42,7 +45,9 @@ pnpm add @timelessui/components
 
 Only enhanced elements have a class entrypoint. CSS-only primitives such as Button, Alert, and Card
 are classes and attributes rather than JavaScript, so they have no per-component module at all —
-their permitted values live on the root import instead.
+their permitted values live on the root import instead. Two pairs share one module behind two
+subpaths, so importing either name gives you both classes: `radio-group` and `checkbox-group` are
+both `choice-group`, and `toaster` and `toast` are both `toast`.
 
 ## What an entrypoint weighs
 
@@ -91,8 +96,9 @@ declared exactly once and generated from the same source as the contracts: `butt
 `primitiveDensities`, `compactDensities`, `tableAlignments`, `formControlSizes`, `fieldLayouts`,
 `formDensities`, `choiceGroupOrientations`, `floatingPlacements`, `tabsOrientations`,
 `tabsActivations`, `dialogKinds`, `sheetPositions`, `popoverRoles`, `hoverCardVariants`,
-`menuOrientations`, `toolbarOrientations`, `toasterPlacements`, `toasterStacks`,
-`toggleGroupOrientations`, `toggleGroupSelections`, and `colorPickerFormats`.
+`menuOrientations`, `toolbarOrientations`, `collectionAlignments`, `optionFilterModes`,
+`toasterPlacements`, `toasterStacks`, `toggleGroupOrientations`, `toggleGroupSelections`, and
+`colorPickerFormats`.
 
 Arrays with identical values keep separate names because they are separate public exports.
 `buttonSizes`, `primitiveSizes`, and `formControlSizes` are all `sm | md | lg`, and each names the

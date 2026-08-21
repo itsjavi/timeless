@@ -1,6 +1,6 @@
 /*
  * Core: the declarations a Timeless component needs to behave correctly, with none of Atmosphere's
- * look. Required. `theme-atmosphere.css` and the component stylesheets beside it are the optional
+ * look. Required. `themes/atmosphere.css` and the component stylesheets beside it are the optional
  * tier — replace them wholesale and every component here is still positioned, still scrolls, still
  * operable, just plain.
  *

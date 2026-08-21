@@ -114,8 +114,11 @@ See `.agents/README.md` for the layout, the frontmatter contract, and how to add
 
 ## Rules for writing `.stories.ts` files
 
-- Prefer one component per story file. Use a title path that groups related files, e.g.
-  `CSS Primitives/Button`, `CSS Primitives/Badge`, and `CSS Primitives/Card`.
+- Prefer one component per story file. Title it `Library/<Group>/<Component>`, where `<Group>` is
+  the catalog group — e.g. `Library/Actions/Button`, `Library/Feedback/Badge`,
+  `Library/Content/Card`. `write-route-catalog.mjs` fails the build on implementation-oriented
+  prefixes such as `CSS Primitives/`, and the route id itself comes from the story filename through
+  the `storyDomains` table in `apps/stories/.storylite/config.ts`, not from the title.
 - Every component story file must export a `Default` story. Use `Default` for the default view with
   useful args and controls.
 - Additional story exports should show meaningful demos that are different from the default view and
@@ -140,10 +143,11 @@ See `.agents/README.md` for the layout, the frontmatter contract, and how to add
 
 ```ts
 const meta: StoryLiteMeta = {
-  title: 'Popover',
+  title: 'Library/Overlays/Popover',
   parameters: {
     renderer: 'html',
-    css: [themeCss, popoverCss, demoCss],
+    // Four per component since the core/theme split: base tokens, core, theme tokens, theme.
+    css: [tokensCss, coreFloatingCss, corePopoverCss, themeCss, popoverCss, demoCss],
     defineCustomElements: defineTimelessElements,
   },
 }
@@ -182,7 +186,7 @@ Do:
   with the code they exercise (`utility.test.ts`), and mock network and storage boundaries.
 - Manual QA, especially for releases: verify on staging and file bugs. If a bug is critical,
   backport and re-test.
-- Run `pnpm test` and `pnpm test:coverage` after touching critical or complex flows.
+- Run `pnpm test` after touching critical or complex flows, and `pnpm qa` before opening a PR.
 
 Do not:
 

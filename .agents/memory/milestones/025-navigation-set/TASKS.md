@@ -1,5 +1,12 @@
 # Milestone 025 Tasks
 
+> Revised before implementation, on 2026-08-21. This list was written before milestone 028 split
+> every component stylesheet into `core/` and `themes/atmosphere/`, so its CSS tasks named
+> `src/css/<component>.css` and an `@import` into `src/css/components.css`, a file that no longer
+> exists. Each component now needs two stylesheets, two aggregate imports, and a `core:validate`
+> pass, and a new element needs a `performance-baselines.json` entry and a `storyDomains` entry that
+> did not exist as steps when this was planned. `PLAN.md` stays as written; this is the live list.
+
 ## 0. Baseline
 
 - [ ] Confirm zero occurrences of `breadcrumb`, `pagination`, and `nav-menu` in `packages/` and
@@ -14,7 +21,9 @@
 ## 1. Breadcrumb — CSS only
 
 - [ ] Add a `breadcrumbSeparators` value set `['chevron', 'slash']` with a real type and module
-- [ ] Add the `css('breadcrumb', 'ui-breadcrumb', 'breadcrumb.css', …)` registry entry
+- [ ] Add the
+      `css('breadcrumb', 'ui-breadcrumb', ['core/breadcrumb.css', 'themes/atmosphere/breadcrumb.css'], …)`
+      registry entry
 - [ ] Declare `data-ui-separator` and `data-ui-density` (reusing `compactDensities`)
 - [ ] Declare the `item`, `link`, and `current` parts — the separator is a pseudo-element, not a
       part
@@ -22,39 +31,53 @@
 - [ ] Set `accessibility()` to the `<nav>` + `<ol>` + `aria-current="page"` composition, checked
       against `.agents/skills/verify-apg-conformance/SKILL.md`
 - [ ] Write real descriptions for every field
-- [ ] Create `src/css/breadcrumb.css` in the `ui.components` layer
+- [ ] Create `src/css/core/breadcrumb.css` in the `ui.components` layer: `display`, and nothing
+      cosmetic and no sizing, per `check-core-boundary.mjs`
+- [ ] Create `src/css/themes/atmosphere/breadcrumb.css` for the look and every size
 - [ ] Render the separator as generated content (`li + li::before` or `li:not(:last-child)::after`)
+      in the **theme**, since the theme draws it and core has nothing to position without it
 - [ ] Select `[aria-current='page']` for the current crumb
 - [ ] Implement truncation with `min-inline-size: 0` and `text-overflow: ellipsis` on middle crumbs
-- [ ] Confirm every gap comes from `--ui-space-1..5`
-- [ ] Add the `@import` to `src/css/components.css`
+      — `min-inline-size` is sizing, so it is the theme's
+- [ ] Confirm every gap comes from `--ui-space-1..5`, and that any token a core rule reads carries a
+      literal fallback
+- [ ] Add the `@import` to **both** `src/css/core.css` and `src/css/themes/atmosphere.css`
+- [ ] `pnpm -F @timelessui/components run core:validate`
 - [ ] `pnpm -F @timelessui/components run generate`
 - [ ] Re-export the generated array, union, and guard from the primitives module
 - [ ] Add the export block to `src/index.ts`
 - [ ] Write the example factory emitting the `<nav>` accessible name, the `<ol>`, and an unlinked
       final crumb with `aria-current="page"`
-- [ ] Add the catalog entry with `group: 'Navigation'`, a deliberate `domain`, and `styles`
-      including `tokens.css`, `link.css`, and `breadcrumb.css`
+- [ ] Add the catalog entry with `group: 'Navigation'`, a deliberate `domain`, and complete
+      `styles`: `tokens.css`, every `core/*` file, `themes/atmosphere/tokens.css`, then every theme
+      file. `validate.mjs` rejects a theme file whose `core/` sibling or theme tokens are missing
 - [ ] Add the story titled `Library/<Domain>/<Component>` matching the catalog domain and id
+- [ ] Add `breadcrumb` to the `storyDomains` table in `apps/stories/.storylite/config.ts` — the
+      title does not derive the route id, and without the entry the build fails on an
+      implementation-oriented route
 - [ ] Add the `apps/stories/src/smoke.test.ts` entry
 - [ ] `pnpm -F @timelessui/components run contracts:validate`
 
 ## 2. Pagination — CSS only
 
-- [ ] Add the `css('pagination', 'ui-pagination', 'pagination.css', …)` registry entry
+- [ ] Add the
+      `css('pagination', 'ui-pagination', ['core/pagination.css', 'themes/atmosphere/pagination.css'], …)`
+      registry entry
 - [ ] Reuse an existing `sm | md | lg` set for `data-ui-size`; do **not** declare a fourth one
 - [ ] Declare the `item`, `link`, `previous`, `next`, and `ellipsis` parts — never `pager`, which
       milestone 022 owns for paging options
 - [ ] Declare the `current` state, selected as `[aria-current='page']`
 - [ ] Set `accessibility()` to the `<nav>` + list-of-links composition
 - [ ] Write real descriptions for every field
-- [ ] Create `src/css/pagination.css` reusing `.ui-group[data-ui-attached]` for the joined strip
+- [ ] Create `src/css/core/pagination.css` and `src/css/themes/atmosphere/pagination.css`, reusing
+      `.ui-group[data-ui-attached]` for the joined strip
 - [ ] Render the boundary control as a non-link `<span>`, not an `aria-disabled` `<a>`
 - [ ] Mark the ellipsis `aria-hidden` in the factory
 - [ ] Give previous and next accessible names that describe them, not glyphs
-- [ ] Add the `@import` to `src/css/components.css`
+- [ ] Add the `@import` to **both** aggregates, and run `core:validate`
 - [ ] `pnpm generate`, re-export values, add the `src/index.ts` block
-- [ ] Add the example factory, catalog entry, story, and `smoke.test.ts` entry
+- [ ] Add the example factory, catalog entry with complete `styles`, story, `storyDomains` entry,
+      and `smoke.test.ts` entry
 - [ ] Confirm no `ui-pagination` **custom element** was added — page navigation is links
 - [ ] `contracts:validate`
 
@@ -72,14 +95,18 @@
 - [ ] Confirm no `role="menu"` and no arrow-key roving focus; `Tab` traverses the links
 - [ ] State that rule explicitly in the contract and the docs
 - [ ] Confirm the element writes no visual declarations and generates no elements
+- [ ] Create `src/css/core/nav-menu.css` and `src/css/themes/atmosphere/nav-menu.css`, add both to
+      the aggregates, and run `core:validate`
 - [ ] Complete the element add sequence: `src/nav-menu.ts` + test, generate, value re-exports,
-      `src/index.ts` block, `./nav-menu` subpath in `packages/components/package.json`, tag in
-      `src/define.test.ts`, `preview-runtime.ts` loader, catalog entry, story, `smoke.test.ts` entry
+      `src/index.ts` block, `./nav-menu` subpath in `packages/components/package.json`, a
+      `performance-baselines.json` entry from `performance:check -- --measure`, tag in
+      `src/define.test.ts`, `preview-runtime.ts` loader, catalog entry, story, `storyDomains` entry,
+      `smoke.test.ts` entry
 
 ## 4. Documentation
 
-- [ ] Update the hardcoded component count in `apps/web/src/content/docs/docs/index.mdx`
-- [ ] Better: derive it from `examples.length` so it stops being a manual step for future milestones
+- [x] The component count in `apps/web/src/content/docs/docs/index.mdx` already interpolates from
+      the catalog, so there is nothing to update — done ahead of this milestone
 - [ ] Pick `domain` and `group` deliberately for all three, noting that `tabs` already sits in
       `domain: 'overlays'` with `group: 'Navigation'`
 - [ ] `pnpm build:stories`, then commit the regenerated `apps/stories/story-routes.json`
