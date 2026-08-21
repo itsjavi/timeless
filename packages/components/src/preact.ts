@@ -370,7 +370,7 @@ export interface UIOtpFieldElementProps extends TimelessGlobalProps {
 }
 
 export interface UICopyButtonElementProps extends TimelessGlobalProps {
-  /** The literal text to copy. Wins over `from` when both are present, the way an authored `aria-label` wins over a computed name. */
+  /** The literal text to copy. Wins over `from` on presence rather than content, the way `value` does on an option: an explicit `value=""` is the author saying to copy nothing. */
   value?: string
   /** Id of the element to read instead of `value`. An `input`, `textarea`, or `select` gives its current `value`; anything else gives its text. */
   from?: string
@@ -382,7 +382,7 @@ export interface UICopyButtonElementProps extends TimelessGlobalProps {
   feedbackDuration?: string
   /** DOM property reflecting the `copied-message` attribute. */
   copiedMessage?: string
-  /** Dispatched once per activation, on success and on every failure. The detail carries `status`, the resolved `value`, and a `reason` naming why a failure failed. */
+  /** Dispatched once per activation, on success and on every failure. The detail carries `status`, the resolved `value`, and a `reason` naming what went wrong: `empty`, `unsupported`, or `denied`. */
   'onui-copy'?: (event: CustomEvent<CopyDetail>) => void
 }
 

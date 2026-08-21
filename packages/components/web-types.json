@@ -868,7 +868,7 @@
           "attributes": [
             {
               "name": "value",
-              "description": "The literal text to copy. Wins over `from` when both are present, the way an authored `aria-label` wins over a computed name.",
+              "description": "The literal text to copy. Wins over `from` on presence rather than content, the way `value` does on an option: an explicit `value=\"\"` is the author saying to copy nothing.",
               "value": {
                 "kind": "plain",
                 "type": "string"
@@ -902,7 +902,7 @@
           "events": [
             {
               "name": "ui-copy",
-              "description": "Dispatched once per activation, on success and on every failure. The detail carries `status`, the resolved `value`, and a `reason` naming why a failure failed."
+              "description": "Dispatched once per activation, on success and on every failure. The detail carries `status`, the resolved `value`, and a `reason` naming what went wrong: `empty`, `unsupported`, or `denied`."
             }
           ]
         }

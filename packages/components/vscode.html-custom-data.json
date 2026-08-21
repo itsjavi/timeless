@@ -536,7 +536,7 @@
       "attributes": [
         {
           "name": "value",
-          "description": "The literal text to copy. Wins over `from` when both are present, the way an authored `aria-label` wins over a computed name."
+          "description": "The literal text to copy. Wins over `from` on presence rather than content, the way `value` does on an option: an explicit `value=\"\"` is the author saying to copy nothing."
         },
         {
           "name": "from",

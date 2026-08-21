@@ -225,6 +225,7 @@ export const examples = [
     definitions: ['ui-copy-button'],
     styles: [
       'tokens.css',
+      'core/button.css',
       'core/code.css',
       'core/copy-button.css',
       'themes/atmosphere/tokens.css',

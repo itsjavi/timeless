@@ -2873,7 +2873,7 @@
           "attributes": [
             {
               "name": "value",
-              "description": "The literal text to copy. Wins over `from` when both are present, the way an authored `aria-label` wins over a computed name.",
+              "description": "The literal text to copy. Wins over `from` on presence rather than content, the way `value` does on an option: an explicit `value=\"\"` is the author saying to copy nothing.",
               "type": {
                 "text": "string"
               }
@@ -2909,7 +2909,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "The literal text to copy. Wins over `from` when both are present, the way an authored `aria-label` wins over a computed name."
+              "description": "The literal text to copy. Wins over `from` on presence rather than content, the way `value` does on an option: an explicit `value=\"\"` is the author saying to copy nothing."
             },
             {
               "kind": "field",
@@ -2942,7 +2942,7 @@
           "events": [
             {
               "name": "ui-copy",
-              "description": "Dispatched once per activation, on success and on every failure. The detail carries `status`, the resolved `value`, and a `reason` naming why a failure failed.",
+              "description": "Dispatched once per activation, on success and on every failure. The detail carries `status`, the resolved `value`, and a `reason` naming what went wrong: `empty`, `unsupported`, or `denied`.",
               "type": {
                 "text": "CustomEvent<CopyDetail>"
               }
@@ -2977,7 +2977,7 @@
               "name": "status",
               "selector": "[data-ui-part~='status']",
               "required": false,
-              "description": "A `role=\"status\"` region the confirmation is written into. Author it, including its visual treatment — Timeless writes text and never creates the element. Without it nothing is announced."
+              "description": "A `role=\"status\"` region the confirmation is written into. Author it — Timeless writes text and never creates the element — and without it nothing is announced. It is clipped away by default, because the visible confirmation is the `copied` part; restyle it if you want it seen."
             }
           ]
         }

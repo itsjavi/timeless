@@ -4012,7 +4012,7 @@ export const componentContracts = {
         name: 'value',
         type: 'string',
         description:
-          'The literal text to copy. Wins over `from` when both are present, the way an authored `aria-label` wins over a computed name.',
+          'The literal text to copy. Wins over `from` on presence rather than content, the way `value` does on an option: an explicit `value=""` is the author saying to copy nothing.',
       },
       {
         name: 'from',
@@ -4061,7 +4061,7 @@ export const componentContracts = {
         required: false,
         selector: "[data-ui-part~='status']",
         description:
-          'A `role="status"` region the confirmation is written into. Author it, including its visual treatment — Timeless writes text and never creates the element. Without it nothing is announced.',
+          'A `role="status"` region the confirmation is written into. Author it — Timeless writes text and never creates the element — and without it nothing is announced. It is clipped away by default, because the visible confirmation is the `copied` part; restyle it if you want it seen.',
       },
     ],
     states: [
@@ -4079,7 +4079,7 @@ export const componentContracts = {
         name: 'ui-copy',
         type: 'CustomEvent<CopyDetail>',
         description:
-          'Dispatched once per activation, on success and on every failure. The detail carries `status`, the resolved `value`, and a `reason` naming why a failure failed.',
+          'Dispatched once per activation, on success and on every failure. The detail carries `status`, the resolved `value`, and a `reason` naming what went wrong: `empty`, `unsupported`, or `denied`.',
         cancelable: false,
       },
     ],
