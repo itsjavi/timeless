@@ -107,9 +107,59 @@ if (forbidden.length > 0) {
   )
 }
 
-console.log(
-  `Verified ${claims.length} platform claims against the library source, and ${principles.length} house rules.`,
+/**
+ * `README.md` names the components that anchor a surface to their trigger, and it had drifted to four
+ * of six — Menu Button and Hover Card anchor and were never added. Which components anchor is not a
+ * judgement call: `syncFloatingAnchor` is the only way a component gets an anchor name, so its call
+ * sites are the list. `floating.css` names the same six in its header comment, for a reader who is in
+ * the stylesheet rather than here.
+ *
+ * The bullet is worth keeping as prose, because "for the six surfaces that open beside a trigger"
+ * teaches more than a generated list would. It is not worth trusting.
+ */
+const anchoredModules = (await readdir(resolve(root, 'packages/components/src')))
+  .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'))
+  // `floating.ts` declares the helper and `index.ts` re-exports it; neither anchors anything.
+  .filter((name) => name !== 'floating.ts' && name !== 'index.ts')
+const anchored = []
+for (const name of anchoredModules) {
+  const source = await readFile(resolve(root, 'packages/components/src', name), 'utf8')
+  if (/\bsyncFloatingAnchor\b/.test(source)) anchored.push(name.replace(/\.ts$/, ''))
+}
+const readme = await readFile(resolve(root, 'README.md'), 'utf8')
+const anchorBullet = readme.split('\n').find((line) => line.startsWith('- CSS anchor positioning'))
+if (!anchorBullet) {
+  throw new Error(
+    'README.md no longer names the anchored surfaces; update this check or restore it',
+  )
+}
+// Collapsed, because the bullet wraps and "Menu Button" can arrive split across two lines.
+const anchorClaim = readme.slice(readme.indexOf(anchorBullet)).split('\n- ')[0].replace(/\s+/g, ' ')
+const missingAnchors = anchored.filter(
+  (name) => !new RegExp(name.replace(/-/g, '[ -]'), 'i').test(anchorClaim),
 )
+if (missingAnchors.length > 0) {
+  throw new Error(
+    `README.md's anchor-positioning bullet omits ${missingAnchors.join(', ')}, which call syncFloatingAnchor`,
+  )
+}
+if (!new RegExp(`\\b${numberWord(anchored.length)}\\b`, 'i').test(anchorClaim)) {
+  throw new Error(
+    `README.md's anchor-positioning bullet does not say "${numberWord(anchored.length)}", but ${anchored.length} components call syncFloatingAnchor`,
+  )
+}
+
+console.log(
+  `Verified ${claims.length} platform claims against the library source, ${principles.length} house rules, and ${anchored.length} anchored surfaces.`,
+)
+
+function numberWord(count) {
+  return (
+    ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'][
+      count
+    ] ?? String(count)
+  )
+}
 
 function principleItems(source) {
   const list = source.slice(

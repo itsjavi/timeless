@@ -645,9 +645,12 @@ export const components = [
         set: 'buttonVariants',
         default: 'primary',
         description:
-          'Visual intent, resolved by `button.css`. Author `class="ui-button ui-toggle"` so the shared button styling applies.',
+          'Visual intent, resolved by `themes/atmosphere/button.css`. Author `class="ui-button ui-toggle"` so the shared button styling applies.',
       }),
-      size('buttonSizes', 'Control height, padding, and font size. Resolved by `button.css`.'),
+      size(
+        'buttonSizes',
+        'Control height, padding, and font size. Resolved by `themes/atmosphere/button.css`.',
+      ),
     ],
     [],
     [
@@ -2026,7 +2029,7 @@ export const components = [
       attribute('attached', 'boolean', {
         property: false,
         description:
-          'Present to join the buttons into one segmented control. Styling only, resolved by `toggle.css`.',
+          'Present to join the buttons into one segmented control. Styling only, resolved by `themes/atmosphere/toggle.css`.',
       }),
       attribute('orientation', 'string', {
         set: 'toggleGroupOrientations',

@@ -14,7 +14,7 @@ yet, while the primitives settle.
 
 ## Vision
 
-Most Timeless components are plain CSS over native HTML and need no JavaScript at all. The rest are
+Around half of Timeless is plain CSS over native HTML and needs no JavaScript at all. The rest are
 custom elements, used only where keyboard coordination, focus management, or state synchronisation
 cannot be expressed accessibly in CSS. Either way the markup you author is the markup that ships:
 the initial shell is useful before JavaScript runs, so pages avoid layout shifts, unstyled flashes,
@@ -25,7 +25,8 @@ catalog and its page says so, rather than leaving it to be discovered.
 
 The library targets Baseline 2025 browsers and builds on these platform features today:
 
-- CSS anchor positioning, for popover, menu, select, and combobox surfaces
+- CSS anchor positioning, for the six surfaces that open beside a trigger — Popover, Menu, Menu
+  Button, Select, Combobox, and Hover Card
 - Popovers and native `<dialog>`, for top-layer, light dismiss, and Escape handling
 - Cascade layers (`ui.tokens`, `ui.components`, `ui.utilities`), so consumer CSS wins without
   specificity fights
@@ -66,9 +67,11 @@ theme you get is whichever path you imported. `/docs/styling/css/` has the detai
 Components are grouped as Foundations, Actions, Forms, Navigation, Content, Feedback, Overlays, and
 Color. The catalog is declared once in `packages/examples/src/catalog.ts`, which drives the
 documentation sidebar, the component index at `/docs/components/`, and the live previews — so the
-count is never restated by hand. StoryLite route ids are the exception: `resolveStoryId` in
-`apps/stories/.storylite/config.ts` derives them from the story filename through a table kept in
-sync by hand, and nothing yet compares the two.
+count is never restated by hand. StoryLite route ids are the one place the derivation is manual:
+`resolveStoryId` in `apps/stories/.storylite/config.ts` builds them from the story filename through
+a table kept in sync by hand. That table is no longer trusted, though — `validate-docs.mjs` checks
+every documented component's route against the committed `apps/stories/story-routes.json`, so a
+missing entry fails the build instead of shipping a 404.
 
 Each component's reference page is generated from
 `packages/components/scripts/component-registry.mjs` — the single declaration of every public root,

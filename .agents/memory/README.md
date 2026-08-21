@@ -81,6 +81,13 @@ Each milestone must contain these files:
   trade-offs, important implementation decisions, and a summary of the changes made. Do not repeat
   the full plan or task list.
 
+Two exceptions, both by design rather than by omission:
+
+- A `Rejected` milestone keeps only `PLAN.md`. There is no work to track and no outcome to record,
+  so `TASKS.md` and `RESULTS.md` are never created — the folder exists to hold the number and the
+  reasoning.
+- `001-kickoff` predates this structure and is a single retrospective note. It stays as it is.
+
 Small, localized changes do not need a milestone unless the user asks for one.
 
 ## Model Attribution

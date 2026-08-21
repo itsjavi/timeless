@@ -1,7 +1,7 @@
 # @timelessui/components
 
 CSS-first Timeless UI components. This is the only package you install for components;
-`@timelessui/core` arrives as a dependency.
+`@timelessui/core` and `@timelessui/color` both arrive as dependencies.
 
 ```bash
 pnpm add @timelessui/components

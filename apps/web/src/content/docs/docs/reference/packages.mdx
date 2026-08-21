@@ -7,11 +7,11 @@ sidebar:
 
 ## Packages
 
-| Package                  | Role                                                                                                                                                                            |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@timelessui/components` | Everything a consumer needs to build an interface: CSS, custom elements, contracts, and utilities. This is the only package you install for components.                         |
-| `@timelessui/color`      | CSS color parsing, conversion, gamut, and contrast utilities. A standalone library with no dependency on the components; install it only if you want the color math on its own. |
-| `@timelessui/core`       | The internal custom-element authoring layer the components are built on. It arrives as a dependency; you do not import it directly, and it is not part of the public API.       |
+| Package                  | Role                                                                                                                                                                                                  |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@timelessui/components` | Everything a consumer needs to build an interface: CSS, custom elements, contracts, and utilities. This is the only package you install for components.                                               |
+| `@timelessui/color`      | CSS color parsing, conversion, gamut, and contrast utilities. It depends on nothing, and arrives as a dependency of the components; install it directly only if you want the color math without them. |
+| `@timelessui/core`       | The internal custom-element authoring layer the components are built on. It arrives as a dependency; you do not import it directly, and it is not part of the public API.                             |
 
 ```bash
 pnpm add @timelessui/components
@@ -85,8 +85,8 @@ set of values also names the array that set is exported as, in its `set` field.
 
 The build proves those values against the stylesheets in both directions: a value a stylesheet
 selects must be declared, and a declared value must be selected or be the default, which is the base
-rule and so has no selector of its own. `pnpm contracts:validate` fails either way, which is why the
-reference tables cannot drift from the CSS.
+rule and so has no selector of its own. `pnpm -F @timelessui/components run contracts:validate`
+fails either way, which is why the reference tables cannot drift from the CSS.
 
 Permitted values are also exported individually as `as const` arrays with matching union types, each
 declared exactly once and generated from the same source as the contracts: `buttonVariants`,

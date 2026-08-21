@@ -424,7 +424,7 @@
       "attributes": [
         {
           "name": "attached",
-          "description": "Present to join the buttons into one segmented control. Styling only, resolved by `toggle.css`. Presence-based: author the attribute with no value."
+          "description": "Present to join the buttons into one segmented control. Styling only, resolved by `themes/atmosphere/toggle.css`. Presence-based: author the attribute with no value."
         },
         {
           "name": "orientation",

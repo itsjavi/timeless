@@ -362,7 +362,7 @@ export interface UIToastElementProps extends TimelessGlobalProps {
 }
 
 export interface UIToggleGroupElementProps extends TimelessGlobalProps {
-  /** Present to join the buttons into one segmented control. Styling only, resolved by `toggle.css`. */
+  /** Present to join the buttons into one segmented control. Styling only, resolved by `themes/atmosphere/toggle.css`. */
   attached?: boolean
   /** Layout and arrow-key axis. */
   orientation?: ToggleGroupOrientation

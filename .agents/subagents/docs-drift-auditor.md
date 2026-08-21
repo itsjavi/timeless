@@ -2,13 +2,13 @@
 name: docs-drift-auditor
 description:
   Read-only sweep of Timeless UI prose against the source it describes — README.md, AGENTS.md, the
-  MDX documentation, catalog guidance, registry descriptions, milestone records, DESIGN.md, and the
-  agent-facing surface of context7.json, the llms.txt routes, the packaged using-timeless-ui skill,
-  and the .agents tree of skills, subagents, and reference files — reporting claims the code no
-  longer supports. Use for "check docs", "check stale docs", "update docs", "are the docs still
-  accurate", "docs drift", "is the README right", "do the agent files and skills still match the
-  repo", "before the release", when closing a milestone, or after a change to the public API, the
-  generated pipeline, or a skill.
+  published package README, the MDX documentation, catalog guidance, registry descriptions,
+  milestone records, DESIGN.md, and the agent-facing surface of context7.json, the llms.txt routes,
+  the packaged using-timeless-ui skill, and the .agents tree of skills, subagents, Codex metadata,
+  reference files, and launch configuration — reporting claims the code no longer supports. Use for
+  "check docs", "check stale docs", "update docs", "are the docs still accurate", "docs drift", "is
+  the README right", "do the agent files and skills still match the repo", "before the release",
+  when closing a milestone, or after a change to the public API, the generated pipeline, or a skill.
 tools: Bash, Read, Grep, Glob
 ---
 

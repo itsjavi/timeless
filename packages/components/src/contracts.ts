@@ -248,7 +248,7 @@ export const componentContracts = {
         values: ['primary', 'secondary', 'outline', 'ghost', 'danger', 'danger-outline', 'link'],
         default: 'primary',
         description:
-          'Visual intent, resolved by `button.css`. Author `class="ui-button ui-toggle"` so the shared button styling applies.',
+          'Visual intent, resolved by `themes/atmosphere/button.css`. Author `class="ui-button ui-toggle"` so the shared button styling applies.',
       },
       {
         name: 'data-ui-size',
@@ -256,7 +256,8 @@ export const componentContracts = {
         set: 'buttonSizes',
         values: ['sm', 'md', 'lg'],
         default: 'md',
-        description: 'Control height, padding, and font size. Resolved by `button.css`.',
+        description:
+          'Control height, padding, and font size. Resolved by `themes/atmosphere/button.css`.',
       },
     ],
     parts: [],
@@ -3458,7 +3459,7 @@ export const componentContracts = {
         name: 'attached',
         type: 'boolean',
         description:
-          'Present to join the buttons into one segmented control. Styling only, resolved by `toggle.css`.',
+          'Present to join the buttons into one segmented control. Styling only, resolved by `themes/atmosphere/toggle.css`.',
       },
       {
         name: 'orientation',

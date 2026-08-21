@@ -2,14 +2,15 @@
 name: audit-docs-drift
 allowed-tools: Bash, Read, Grep, Glob
 description:
-  Sweep Timeless UI prose against the source it describes — README.md, AGENTS.md, the MDX
-  documentation, catalog guidance, registry descriptions, milestone records, DESIGN.md, and the
-  agent-facing surface of context7.json, the llms.txt routes, the packaged using-timeless-ui skill,
-  and the .agents tree of skills, subagents, and reference files — and report claims the code no
-  longer supports. Read-only. Use for requests like "check the docs", "are the docs still accurate",
-  "is the README stale", or "do the agent files and skills still match the repo", when preparing a
-  release, when closing a milestone, and after a change to the public API, the generated pipeline,
-  or a skill. Reports drift; it does not write new documentation.
+  Sweep Timeless UI prose against the source it describes — README.md, AGENTS.md, the published
+  package README, the MDX documentation, catalog guidance, registry descriptions, milestone records,
+  DESIGN.md, and the agent-facing surface of context7.json, the llms.txt routes, the packaged
+  using-timeless-ui skill, and the .agents tree of skills, subagents, Codex metadata, reference
+  files, and launch configuration — and report claims the code no longer supports. Read-only. Use
+  for requests like "check the docs", "are the docs still accurate", "is the README stale", or "do
+  the agent files and skills still match the repo", when preparing a release, when closing a
+  milestone, and after a change to the public API, the generated pipeline, or a skill. Reports
+  drift; it does not write new documentation.
 ---
 
 # Audit documentation drift
@@ -165,10 +166,11 @@ or `Rejected`. Report any status the record contradicts — `Implemented` over a
 still reads `Pending implementation.`, or `Accepted` over a milestone whose work demonstrably
 shipped.
 
-`.agents/memory/README.md` requires all three files per milestone. Report `RESULTS.md` still reading
-`Pending implementation.` while its `TASKS.md` is fully checked, and any file missing its
-attribution footer — noting that milestones 001 to 018 predate the footer convention and are
-explicitly grandfathered.
+`.agents/memory/README.md` requires all three files per milestone, except a `Rejected` one, which
+keeps only `PLAN.md`, and `001-kickoff`, which predates the structure. Report `RESULTS.md` still
+reading `Pending implementation.` while its `TASKS.md` is fully checked, and any file missing its
+attribution footer — noting that milestones 001 to 018 predate the footer convention entirely and
+019 and 020 adopted it on `RESULTS.md` only. From 021 on, every file should carry one.
 
 ### 7. Design language
 
@@ -240,11 +242,14 @@ Also confirm by reading:
 - Each `.agents/subagents/*.md` names a `SKILL.md` that exists, and its `tools:` line still matches
   the `allowed-tools` of the skill it delegates to. The README's read-only claim for both auditors
   depends on that line, not on the prose.
-- Each `agents/openai.yaml` uses only its own allowlist — `display_name`, `short_description`,
-  `icon_small`, `icon_large`, `brand_color`, `default_prompt`, `dependencies.tools[]`, and
+- Each `agents/openai.yaml` uses only its own allowlist — the six display keys nested under
+  `interface:` (`display_name`, `short_description`, `icon_small`, `icon_large`, `brand_color`,
+  `default_prompt`), plus the top-level `dependencies.tools[]` and
   `policy.allow_implicit_invocation` — and its `default_prompt` names a skill that exists.
-- Server names and ports in `.claude/launch.json` still resolve to real scripts, and match the ports
-  `README.md` advertises for `pnpm dev`.
+- Server names in `.claude/launch.json` still resolve to real scripts. Its `port` is injected into
+  the process as `PORT`, so an entry whose script reads `${PORT:-…}` binds the declared port rather
+  than its own default — the two disagreeing is not a finding. What is a finding is the `web` and
+  `storylite` ports disagreeing with what `README.md` advertises for `pnpm dev`.
 
 ### 10. Rule enumerations that exist twice
 

@@ -34,9 +34,9 @@ export type UIAttributeConfig = {
     size?: ButtonSize
   }
   toggle: {
-    /** Visual intent, resolved by `button.css`. Author `class="ui-button ui-toggle"` so the shared button styling applies. */
+    /** Visual intent, resolved by `themes/atmosphere/button.css`. Author `class="ui-button ui-toggle"` so the shared button styling applies. */
     variant?: ButtonVariant
-    /** Control height, padding, and font size. Resolved by `button.css`. */
+    /** Control height, padding, and font size. Resolved by `themes/atmosphere/button.css`. */
     size?: ButtonSize
   }
   alert: {

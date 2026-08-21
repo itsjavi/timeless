@@ -53,8 +53,10 @@ investigation someone already finished. Verify anything you intend to act on aga
 | [`research/llm-support.md`](research/llm-support.md)               | How should a component library make itself usable by coding agents, and which mechanisms suit Astro and Starlight? Produced milestone 027 |
 
 Every document carries `model` and `date` frontmatter naming what produced it and when, and ends
-with a section recording what it led to. Add new ones with the same shape and a row in the table
-above.
+with a section recording what it led to — `What this produced` in `llm-support.md`,
+`Derived milestones` in `library-comparison.md`. The heading is whatever fits; having one is not
+optional, because it is the only link from an investigation to the work it caused. Add new ones with
+the same shape and a row in the table above.
 
 ## How each tool discovers this
 
@@ -114,11 +116,23 @@ allowlist, the name-to-directory match, the angle brackets, the symlinks, and th
 run it after editing this tree rather than trusting a review. What it cannot check is whether
 Codex's own allowlist still reads as quoted here; that lives outside the repository.
 
-Codex-only configuration goes in `agents/openai.yaml`, whose own allowlist is `display_name`,
-`short_description`, `icon_small`, `icon_large`, `brand_color`, `default_prompt`, plus
-`dependencies.tools[]` and `policy.allow_implicit_invocation`. Note that `dependencies.tools[]`
-declares required MCP servers — what the skill _needs_ — and is unrelated to `allowed-tools`, which
-limits what it _may use_.
+Codex-only configuration goes in `agents/openai.yaml`, whose own allowlist is
+`interface.display_name`, `interface.short_description`, `interface.icon_small`,
+`interface.icon_large`, `interface.brand_color`, `interface.default_prompt`, plus
+`dependencies.tools[]` and `policy.allow_implicit_invocation`. The six display keys are nested under
+`interface:`; the other two are their own top-level blocks, as in:
+
+```yaml
+interface:
+  display_name: 'Audit Timeless Docs Drift'
+  short_description: 'Find prose the Timeless source no longer supports'
+  default_prompt: 'Use $audit-docs-drift to sweep …'
+policy:
+  allow_implicit_invocation: false
+```
+
+Note that `dependencies.tools[]` declares required MCP servers — what the skill _needs_ — and is
+unrelated to `allowed-tools`, which limits what it _may use_.
 
 ## Adding a skill
 

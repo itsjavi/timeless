@@ -105,10 +105,12 @@ See `.agents/README.md` for the layout, the frontmatter contract, and how to add
   keep their own type guards. A public export must never change name or module.
 - Sets with identical values keep separate names when they are separate public exports.
   `buttonSizes`, `primitiveSizes`, and `formControlSizes` are all `sm | md | lg`.
-- `pnpm contracts:validate` proves every set against the stylesheets in both directions. A value the
-  CSS selects must be declared, and a declared value must be selected or be the attribute default.
+- `pnpm -F @timelessui/components run contracts:validate` proves every set against the stylesheets
+  in both directions. A value the CSS selects must be declared, and a declared value must be
+  selected or be the attribute default.
 - Declare each element's events with the detail type that element actually dispatches, not the
-  shared `UITransitionDetail`. `pnpm manifest:validate` fails when the named type is not exported.
+  shared `UITransitionDetail`. `pnpm -F @timelessui/components run manifest:validate` fails when the
+  named type is not exported.
 - Never hand-copy a value list into `argTypes.options`, an example factory, or a test. Import the
   exported array.
 

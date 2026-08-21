@@ -5,10 +5,11 @@ description:
   Audit Timeless UI source, stories, and examples against the AGENTS.md authoring rules no validator
   script enforces — visual styling written from component JS, data-ui-* used as configuration on
   custom-element hosts, boolean attributes carrying string values, hand-copied value lists, private
-  runtime hooks in copyable source, ARIA substituting for native behavior, and Shadow DOM.
-  Read-only. Use for requests like "check the conventions", "does this follow AGENTS.md", or "review
-  this before I open the PR", on a diff or repo-wide. Not for correctness bugs, and not for anything
-  a validator already proves.
+  runtime hooks in copyable source, ARIA substituting for native behavior, Shadow DOM, diagnostics
+  exposed through public data-ui-*, and components that stop reading correctly without the
+  Atmosphere theme. Read-only. Use for requests like "check the conventions", "does this follow
+  AGENTS.md", or "review this before I open the PR", on a diff or repo-wide. Not for correctness
+  bugs, and not for anything a validator already proves.
 ---
 
 # Audit component contracts
