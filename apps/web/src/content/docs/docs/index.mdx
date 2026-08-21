@@ -9,10 +9,18 @@ import StoriesLink from '../../../components/docs/StoriesLink.astro'
 
 export const componentCount = examples.filter((example) => example.domain !== 'recipes').length
 
-Timeless is a UI library of plain CSS and custom elements. You author the markup, your CSS can
-override anything, and JavaScript only runs where the platform cannot do the job alone. There is no
-framework runtime and no third-party dependency, so the same components work in plain HTML, React,
-Preact, Vue, Svelte, Solid, and Astro.
+Timeless is a UI library designed to outlast your framework. It is built from the browser's own
+primitives — plain CSS over native HTML, with custom elements only where keyboard coordination,
+focus, or state cannot be expressed accessibly in CSS. There is no framework runtime and no
+third-party dependency, so the same components run in plain HTML, React, Preact, Vue, Svelte, Solid,
+and Astro, and keep running when you move between them.
+
+The markup you author is the markup that ships. It renders on the server as plain HTML and CSS and
+is useful before any JavaScript loads, so there is no unstyled flash and no shell that rearranges
+itself once a runtime boots — the few components the platform cannot express declaratively say so on
+their own page. Your CSS overrides anything, because cascade layers put it above ours. And the whole
+contract is published for coding agents to read: every documentation page at its own URL plus `.md`,
+an `llms.txt` index, and a skill that ships in the package.
 
 <CardGrid>
   <LinkCard
@@ -22,7 +30,7 @@ Preact, Vue, Svelte, Solid, and Astro.
   />
   <LinkCard
     title="Use it with a coding agent"
-    description="Markdown routes, llms.txt, and a skill that ships in the package."
+    description="How to point a model at the contract, and what it reads when you do."
     href="/docs/getting-started/agents/"
   />
   <LinkCard
