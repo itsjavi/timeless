@@ -1,6 +1,10 @@
 import { access, readFile, readdir } from 'node:fs/promises'
 import { extname, resolve, sep } from 'node:path'
 import { examples } from '@timelessui/examples'
+import {
+  incompleteTiers,
+  readStylesheetNames,
+} from '../../../packages/examples/scripts/css-tiers.mjs'
 
 const root = resolve(import.meta.dirname, '../../..')
 const manifest = JSON.parse(
@@ -30,6 +34,7 @@ if (missingTags.length > 0)
  * the two aggregates; no example lists an aggregate.
  */
 const AGGREGATE_CSS = new Set(['core.css', 'themes/atmosphere.css'])
+const shippedStylesheets = await readStylesheetNames()
 const cssRoot = resolve(root, 'packages/components/src/css')
 const availableCss = (await readdir(cssRoot, { recursive: true }))
   .map((name) => name.split(sep).join('/'))
@@ -64,6 +69,29 @@ for (const file of contentFiles) {
     if (!examples.some((example) => example.id === match[1])) {
       throw new Error(`${file} references missing example ${match[1]}`)
     }
+  }
+
+  /*
+   * Every CSS import snippet has to name a real file and a complete set of tiers, by the same rule the
+   * catalog's `styles` arrays answer to. Ten pages named a component's theme stylesheet with no
+   * `themes/atmosphere/tokens.css`, so every `--ui-*` in the snippet a reader copied resolved to
+   * nothing — milestone 028 fallout that no check was looking for, in the pages a first-time consumer
+   * reads first.
+   */
+  const imported = [
+    ...new Set(
+      [...source.matchAll(/@timelessui\/components\/css\/([a-z0-9/.-]+\.css)/g)].map(
+        (match) => match[1],
+      ),
+    ),
+  ]
+  for (const name of imported) {
+    if (!shippedStylesheets.has(name) && !AGGREGATE_CSS.has(name)) {
+      throw new Error(`${file} imports @timelessui/components/css/${name}, which does not exist`)
+    }
+  }
+  for (const problem of incompleteTiers(imported, shippedStylesheets)) {
+    throw new Error(`${file} imports ${problem}`)
   }
 }
 
