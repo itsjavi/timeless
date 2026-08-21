@@ -107,6 +107,58 @@ test.describe('copy button', () => {
     await expect(host.locator("[data-ui-part~='idle']")).toBeVisible()
   })
 
+  /**
+   * Two things at once, because they share a cause: `status` is a token Avatar, Listbox, Select, and
+   * Combobox also declare, so an unscoped lookup finds a nested root's part first and writes the
+   * confirmation into a decorative dot. And the platform has no element that *is* a live region, so an
+   * author who writes the part and forgets `role` gets silence with nothing saying why.
+   */
+  test('writes the confirmation into its own region, and completes it', async ({ page }) => {
+    await page.goto('/stories/library-actions-copy-button--default/')
+    await expectRouteDocumentReady(page)
+
+    const wired = await page.evaluate(async () => {
+      const host = document.createElement('ui-copy-button')
+      host.setAttribute('value', 'nested-source')
+      host.setAttribute('copied-message', 'Value copied')
+      // The avatar declares `status` too, and its dot comes first in document order.
+      host.innerHTML = `
+        <button data-ui-part="trigger" type="button" aria-label="Copy the value">
+          <span class="ui-avatar"><span data-ui-part="status"></span></span>
+          <span data-ui-part="idle" aria-hidden="true">Copy</span>
+          <span data-ui-part="copied" aria-hidden="true">Copied</span>
+        </button>
+        <span data-ui-part="status"></span>`
+      document.body.append(host)
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+
+      const dot = host.querySelector<HTMLElement>(".ui-avatar [data-ui-part~='status']")
+      const region = host.querySelector<HTMLElement>(":scope > [data-ui-part~='status']")
+      // The role and `aria-live` the author left off, on the region this component owns and no other.
+      const wiring = {
+        regionRole: region?.getAttribute('role') ?? null,
+        regionLive: region?.getAttribute('aria-live') ?? null,
+        dotRole: dot?.getAttribute('role') ?? null,
+      }
+
+      host.querySelector<HTMLElement>("[data-ui-part~='trigger']")?.click()
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      return {
+        ...wiring,
+        regionText: region?.textContent ?? null,
+        dotText: dot?.textContent ?? null,
+      }
+    })
+
+    expect(wired).toEqual({
+      dotRole: null,
+      dotText: '',
+      regionLive: 'polite',
+      regionRole: 'status',
+      regionText: 'Value copied',
+    })
+  })
+
   test('reports an empty source rather than copying nothing quietly', async ({ page }) => {
     await page.goto('/stories/library-actions-copy-button--default/')
     await expectRouteDocumentReady(page)

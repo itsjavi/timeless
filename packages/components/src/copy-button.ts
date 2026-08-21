@@ -1,4 +1,5 @@
 import { attr, createUIElementClass, element, listen } from '@timelessui/core'
+import { isOwnedBy, queryOwnedPart } from './parts'
 
 const TRIGGER_SELECTOR = "[data-ui-part~='trigger']"
 const COPIED_SELECTOR = "[data-ui-part~='copied']"
@@ -134,7 +135,10 @@ export function createCopyButtonElementClass(
     #feedbackTimer: number | null = null
 
     protected override connected(): void {
-      this.observeParts(() => this.revealTrigger())
+      this.observeParts(() => {
+        this.nameStatusRegion()
+        this.revealTrigger()
+      })
     }
 
     protected override disconnected(): void {
@@ -143,7 +147,9 @@ export function createCopyButtonElementClass(
 
     @listen('click')
     handleClick(event: Event): void {
-      if (!this.closestTarget(event, TRIGGER_SELECTOR)) return
+      const trigger = this.closestTarget(event, TRIGGER_SELECTOR)
+      // `trigger` is a token nine other contracts declare, so a nested root's trigger is not ours.
+      if (!trigger || !isOwnedBy(this, trigger)) return
       void this.copy()
     }
 
@@ -159,6 +165,12 @@ export function createCopyButtonElementClass(
     /** The state and the announcement, both lasting `feedback-duration`. */
     private confirm(): void {
       this.setCustomState('--copied', true)
+      /*
+       * Unscoped on purpose, unlike the two shared tokens: `copied` is declared by this contract
+       * alone, so the only thing it can match is ours, and the search then covers exactly what
+       * `ui-copy-button [data-ui-part~='copied']` styles — including a label nested inside a
+       * `.ui-button` trigger, which an ownership walk would exclude.
+       */
       this.announce(this.copiedMessage || this.$(COPIED_SELECTOR)?.textContent?.trim() || '')
 
       this.clearFeedbackTimer()
@@ -176,7 +188,7 @@ export function createCopyButtonElementClass(
 
     /** Writes into the authored region. An absent region is a choice, not an error. */
     private announce(message: string): void {
-      const status = this.$(STATUS_SELECTOR)
+      const status = queryOwnedPart<HTMLElement>(this, STATUS_SELECTOR)
       if (status) status.textContent = message
     }
 
@@ -188,8 +200,22 @@ export function createCopyButtonElementClass(
      */
     private revealTrigger(): void {
       if (!this.ownerWindow?.navigator.clipboard) return
-      const trigger = this.$(TRIGGER_SELECTOR)
+      const trigger = queryOwnedPart<HTMLElement>(this, TRIGGER_SELECTOR)
       if (trigger?.hidden) trigger.hidden = false
+    }
+
+    /**
+     * The platform has no element that is a live region, so the role and `aria-live` are the one piece
+     * of ARIA here that completes a contract rather than replacing behavior — the same two guards
+     * `enhanceListboxLiveRegion` applies to the collection surfaces. An authored value always wins.
+     * Without this, an author who writes the part and forgets the role gets a silent copy button and
+     * nothing saying why: no validator walks parts.
+     */
+    private nameStatusRegion(): void {
+      const status = queryOwnedPart<HTMLElement>(this, STATUS_SELECTOR)
+      if (!status) return
+      if (!status.hasAttribute('role')) status.setAttribute('role', 'status')
+      if (!status.hasAttribute('aria-live')) status.setAttribute('aria-live', 'polite')
     }
 
     private clearFeedbackTimer(): void {
