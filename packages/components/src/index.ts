@@ -280,6 +280,7 @@ export {
   type CopyClipboardLike,
   type CopyDetail,
   type CopyFailureReason,
+  type CopyProposalDetail,
   type CopySourceLike,
   type UICopyButtonElementConstructor,
 } from './copy-button'

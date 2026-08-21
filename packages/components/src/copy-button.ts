@@ -13,7 +13,14 @@ const DEFAULT_FEEDBACK_DURATION = 1800
  */
 const VALUE_SOURCE_ELEMENTS = new Set(['input', 'select', 'textarea'])
 
-export type CopyFailureReason = 'unsupported' | 'denied' | 'empty'
+/**
+ * `unsupported` and `denied` are separate because presence and permission are independent: measured on
+ * `localhost`, a secure origin, `navigator.clipboard` is an object while `permissions.query` reports
+ * `denied` and the write rejects. `rejected` is a listener's own `respondWith` promise failing, which is
+ * not the same thing as a refusal — the first thing that probe hit was a `DataError` from a malformed
+ * image, and calling that `denied` would send an author looking at permissions.
+ */
+export type CopyFailureReason = 'unsupported' | 'denied' | 'empty' | 'rejected'
 
 /**
  * One event with a discriminator rather than two events, because a consumer that cares about copying
@@ -30,6 +37,30 @@ export type CopyDetail = {
 /** The one method this component needs from `navigator.clipboard`. */
 export type CopyClipboardLike = {
   writeText(text: string): Promise<void>
+}
+
+/**
+ * The detail of the cancelable `ui-before-copy` proposal, dispatched before anything is written.
+ *
+ * This is where a consumer copies something the element cannot resolve from markup — an image, a PDF,
+ * `text/html`, a value computed at click time. `writeText` carries a string and nothing else, so rather
+ * than growing `value` into a union, the element hands the write over and keeps the confirmation: pass
+ * your own promise to `respondWith` and `--copied`, the announcement, and `ui-copy` all follow its
+ * outcome, so nothing ever confirms a copy that did not happen.
+ *
+ * `respondWith` implies `preventDefault()`. Call it synchronously from the listener, and call your own
+ * clipboard method synchronously too — the click's transient user activation is the same one the element
+ * depends on, and some engines refuse the write without it. For a blob that is not ready yet, hand
+ * `ClipboardItem` the promise rather than awaiting it first: `new ClipboardItem({ 'image/png': blobPromise })`
+ * lets `write` start immediately while the data resolves.
+ *
+ * `preventDefault()` on its own cancels the copy outright. Nothing is written and no `ui-copy` follows,
+ * which is what cancelling a proposal means everywhere else in this library.
+ */
+export type CopyProposalDetail = {
+  /** What the element resolved from `value` or `from`. Empty when neither is authored. */
+  readonly value: string
+  respondWith(write: Promise<void>): void
 }
 
 /** Structural stand-in for the element `from` names. */
@@ -154,12 +185,48 @@ export function createCopyButtonElementClass(
     }
 
     private async copy(): Promise<void> {
-      const detail = await performCopy(
-        resolveCopyValue(this),
-        this.ownerWindow?.navigator.clipboard,
-      )
+      const value = resolveCopyValue(this)
+      const proposal = this.propose(value)
+
+      /*
+       * The proposal is dispatched before the outcome table rather than after it, so a button whose
+       * payload exists only in script is reachable: with no `value` and no `from` the element would
+       * otherwise report `empty` and never ask.
+       */
+      if (proposal.handled) {
+        // Cancelled outright. No write, and no committed event, which is what cancelling means here.
+        if (!proposal.write) return
+        try {
+          await proposal.write
+        } catch {
+          this.emit<CopyDetail>('ui-copy', { status: 'failed', value, reason: 'rejected' })
+          return
+        }
+        this.confirm()
+        this.emit<CopyDetail>('ui-copy', { status: 'copied', value, reason: null })
+        return
+      }
+
+      const detail = await performCopy(value, this.ownerWindow?.navigator.clipboard)
       if (detail.status === 'copied') this.confirm()
       this.emit<CopyDetail>('ui-copy', detail)
+    }
+
+    /** Dispatches `ui-before-copy` and reports what the listener did with it, if anything. */
+    private propose(value: string): { handled: boolean; write: Promise<void> | null } {
+      let write: Promise<void> | null = null
+      const proceed = this.emit<CopyProposalDetail>(
+        'ui-before-copy',
+        {
+          value,
+          respondWith: (response) => {
+            write = response
+          },
+        },
+        { cancelable: true },
+      )
+      // `respondWith` implies prevention, so a listener that only calls it still takes the write over.
+      return { handled: !proceed || write !== null, write }
     }
 
     /** The state and the announcement, both lasting `feedback-duration`. */

@@ -91,9 +91,9 @@ test.describe('copy button', () => {
     await expect
       .poll(() => page.evaluate(() => navigator.clipboard.readText()))
       .toBe('pnpm add @timelessui/components')
-    expect(await copyEvents(page)).toEqual([
-      { reason: null, status: 'copied', value: 'pnpm add @timelessui/components' },
-    ])
+    await expect
+      .poll(() => copyEvents(page))
+      .toEqual([{ reason: null, status: 'copied', value: 'pnpm add @timelessui/components' }])
 
     // The confirmation reaches the authored region, and the button is not renamed to deliver it.
     await expect(status).toHaveText('Install command copied')
@@ -157,6 +157,127 @@ test.describe('copy button', () => {
       regionRole: 'status',
       regionText: 'Value copied',
     })
+  })
+
+  /**
+   * The two halves of `ui-before-copy`. Cancelling suppresses the committed event, the way cancelling
+   * `ui-before-change` does everywhere else in this library. Answering it with `respondWith` hands the
+   * write over — which is the only way to copy something `writeText` cannot carry — and the element
+   * still owns the confirmation, so `--copied` and the announcement follow the promise rather than a
+   * guess.
+   */
+  test('a cancelled proposal writes nothing and commits nothing', async ({ page }) => {
+    await page.goto('/stories/library-actions-copy-button--default/')
+    await expectRouteDocumentReady(page)
+
+    const host = page.locator('ui-copy-button')
+    await page.evaluate(() => navigator.clipboard.writeText('untouched'))
+    await host.evaluate((element) => {
+      Object.assign(window, { __copyEvents: [], __proposals: [] })
+      element.addEventListener('ui-before-copy', (event) => {
+        ;(window as typeof window & { __proposals: unknown[] }).__proposals.push(
+          (event as CustomEvent).detail.value,
+        )
+        event.preventDefault()
+      })
+      element.addEventListener('ui-copy', (event) => {
+        ;(window as typeof window & { __copyEvents: unknown[] }).__copyEvents.push(
+          (event as CustomEvent).detail,
+        )
+      })
+    })
+
+    await host.getByRole('button', { name: 'Copy the install command' }).click()
+
+    expect(
+      await page.evaluate(() => (window as typeof window & { __proposals: unknown[] }).__proposals),
+    ).toEqual(['pnpm add @timelessui/components'])
+    expect(await copyEvents(page)).toEqual([])
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('untouched')
+    expect(await host.evaluate((element) => element.matches(':state(--copied)'))).toBe(false)
+  })
+
+  test('respondWith copies an image and still drives the confirmation', async ({ page }) => {
+    await page.goto('/stories/library-actions-copy-button--default/')
+    await expectRouteDocumentReady(page)
+
+    const host = page.locator('ui-copy-button')
+    const status = host.locator("[data-ui-part~='status']")
+    await recordCopyEvents(host)
+    await host.evaluate((element) => {
+      element.addEventListener('ui-before-copy', (event) => {
+        // A real 1x1 PNG, and handed to `ClipboardItem` as a promise so `write` starts synchronously.
+        const png =
+          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mO4o2ACAAMMATH9sBa8AAAAAElFTkSuQmCC'
+        ;(event as CustomEvent).detail.respondWith(
+          navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': fetch(png).then((response) => response.blob()) }),
+          ]),
+        )
+      })
+    })
+
+    await host.getByRole('button', { name: 'Copy the install command' }).click()
+
+    // The image really is on the clipboard, not the snippet text the element resolved.
+    await expect
+      .poll(() =>
+        page.evaluate(async () => (await navigator.clipboard.read()).flatMap((item) => item.types)),
+      )
+      .toContain('image/png')
+    await expect
+      .poll(() => copyEvents(page))
+      .toEqual([{ reason: null, status: 'copied', value: 'pnpm add @timelessui/components' }])
+    // The element kept the confirmation, because it awaited the promise rather than assuming.
+    expect(await host.evaluate((element) => element.matches(':state(--copied)'))).toBe(true)
+    await expect(status).toHaveText('Install command copied')
+  })
+
+  /** The same interception as the story ships it, so the copyable example is the tested one. */
+  test('the intercepted-copy story really writes an image', async ({ page }) => {
+    await page.goto('/stories/library-actions-copy-button--intercepted-copy/')
+    await expectRouteDocumentReady(page)
+    await page.waitForFunction(() => Boolean(customElements.get('story-copy-blob')))
+
+    const host = page.locator('ui-copy-button')
+    await recordCopyEvents(host)
+    await host.getByRole('button', { name: 'Copy the swatch as an image' }).click()
+
+    await expect
+      .poll(() =>
+        page.evaluate(async () => (await navigator.clipboard.read()).flatMap((item) => item.types)),
+      )
+      .toContain('image/png')
+    // The detail still carries what the element resolved; the listener replaced only the write.
+    await expect
+      .poll(() => copyEvents(page))
+      .toEqual([{ reason: null, status: 'copied', value: 'oklch(62% 0.18 32)' }])
+    await expect(host.locator("[data-ui-part~='status']")).toHaveText('Swatch image copied')
+  })
+
+  test('a failed respondWith reports rejected rather than denied', async ({ page }) => {
+    await page.goto('/stories/library-actions-copy-button--default/')
+    await expectRouteDocumentReady(page)
+
+    const host = page.locator('ui-copy-button')
+    await recordCopyEvents(host)
+    await host.evaluate((element) => {
+      element.addEventListener('ui-before-copy', (event) => {
+        // An undecodable image, which is the first thing a real integration gets wrong.
+        ;(event as CustomEvent).detail.respondWith(
+          navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': new Blob(['not an image'], { type: 'image/png' }) }),
+          ]),
+        )
+      })
+    })
+
+    await host.getByRole('button', { name: 'Copy the install command' }).click()
+
+    await expect
+      .poll(() => copyEvents(page))
+      .toEqual([{ reason: 'rejected', status: 'failed', value: 'pnpm add @timelessui/components' }])
+    expect(await host.evaluate((element) => element.matches(':state(--copied)'))).toBe(false)
   })
 
   test('reports an empty source rather than copying nothing quietly', async ({ page }) => {

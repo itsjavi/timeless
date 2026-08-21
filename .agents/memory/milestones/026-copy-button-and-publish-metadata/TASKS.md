@@ -36,6 +36,10 @@
       region, clear after `feedback-duration` (default 1800)
 - [x] Dispatch exactly one `ui-copy` per activation on every path, including `unsupported`,
       `denied`, and `empty` — made structural by `performCopy`, which returns one detail per call
+- [x] Added in review, not in the plan: `ui-before-copy`, a cancelable proposal carrying
+      `respondWith(promise)`, so a consumer can cancel the copy or write something `writeText`
+      cannot carry — an image, a blob, `text/html` — while the element keeps the confirmation. Adds
+      the `rejected` failure reason and leaves `value`, `from`, and `CopyDetail` unchanged
 - [x] Implement the opt-in reveal: remove `hidden` from the trigger only when registration succeeds
       and `navigator.clipboard` exists
 - [x] Create `src/copy-button.test.ts` covering value precedence and all three failure reasons

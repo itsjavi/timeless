@@ -137,3 +137,45 @@ export const HiddenUntilSupported = {
     </section>
   </main>`,
 } satisfies StoryLiteStoryDefinition
+
+/**
+ * `writeText` carries a string, so anything else — an image, a PDF, `text/html`, a value computed at
+ * click time — goes through the cancelable proposal. The element keeps the confirmation, so `--copied`
+ * and the announcement follow the promise rather than assuming it worked.
+ */
+export const InterceptedCopy = {
+  source: () => `${createCopyButton({
+    label: 'Copy the swatch as an image',
+    value: 'oklch(62% 0.18 32)',
+    copiedMessage: 'Swatch image copied',
+  })}
+
+<script type="module">
+  const png = 'data:image/png;base64,\u2026'
+
+  document.querySelector('ui-copy-button').addEventListener('ui-before-copy', (event) => {
+    // Synchronous, and ClipboardItem takes the promised blob, so the click's activation still covers
+    // the write. Awaiting the fetch first would lose it.
+    event.detail.respondWith(
+      navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': fetch(png).then((response) => response.blob()) }),
+      ]),
+    )
+  })
+</script>`,
+  render: () => `<main class="ui-demo-page">
+    <header>
+      <h1>Copying something else</h1>
+      <p>The button below resolves <code class="ui-code">oklch(62% 0.18 32)</code> from its <code class="ui-code">value</code>, and a <code class="ui-code">ui-before-copy</code> listener replaces it with a PNG of the swatch. Paste into an image editor rather than a text field. <code class="ui-code">preventDefault()</code> on its own cancels instead, and then no <code class="ui-code">ui-copy</code> follows.</p>
+    </header>
+    <section class="ui-demo-row" aria-label="A copy button that writes an image">
+      <story-copy-blob>
+        ${createCopyButton({
+          label: 'Copy the swatch as an image',
+          value: 'oklch(62% 0.18 32)',
+          copiedMessage: 'Swatch image copied',
+        })}
+      </story-copy-blob>
+    </section>
+  </main>`,
+} satisfies StoryLiteStoryDefinition

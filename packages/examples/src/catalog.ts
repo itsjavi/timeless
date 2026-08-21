@@ -223,7 +223,7 @@ export const examples = [
     domain: 'actions',
     group: 'Actions',
     guidance:
-      'Use Copy Button whenever a value on the page is meant to be taken somewhere else \u2014 an install command, a token, an id. The alternative is a plain button and a click handler, which is the same three lines every time and usually skips the announcement.',
+      'Use Copy Button whenever a value on the page is meant to be taken somewhere else \u2014 an install command, a token, an id. The alternative is a plain button and a click handler, which is the same three lines every time and usually skips the announcement. For a long or changing value reach for `from` rather than `value`: it is read at activation, so nothing has to be kept in sync and nothing is duplicated into an attribute. For anything a string cannot carry \u2014 an image, a blob, `text/html` \u2014 answer `ui-before-copy` with `respondWith`, and the confirmation still follows your write.',
     authoring:
       'Give the trigger an `aria-label` and mark the `idle` and `copied` labels `aria-hidden="true"`. A button whose accessible name changes while it holds focus is announced inconsistently across screen readers, so the visible confirmation and the name are deliberately separate. Author the `status` region too: it is where the confirmation is announced, and without it the copy is silent.',
     beforeJavaScript:

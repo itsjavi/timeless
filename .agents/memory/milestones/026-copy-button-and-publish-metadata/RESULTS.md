@@ -105,6 +105,39 @@ travels through `ui-copy`, where a consumer can act on the reason.
 Both halves are now asserted in `no-javascript.spec.ts` so the asymmetry is a tested contract rather
 than a note.
 
+**Rich clipboard content: a cancelable proposal, not a wider `value`.** Raised in review, and my
+first read was that it needed its own milestone — a blob has no attribute representation, so `value`
+would have to grow into a union and `CopyDetail.value` would stop being a `string`. That was the
+wrong shape. The library already has the mechanism: `ui-before-change` is a cancelable proposal
+dispatched before a commit, and cancelling it suppresses the committed event. `ui-before-copy` is
+the same pattern, and it carries `respondWith(promise)`.
+
+- `preventDefault()` cancels the copy. Nothing is written and no `ui-copy` follows, which is what
+  cancelling a proposal means everywhere else here.
+- `respondWith(promise)` hands the write over and implies prevention. The element awaits it and
+  drives `--copied`, the announcement, and `ui-copy` from the outcome, so a confirmation never
+  claims a copy that did not happen.
+
+`value`, `from`, and the `value` property are untouched, and `CopyDetail.value` is still the string
+the element resolved — for an image copy it is whatever `value` or `from` gave, which is what the
+listener saw and chose to replace. The proposal is dispatched **before** the outcome table rather
+than after it, so a button whose payload exists only in script is reachable: with no `value` and no
+`from` the element would otherwise report `empty` and never ask.
+
+One reason was added rather than reused. A rejected `respondWith` promise reports `rejected`, not
+`denied`, because the first thing the probe hit was a `DataError` from a malformed image — calling
+that a denial would send an author to check permissions. Verified end to end in Chromium: a 1x1 PNG
+through `respondWith` lands on the real clipboard as `image/png`, `ui-copy` reports `copied`, and
+the announcement fires; an undecodable blob reports `rejected` with no confirmation.
+
+**`ClipboardItem` takes a promised blob, and that is the difference between working and not.**
+`respondWith` has to be called synchronously to keep the click's transient user activation, which
+reads like it forces the author to have the blob in hand. It does not:
+`new ClipboardItem({ 'image/png': blobPromise })` lets `write` start immediately while the data
+resolves. Awaiting the fetch first and then calling `write` is the version that loses activation.
+The registry description and the story both show the working shape, because the broken one is the
+obvious one.
+
 ### Constraints found during the work
 
 **A theme cannot hide the announcement region, and core cannot size it.** The plan says the
@@ -232,6 +265,10 @@ whose baseline was introduced in this same milestone:
 - Scoping the part lookups pulled `parts.js` into the closure — `gzipBytes` 3748 → 4484, `rawBytes`
   12211 → 13966, CSS unchanged. It is the shared module every other multi-part element already
   loads, so a page that renders any of them pays nothing for this.
+- `ui-before-copy` and `respondWith` added `gzipBytes` 4484 → 4710 and `rawBytes` 13966 → 14754, CSS
+  unchanged. Inside the 10% tolerance, so the check would have passed on the old figures;
+  re-baselined anyway, because a component's first release should not spend the next change's
+  headroom.
 
 ## Follow-ups, recorded rather than done
 
@@ -242,17 +279,10 @@ whose baseline was introduced in this same milestone:
 - **Teach `validate.ts` about parts.** It walks attributes only, so a copy button with no `status`
   region — announcing nothing — cannot be reported. Extending it changes a shared module for one
   component's benefit.
-- **Rich clipboard content — a blob, an image, `text/html`.** Raised while the work was in review,
-  and genuinely out of reach here: `writeText` carries a string, and anything else needs
-  `navigator.clipboard.write([new ClipboardItem(...)])`, whose format support is asked per type
-  through `ClipboardItem.supports()` rather than being a version floor. Measured in Chromium during
-  this milestone: `write`, `ClipboardItem`, and `supports('image/png')` are all present, so the
-  platform is there. What it would cost is a public surface with no attribute representation — a
-  blob has no serialisation an author can write in HTML — plus a `CopyDetail.value` that is no
-  longer a string and at least one more failure reason. That is a contract change, not an addition,
-  and belongs in its own milestone. Long or dynamic **text** needs none of it: `from` is read at
-  activation, so a 50,000-character source resolves with nothing duplicated into an attribute.
-  Verified in the browser; the `from` description now says so.
+- **Rich clipboard content is now supported**, and it did not need the contract change I first
+  expected. See the decision above; nothing is left over. Long or dynamic text needed nothing at
+  all: `from` is read at activation, so a 50,000-character source resolves with nothing duplicated
+  into an attribute. Verified in the browser, and the `from` description now says so.
 - **Nothing compares the StoryLite route ids to the catalog.** `apps/web/src/lib/stories.ts` builds
   the documentation's "Open in StoryLite" link as `library-${domain}-${id}--${story}` from the
   catalog, while `resolveStoryId` builds the real ids from filenames. A missing `storyDomains` entry

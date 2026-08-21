@@ -42,7 +42,7 @@ import type { ToggleGroupChangeDetail } from './toggle-group'
 import type { FormInvalidDetail } from './form'
 import type { RangeFieldChangeDetail } from './range-field'
 import type { OtpFieldChangeDetail, OtpFieldCompleteDetail } from './otp-field'
-import type { CopyDetail } from './copy-button'
+import type { CopyDetail, CopyProposalDetail } from './copy-button'
 
 /**
  * Consumer-authored `data-*` and `aria-*` attributes stay open. The generated members above are
@@ -382,7 +382,9 @@ export interface UICopyButtonElementProps extends TimelessGlobalProps {
   feedbackDuration?: string
   /** DOM property reflecting the `copied-message` attribute. */
   copiedMessage?: string
-  /** Dispatched once per activation, on success and on every failure. The detail carries `status`, the resolved `value`, and a `reason` naming what went wrong: `empty`, `unsupported`, or `denied`. */
+  /** Cancelable proposal dispatched before anything is written, carrying the resolved `value`. Call `preventDefault()` to reject the copy, and no `ui-copy` follows. Or call `detail.respondWith(promise)` to perform the write yourself — which is how you copy an image, a blob, or `text/html`, since `writeText` carries a string and nothing else. The element then awaits your promise and drives `--copied`, the announcement, and `ui-copy` from its outcome, so a confirmation never claims a copy that did not happen. Call it synchronously, and call your own clipboard method synchronously too — the click’s transient user activation is the same one the element depends on. `ClipboardItem` accepts a promised blob, so `new ClipboardItem({ 'image/png': blobPromise })` starts the write immediately while the data resolves. */
+  'onui-before-copy'?: (event: CustomEvent<CopyProposalDetail>) => void
+  /** Dispatched once per activation, on success and on every failure, unless a listener cancelled the proposal. The detail carries `status`, the resolved `value`, and a `reason` naming what went wrong: `empty` when nothing resolved, `unsupported` when there is no Clipboard API, `denied` when the browser refused the write, and `rejected` when a `respondWith` promise failed. */
   'onui-copy'?: (event: CustomEvent<CopyDetail>) => void
 }
 

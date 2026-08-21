@@ -2,6 +2,7 @@ import { defineTimelessElements } from '@timelessui/components/define'
 import { defineLargeDatasetElements } from '../src/stories/collection-navigation/large-dataset.fixture'
 import { defineOwnedFilterElement } from '../src/stories/collection-navigation/owned-filter.fixture'
 import { defineServerErrorsElement } from '../src/stories/form-primitives/server-errors.fixture'
+import { defineCopyBlobElement } from '../src/stories/copy-button.fixture'
 
 /**
  * The only place a story fixture element can be registered.
@@ -18,4 +19,5 @@ export function setupPreview(window: Window): void {
   defineLargeDatasetElements(window)
   defineOwnedFilterElement(window)
   defineServerErrorsElement(window)
+  defineCopyBlobElement(window)
 }

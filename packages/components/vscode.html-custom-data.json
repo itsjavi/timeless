@@ -526,7 +526,7 @@
     },
     {
       "name": "ui-copy-button",
-      "description": "Timeless `ui-copy-button`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Button pattern. Dispatches `ui-copy`.",
+      "description": "Timeless `ui-copy-button`. Enhances the Light DOM you author; the markup stays yours. Implements the ARIA Button pattern. Dispatches `ui-before-copy`, `ui-copy`.",
       "references": [
         {
           "name": "Component reference",

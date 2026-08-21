@@ -2412,9 +2412,15 @@ export const components = [
     [],
     [
       event(
+        'ui-before-copy',
+        'CustomEvent<CopyProposalDetail>',
+        "Cancelable proposal dispatched before anything is written, carrying the resolved `value`. Call `preventDefault()` to reject the copy, and no `ui-copy` follows. Or call `detail.respondWith(promise)` to perform the write yourself \u2014 which is how you copy an image, a blob, or `text/html`, since `writeText` carries a string and nothing else. The element then awaits your promise and drives `--copied`, the announcement, and `ui-copy` from its outcome, so a confirmation never claims a copy that did not happen. Call it synchronously, and call your own clipboard method synchronously too \u2014 the click\u2019s transient user activation is the same one the element depends on. `ClipboardItem` accepts a promised blob, so `new ClipboardItem({ 'image/png': blobPromise })` starts the write immediately while the data resolves.",
+        true,
+      ),
+      event(
         'ui-copy',
         'CustomEvent<CopyDetail>',
-        'Dispatched once per activation, on success and on every failure. The detail carries `status`, the resolved `value`, and a `reason` naming what went wrong: `empty`, `unsupported`, or `denied`.',
+        'Dispatched once per activation, on success and on every failure, unless a listener cancelled the proposal. The detail carries `status`, the resolved `value`, and a `reason` naming what went wrong: `empty` when nothing resolved, `unsupported` when there is no Clipboard API, `denied` when the browser refused the write, and `rejected` when a `respondWith` promise failed.',
       ),
     ],
     accessibility(

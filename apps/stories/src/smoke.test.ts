@@ -77,6 +77,7 @@ import { Default as Tooltip } from './stories/progressive-overlays/tooltip.stori
 import {
   Default as CopyButton,
   HiddenUntilSupported as CopyButtonHiddenUntilSupported,
+  InterceptedCopy as CopyButtonInterceptedCopy,
   Shapes as CopyButtonShapes,
 } from './stories/copy-button.stories'
 
@@ -220,6 +221,12 @@ describe('catalog stories', () => {
     expect(CopyButtonHiddenUntilSupported.render()).toMatch(
       /<button[^>]*\sdata-ui-part="trigger"[^>]*\shidden>/,
     )
+
+    // The interception demo needs its fixture element, which only `setupPreview` can register, and
+    // the copyable source shows the listener rather than the wrapper.
+    expect(CopyButtonInterceptedCopy.render()).toContain('<story-copy-blob>')
+    expect(CopyButtonInterceptedCopy.source()).toContain('ui-before-copy')
+    expect(CopyButtonInterceptedCopy.source()).not.toContain('story-copy-blob')
   })
 
   it('keeps milestone 026 copyable source free of demo wrappers and private hooks', () => {
@@ -227,6 +234,7 @@ describe('catalog stories', () => {
       CopyButton.source(),
       CopyButtonShapes.source(),
       CopyButtonHiddenUntilSupported.source(),
+      CopyButtonInterceptedCopy.source(),
     ]) {
       expect(source).not.toContain('ui-demo-page')
       expect(source).not.toContain('data-ui-internal-')

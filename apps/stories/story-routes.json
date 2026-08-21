@@ -5,6 +5,7 @@
   "/stories/library-actions-button--variants/",
   "/stories/library-actions-copy-button--default/",
   "/stories/library-actions-copy-button--hidden-until-supported/",
+  "/stories/library-actions-copy-button--intercepted-copy/",
   "/stories/library-actions-copy-button--shapes/",
   "/stories/library-actions-toggle--default/",
   "/stories/library-actions-toggle--states/",
